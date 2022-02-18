@@ -7,7 +7,7 @@ import "./BaseRegistrar.sol";
 
 contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     // A map of expiry times
-    mapping(uint256=>uint) expiries;
+    mapping(bytes32=>mapping(uint256=>uint)) expiries;
 
     string private BASE_URI;
 
@@ -59,13 +59,13 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
 
-    constructor(EDNS _edns, bytes32 _baseNode) ERC721("","") {
+    constructor(EDNS _edns) ERC721("","") {
         edns = _edns;
-        baseNode = _baseNode;
     }
 
-    modifier live {
-        require(edns.owner(baseNode) == address(this));
+    modifier live(bytes32 node) {
+        require(baseNodes[node]);
+        require(edns.owner(node) == address(this));
         _;
     }
 
@@ -80,8 +80,8 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
      * @param tokenId uint256 ID of the token to query the owner of
      * @return address currently marked as the owner of the given token ID
      */
-    function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
-        require(expiries[tokenId] > block.timestamp);
+    function ownerOf(bytes32 node, uint256 tokenId) public view live(node) returns (address) {
+        require(expiries[node][tokenId] > block.timestamp);
         return super.ownerOf(tokenId);
     }
 
@@ -98,19 +98,19 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     }
 
     // Set the resolver for the TLD this registrar manages.
-    function setResolver(address resolver) external override onlyOwner {
-        edns.setResolver(baseNode, resolver);
+    function setResolver(bytes32 node, address resolver) external override onlyOwner live(node)   {
+        edns.setResolver(node, resolver);
     }
 
     // Returns the expiration timestamp of the specified id.
-    function nameExpires(uint256 id) external view override returns(uint) {
-        return expiries[id];
+    function nameExpires(uint256 id, bytes32 node) external live(node) view override returns(uint) {
+        return expiries[node][id];
     }
 
     // Returns true iff the specified name is available for registration.
-    function available(uint256 id) public view override returns(bool) {
+    function available(uint256 id, bytes32 node) public live(node) view override returns(bool) {
         // Not available if it's registered here or in its grace period.
-        return expiries[id] + GRACE_PERIOD < block.timestamp;
+        return expiries[node][id] + GRACE_PERIOD < block.timestamp;
     }
 
     /**
@@ -119,8 +119,8 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
      * @param owner The address that should own the registration.
      * @param duration Duration in seconds for the registration.
      */
-    function register(uint256 id, address owner, uint duration) external override returns(uint) {
-      return _register(id, owner, duration, true);
+    function register(uint256 id, bytes32 node, address owner, uint duration) external override live(node) returns(uint) {
+        return _register(id, node, owner, duration, true);
     }
 
     /**
@@ -129,49 +129,58 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
      * @param owner The address that should own the registration.
      * @param duration Duration in seconds for the registration.
      */
-    function registerOnly(uint256 id, address owner, uint duration) external returns(uint) {
-      return _register(id, owner, duration, false);
+    function registerOnly(uint256 id, bytes32 node, address owner, uint duration) external returns(uint) {
+        return _register(id, node, owner, duration, false);
     }
 
-    function _register(uint256 id, address owner, uint duration, bool updateRegistry) internal live onlyController returns(uint) {
-        require(available(id));
+    function _register(uint256 id, bytes32 node, address owner, uint duration, bool updateRegistry) internal live(node) onlyController returns(uint) {
+        require(available(id, node));
         require(block.timestamp + duration + GRACE_PERIOD > block.timestamp + GRACE_PERIOD); // Prevent future overflow
 
-        expiries[id] = block.timestamp + duration;
+        expiries[node][id] = block.timestamp + duration;
         if(_exists(id)) {
             // Name was previously owned, and expired
             _burn(id);
         }
         _mint(owner, id);
         if(updateRegistry) {
-            edns.setSubnodeOwner(baseNode, bytes32(id), owner);
+            edns.setSubnodeOwner(node, bytes32(id), owner);
         }
 
-        emit NameRegistered(id, owner, block.timestamp + duration);
+        emit NameRegistered(id, node, owner, block.timestamp + duration);
 
         return block.timestamp + duration;
     }
 
-    function renew(uint256 id, uint duration) external override live onlyController returns(uint) {
-        require(expiries[id] + GRACE_PERIOD >= block.timestamp); // Name must be registered here or in grace period
-        require(expiries[id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD); // Prevent future overflow
+    function renew(uint256 id, bytes32 node, uint duration) external override live(node) onlyController returns(uint) {
+        require(expiries[node][id] + GRACE_PERIOD >= block.timestamp); // Name must be registered here or in grace period
+        require(expiries[node][id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD); // Prevent future overflow
 
-        expiries[id] += duration;
-        emit NameRenewed(id, expiries[id]);
-        return expiries[id];
+        expiries[node][id] += duration;
+        emit NameRenewed(id, node, expiries[node][id]);
+        return expiries[node][id];
     }
 
     /**
      * @dev Reclaim ownership of a name in EDNS, if you own it in the registrar.
      */
-    function reclaim(uint256 id, address owner) external override live {
+    function reclaim(uint256 id, bytes32 node, address owner) external override live(node) {
         require(_isApprovedOrOwner(msg.sender, id));
-        edns.setSubnodeOwner(baseNode, bytes32(id), owner);
+        edns.setSubnodeOwner(node, bytes32(id), owner);
+    }
+
+    function setNode(bytes32 node) external override{
+        require(!baseNodes[node]);
+        baseNodes[node] = true;
+    }
+
+    function nodeExist(bytes32 node) external view override returns(bool){
+        return baseNodes[node];
     }
 
     function supportsInterface(bytes4 interfaceID) public override(ERC721, IERC165) view returns (bool) {
         return interfaceID == INTERFACE_META_ID ||
-               interfaceID == ERC721_ID ||
-               interfaceID == RECLAIM_ID;
+            interfaceID == ERC721_ID ||
+            interfaceID == RECLAIM_ID;
     }
 }
