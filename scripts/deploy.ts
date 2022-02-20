@@ -3,13 +3,13 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import hre from "hardhat";
+import { ethers } from "hardhat";
 import { keccak_256 as sha3 } from "js-sha3";
 import uts46 from "idna-uts46-hx";
-import { Contract, ethers } from 'ethers';
+import { Contract } from 'ethers';
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-function namehash(inputName: string) {
+export function namehash(inputName: string) {
   // Reject empty names:
   let node = "";
   for (let i = 0; i < 32; i++) {
@@ -44,11 +44,10 @@ function normalize(name: string) {
 //   "ass",
 //   "shit"
 // ];
-const tld = "edns";
+const tlds: string[] = ["edns"];
 const labelhash = (label: string) => ethers.utils.keccak256(ethers.utils.toUtf8Bytes(label));
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const ZERO_HASH =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
+const ZERO_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
@@ -58,33 +57,40 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const EDNSRegistry = await hre.ethers.getContractFactory("EDNSRegistry");
-  const ReverseRegistrar = await hre.ethers.getContractFactory("ReverseRegistrar");
-  const PublicResolver = await hre.ethers.getContractFactory("PublicResolver");
-  const BaseRegistrarImplementation = await hre.ethers.getContractFactory(
-    "BaseRegistrarImplementation"
-  );
-  const EDNSRegistrarController = await hre.ethers.getContractFactory(
-    "EDNSRegistrarController"
-  );
 
-  const signers = await hre.ethers.getSigners();
+  const signers = await ethers.getSigners();
+
+  const EDNSRegistry = await ethers.getContractFactory("EDNSRegistry");
+  const ReverseRegistrar = await ethers.getContractFactory("ReverseRegistrar");
+  const PublicResolver = await ethers.getContractFactory("PublicResolver");
+  const BaseRegistrarImplementation = await ethers.getContractFactory("BaseRegistrarImplementation");
+  const EDNSRegistrarController = await ethers.getContractFactory("EDNSRegistrarController");
 
   const registry = await EDNSRegistry.deploy();
   await registry.deployed();
   console.log(`Registry deployed [${registry.address}]`);
+
   const resolver = await PublicResolver.deploy(registry.address, ZERO_ADDRESS);
   await resolver.deployed();
   console.log(`Resolver deployed [${resolver.address}]`);
-  const baseRegistrar = await BaseRegistrarImplementation.deploy(registry.address, namehash(tld));
+
+  const baseRegistrar = await BaseRegistrarImplementation.deploy(registry.address);
   await baseRegistrar.deployed();
   console.log(`Base Registrar deployed [${baseRegistrar.address}]`);
+
   const registrarController = await EDNSRegistrarController.deploy(
     baseRegistrar.address
   );
   await registrarController.deployed();
+  console.log(`Register Controller deployed [${registrarController.address}]`);
+
   const reverseRegistrar = await ReverseRegistrar.deploy(registry.address, resolver.address);
   await reverseRegistrar.deployed();
+  console.log(`Reverse registrar deployed [${reverseRegistrar.address}]`);
+
+  // const signers = await hre.ethers.getSigners();
+
+
 
   await setupRegistrar(registry, baseRegistrar);
   await setupResolver(registry, resolver, signers[0]);
@@ -102,9 +108,9 @@ async function setupResolver(registry: Contract, resolver: Contract, account: Si
 }
 
 async function setupRegistrar(registry: Contract, registrar: Contract) {
-  // for (let tld of tlds) {
-  await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address);
-  // }
+  for (let tld of tlds) {
+    await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address);
+  }
 }
 
 async function setupReverseRegistrar(registry: Contract, reverseRegistrar: Contract, account: SignerWithAddress) {

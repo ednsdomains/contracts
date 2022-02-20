@@ -4,12 +4,13 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "../registry/EDNS.sol";
 import "./BaseRegistrar.sol";
+import "hardhat/console.sol";
 
 contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     // A map of expiry times
-    mapping(bytes32=>mapping(uint256=>uint)) expiries;
+    mapping(uint256=>uint) expiries;
 
-    string private BASE_URI;
+    string private baseURI;
 
     bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
     bytes4 constant private ERC721_ID = bytes4(
@@ -25,15 +26,15 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     );
     bytes4 constant private RECLAIM_ID = bytes4(keccak256("reclaim(uint256,address)"));
 
-    function _setBaseURI(string memory baseURI) internal virtual {
-        BASE_URI = baseURI;
+    function _setBaseURI(string memory __baseURI) internal virtual {
+        baseURI = __baseURI;
     }
 
     function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-        string memory baseURI = _baseURI();
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, "/", this, "/", tokenId)) : "";
+        string memory __baseURI = _baseURI();
+        return bytes(__baseURI).length > 0 ? string(abi.encodePacked(baseURI, "/", this, "/", tokenId)) : "";
     }
 
     function _baseURI()
@@ -42,7 +43,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         override(ERC721)
         returns(string memory)
     {
-        return BASE_URI;
+        return baseURI;
     }
 
     /**
@@ -64,7 +65,6 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     }
 
     modifier live(bytes32 node) {
-        require(baseNodes[node]);
         require(edns.owner(node) == address(this));
         _;
     }
@@ -80,8 +80,8 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
      * @param tokenId uint256 ID of the token to query the owner of
      * @return address currently marked as the owner of the given token ID
      */
-    function ownerOf(bytes32 node, uint256 tokenId) public view live(node) returns (address) {
-        require(expiries[node][tokenId] > block.timestamp);
+    function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
+        require(expiries[tokenId] > block.timestamp);
         return super.ownerOf(tokenId);
     }
 
@@ -98,19 +98,19 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     }
 
     // Set the resolver for the TLD this registrar manages.
-    function setResolver(bytes32 node, address resolver) external override onlyOwner live(node)   {
+    function setResolver (bytes32 node, address resolver) external override onlyOwner {
         edns.setResolver(node, resolver);
     }
 
     // Returns the expiration timestamp of the specified id.
-    function nameExpires(uint256 id, bytes32 node) external live(node) view override returns(uint) {
-        return expiries[node][id];
+    function nameExpires(uint256 id) external view override returns(uint) {
+        return expiries[id];
     }
 
     // Returns true iff the specified name is available for registration.
-    function available(uint256 id, bytes32 node) public live(node) view override returns(bool) {
+    function available(uint256 id) public view override returns(bool) {
         // Not available if it's registered here or in its grace period.
-        return expiries[node][id] + GRACE_PERIOD < block.timestamp;
+        return expiries[id] + GRACE_PERIOD < block.timestamp;
     }
 
     /**
@@ -134,10 +134,10 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     }
 
     function _register(uint256 id, bytes32 node, address owner, uint duration, bool updateRegistry) internal live(node) onlyController returns(uint) {
-        require(available(id, node));
+        require(available(id));
         require(block.timestamp + duration + GRACE_PERIOD > block.timestamp + GRACE_PERIOD); // Prevent future overflow
 
-        expiries[node][id] = block.timestamp + duration;
+        expiries[id] = block.timestamp + duration;
         if(_exists(id)) {
             // Name was previously owned, and expired
             _burn(id);
@@ -147,18 +147,18 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
             edns.setSubnodeOwner(node, bytes32(id), owner);
         }
 
-        emit NameRegistered(id, node, owner, block.timestamp + duration);
+        emit NameRegistered(id, owner, block.timestamp + duration);
 
         return block.timestamp + duration;
     }
 
     function renew(uint256 id, bytes32 node, uint duration) external override live(node) onlyController returns(uint) {
-        require(expiries[node][id] + GRACE_PERIOD >= block.timestamp); // Name must be registered here or in grace period
-        require(expiries[node][id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD); // Prevent future overflow
+        require(expiries[id] + GRACE_PERIOD >= block.timestamp); // Name must be registered here or in grace period
+        require(expiries[id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD); // Prevent future overflow
 
-        expiries[node][id] += duration;
-        emit NameRenewed(id, node, expiries[node][id]);
-        return expiries[node][id];
+        expiries[id] += duration;
+        emit NameRenewed(id, expiries[id]);
+        return expiries[id];
     }
 
     /**
@@ -169,13 +169,12 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         edns.setSubnodeOwner(node, bytes32(id), owner);
     }
 
-    function setNode(bytes32 node) external override{
-        require(!baseNodes[node]);
-        baseNodes[node] = true;
+    function setBaseNode(bytes32 nodehash, bool _available) public virtual override onlyOwner{
+        baseNodes[nodehash] = _available;
     }
 
-    function nodeExist(bytes32 node) external view override returns(bool){
-        return baseNodes[node];
+    function baseNodeAvailable(bytes32 nodehash) public view override returns(bool){
+        return baseNodes[nodehash];
     }
 
     function supportsInterface(bytes4 interfaceID) public override(ERC721, IERC165) view returns (bool) {
