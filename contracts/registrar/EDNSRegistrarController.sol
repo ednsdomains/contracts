@@ -4,7 +4,6 @@ import "./BaseRegistrarImplementation.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../resolvers/Resolver.sol";
 import "./StringUtils.sol";
-import "hardhat/console.sol";
 
 contract EDNSRegistrarController is Ownable{
     using StringUtils for *;
