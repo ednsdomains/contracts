@@ -1,30 +1,49 @@
-pragma solidity >=0.8.4;
+pragma solidity ^0.8.10;
 
 import "./BaseRegistrarImplementation.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "../resolvers/Resolver.sol";
 import "./StringUtils.sol";
+import "../rewarding/IAffiliateProgram.sol";
 
-contract EDNSRegistrarController is Ownable{
+contract EDNSRegistrarController is AccessControlEnumerable{
     using StringUtils for *;
 
     bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
+    bytes4 constant private ACCESS_CONTROL_ENUMERABLE_ID = bytes4(
+        keccak256("getRoleMember(bytes32,uint256)") ^
+        keccak256("getRoleMemberCount(bytes32)")
+    );
 
-    event NameRegistered(string name, string indexed tld, bytes32 indexed label, address indexed owner, uint expires);
-    event NameRenewed(string name, string indexed tld, bytes32 indexed label, uint expires);
+    event NameRegistered(string name, bytes indexed tld, bytes32 indexed label, address indexed owner, uint expires);
+    event NameRenewed(string name, bytes indexed tld, bytes32 indexed label, uint expires);
 
-    mapping(bytes => bytes32) tlds;
+    mapping(bytes => bytes32) public tlds;
+
+    mapping(address => bool) private _operators;
 
     BaseRegistrarImplementation private base;
 
     uint private nameMinimumLengthLimit;
     uint private nameMaximumLengthLimit;
 
+    IAffiliateProgram private _affiliateProgram;
+
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+
     constructor(BaseRegistrarImplementation _base) {
         base = _base;
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(OPERATOR_ROLE, _msgSender());
     }
 
-    function setNameLengthLimit(uint minimum, uint maximum) public onlyOwner{
+    function setAffiliateProgram(IAffiliateProgram _program) public{
+        require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
+        _affiliateProgram = _program;
+    }
+
+    function setNameLengthLimit(uint minimum, uint maximum) public{
+        require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
         nameMinimumLengthLimit = minimum;
         nameMaximumLengthLimit = maximum;
     }
@@ -40,7 +59,8 @@ contract EDNSRegistrarController is Ownable{
         return valid(name) && base.available(uint256(label));
     }
 
-    function registerWithConfig(string memory name, string memory tld, address owner, uint duration, address resolver, address addr) public onlyOwner {
+    function registerWithConfig(string memory name, string memory tld, address owner, uint duration, address resolver, address addr, bytes32 affiliate) public {
+        require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
         require(tldAvailable(tld), "TLD not available");
         bytes32 baseNode = tlds[bytes(tld)];
         bytes32 label = keccak256(bytes(abi.encodePacked(name,baseNode)));
@@ -51,6 +71,11 @@ contract EDNSRegistrarController is Ownable{
             // Set this contract as the (temporary) owner, giving it
             // permission to set up the resolver.
             expires = base.register(tokenId, baseNode, address(this), duration);
+            if(address(_affiliateProgram) != address(0) && affiliate != 0x0){
+                if(_affiliateProgram.allowRewarding()){
+                    
+                }
+            }
 
             // The nodehash of this label
             bytes32 nodehash = keccak256(abi.encodePacked(baseNode, bytes32(tokenId)));
@@ -71,23 +96,27 @@ contract EDNSRegistrarController is Ownable{
             expires = base.register(tokenId, baseNode, owner, duration);
         }
 
-        emit NameRegistered(name, tld, label, owner, expires);
+        emit NameRegistered(name, bytes(tld), label, owner, expires);
     }
 
-    function renew(string calldata name, string calldata tld, uint duration) external onlyOwner() {
+    function renew(string calldata name, string calldata tld, uint duration) public {
+        require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
         require(tldAvailable(tld), "TLD not available");
+
         bytes32 baseNode = tlds[bytes(tld)];
         bytes32 label = keccak256(bytes(abi.encodePacked(name,tld)));
         uint256 tokenId = uint256(label);
         uint expires = base.renew(tokenId, baseNode, duration);
-        emit NameRenewed(name, tld, label, expires);
+        emit NameRenewed(name, bytes(tld), label, expires);
     }
 
-    function supportsInterface(bytes4 interfaceID) external pure returns (bool) {
-        return interfaceID == INTERFACE_META_ID;
+    function supportsInterface(bytes4 interfaceID) public override(AccessControlEnumerable) pure returns (bool) {
+        return interfaceID == INTERFACE_META_ID || interfaceID == ACCESS_CONTROL_ENUMERABLE_ID;
     }
 
-    function setTld(string memory tld, bytes32 nodehash) public virtual onlyOwner {
+    function setTld(string memory tld, bytes32 nodehash) public virtual {
+        require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
+        
         tlds[bytes(tld)] = nodehash;
     }
 
