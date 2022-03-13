@@ -2,21 +2,22 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "../registrar/EDNSRegistrarController.sol";
 import "./IAffiliateProgram.sol";
 import "../registrar/StringUtils.sol";
 
-contract AffiliateProgram is Context, AccessControlEnumerable, ERC721Pausable, ERC721Enumerable, ReentrancyGuard, IAffiliateProgram{
+contract AffiliateProgram is ContextUpgradeable, ERC721Upgradeable, AccessControlEnumerableUpgradeable, ERC721PausableUpgradeable, ERC721EnumerableUpgradeable, ReentrancyGuardUpgradeable, IAffiliateProgram{
     using StringUtils for string;
     using SafeERC20 for IERC20;
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
     // STRUCTS
     struct Profile{
@@ -68,9 +69,19 @@ contract AffiliateProgram is Context, AccessControlEnumerable, ERC721Pausable, E
     mapping(bytes32 => Profile) private _profiles;
 
     uint256 private _rewardPerYear;
-    
-    /* ========== CONSTRUCTORS  ========== */
-    constructor(EDNSRegistrarController _controller) ERC721("EDNS Affiliate Program", "EDNSAP") {
+
+    /* ========== INITIALIZER  ========== */
+    function initialize(EDNSRegistrarController _controller) public initializer{
+        __AffiliateProgram_init(_controller);
+    }
+
+    function __AffiliateProgram_init(EDNSRegistrarController _controller) internal onlyInitializing{
+        __ERC721_init_unchained("EDNS Affiliate Program", "EDNSAP");
+        __ReentrancyGuard_init_unchained();
+        __AffiliateProgram_init_unchained(_controller);
+    }
+
+    function __AffiliateProgram_init_unchained(EDNSRegistrarController _controller) internal onlyInitializing{
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(OPERATOR_ROLE, _msgSender());
 
@@ -386,16 +397,16 @@ contract AffiliateProgram is Context, AccessControlEnumerable, ERC721Pausable, E
         }
     }
 
-    function _transfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
+    function _transfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Upgradeable) {
         super._transfer(from, to, tokenId);
         _profiles[bytes32(tokenId)].owner = to;
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Pausable, ERC721Enumerable) {
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721EnumerableUpgradeable, ERC721PausableUpgradeable, ERC721Upgradeable) {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControlEnumerable, ERC721Enumerable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlEnumerableUpgradeable, ERC721EnumerableUpgradeable, ERC721Upgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
