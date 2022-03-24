@@ -1,10 +1,10 @@
 pragma solidity ^0.8.4;
 
 import "../registry/EDNS.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./Controllable.sol";
 
-contract Root is Ownable, Controllable {
+contract Root is OwnableUpgradeable, Controllable {
     bytes32 private constant ROOT_NODE = bytes32(0);
 
     bytes4 private constant INTERFACE_META_ID =
@@ -15,7 +15,16 @@ contract Root is Ownable, Controllable {
     EDNS public edns;
     mapping(bytes32 => bool) public locked;
 
-    constructor(EDNS _edns) public {
+
+    function initialize(EDNS _edns) public initializer{
+        __Root_init(_edns);
+    }
+
+    function __Root_init(EDNS _edns) internal onlyInitializing{
+        __Root_init_unchained(_edns);
+    }
+
+    function __Root_init_unchained(EDNS _edns) internal onlyInitializing{
         edns = _edns;
     }
 

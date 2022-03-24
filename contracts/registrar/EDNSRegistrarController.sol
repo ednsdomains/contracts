@@ -1,12 +1,12 @@
 pragma solidity ^0.8.10;
 
 import "./BaseRegistrarImplementation.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "../resolvers/Resolver.sol";
 import "./StringUtils.sol";
-import "../rewarding/IAffiliateProgram.sol";
+// import "../rewarding/IAffiliateProgram.sol";
 
-contract EDNSRegistrarController is AccessControlEnumerable{
+contract EDNSRegistrarController is AccessControlEnumerableUpgradeable{
     using StringUtils for *;
 
     bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
@@ -27,20 +27,29 @@ contract EDNSRegistrarController is AccessControlEnumerable{
     uint private nameMinimumLengthLimit;
     uint private nameMaximumLengthLimit;
 
-    IAffiliateProgram private _affiliateProgram;
+    // IAffiliateProgram private _affiliateProgram;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
-    constructor(BaseRegistrarImplementation _base) {
+    function initialize(BaseRegistrarImplementation _base) public initializer{
+        __EDNSRegistrarController_init(_base);
+    }
+
+    function __EDNSRegistrarController_init(BaseRegistrarImplementation _base) internal onlyInitializing{
+        __EDNSRegistrarController_init_unchained(_base);
+        __AccessControlEnumerable_init_unchained();
+    }
+
+    function __EDNSRegistrarController_init_unchained(BaseRegistrarImplementation _base) internal onlyInitializing{
         base = _base;
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(OPERATOR_ROLE, _msgSender());
     }
 
-    function setAffiliateProgram(IAffiliateProgram _program) public{
-        require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
-        _affiliateProgram = _program;
-    }
+    // function setAffiliateProgram(IAffiliateProgram _program) public{
+    //     require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
+    //     _affiliateProgram = _program;
+    // }
 
     function setNameLengthLimit(uint minimum, uint maximum) public{
         require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
@@ -59,7 +68,7 @@ contract EDNSRegistrarController is AccessControlEnumerable{
         return valid(name) && base.available(uint256(label));
     }
 
-    function registerWithConfig(string memory name, string memory tld, address owner, uint duration, address resolver, address addr, bytes32 affiliate) public {
+    function registerWithConfig(string memory name, string memory tld, address owner, uint duration, address resolver, address addr) public {
         require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
         require(tldAvailable(tld), "TLD not available");
         bytes32 baseNode = tlds[bytes(tld)];
@@ -71,11 +80,11 @@ contract EDNSRegistrarController is AccessControlEnumerable{
             // Set this contract as the (temporary) owner, giving it
             // permission to set up the resolver.
             expires = base.register(tokenId, baseNode, address(this), duration);
-            if(address(_affiliateProgram) != address(0) && affiliate != 0x0){
-                if(_affiliateProgram.allowRewarding()){
+            // if(address(_affiliateProgram) != address(0) && affiliate != 0x0){
+            //     if(_affiliateProgram.allowRewarding()){
                     
-                }
-            }
+            //     }
+            // }
 
             // The nodehash of this label
             bytes32 nodehash = keccak256(abi.encodePacked(baseNode, bytes32(tokenId)));
@@ -110,7 +119,7 @@ contract EDNSRegistrarController is AccessControlEnumerable{
         emit NameRenewed(name, bytes(tld), label, expires);
     }
 
-    function supportsInterface(bytes4 interfaceID) public override(AccessControlEnumerable) pure returns (bool) {
+    function supportsInterface(bytes4 interfaceID) public override(AccessControlEnumerableUpgradeable) pure returns (bool) {
         return interfaceID == INTERFACE_META_ID || interfaceID == ACCESS_CONTROL_ENUMERABLE_ID;
     }
 

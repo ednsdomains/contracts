@@ -1,10 +1,11 @@
 pragma solidity ^0.8.10;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./EDNS.sol";
 /**
  * The EDNS registry contract.
  */
-contract EDNSRegistry is EDNS {
+contract EDNSRegistry is EDNS, Initializable {
     struct Record {
         address owner;
         address resolver;
@@ -24,9 +25,22 @@ contract EDNSRegistry is EDNS {
     /**
      * @dev Constructs a new EDNS registrar.
      */
-    constructor() public {
+    // constructor() public {
+    //     records[0x0].owner = msg.sender;
+    // }
+
+    function initialize() public initializer{
+        __EDNS_init();
+    }
+
+    function __EDNS_init() internal onlyInitializing{
+        __EDNS_init_unchained();
+    }
+
+    function __EDNS_init_unchained() internal onlyInitializing{
         records[0x0].owner = msg.sender;
     }
+
 
     /**
      * @dev Sets the record for a node.

@@ -1,9 +1,11 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
 import { BaseRegistrarImplementation, EDNSRegistrarController, EDNSRegistry, PublicResolver, ReverseRegistrar } from "../typechain";
 import { namehash } from "ethers/lib/utils";
 import Web3 from "web3";
+import { ethers, upgrades } from "hardhat";
+import { Contract } from 'ethers';
+import { reverse } from "dns";
 
 const tlds: string[] = ["edns"];
 const sampleDomain = {
@@ -45,8 +47,6 @@ describe("EDNS", function () {
   let registrarController: EDNSRegistrarController;
   let reverseRegistrar: ReverseRegistrar;
 
-
-
   beforeEach(async function () {
     const EDNSRegistry = await ethers.getContractFactory("EDNSRegistry");
     const ReverseRegistrar = await ethers.getContractFactory("ReverseRegistrar");
@@ -54,11 +54,36 @@ describe("EDNS", function () {
     const BaseRegistrarImplementation = await ethers.getContractFactory("BaseRegistrarImplementation");
     const EDNSRegistrarController = await ethers.getContractFactory("EDNSRegistrarController");
 
-    registry = await EDNSRegistry.deploy();
-    publicResolver = await PublicResolver.deploy(registry.address, ZERO_ADDRESS);
-    baseRegistrar = await BaseRegistrarImplementation.deploy(registry.address);
-    registrarController = await EDNSRegistrarController.deploy(baseRegistrar.address);
-    reverseRegistrar = await ReverseRegistrar.deploy(registry.address, publicResolver.address);
+    // registry = await EDNSRegistry.deploy();
+    // publicResolver = await PublicResolver.deploy(registry.address, ZERO_ADDRESS);
+    // baseRegistrar = await BaseRegistrarImplementation.deploy(registry.address);
+    // registrarController = await EDNSRegistrarController.deploy(baseRegistrar.address);
+    // reverseRegistrar = await ReverseRegistrar.deploy(registry.address, publicResolver.address);
+
+    const _registry = await upgrades.deployProxy(EDNSRegistry);
+    await _registry.deployed();
+    console.log(`Registry deployed [${_registry.address}]`);
+    registry = EDNSRegistry.attach(_registry.address);
+
+    const _publicResolver = await upgrades.deployProxy(PublicResolver, [_registry.address, ZERO_ADDRESS]);
+    await _publicResolver.deployed();
+    console.log(`Resolver deployed [${_publicResolver.address}]`);
+    publicResolver = PublicResolver.attach(_publicResolver.address);
+
+    const _baseRegistrar = await upgrades.deployProxy(BaseRegistrarImplementation, [_registry.address]);
+    await _baseRegistrar.deployed();
+    console.log(`Base Registrar deployed [${_baseRegistrar.address}]`);
+    baseRegistrar = BaseRegistrarImplementation.attach(_baseRegistrar.address)
+
+    const _registrarController = await upgrades.deployProxy(EDNSRegistrarController, [_baseRegistrar.address]);
+    await _registrarController.deployed();
+    console.log(`Register Controller deployed [${_registrarController.address}]`);
+    registrarController = EDNSRegistrarController.attach(_registrarController.address);
+
+    const _reverseRegistrar = await upgrades.deployProxy(ReverseRegistrar, [_registry.address, _publicResolver.address]);
+    await _reverseRegistrar.deployed();
+    console.log(`Reverse registrar deployed [${_reverseRegistrar.address}]`);
+    reverseRegistrar = ReverseRegistrar.attach(_reverseRegistrar.address);
   });
 
   describe("Initial setup", async function () {
@@ -86,6 +111,18 @@ describe("EDNS", function () {
 
       const [owner] = await ethers.getSigners();
       const duration: number = 31104000; // 360 days;
+      const estimateGasFee = await registrarController.estimateGas.registerWithConfig(`one2cloud`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
+      const estimateGasFeeWithShortestNumber = await registrarController.estimateGas.registerWithConfig(`12345`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
+      const estimateGasFeeWithLongestNumber = await registrarController.estimateGas.registerWithConfig(`61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
+      const estimateGasFeeWithShortestString = await registrarController.estimateGas.registerWithConfig(`12345`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
+      const estimateGasFeeWithLongestString = await registrarController.estimateGas.registerWithConfig(`61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
+      console.log({
+        estimateGasFee: estimateGasFee.toString(),
+        estimateGasFeeWithShortestNumber: estimateGasFeeWithShortestNumber.toString(),
+        estimateGasFeeWithLongestNumber: estimateGasFeeWithLongestNumber.toString(),
+        estimateGasFeeWithShortestString: estimateGasFeeWithShortestString.toString(),
+        estimateGasFeeWithLongestString: estimateGasFeeWithLongestString.toString()
+      });
       await registrarController.registerWithConfig(sampleDomain.name, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
     });
 

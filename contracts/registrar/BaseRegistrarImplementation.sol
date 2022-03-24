@@ -1,11 +1,11 @@
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "../registry/EDNS.sol";
 import "./BaseRegistrar.sol";
 
-contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
+contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
     // A map of expiry times
     mapping(uint256=>uint) expiries;
 
@@ -29,7 +29,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         baseURI = __baseURI;
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
+    function tokenURI(uint256 tokenId) public view virtual override(ERC721Upgradeable) returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
         string memory __baseURI = _baseURI();
@@ -39,7 +39,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
     function _baseURI()
         internal
         view
-        override(ERC721)
+        override(ERC721Upgradeable)
         returns(string memory)
     {
         return baseURI;
@@ -59,7 +59,17 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
 
-    constructor(EDNS _edns) ERC721("","") {
+    function initialize(EDNS _edns) public initializer{
+        __BaseRegistrarImplementation_init(_edns);
+    }
+
+    function __BaseRegistrarImplementation_init(EDNS _edns) internal onlyInitializing{
+        __BaseRegistrarImplementation_init_unchained(_edns);
+        __ERC721_init_unchained("EDNS", "EDNS");
+        __Ownable_init_unchained();
+    }
+
+    function __BaseRegistrarImplementation_init_unchained(EDNS _edns) internal onlyInitializing{
         edns = _edns;
     }
 
@@ -79,7 +89,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
      * @param tokenId uint256 ID of the token to query the owner of
      * @return address currently marked as the owner of the given token ID
      */
-    function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
+    function ownerOf(uint256 tokenId) public view override(IERC721Upgradeable, ERC721Upgradeable) returns (address) {
         require(expiries[tokenId] > block.timestamp);
         return super.ownerOf(tokenId);
     }
@@ -176,7 +186,7 @@ contract BaseRegistrarImplementation is ERC721, BaseRegistrar  {
         return baseNodes[nodehash];
     }
 
-    function supportsInterface(bytes4 interfaceID) public override(ERC721, IERC165) view returns (bool) {
+    function supportsInterface(bytes4 interfaceID) public override(ERC721Upgradeable, IERC165Upgradeable) view returns (bool) {
         return interfaceID == INTERFACE_META_ID ||
             interfaceID == ERC721_ID ||
             interfaceID == RECLAIM_ID;

@@ -5,9 +5,14 @@ import "./IMulticallable.sol";
 import "./SupportsInterface.sol";
 
 abstract contract Multicallable is IMulticallable, SupportsInterface {
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable state-variable-assignment
+    address private immutable self = address(this);
+    // https://docs.openzeppelin.com/upgrades-plugins/1.x/faq#delegatecall-selfdestruct
     function multicall(bytes[] calldata data) external override returns(bytes[] memory results) {
+        require(address(this) != self);
         results = new bytes[](data.length);
         for(uint i = 0; i < data.length; i++) {
+            /// @custom:oz-upgrades-unsafe-allow delegatecall
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
             require(success);
             results[i] = result;

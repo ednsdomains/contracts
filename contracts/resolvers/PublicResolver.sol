@@ -1,6 +1,6 @@
 // SPDX-Licednse-Identifier: MIT
 pragma solidity ^0.8.10;
-
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../registry/EDNS.sol";
 import "./profiles/ABIResolver.sol";
 import "./profiles/AddrResolver.sol";
@@ -20,7 +20,7 @@ interface INameWrapper {
  * A simple resolver anyone can use; only allows the owner of a node to set its
  * address.
  */
-contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver {
+contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver, Initializable {
     EDNS edns;
     INameWrapper nameWrapper;
 
@@ -35,7 +35,20 @@ contract PublicResolver is Multicallable, ABIResolver, AddrResolver, ContentHash
     // Logged when an operator is added or removed.
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-    constructor(EDNS _edns, INameWrapper wrapperAddress){
+    // constructor(EDNS _edns, INameWrapper wrapperAddress){
+    //     edns = _edns;
+    //     nameWrapper = wrapperAddress;
+    // }
+
+    function initialize(EDNS _edns, INameWrapper wrapperAddress) public initializer{
+        __PublicResolver_init(_edns, wrapperAddress);
+    }
+
+    function __PublicResolver_init(EDNS _edns, INameWrapper wrapperAddress) internal onlyInitializing{
+        __PublicResolver_init_unchained(_edns, wrapperAddress);
+    }
+
+    function __PublicResolver_init_unchained(EDNS _edns, INameWrapper wrapperAddress) internal onlyInitializing{
         edns = _edns;
         nameWrapper = wrapperAddress;
     }

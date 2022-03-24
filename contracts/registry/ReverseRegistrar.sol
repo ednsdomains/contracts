@@ -1,7 +1,7 @@
 pragma solidity ^0.8.10;
 
 import "./EDNS.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../root/Controllable.sol";
 
 abstract contract NameResolver {
@@ -14,18 +14,22 @@ bytes32 constant ADDR_REVERSE_NODE = 0x91d1777781884d03a6757a803996e38de2a42967f
 
 // namehash('addr.reverse')
 
-contract ReverseRegistrar is Ownable, Controllable {
+contract ReverseRegistrar is OwnableUpgradeable, Controllable {
     EDNS public edns;
     NameResolver public defaultResolver;
 
     event ReverseClaimed(address indexed addr, bytes32 indexed node);
 
-    /**
-     * @dev Constructor
-     * @param ednsAddr The address of the EDNS registry.
-     * @param resolverAddr The address of the default reverse resolver.
-     */
-    constructor(EDNS ednsAddr, NameResolver resolverAddr) {
+    function initialize(EDNS ednsAddr, NameResolver resolverAddr) public initializer{
+        __ReverseRegistrar_init(ednsAddr, resolverAddr);
+    }
+
+    function __ReverseRegistrar_init(EDNS ednsAddr, NameResolver resolverAddr) internal onlyInitializing{
+        __ReverseRegistrar_init_unchained(ednsAddr, resolverAddr);
+        __Ownable_init_unchained();
+    }
+
+    function __ReverseRegistrar_init_unchained(EDNS ednsAddr, NameResolver resolverAddr) internal onlyInitializing{
         edns = ednsAddr;
         defaultResolver = resolverAddr;
 
@@ -206,7 +210,7 @@ contract ReverseRegistrar is Ownable, Controllable {
     }
 
     function ownsContract(address addr) internal view returns (bool) {
-        try Ownable(addr).owner() returns (address owner) {
+        try OwnableUpgradeable(addr).owner() returns (address owner) {
             return owner == msg.sender;
         } catch {
             return false;

@@ -1,8 +1,8 @@
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract Controllable is Ownable {
+contract Controllable is OwnableUpgradeable {
     mapping(address => bool) public controllers;
 
     event ControllerChanged(address indexed controller, bool enabled);

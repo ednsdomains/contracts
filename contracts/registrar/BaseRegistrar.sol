@@ -1,11 +1,10 @@
 pragma solidity ^0.8.4;
 
 import "../registry/EDNS.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-
-abstract contract BaseRegistrar is Ownable, IERC721 {
+abstract contract BaseRegistrar is OwnableUpgradeable, IERC721Upgradeable {
     uint constant public GRACE_PERIOD = 90 days;
 
     event ControllerAdded(address indexed controller);

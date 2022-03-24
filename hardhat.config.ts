@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
       url: process.env.QUORUM_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      gas: 0
+      // gas: 0
     },
     "polygon-mainnet": {
       url: process.env.POLYGON_MAINNET_URL || "",
