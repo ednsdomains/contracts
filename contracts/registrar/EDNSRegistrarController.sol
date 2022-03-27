@@ -44,6 +44,8 @@ contract EDNSRegistrarController is AccessControlEnumerableUpgradeable{
         base = _base;
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(OPERATOR_ROLE, _msgSender());
+        nameMinimumLengthLimit = 5;
+        nameMaximumLengthLimit = 128;
     }
 
     // function setAffiliateProgram(IAffiliateProgram _program) public{
@@ -68,6 +70,13 @@ contract EDNSRegistrarController is AccessControlEnumerableUpgradeable{
         return valid(name) && base.available(uint256(label));
     }
 
+    function getTokenId(string memory name, string memory tld) public view returns(uint256) {
+        bytes32 baseNode = tlds[bytes(tld)];
+        bytes32 label = keccak256(bytes(abi.encodePacked(name,baseNode)));
+        uint256 tokenId = uint256(label);
+        return tokenId;
+    }
+
     function registerWithConfig(string memory name, string memory tld, address owner, uint duration, address resolver, address addr) public {
         require(hasRole(OPERATOR_ROLE, _msgSender()), "Forbidden access");
         require(tldAvailable(tld), "TLD not available");
@@ -80,11 +89,6 @@ contract EDNSRegistrarController is AccessControlEnumerableUpgradeable{
             // Set this contract as the (temporary) owner, giving it
             // permission to set up the resolver.
             expires = base.register(tokenId, baseNode, address(this), duration);
-            // if(address(_affiliateProgram) != address(0) && affiliate != 0x0){
-            //     if(_affiliateProgram.allowRewarding()){
-                    
-            //     }
-            // }
 
             // The nodehash of this label
             bytes32 nodehash = keccak256(abi.encodePacked(baseNode, bytes32(tokenId)));
@@ -104,7 +108,6 @@ contract EDNSRegistrarController is AccessControlEnumerableUpgradeable{
             require(addr == address(0));
             expires = base.register(tokenId, baseNode, owner, duration);
         }
-
         emit NameRegistered(name, bytes(tld), label, owner, expires);
     }
 

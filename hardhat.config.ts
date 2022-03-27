@@ -26,22 +26,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 const config: HardhatUserConfig = {
   solidity: "0.8.10",
   networks: {
-    quorum: {
-      url: process.env.QUORUM_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      // gas: 0
+    matic: {
+      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
     },
-    "polygon-mainnet": {
-      url: process.env.POLYGON_MAINNET_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    maticmum: {
+      url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
     },
-    "polygon-mumbai": {
-      url: process.env.POLYGON_MUMBAI_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
+    goerli: {
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
+    }
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

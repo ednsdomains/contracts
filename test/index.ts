@@ -27,6 +27,7 @@ async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver, a
 
 async function setupRegistrar(registry: EDNSRegistry, registrarController: EDNSRegistrarController, registrar: BaseRegistrarImplementation) {
   await registrar.addController(registrarController.address);
+  await registrarController.setNameLengthLimit(5, 128);
   for (let tld of tlds) {
     await registrarController.setTld(tld, namehash(tld));
     await registrar.setBaseNode(namehash(tld), true);
@@ -96,7 +97,7 @@ describe("EDNS", function () {
     it("Should setup registrar", async function () {
       await setupRegistrar(registry, registrarController, baseRegistrar);
       const tldAvailable = await registrarController.tldAvailable(sampleDomain.tld);
-      expect(tldAvailable).to.equal(true);
+      expect(tldAvailable, "TLD Available").to.equal(true);
     });
 
     it("Should setup reverse registrar", async function () {
@@ -107,10 +108,17 @@ describe("EDNS", function () {
     it("Should register a domain name with '.edns'", async function () {
       await setupRegistrar(registry, registrarController, baseRegistrar);
       const tldAvailable = await registrarController.tldAvailable(sampleDomain.tld);
-      expect(tldAvailable).to.equal(true);
+      expect(tldAvailable, "TLD Available").to.equal(true);
 
       const [owner] = await ethers.getSigners();
       const duration: number = 31104000; // 360 days;
+
+      const domainValid = await registrarController.valid("one2cloud");
+      expect(domainValid, "Domain Valid").to.equal(true);
+
+      const domainAvailable = await registrarController.available("one2cloud", sampleDomain.tld);
+      expect(domainAvailable, "Domain Available").to.equal(true);
+
       const estimateGasFee = await registrarController.estimateGas.registerWithConfig(`one2cloud`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
       const estimateGasFeeWithShortestNumber = await registrarController.estimateGas.registerWithConfig(`12345`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
       const estimateGasFeeWithLongestNumber = await registrarController.estimateGas.registerWithConfig(`61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`, sampleDomain.tld, owner.address, duration, publicResolver.address, owner.address);
