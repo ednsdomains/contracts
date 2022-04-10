@@ -5,42 +5,61 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "../registry/EDNS.sol";
 import "./BaseRegistrar.sol";
 
-contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
+contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
     // A map of expiry times
-    mapping(uint256=>uint) expiries;
+    mapping(uint256 => uint256) expiries;
 
     string private baseURI;
 
-    bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
-    bytes4 constant private ERC721_ID = bytes4(
-        keccak256("balanceOf(address)") ^
-        keccak256("ownerOf(uint256)") ^
-        keccak256("approve(address,uint256)") ^
-        keccak256("getApproved(uint256)") ^
-        keccak256("setApprovalForAll(address,bool)") ^
-        keccak256("isApprovedForAll(address,address)") ^
-        keccak256("transferFrom(address,address,uint256)") ^
-        keccak256("safeTransferFrom(address,address,uint256)") ^
-        keccak256("safeTransferFrom(address,address,uint256,bytes)")
-    );
-    bytes4 constant private RECLAIM_ID = bytes4(keccak256("reclaim(uint256,address)"));
+    bytes4 private constant INTERFACE_META_ID =
+        bytes4(keccak256("supportsInterface(bytes4)"));
+    bytes4 private constant ERC721_ID =
+        bytes4(
+            keccak256("balanceOf(address)") ^
+                keccak256("ownerOf(uint256)") ^
+                keccak256("approve(address,uint256)") ^
+                keccak256("getApproved(uint256)") ^
+                keccak256("setApprovalForAll(address,bool)") ^
+                keccak256("isApprovedForAll(address,address)") ^
+                keccak256("transferFrom(address,address,uint256)") ^
+                keccak256("safeTransferFrom(address,address,uint256)") ^
+                keccak256("safeTransferFrom(address,address,uint256,bytes)")
+        );
+    bytes4 private constant RECLAIM_ID =
+        bytes4(keccak256("reclaim(uint256,address)"));
+
+    function setBaseURI(string memory __baseURI) public virtual onlyOwner {
+        _setBaseURI(__baseURI);
+    }
 
     function _setBaseURI(string memory __baseURI) internal virtual {
         baseURI = __baseURI;
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override(ERC721Upgradeable) returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override(ERC721Upgradeable)
+        returns (string memory)
+    {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
 
         string memory __baseURI = _baseURI();
-        return bytes(__baseURI).length > 0 ? string(abi.encodePacked(baseURI, "/", this, "/", tokenId)) : "";
+        return
+            bytes(__baseURI).length > 0
+                ? string(abi.encodePacked(baseURI, "/", this, "/", tokenId))
+                : "";
     }
 
     function _baseURI()
         internal
         view
         override(ERC721Upgradeable)
-        returns(string memory)
+        returns (string memory)
     {
         return baseURI;
     }
@@ -54,22 +73,35 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
      * @return bool whether the msg.sender is approved for the given token ID,
      *    is an operator of the owner, or is the owner of the token
      */
-    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view override returns (bool) {
+    function _isApprovedOrOwner(address spender, uint256 tokenId)
+        internal
+        view
+        override
+        returns (bool)
+    {
         address owner = ownerOf(tokenId);
-        return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+        return (spender == owner ||
+            getApproved(tokenId) == spender ||
+            isApprovedForAll(owner, spender));
     }
 
-    function initialize(EDNS _edns) public initializer{
+    function initialize(EDNS _edns) public initializer {
         __BaseRegistrarImplementation_init(_edns);
     }
 
-    function __BaseRegistrarImplementation_init(EDNS _edns) internal onlyInitializing{
+    function __BaseRegistrarImplementation_init(EDNS _edns)
+        internal
+        onlyInitializing
+    {
         __BaseRegistrarImplementation_init_unchained(_edns);
         __ERC721_init_unchained("EDNS", "EDNS");
         __Ownable_init_unchained();
     }
 
-    function __BaseRegistrarImplementation_init_unchained(EDNS _edns) internal onlyInitializing{
+    function __BaseRegistrarImplementation_init_unchained(EDNS _edns)
+        internal
+        onlyInitializing
+    {
         edns = _edns;
     }
 
@@ -78,7 +110,7 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
         _;
     }
 
-    modifier onlyController {
+    modifier onlyController() {
         require(controllers[msg.sender]);
         _;
     }
@@ -89,7 +121,12 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
      * @param tokenId uint256 ID of the token to query the owner of
      * @return address currently marked as the owner of the given token ID
      */
-    function ownerOf(uint256 tokenId) public view override(IERC721Upgradeable, ERC721Upgradeable) returns (address) {
+    function ownerOf(uint256 tokenId)
+        public
+        view
+        override(IERC721Upgradeable, ERC721Upgradeable)
+        returns (address)
+    {
         require(expiries[tokenId] > block.timestamp);
         return super.ownerOf(tokenId);
     }
@@ -107,17 +144,21 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
     }
 
     // Set the resolver for the TLD this registrar manages.
-    function setResolver (bytes32 node, address resolver) external override onlyOwner {
+    function setResolver(bytes32 node, address resolver)
+        external
+        override
+        onlyOwner
+    {
         edns.setResolver(node, resolver);
     }
 
     // Returns the expiration timestamp of the specified id.
-    function nameExpires(uint256 id) external view override returns(uint) {
+    function nameExpires(uint256 id) external view override returns (uint256) {
         return expiries[id];
     }
 
     // Returns true iff the specified name is available for registration.
-    function available(uint256 id) public view override returns(bool) {
+    function available(uint256 id) public view override returns (bool) {
         // Not available if it's registered here or in its grace period.
         return expiries[id] + GRACE_PERIOD < block.timestamp;
     }
@@ -128,7 +169,12 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
      * @param owner The address that should own the registration.
      * @param duration Duration in seconds for the registration.
      */
-    function register(uint256 id, bytes32 node, address owner, uint duration) external override live(node) returns(uint) {
+    function register(
+        uint256 id,
+        bytes32 node,
+        address owner,
+        uint256 duration
+    ) external override live(node) returns (uint256) {
         return _register(id, node, owner, duration, true);
     }
 
@@ -138,21 +184,35 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
      * @param owner The address that should own the registration.
      * @param duration Duration in seconds for the registration.
      */
-    function registerOnly(uint256 id, bytes32 node, address owner, uint duration) external returns(uint) {
+    function registerOnly(
+        uint256 id,
+        bytes32 node,
+        address owner,
+        uint256 duration
+    ) external returns (uint256) {
         return _register(id, node, owner, duration, false);
     }
 
-    function _register(uint256 id, bytes32 node, address owner, uint duration, bool updateRegistry) internal live(node) onlyController returns(uint) {
+    function _register(
+        uint256 id,
+        bytes32 node,
+        address owner,
+        uint256 duration,
+        bool updateRegistry
+    ) internal live(node) onlyController returns (uint256) {
         require(available(id));
-        require(block.timestamp + duration + GRACE_PERIOD > block.timestamp + GRACE_PERIOD); // Prevent future overflow
+        require(
+            block.timestamp + duration + GRACE_PERIOD >
+                block.timestamp + GRACE_PERIOD
+        ); // Prevent future overflow
 
         expiries[id] = block.timestamp + duration;
-        if(_exists(id)) {
+        if (_exists(id)) {
             // Name was previously owned, and expired
             _burn(id);
         }
         _mint(owner, id);
-        if(updateRegistry) {
+        if (updateRegistry) {
             edns.setSubnodeOwner(node, bytes32(id), owner);
         }
 
@@ -161,9 +221,15 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
         return block.timestamp + duration;
     }
 
-    function renew(uint256 id, bytes32 node, uint duration) external override live(node) onlyController returns(uint) {
+    function renew(
+        uint256 id,
+        bytes32 node,
+        uint256 duration
+    ) external override live(node) onlyController returns (uint256) {
         require(expiries[id] + GRACE_PERIOD >= block.timestamp); // Name must be registered here or in grace period
-        require(expiries[id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD); // Prevent future overflow
+        require(
+            expiries[id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD
+        ); // Prevent future overflow
 
         expiries[id] += duration;
         emit NameRenewed(id, expiries[id]);
@@ -173,21 +239,41 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar  {
     /**
      * @dev Reclaim ownership of a name in EDNS, if you own it in the registrar.
      */
-    function reclaim(uint256 id, bytes32 node, address owner) external override live(node) {
+    function reclaim(
+        uint256 id,
+        bytes32 node,
+        address owner
+    ) external override live(node) {
         require(_isApprovedOrOwner(msg.sender, id));
         edns.setSubnodeOwner(node, bytes32(id), owner);
     }
 
-    function setBaseNode(bytes32 nodehash, bool _available) public virtual override onlyOwner{
+    function setBaseNode(bytes32 nodehash, bool _available)
+        public
+        virtual
+        override
+        onlyOwner
+    {
         baseNodes[nodehash] = _available;
     }
 
-    function baseNodeAvailable(bytes32 nodehash) public view override returns(bool){
+    function baseNodeAvailable(bytes32 nodehash)
+        public
+        view
+        override
+        returns (bool)
+    {
         return baseNodes[nodehash];
     }
 
-    function supportsInterface(bytes4 interfaceID) public override(ERC721Upgradeable, IERC165Upgradeable) view returns (bool) {
-        return interfaceID == INTERFACE_META_ID ||
+    function supportsInterface(bytes4 interfaceID)
+        public
+        view
+        override(ERC721Upgradeable, IERC165Upgradeable)
+        returns (bool)
+    {
+        return
+            interfaceID == INTERFACE_META_ID ||
             interfaceID == ERC721_ID ||
             interfaceID == RECLAIM_ID;
     }
