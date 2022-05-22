@@ -1,11 +1,14 @@
 pragma solidity ^0.8.10;
 
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "../registry/EDNS.sol";
 import "./BaseRegistrar.sol";
 
 contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
+    using StringsUpgradeable for uint256;
+
     // A map of expiry times
     mapping(uint256 => uint256) expiries;
 
@@ -48,10 +51,9 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
             "ERC721Metadata: URI query for nonexistent token"
         );
 
-        string memory __baseURI = _baseURI();
         return
-            bytes(__baseURI).length > 0
-                ? string(abi.encodePacked(baseURI, "/", this, "/", tokenId))
+            bytes(baseURI).length > 0
+                ? string(abi.encodePacked(baseURI, "/", tokenId.toString()))
                 : "";
     }
 

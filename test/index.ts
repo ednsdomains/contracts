@@ -10,8 +10,6 @@ import {
 import { namehash } from "ethers/lib/utils";
 import Web3 from "web3";
 import { ethers, upgrades } from "hardhat";
-import { Contract } from "ethers";
-import { reverse } from "dns";
 
 const tlds: string[] = ["edns"];
 const sampleDomain = {
@@ -30,6 +28,7 @@ async function setupResolver(
   resolver: PublicResolver,
   account: SignerWithAddress
 ) {
+  console.log("Setting up resolver...");
   const resolverNode = namehash("resolver");
   const resolverLabel = labelhash("resolver");
   await registry.setSubnodeOwner(ZERO_HASH, resolverLabel, account.address);
@@ -42,6 +41,7 @@ async function setupRegistrar(
   registrarController: EDNSRegistrarController,
   registrar: BaseRegistrarImplementation
 ) {
+  console.log("Setting up registrar...");
   await registrar.addController(registrarController.address);
   await registrarController.setNameLengthLimit(5, 128);
   for (let tld of tlds) {
@@ -60,6 +60,7 @@ async function setupReverseRegistrar(
   reverseRegistrar: ReverseRegistrar,
   account: SignerWithAddress
 ) {
+  console.log("Setting up reverse registrar...");
   await registry.setSubnodeOwner(
     ZERO_HASH,
     labelhash("reverse"),
@@ -141,111 +142,112 @@ describe("EDNS", function () {
   });
 
   describe("Initial setup", async function () {
-    it("Should setup public resolver", async function () {
-      const [owner] = await ethers.getSigners();
-      await setupResolver(registry, publicResolver, owner);
-    });
+    // it("Should setup public resolver", async function () {
+    //   const [owner] = await ethers.getSigners();
+    //   await setupResolver(registry, publicResolver, owner);
+    // });
 
-    it("Should setup registrar", async function () {
-      await setupRegistrar(registry, registrarController, baseRegistrar);
-      const tldAvailable = await registrarController.tldAvailable(
-        sampleDomain.tld
-      );
-      expect(tldAvailable, "TLD Available").to.equal(true);
-    });
+    // it("Should setup registrar", async function () {
+    //   await setupRegistrar(registry, registrarController, baseRegistrar);
+    //   const tldAvailable = await registrarController.tldAvailable(
+    //     sampleDomain.tld
+    //   );
+    //   expect(tldAvailable, "TLD Available").to.equal(true);
+    // });
 
-    it("Should setup reverse registrar", async function () {
-      const [owner] = await ethers.getSigners();
-      await setupReverseRegistrar(registry, reverseRegistrar, owner);
-    });
+    // it("Should setup reverse registrar", async function () {
+    //   const [owner] = await ethers.getSigners();
+    //   await setupReverseRegistrar(registry, reverseRegistrar, owner);
+    // });
 
-    it("Should register a domain name with '.edns'", async function () {
-      await setupRegistrar(registry, registrarController, baseRegistrar);
-      const tldAvailable = await registrarController.tldAvailable(
-        sampleDomain.tld
-      );
-      expect(tldAvailable, "TLD Available").to.equal(true);
+    // it("Should register a domain name with '.edns'", async function () {
+    //   await setupRegistrar(registry, registrarController, baseRegistrar);
+    //   const tldAvailable = await registrarController.tldAvailable(
+    //     sampleDomain.tld
+    //   );
+    //   expect(tldAvailable, "TLD Available").to.equal(true);
 
-      const [owner] = await ethers.getSigners();
-      const duration: number = 31104000; // 360 days;
+    //   const [owner] = await ethers.getSigners();
+    //   const duration: number = 31104000; // 360 days;
 
-      const domainValid = await registrarController.valid("one2cloud");
-      expect(domainValid, "Domain Valid").to.equal(true);
+    //   const domainValid = await registrarController.valid("one2cloud");
+    //   expect(domainValid, "Domain Valid").to.equal(true);
 
-      const domainAvailable = await registrarController.available(
-        "one2cloud",
-        sampleDomain.tld
-      );
-      expect(domainAvailable, "Domain Available").to.equal(true);
+    //   const domainAvailable = await registrarController.available(
+    //     "one2cloud",
+    //     sampleDomain.tld
+    //   );
+    //   expect(domainAvailable, "Domain Available").to.equal(true);
 
-      const estimateGasFee =
-        await registrarController.estimateGas.registerWithConfig(
-          `one2cloud`,
-          sampleDomain.tld,
-          owner.address,
-          duration,
-          publicResolver.address,
-          owner.address
-        );
-      const estimateGasFeeWithShortestNumber =
-        await registrarController.estimateGas.registerWithConfig(
-          `12345`,
-          sampleDomain.tld,
-          owner.address,
-          duration,
-          publicResolver.address,
-          owner.address
-        );
-      const estimateGasFeeWithLongestNumber =
-        await registrarController.estimateGas.registerWithConfig(
-          `61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`,
-          sampleDomain.tld,
-          owner.address,
-          duration,
-          publicResolver.address,
-          owner.address
-        );
-      const estimateGasFeeWithShortestString =
-        await registrarController.estimateGas.registerWithConfig(
-          `12345`,
-          sampleDomain.tld,
-          owner.address,
-          duration,
-          publicResolver.address,
-          owner.address
-        );
-      const estimateGasFeeWithLongestString =
-        await registrarController.estimateGas.registerWithConfig(
-          `61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`,
-          sampleDomain.tld,
-          owner.address,
-          duration,
-          publicResolver.address,
-          owner.address
-        );
-      console.log({
-        estimateGasFee: estimateGasFee.toString(),
-        estimateGasFeeWithShortestNumber:
-          estimateGasFeeWithShortestNumber.toString(),
-        estimateGasFeeWithLongestNumber:
-          estimateGasFeeWithLongestNumber.toString(),
-        estimateGasFeeWithShortestString:
-          estimateGasFeeWithShortestString.toString(),
-        estimateGasFeeWithLongestString:
-          estimateGasFeeWithLongestString.toString(),
-      });
-      await registrarController.registerWithConfig(
-        sampleDomain.name,
-        sampleDomain.tld,
-        owner.address,
-        duration,
-        publicResolver.address,
-        owner.address
-      );
-    });
+    //   const estimateGasFee =
+    //     await registrarController.estimateGas.registerWithConfig(
+    //       `one2cloud`,
+    //       sampleDomain.tld,
+    //       owner.address,
+    //       duration,
+    //       publicResolver.address,
+    //       owner.address
+    //     );
+    //   const estimateGasFeeWithShortestNumber =
+    //     await registrarController.estimateGas.registerWithConfig(
+    //       `12345`,
+    //       sampleDomain.tld,
+    //       owner.address,
+    //       duration,
+    //       publicResolver.address,
+    //       owner.address
+    //     );
+    //   const estimateGasFeeWithLongestNumber =
+    //     await registrarController.estimateGas.registerWithConfig(
+    //       `61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`,
+    //       sampleDomain.tld,
+    //       owner.address,
+    //       duration,
+    //       publicResolver.address,
+    //       owner.address
+    //     );
+    //   const estimateGasFeeWithShortestString =
+    //     await registrarController.estimateGas.registerWithConfig(
+    //       `12345`,
+    //       sampleDomain.tld,
+    //       owner.address,
+    //       duration,
+    //       publicResolver.address,
+    //       owner.address
+    //     );
+    //   const estimateGasFeeWithLongestString =
+    //     await registrarController.estimateGas.registerWithConfig(
+    //       `61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`,
+    //       sampleDomain.tld,
+    //       owner.address,
+    //       duration,
+    //       publicResolver.address,
+    //       owner.address
+    //     );
+    //   console.log({
+    //     estimateGasFee: estimateGasFee.toString(),
+    //     estimateGasFeeWithShortestNumber:
+    //       estimateGasFeeWithShortestNumber.toString(),
+    //     estimateGasFeeWithLongestNumber:
+    //       estimateGasFeeWithLongestNumber.toString(),
+    //     estimateGasFeeWithShortestString:
+    //       estimateGasFeeWithShortestString.toString(),
+    //     estimateGasFeeWithLongestString:
+    //       estimateGasFeeWithLongestString.toString(),
+    //   });
+    //   await registrarController.registerWithConfig(
+    //     sampleDomain.name,
+    //     sampleDomain.tld,
+    //     owner.address,
+    //     duration,
+    //     publicResolver.address,
+    //     owner.address
+    //   );
+    // });
 
     it("Should able to resolve the address", async function () {
       const [owner] = await ethers.getSigners();
+
       await setupResolver(registry, publicResolver, owner);
 
       await setupRegistrar(registry, registrarController, baseRegistrar);
@@ -257,6 +259,7 @@ describe("EDNS", function () {
       await setupReverseRegistrar(registry, reverseRegistrar, owner);
 
       const duration: number = 31104000; // 360 days;
+      console.log("Registering domain...");
       await registrarController.registerWithConfig(
         sampleDomain.name,
         sampleDomain.tld,
@@ -270,8 +273,21 @@ describe("EDNS", function () {
       const label = Web3.utils.soliditySha3(sampleDomain.name, nodehash);
       const hash = Web3.utils.soliditySha3(nodehash, label!);
 
+      console.log("Resolving address from resolver...");
       const addr = await publicResolver["addr(bytes32)"](hash!);
       expect(addr).to.equal(owner.address);
+
+      console.log("Setting base URI...");
+      await baseRegistrar.setBaseURI(
+        "https://api.edns.domains/metadata/0x53a0018f919bde9c254bda697966c5f448ffddcb"
+      );
+
+      console.log("getting token ID...");
+      const tokenId = await registrarController.getTokenId(
+        sampleDomain.name,
+        sampleDomain.tld
+      );
+      console.log(await baseRegistrar.tokenURI(tokenId));
     });
   });
 });

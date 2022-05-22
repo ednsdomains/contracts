@@ -8,8 +8,9 @@ import {
   EDNSRegistrarController,
   EDNSRegistry,
   ReverseRegistrar,
+  PublicResolver,
+  Addresses,
 } from "../typechain";
-import { PublicResolver } from "../typechain/PublicResolver";
 import { upgrades } from "hardhat";
 import Web3 from "web3";
 import { formatsByName, formatsByCoinType } from "@ensdomains/address-encoder";
@@ -27,8 +28,8 @@ const provider = new hardhat.ethers.providers.InfuraProvider(
 provider.getFeeData = async () => {
   const gasPrice = await provider.getGasPrice();
   return {
-    maxFeePerGas: ethers.BigNumber.from(40000000000),
-    maxPriorityFeePerGas: ethers.BigNumber.from(40000000000),
+    maxFeePerGas: ethers.BigNumber.from(520000000000),
+    maxPriorityFeePerGas: ethers.BigNumber.from(50000000000),
     gasPrice,
   };
 };
@@ -111,6 +112,12 @@ async function main() {
     "Gas price: ",
     ethers.utils.formatUnits(await provider.getGasPrice(), "gwei")
   );
+
+  const AddressesLibrary = await hardhat.ethers.getContractFactory(
+    "Addresses",
+    signer
+  );
+
   const registry = EDNSRegistry.attach(
     "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12"
   );
@@ -175,7 +182,9 @@ async function main() {
   // await setupReverseRegistrar(registry, reverseRegistrar);
   // console.log("Finished setup reverse registrar");
 
-  // await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
+  await baseRegistrar.setBaseURI(
+    "https://api.edns.domains/metadata/0x53a0018f919bde9c254bda697966c5f448ffddcb"
+  );
 
   // const _saddr = await signer.getAddress();
 
