@@ -10,7 +10,6 @@ interface IRegistry {
   event NewResolver(string fqdn, address newResolver);
 
   event SetOperator(string fqdn, address operator, bool approved);
-  event SetTtl(string fqdn, uint256 ttl);
 
   function setRecord(
     string memory tld,
@@ -23,14 +22,13 @@ interface IRegistry {
     string memory tld,
     address owner,
     address resolver,
-    uint256 ttl
+    uint256 expiry
   ) external;
 
   function setRecord(
     string memory host,
     string memory domain,
-    string memory tld,
-    uint256 ttl
+    string memory tld
   ) external;
 
   function setResolver(bytes32 tld, address resolver) external;
@@ -62,17 +60,10 @@ interface IRegistry {
     bool approved
   ) external;
 
-  function setTtl(
+  function setExpiry(
     bytes32 domain,
     bytes32 tld,
-    uint256 ttl
-  ) external;
-
-  function setTtl(
-    bytes32 host,
-    bytes32 domain,
-    bytes32 tld,
-    uint256 ttl
+    uint256 expiry
   ) external;
 
   function owner(bytes32 tld) external view returns (address);
@@ -113,4 +104,10 @@ interface IRegistry {
     bytes32 domain,
     bytes32 tld
   ) external view returns (bool);
+
+  function expiry(bytes32 domain, bytes32 tld) external view returns (uint256);
+
+  function gracePeriod() external view returns (uint256);
+
+  function live(bytes32 domain, bytes32 tld) external view returns (bool);
 }

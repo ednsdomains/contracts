@@ -8,9 +8,9 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "./IRegistry.sol";
 
 contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
-  uint256 public constant DEFAULT_TTL = 604800; // 7 days
+  uint256 public constant GRACE_PERIOD = 30 days;
 
-  bytes32 private constant _AT_SIGN = keccak256("@");
+  bytes32 internal constant _AT_SIGN = keccak256("@");
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
@@ -29,18 +29,22 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     string name;
     address owner;
     address resolver;
-    uint256 ttl;
+    uint256 expiry;
     mapping(address => bool) operators;
     mapping(bytes32 => HostRecord) hosts;
   }
 
   struct HostRecord {
     string name;
-    uint256 ttl;
     mapping(address => bool) operators;
   }
 
-  mapping(bytes32 => TldRecord) private _records;
+  mapping(bytes32 => TldRecord) internal _records;
+
+  modifier requireAdmin() {
+    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    _;
+  }
 
   modifier requireRoot() {
     require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
@@ -89,6 +93,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     __Registry_init_unchained();
     __AccessControl_init_unchained();
     __Multicall_init_unchained();
+    __ERC165_init_unchained();
   }
 
   function __Registry_init_unchained() internal onlyInitializing {
@@ -103,6 +108,79 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     address owner,
     address resolver
   ) external requireRoot {
+    _setRecord(tld, owner, resolver);
+  }
+
+  function setRecord(
+    string memory domain,
+    string memory tld,
+    address owner,
+    address resolver,
+    uint256 expiry
+  ) external requireRegistrar {
+    _setRecord(domain, tld, owner, resolver, expiry);
+  }
+
+  function setRecord(
+    string memory host,
+    string memory domain,
+    string memory tld
+  ) external requirePublicResolver {
+    _setRecord(host, domain, tld);
+  }
+
+  function setResolver(bytes32 tld, address resolver) external requireRoot {
+    _setResolver(tld, resolver);
+  }
+
+  function setResolver(
+    bytes32 domain,
+    bytes32 tld,
+    address resolver
+  ) external requireRoot {
+    _setResolver(domain, tld, resolver);
+  }
+
+  function setOwner(
+    bytes32 domain,
+    bytes32 tld,
+    address owner
+  ) external requireRegistrar {
+    _setOwner(domain, tld, owner);
+  }
+
+  function setOperator(
+    bytes32 domain,
+    bytes32 tld,
+    address operator,
+    bool approved
+  ) public requireDomainOwner(domain, tld) {
+    _setOperator(domain, tld, operator, approved);
+  }
+
+  function setOperator(
+    bytes32 host,
+    bytes32 domain,
+    bytes32 tld,
+    address operator,
+    bool approved
+  ) public requireDomainOperator(domain, tld) {
+    _setOperator(host, domain, tld, operator, approved);
+  }
+
+  function setExpiry(
+    bytes32 domain,
+    bytes32 tld,
+    uint256 expiry
+  ) external requireRegistrar {
+    _setExpiry(domain, tld, expiry);
+  }
+
+  function _setRecord(
+    string memory tld,
+    address owner,
+    address resolver
+  ) internal {
     require(!exists(keccak256(abi.encodePacked(tld))), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
@@ -113,82 +191,79 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     emit NewTld(tld, owner);
   }
 
-  function setRecord(
+  function _setRecord(
     string memory domain,
     string memory tld,
     address owner,
     address resolver,
-    uint256 ttl
-  ) external requireRegistrar {
+    uint256 expiry
+  ) internal {
     require(owner != address(0x0), "UNDEFINED_OWNER");
-    require(resolver != address(0x0), "UNDEFINED_RESOLVER");
-    require(ttl >= 60, "TTL_TOO_LOW");
+    if (resolver == address(0x0)) resolver = _records[keccak256(abi.encodePacked(tld))].resolver;
     require(exists(keccak256(abi.encodePacked(tld))), "TLD_NOT_EXIST");
     DomainRecord storage _record = _records[keccak256(abi.encodePacked(tld))].domains[keccak256(abi.encodePacked(domain))];
     _record.name = domain;
     _record.owner = owner;
     _record.resolver = resolver;
-    _record.ttl = ttl;
+    _record.expiry = expiry;
     emit NewDomain(domain, tld, owner);
   }
 
-  function setRecord(
+  function _setRecord(
     string memory host,
     string memory domain,
-    string memory tld,
-    uint256 ttl
-  ) external requirePublicResolver {
+    string memory tld
+  ) internal {
     require(exists(keccak256(abi.encodePacked(domain)), keccak256(abi.encodePacked(tld))), "DOMAIN_NOT_EXIST");
     HostRecord storage _record = _records[keccak256(abi.encodePacked(tld))].domains[keccak256(abi.encodePacked(domain))].hosts[keccak256(abi.encodePacked(host))];
     _record.name = host;
-    _record.ttl = ttl;
     emit NewHost(host, domain, tld);
   }
 
-  function setResolver(bytes32 tld, address resolver) external requireRoot {
+  function _setResolver(bytes32 tld, address resolver) internal {
     require(exists(tld), "TLD_NOT_EXIST");
     _records[tld].resolver = resolver;
     emit NewResolver(_records[tld].name, resolver);
   }
 
-  function setResolver(
+  function _setResolver(
     bytes32 domain,
     bytes32 tld,
     address resolver
-  ) external requireRoot {
+  ) internal {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].resolver = resolver;
     emit NewResolver(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), resolver);
   }
 
-  function setOwner(
+  function _setOwner(
     bytes32 domain,
     bytes32 tld,
     address owner
-  ) external requireRegistrar {
+  ) internal {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].owner = owner;
     emit NewOwner(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), owner);
   }
 
-  function setOperator(
+  function _setOperator(
     bytes32 domain,
     bytes32 tld,
     address operator,
     bool approved
-  ) public requireDomainOwner(domain, tld) {
+  ) internal {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].operators[operator] = approved;
     emit SetOperator(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), operator, approved);
   }
 
-  function setOperator(
+  function _setOperator(
     bytes32 host,
     bytes32 domain,
     bytes32 tld,
     address operator,
     bool approved
-  ) public requireDomainOperator(domain, tld) {
+  ) internal {
     require(exists(host, domain, tld), "HOST_NOT_EXIST");
     _records[tld].domains[domain].hosts[host].operators[operator] = approved;
     emit SetOperator(
@@ -198,25 +273,14 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     );
   }
 
-  function setTtl(
+  function _setExpiry(
     bytes32 domain,
     bytes32 tld,
-    uint256 ttl
-  ) public requireDomainOwner(domain, tld) {
+    uint256 expiry
+  ) internal {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
-    _records[tld].domains[domain].ttl = ttl;
-    emit SetTtl(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), ttl);
-  }
-
-  function setTtl(
-    bytes32 host,
-    bytes32 domain,
-    bytes32 tld,
-    uint256 ttl
-  ) public requireDomainOperator(domain, tld) {
-    require(exists(host, domain, tld), "HOST_NOT_EXIST");
-    _records[tld].domains[domain].hosts[host].ttl = ttl;
-    emit SetTtl(string(abi.encodePacked(_records[tld].domains[domain].hosts[host].name, ".", _records[tld].domains[domain].name, ".", _records[tld].name)), ttl);
+    require(_records[tld].domains[domain].expiry + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
+    _records[tld].domains[domain].expiry = expiry;
   }
 
   function owner(bytes32 tld) public view returns (address) {
@@ -252,7 +316,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 domain,
     bytes32 tld
   ) public view returns (bool) {
-    return _records[tld].domains[domain].hosts[host].ttl != 0;
+    return abi.encodePacked(_records[tld].domains[domain].hosts[host].name).length > 0;
   }
 
   function operator(
@@ -282,5 +346,21 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 tld
   ) public view returns (bool) {
     return _records[tld].domains[domain].hosts[host].operators[_msgSender()];
+  }
+
+  function expiry(bytes32 domain, bytes32 tld) public view returns (uint256) {
+    return _records[tld].domains[domain].expiry;
+  }
+
+  function gracePeriod() public pure returns (uint256) {
+    return GRACE_PERIOD;
+  }
+
+  function live(bytes32 domain, bytes32 tld) public view returns (bool) {
+    return _records[tld].domains[domain].expiry >= block.timestamp;
+  }
+
+  function supportsInterface(bytes4 interfaceID) public view override returns (bool) {
+    return interfaceID == type(IRegistry).interfaceId || super.supportsInterface(interfaceID);
   }
 }
