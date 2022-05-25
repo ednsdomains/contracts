@@ -23,8 +23,8 @@ contract Registrar is IRegisrar, ERC721Upgradeable, ERC2981Upgradeable, AccessCo
 
   function __Registrar_init(Registry registry_) internal onlyInitializing {
     __Registrar_init_unchained(registry_);
-    __ERC721_init_unchained("Omni Name Service", "OMNS");
-    __AccessControl_init_unchained();
+    __ERC721_init("Omni Name Service", "OMNS");
+    __AccessControl_init();
   }
 
   function __Registrar_init_unchained(Registry registry_) internal onlyInitializing {

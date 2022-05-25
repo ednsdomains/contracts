@@ -91,9 +91,9 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
 
   function __Registry_init() internal onlyInitializing {
     __Registry_init_unchained();
-    __AccessControl_init_unchained();
-    __Multicall_init_unchained();
-    __ERC165_init_unchained();
+    __AccessControl_init();
+    __Multicall_init();
+    __ERC165_init();
   }
 
   function __Registry_init_unchained() internal onlyInitializing {
