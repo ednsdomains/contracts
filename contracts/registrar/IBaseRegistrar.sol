@@ -3,7 +3,7 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 
-interface IRegisrar is IERC721Upgradeable {
+interface IBaseRegistrar is IERC721Upgradeable {
   // event ControllerAdded(address controller, bytes tld);
   // event ControllerRemoved(address controller, bytes tld);
 
@@ -20,8 +20,8 @@ interface IRegisrar is IERC721Upgradeable {
   function exists(string memory domain, string memory tld) external view returns (bool);
 
   function setControllerApproval(
+    string calldata tld,
     address controller,
-    string memory tld,
     bool approved
   ) external;
 

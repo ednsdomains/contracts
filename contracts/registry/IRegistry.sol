@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-interface IRegistry {
+interface ISingletonRegistry {
   event NewTld(string tld, address owner);
   event NewDomain(string domain, string tld, address owner);
   event NewHost(string host, string domain, string tld);
@@ -14,7 +14,8 @@ interface IRegistry {
   function setRecord(
     string memory tld,
     address owner,
-    address resolver
+    address resolver,
+    bool enable
   ) external;
 
   function setRecord(
@@ -38,6 +39,8 @@ interface IRegistry {
     bytes32 tld,
     address resolver
   ) external;
+
+  function setOwner(bytes32 tld, address owner) external;
 
   function setOwner(
     bytes32 domain,
@@ -65,6 +68,8 @@ interface IRegistry {
     bytes32 tld,
     uint256 expiry
   ) external;
+
+  function setEnable(bytes32 tld, bool enable) external;
 
   function owner(bytes32 tld) external view returns (address);
 
@@ -110,4 +115,6 @@ interface IRegistry {
   function gracePeriod() external view returns (uint256);
 
   function live(bytes32 domain, bytes32 tld) external view returns (bool);
+
+  function enable(bytes32 tld) external view returns (bool);
 }

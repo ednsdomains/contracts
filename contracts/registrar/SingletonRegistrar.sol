@@ -6,12 +6,16 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./utils/LabelValidator.sol";
-import "./IRegistrar.sol";
-import "./Registry.sol";
+import "../utils/LabelValidator.sol";
+import "./ISingletonRegistrar.sol";
+import "../registry/Registry.sol";
 
-contract Registrar is IRegisrar, ERC721Upgradeable, ERC2981Upgradeable, AccessControlUpgradeable, LabelValidator {
+contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Upgradeable, AccessControlUpgradeable, LabelValidator {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
+
+  uint8 public immutable chainId; // The current chain ID in LZ
+  uint8 public immutable chainIds; // The list of chain IDs in LZ
 
   mapping(address => mapping(bytes32 => bool)) public controllers;
 
@@ -28,7 +32,16 @@ contract Registrar is IRegisrar, ERC721Upgradeable, ERC2981Upgradeable, AccessCo
   }
 
   function __Registrar_init_unchained(Registry registry_) internal onlyInitializing {
-    registry_ = _registry;
+    _registry = registry_;
+    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(ROOT_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _setupRole(ADMIN_ROLE, _msgSender());
+  }
+
+  modifier requireRoot() {
+    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    _;
   }
 
   modifier requireAdmin() {
@@ -73,19 +86,19 @@ contract Registrar is IRegisrar, ERC721Upgradeable, ERC2981Upgradeable, AccessCo
   }
 
   function _setControllerApproval(
-    address controller,
     bytes32 tld,
+    address controller,
     bool approved
   ) internal {
     controllers[controller][tld] = approved;
   }
 
   function setControllerApproval(
-    address controller,
     string memory tld,
+    address controller,
     bool approved
-  ) public requireAdmin {
-    Registrar._setControllerApproval(controller, keccak256(abi.encodePacked(tld)), approved);
+  ) external requireRoot {
+    Registrar._setControllerApproval(keccak256(abi.encodePacked(tld)), controller, approved);
   }
 
   function _register(
@@ -160,7 +173,7 @@ contract Registrar is IRegisrar, ERC721Upgradeable, ERC2981Upgradeable, AccessCo
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC2981Upgradeable, ERC721Upgradeable, IERC165Upgradeable) returns (bool) {
-    return interfaceID == type(IRegisrar).interfaceId || super.supportsInterface(interfaceID);
+    return interfaceID == type(IRegistrar).interfaceId || super.supportsInterface(interfaceID);
   }
 
   // function setURI(string memory uri_) public virtual onlyOwner {
