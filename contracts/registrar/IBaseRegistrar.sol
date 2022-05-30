@@ -11,6 +11,8 @@ interface IBaseRegistrar is IERC721Upgradeable {
   event DomainRenewed(bytes domain, bytes tld, uint256 expiry);
   event DomainReclaimed(bytes domain, bytes tld, address owner);
 
+  event SetController(bytes tld, address controller, bool approved);
+
   function expiry(string memory domain, string memory tld) external view returns (uint256);
 
   function available(string memory domain, string memory tld) external view returns (bool);

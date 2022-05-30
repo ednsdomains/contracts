@@ -2,8 +2,9 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import "../utils/LabelValidator.sol";
 
-abstract contract BaseResolver is ERC165Upgradeable {
+abstract contract BaseResolver is ERC165Upgradeable, LabelValidator {
   function isAuthorised(string memory domain, string memory tld) internal view virtual returns (bool);
 
   function isAuthorised(bytes32 domain, bytes32 tld) internal view virtual returns (bool);

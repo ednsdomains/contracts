@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
-import "../IRegistry.sol";
+import "../registry/IRegistry.sol";
 import "./BaseResolver.sol";
 
 contract Resolver is MulticallUpgradeable {

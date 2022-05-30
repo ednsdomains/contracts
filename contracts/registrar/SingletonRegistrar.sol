@@ -10,12 +10,14 @@ import "../utils/LabelValidator.sol";
 import "./ISingletonRegistrar.sol";
 import "../registry/Registry.sol";
 
+// TODO: Implement ERC2981 NFT Royalty Standard
 contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Upgradeable, AccessControlUpgradeable, LabelValidator {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
 
-  uint8 public immutable chainId; // The current chain ID in LZ
-  uint8 public immutable chainIds; // The list of chain IDs in LZ
+  // future preparing for adopting LayerZero
+  // uint8 public immutable chainId; // The current chain ID in LZ
+  // uint8 public immutable chainIds; // The list of chain IDs in LZ
 
   mapping(address => mapping(bytes32 => bool)) public controllers;
 
@@ -64,15 +66,15 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   function expiry(string memory domain, string memory tld) public view returns (uint256) {
-    return Registrar._expiry(abi.encodePacked(domain), abi.encodePacked(tld));
+    return _expiry(abi.encodePacked(domain), abi.encodePacked(tld));
   }
 
   function _available(bytes memory domain, bytes memory tld) internal view returns (bool) {
-    return Registrar._expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
+    return _expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
   }
 
   function available(string memory domain, string memory tld) public view returns (bool) {
-    return Registrar._available(abi.encodePacked(domain), abi.encodePacked(tld));
+    return _available(abi.encodePacked(domain), abi.encodePacked(tld));
   }
 
   function ownerOf(string memory domain, string memory tld) public view override returns (address) {
@@ -86,11 +88,12 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   function _setControllerApproval(
-    bytes32 tld,
+    bytes memory tld,
     address controller,
     bool approved
   ) internal {
-    controllers[controller][tld] = approved;
+    controllers[controller][keccak256(tld)] = approved;
+    emit SetController(tld, controller, approved);
   }
 
   function setControllerApproval(
@@ -98,7 +101,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     address controller,
     bool approved
   ) external requireRoot {
-    Registrar._setControllerApproval(keccak256(abi.encodePacked(tld)), controller, approved);
+    _setControllerApproval(abi.encodePacked(tld), controller, approved);
   }
 
   function _register(
@@ -107,8 +110,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     address owner,
     uint256 duration
   ) internal {
-    require(super.valid(domain), "INVALID_DOMAIN_NAME");
-    require(Registrar._available(domain, tld), "DOMAIN_NOT_AVAILABLE");
+    require(_validDomain(domain), "INVALID_DOMAIN_NAME");
+    require(_available(domain, tld), "DOMAIN_NOT_AVAILABLE");
     require(block.timestamp + duration + _registry.gracePeriod() > block.timestamp + _registry.gracePeriod(), "DURATION_TOO_SHORT");
     uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
     uint256 expiry_ = block.timestamp + duration;
@@ -126,7 +129,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     address owner,
     uint256 duration
   ) external requireController(keccak256(abi.encodePacked(tld))) {
-    Registrar._register(abi.encodePacked(domain), abi.encodePacked(tld), owner, duration);
+    _register(abi.encodePacked(domain), abi.encodePacked(tld), owner, duration);
   }
 
   function _renew(
@@ -148,7 +151,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     string calldata tld,
     uint256 duration
   ) external requireController(keccak256(abi.encodePacked(tld))) {
-    Registrar._renew(abi.encodePacked(domain), abi.encodePacked(tld), duration);
+    _renew(abi.encodePacked(domain), abi.encodePacked(tld), duration);
   }
 
   function _reclaim(
@@ -162,6 +165,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     bytes32 _tld = keccak256(tld);
     require(_registry.live(_domain, _tld), "DOMAIN_EXPIRED");
     _registry.setOwner(keccak256(domain), keccak256(tld), owner);
+    emit DomainReclaimed(domain, tld, owner);
   }
 
   function reclaim(
@@ -169,11 +173,11 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     string calldata tld,
     address owner
   ) external requireController(keccak256(abi.encodePacked(tld))) {
-    Registrar._reclaim(abi.encodePacked(domain), abi.encodePacked(tld), owner);
+    _reclaim(abi.encodePacked(domain), abi.encodePacked(tld), owner);
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC2981Upgradeable, ERC721Upgradeable, IERC165Upgradeable) returns (bool) {
-    return interfaceID == type(IRegistrar).interfaceId || super.supportsInterface(interfaceID);
+    return interfaceID == type(ISingletonRegistrar).interfaceId || super.supportsInterface(interfaceID);
   }
 
   // function setURI(string memory uri_) public virtual onlyOwner {

@@ -22,6 +22,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     address owner;
     address resolver;
     bool enable;
+    bool omni;
     mapping(bytes32 => DomainRecord) domains;
   }
 
@@ -108,9 +109,10 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     string memory tld,
     address owner_,
     address resolver_,
-    bool enable_
+    bool enable_,
+    bool omni
   ) external requireRoot {
-    _setRecord(tld, owner_, resolver_, enable_);
+    _setRecord(tld, owner_, resolver_, enable_, omni);
   }
 
   function setRecord(
@@ -190,7 +192,8 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     string memory tld,
     address owner_,
     address resolver_,
-    bool enable_
+    bool enable_,
+    bool omni
   ) internal {
     require(!exists(keccak256(abi.encodePacked(tld))), "TLD_EXIST");
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
@@ -200,6 +203,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     _record.owner = owner_;
     _record.resolver = resolver_;
     _record.enable = enable_;
+    _record.omni = omni;
     emit NewTld(tld, owner_);
   }
 
@@ -385,6 +389,10 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
 
   function enable(bytes32 tld) public view returns (bool) {
     return _records[tld].enable;
+  }
+
+  function omni(bytes32 tld) public view returns (bool) {
+    return _records[tld].omni;
   }
 
   function supportsInterface(bytes4 interfaceID) public view override returns (bool) {

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-interface ISingletonRegistry {
+interface IRegistry {
   event NewTld(string tld, address owner);
   event NewDomain(string domain, string tld, address owner);
   event NewHost(string host, string domain, string tld);
@@ -15,7 +15,8 @@ interface ISingletonRegistry {
     string memory tld,
     address owner,
     address resolver,
-    bool enable
+    bool enable,
+    bool omni
   ) external;
 
   function setRecord(
@@ -117,4 +118,6 @@ interface ISingletonRegistry {
   function live(bytes32 domain, bytes32 tld) external view returns (bool);
 
   function enable(bytes32 tld) external view returns (bool);
+
+  function omni(bytes32 tld) external view returns (bool);
 }
