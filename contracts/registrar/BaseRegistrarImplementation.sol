@@ -2,6 +2,9 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "../registry/EDNS.sol";
 import "./BaseRegistrar.sol";
 
@@ -47,11 +50,23 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
             _exists(tokenId),
             "ERC721Metadata: URI query for nonexistent token"
         );
-
         string memory __baseURI = _baseURI();
         return
             bytes(__baseURI).length > 0
-                ? string(abi.encodePacked(baseURI, "/", this, "/", tokenId))
+                ? string(
+                    abi.encodePacked(
+                        __baseURI,
+                        "/",
+                        StringsUpgradeable.toHexString(
+                            uint160(address(this)),
+                            20
+                        ),
+                        "/",
+                        StringsUpgradeable.toString(tokenId),
+                        "/",
+                        "metadata.json"
+                    )
+                )
                 : "";
     }
 
@@ -268,13 +283,15 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
 
     function supportsInterface(bytes4 interfaceID)
         public
-        view
+        pure
         override(ERC721Upgradeable, IERC165Upgradeable)
         returns (bool)
     {
         return
             interfaceID == INTERFACE_META_ID ||
             interfaceID == ERC721_ID ||
+            interfaceID == type(IERC721Upgradeable).interfaceId ||
+            interfaceID == type(IERC721MetadataUpgradeable).interfaceId ||
             interfaceID == RECLAIM_ID;
     }
 }

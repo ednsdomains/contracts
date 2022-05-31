@@ -1,7 +1,7 @@
 import hardhat from "hardhat";
 import { keccak_256 as sha3 } from "js-sha3";
 import uts46 from "idna-uts46-hx";
-import { ethers, Overrides } from "ethers";
+import { BigNumber, ethers, Overrides } from "ethers";
 import { AwsKmsSigner } from "ethers-aws-kms-signer";
 import {
   BaseRegistrarImplementation,
@@ -27,8 +27,8 @@ const provider = new hardhat.ethers.providers.InfuraProvider(
 provider.getFeeData = async () => {
   const gasPrice = await provider.getGasPrice();
   return {
-    maxFeePerGas: ethers.BigNumber.from(40000000000),
-    maxPriorityFeePerGas: ethers.BigNumber.from(40000000000),
+    maxFeePerGas: ethers.BigNumber.from(60000000000),
+    maxPriorityFeePerGas: ethers.BigNumber.from(60000000000),
     gasPrice,
   };
 };
@@ -111,21 +111,41 @@ async function main() {
     "Gas price: ",
     ethers.utils.formatUnits(await provider.getGasPrice(), "gwei")
   );
-  const registry = EDNSRegistry.attach(
-    "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12"
-  );
-  const resolver = PublicResolver.attach(
-    "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144"
-  );
+  // const registry = EDNSRegistry.attach(
+  //   "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12"
+  // );
+  // const resolver = PublicResolver.attach(
+  //   "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144"
+  // );
   const baseRegistrar = BaseRegistrarImplementation.attach(
     "0x53a0018f919bde9C254bda697966C5f448ffDDcB"
   );
-  const registrarController = EDNSRegistrarController.attach(
-    "0x8C856f71d71e8CF4AD9A44cDC426b09e315c6A6a"
-  );
-  const reverseRegistrar = ReverseRegistrar.attach(
-    "0xD986F9083F006D0E2d08c9F22247b4a0a213146D"
-  );
+
+  // console.log(await baseRegistrar.supportsInterface("0x5b5e139f"));
+  // console.log(await baseRegistrar.supportsInterface("0x80ac58cd"));
+  // console.log(await baseRegistrar.supportsInterface("0x780e9d63"));
+
+  await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
+
+  // console.log(
+  //   await baseRegistrar.tokenURI(
+  //     ethers.BigNumber.from(
+  //       "34513937740690410856504591299705209936969610383299924432054331796640992699107"
+  //     )
+  //   )
+  // );
+
+  // const registrarController = EDNSRegistrarController.attach(
+  //   "0x8C856f71d71e8CF4AD9A44cDC426b09e315c6A6a"
+  // );
+  // const reverseRegistrar = ReverseRegistrar.attach(
+  //   "0xD986F9083F006D0E2d08c9F22247b4a0a213146D"
+  // );
+
+  // const tx = await baseRegistrar.populateTransaction.transferOwnership(
+  //   "0xe3515A181D8d2F39F5f4D672457B54EeaE022b15"
+  // );
+  // console.log({ data: tx.data });
 
   // const _registry = await upgrades.deployProxy(EDNSRegistry, []);
   // await _registry.deployed();

@@ -65,11 +65,22 @@ async function main() {
   // const _resolver = await upgrades.upgradeProxy(PUBLIC_RESOLVER_ADDRESS, PublicResolver);
   // console.log("Public Resolver upgraded");
 
+  // const __baseRegistrar = await upgrades.forceImport(
+  //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
+  //   BaseRegistrarImplementation
+  // );
+
+  // const _baseRegistrar = await upgrades.upgradeProxy(
+  //   __baseRegistrar,
+  //   BaseRegistrarImplementation
+  // );
+
   const _baseRegistrar = await upgrades.upgradeProxy(
     BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
     BaseRegistrarImplementation
   );
-  console.log("Base Registrar Implementation upgraded");
+
+  // console.log("Base Registrar Implementation upgraded");
 
   // const _registrarController = await upgrades.upgradeProxy(EDNS_REGISTRAR_CONTROLLER_ADDRESS, EDNSRegistrarController);
   // console.log("EDNS Registry Controller upgraded");
