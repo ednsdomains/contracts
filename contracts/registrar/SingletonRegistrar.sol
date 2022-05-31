@@ -3,12 +3,14 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../utils/LabelValidator.sol";
 import "./ISingletonRegistrar.sol";
 import "../registry/Registry.sol";
+import "../oracle/ITokenPriceOracle.sol";
 
 // TODO: Implement ERC2981 NFT Royalty Standard
 contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Upgradeable, AccessControlUpgradeable, LabelValidator {
@@ -22,6 +24,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   mapping(address => mapping(bytes32 => bool)) public controllers;
 
   Registry internal _registry;
+  IERC20Upgradeable internal _token;
+  ITokenPriceOracle internal _priceOracle;
 
   function initialize(Registry registry_) public initializer {
     __Registrar_init(registry_);

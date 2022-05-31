@@ -3,5 +3,4 @@ pragma solidity ^0.8.10;
 
 import "./IBaseRegistrar.sol";
 
-interface ISingletonRegistrar is IBaseRegistrar {
-}
+interface ISingletonRegistrar is IBaseRegistrar {}

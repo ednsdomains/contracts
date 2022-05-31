@@ -14,11 +14,17 @@ import "./profiles/TextResolver.sol";
  * address.
  */
 contract OwnedResolver is Ownable, ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver {
-    function isAuthorised(bytes32) internal override view returns(bool) {
-        return msg.sender == owner();
-    }
+  function isAuthorised(bytes32) internal view override returns (bool) {
+    return msg.sender == owner();
+  }
 
-    function supportsInterface(bytes4 interfaceID) virtual override(ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver) public pure returns(bool) {
-        return super.supportsInterface(interfaceID);
-    }
+  function supportsInterface(bytes4 interfaceID)
+    public
+    pure
+    virtual
+    override(ABIResolver, AddrResolver, ContentHashResolver, DNSResolver, InterfaceResolver, NameResolver, PubkeyResolver, TextResolver)
+    returns (bool)
+  {
+    return super.supportsInterface(interfaceID);
+  }
 }
