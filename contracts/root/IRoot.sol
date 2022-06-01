@@ -2,7 +2,12 @@
 pragma solidity ^0.8.10;
 
 interface IRoot {
-  function register(string memory tld, address resolver) external;
+  function register(
+    string memory tld,
+    address resolver,
+    bool enable_,
+    bool omni_
+  ) external;
 
   function transfer(string memory tld) external;
 
@@ -19,6 +24,8 @@ interface IRoot {
   ) external;
 
   function enable(string memory tld) external view returns (bool);
+
+  function omni(string memory tld) external view returns (bool);
 
   function resolver(string memory tld) external view returns (address);
 }

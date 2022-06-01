@@ -21,6 +21,8 @@ interface IBaseRegistrar is IERC721Upgradeable {
 
   function exists(string memory domain, string memory tld) external view returns (bool);
 
+  function exists(string memory tld) external view returns (bool);
+
   function setControllerApproval(
     string calldata tld,
     address controller,

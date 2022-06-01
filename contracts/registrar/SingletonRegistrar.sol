@@ -3,14 +3,12 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../utils/LabelValidator.sol";
 import "./ISingletonRegistrar.sol";
-import "../registry/Registry.sol";
-import "../oracle/ITokenPriceOracle.sol";
+import "../registry/IRegistry.sol";
 
 // TODO: Implement ERC2981 NFT Royalty Standard
 contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Upgradeable, AccessControlUpgradeable, LabelValidator {
@@ -23,21 +21,19 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
 
   mapping(address => mapping(bytes32 => bool)) public controllers;
 
-  Registry internal _registry;
-  IERC20Upgradeable internal _token;
-  ITokenPriceOracle internal _priceOracle;
+  IRegistry private _registry;
 
-  function initialize(Registry registry_) public initializer {
+  function initialize(IRegistry registry_) public initializer {
     __Registrar_init(registry_);
   }
 
-  function __Registrar_init(Registry registry_) internal onlyInitializing {
+  function __Registrar_init(IRegistry registry_) internal onlyInitializing {
     __Registrar_init_unchained(registry_);
     __ERC721_init("Omni Name Service", "OMNS");
     __AccessControl_init();
   }
 
-  function __Registrar_init_unchained(Registry registry_) internal onlyInitializing {
+  function __Registrar_init_unchained(IRegistry registry_) internal onlyInitializing {
     _registry = registry_;
     _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(ROOT_ROLE, DEFAULT_ADMIN_ROLE);
@@ -70,7 +66,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   function expiry(string memory domain, string memory tld) public view returns (uint256) {
-    return _expiry(abi.encodePacked(domain), abi.encodePacked(tld));
+    return _expiry(bytes(domain), bytes(tld));
   }
 
   function _available(bytes memory domain, bytes memory tld) internal view returns (bool) {
@@ -78,17 +74,21 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   function available(string memory domain, string memory tld) public view returns (bool) {
-    return _available(abi.encodePacked(domain), abi.encodePacked(tld));
+    return _available(bytes(domain), bytes(tld));
   }
 
   function ownerOf(string memory domain, string memory tld) public view override returns (address) {
-    uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
+    uint256 id = uint256(keccak256(abi.encodePacked(domain, ".", tld)));
     return super.ownerOf(id);
   }
 
   function exists(string memory domain, string memory tld) public view returns (bool) {
-    uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
+    uint256 id = uint256(keccak256(abi.encodePacked(domain, ".", tld)));
     return super._exists(id);
+  }
+
+  function exists(string memory tld) public view returns (bool) {
+    return _registry.exists(keccak256(bytes(tld)));
   }
 
   function _setControllerApproval(
@@ -105,7 +105,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     address controller,
     bool approved
   ) external requireRoot {
-    _setControllerApproval(abi.encodePacked(tld), controller, approved);
+    _setControllerApproval(bytes(tld), controller, approved);
   }
 
   function _register(
@@ -132,8 +132,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     string calldata tld,
     address owner,
     uint256 duration
-  ) external requireController(keccak256(abi.encodePacked(tld))) {
-    _register(abi.encodePacked(domain), abi.encodePacked(tld), owner, duration);
+  ) external requireController(keccak256(bytes(tld))) {
+    _register(bytes(domain), bytes(tld), owner, duration);
   }
 
   function _renew(
@@ -154,8 +154,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     string calldata domain,
     string calldata tld,
     uint256 duration
-  ) external requireController(keccak256(abi.encodePacked(tld))) {
-    _renew(abi.encodePacked(domain), abi.encodePacked(tld), duration);
+  ) external requireController(keccak256(bytes(tld))) {
+    _renew(bytes(domain), bytes(tld), duration);
   }
 
   function _reclaim(
@@ -176,8 +176,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     string calldata domain,
     string calldata tld,
     address owner
-  ) external requireController(keccak256(abi.encodePacked(tld))) {
-    _reclaim(abi.encodePacked(domain), abi.encodePacked(tld), owner);
+  ) external requireController(keccak256(bytes(tld))) {
+    _reclaim(bytes(domain), bytes(tld), owner);
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC2981Upgradeable, ERC721Upgradeable, IERC165Upgradeable) returns (bool) {

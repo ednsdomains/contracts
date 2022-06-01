@@ -27,10 +27,10 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     string memory address_
   ) public {
     require(isAuthorised(domain, tld), "FORBIDDEN_ACCESS");
-    require(_valid(abi.encodePacked(host)), "INVALUD_HOST");
+    require(_valid(bytes(host)), "INVALUD_HOST");
     bytes32 fqdn = keccak256(abi.encodePacked(host, ".", domain, ".", tld));
-    _addresses[fqdn][coin] = abi.encodePacked(address_);
-    emit SetAddress(abi.encodePacked(host, ".", domain, ".", tld), abi.encodePacked(host), abi.encodePacked(domain), abi.encodePacked(tld), coin, abi.encodePacked(address_));
+    _addresses[fqdn][coin] = bytes(address_);
+    emit SetAddress(abi.encodePacked(host, ".", domain, ".", tld), bytes(host), bytes(domain), bytes(tld), coin, bytes(address_));
   }
 
   function addr(
@@ -53,7 +53,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
   }
 
   function addr(string memory fqdn_, uint256 coin) public view returns (bytes memory) {
-    bytes32 fqdn = keccak256(abi.encodePacked(fqdn_));
+    bytes32 fqdn = keccak256(bytes(fqdn_));
     return _addresses[fqdn][coin];
   }
 

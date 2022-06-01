@@ -38,7 +38,7 @@ contract TokenPriceOracle is ITokenPriceOracle, ChainlinkClient, ConfirmedOwner 
   }
 
   function _requestTokenPriceInUsd() internal {
-    if (block.timestamp + 5 minutes > _reqTime) {
+    if (block.timestamp + 3 minutes > _reqTime) {
       Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
       req.add("get", _apiUrl);
       // {"price": 18007584 }
