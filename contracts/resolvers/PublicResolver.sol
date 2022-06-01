@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 import "../registry/IRegistry.sol";
 import "./BaseResolver.sol";
 
-contract Resolver is MulticallUpgradeable {
+contract PublicResolver is MulticallUpgradeable {
   IRegistry public registry;
 
   function initialize(IRegistry registry_) public initializer {

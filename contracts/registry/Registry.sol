@@ -105,6 +105,8 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
+
+  //Create TLD
   function setRecord(
     string memory tld,
     address owner_,
@@ -124,6 +126,8 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     emit NewTld(tld, owner_);
   }
 
+
+  //Add domain
   function setRecord(
     string memory domain,
     string memory tld,
@@ -142,6 +146,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     emit NewDomain(domain, tld, owner_);
   }
 
+  //Sub Domain
   function setRecord(
     string memory host,
     string memory domain,
@@ -153,6 +158,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     emit NewHost(host, domain, tld);
   }
 
+  //set tld resolve
   function setResolver(bytes32 tld, address resolver_) external requireRoot {
     require(exists(tld), "TLD_NOT_EXIST");
     _records[tld].resolver = resolver_;
