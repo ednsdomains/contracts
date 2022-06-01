@@ -7,8 +7,9 @@ import "./ISingletonRegistrar.sol";
 import "../utils/LabelValidator.sol";
 import "../oracle/ITokenPriceOracle.sol";
 import "../oracle/IDomainPriceOracle.sol";
+import "./ISingletonRegistrarController.sol";
 
-contract SingletonRegistrarController is AccessControlUpgradeable, LabelValidator {
+contract SingletonRegistrarController is ISingletonRegistrarController, AccessControlUpgradeable, LabelValidator {
   IERC20Upgradeable private _token;
   ISingletonRegistrar private _registrar;
   IDomainPriceOracle private _domainPrice;
@@ -16,8 +17,11 @@ contract SingletonRegistrarController is AccessControlUpgradeable, LabelValidato
 
   uint256 private constant MINIMUM_COMMIT_TIME = 1 minutes;
   uint256 private constant MAXIMUM_COMMIT_TIME = 1 days;
+  uint256 private constant MINIMUM_REGISTRATION_DURATION = 365 days;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+  mapping(bytes32 => uint256) internal _commitments;
 
   function initialize(
     IERC20Upgradeable token_,
@@ -53,8 +57,12 @@ contract SingletonRegistrarController is AccessControlUpgradeable, LabelValidato
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
+  function available(string memory tld) public view returns (bool) {
+    return _registrar.available(bytes(tld)) && _registrar.controllerApproved(keccak256(bytes(tld)), address(this));
+  }
+
   function available(string memory domain, string memory tld) public view returns (bool) {
-    return valid(domain, tld) && _registrar.available(domain, tld);
+    return valid(domain, tld) && _registrar.available(bytes(domain), bytes(tld));
   }
 
   function price(
@@ -65,5 +73,53 @@ contract SingletonRegistrarController is AccessControlUpgradeable, LabelValidato
     return _domainPrice.price(bytes(domain), keccak256(bytes(tld)), durations);
   }
 
-  function commit() public {}
+  function commit(
+    string memory domain,
+    string memory tld,
+    address owner,
+    uint256 durations
+  ) public {
+    require(available(tld), "TLD_NOT_AVAILABLE");
+    bytes32 commitment = makeCommitment(domain, tld, owner, durations);
+    require(_commitments[commitment] + MAXIMUM_COMMIT_TIME < block.timestamp, "INVALID_COMMIT");
+    _tokenPrice.requestTokenPriceInUsd();
+    _commitments[commitment] = block.timestamp;
+  }
+
+  function makeCommitment(
+    string memory domain,
+    string memory tld,
+    address owner,
+    uint256 durations
+  ) public view returns (bytes32) {
+    require(_registrar.exists(keccak256(bytes(tld))) && _registrar.controllerApproved(keccak256(bytes(tld)), address(this)), "TLD_NOT_AVAILABLE");
+    return keccak256(abi.encodePacked(domain, tld, owner, durations, _msgSender()));
+  }
+
+  function _consumeCommitment(
+    string memory domain,
+    string memory tld,
+    uint256 durations,
+    bytes32 commitment
+  ) internal {
+    require(_commitments[commitment] + MINIMUM_COMMIT_TIME <= block.timestamp, "INVALID_COMMITMENT");
+    require(_commitments[commitment] + MAXIMUM_COMMIT_TIME >= block.timestamp, "INVALID_COMMITMENT");
+    require(available(domain, tld), "DOMAIN_IS_NOT_AVAIABLE");
+    require(durations >= MINIMUM_REGISTRATION_DURATION, "DURATION_TOO_SHORT");
+    delete _commitments[commitment];
+  }
+
+  function registrar(
+    string memory domain,
+    string memory tld,
+    address owner,
+    uint256 durations,
+    bytes32 commitment
+  ) public {}
+
+  function renew(
+    string memory domain,
+    string memory tld,
+    uint256 durations
+  ) public {}
 }

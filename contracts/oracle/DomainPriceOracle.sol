@@ -1,11 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./IDomainPriceOracle.sol";
 import "../oracle/ITokenPriceOracle.sol";
 
-contract DomainPriceOracle is IDomainPriceOracle, OwnableUpgradeable {
+contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
   // The domain price in USD
   struct Price {
     uint256 oneLetter;
@@ -28,9 +30,12 @@ contract DomainPriceOracle is IDomainPriceOracle, OwnableUpgradeable {
 
   function __DomainPriceOracle_init_unchained(ITokenPriceOracle tokenPrice_) internal onlyInitializing {
     _tokenPrice = tokenPrice_;
+    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-  function setPrice(bytes32 tld, uint256[] memory price_) public onlyOwner {
+  function setPrice(bytes32 tld, uint256[] memory price_) public onlyRole(ADMIN_ROLE) {
     require(price_.length == 5, "LENGTH_NOT_MATCH");
     _prices[tld] = Price({ oneLetter: price_[0], twoLetter: price_[1], threeLetter: price_[3], fourLetter: price_[4], fiveLetter: price_[5] });
   }

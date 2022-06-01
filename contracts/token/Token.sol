@@ -18,4 +18,6 @@ contract OMNSToken is ERC20PresetMinterPauserUpgradeable {
   function decimals() public pure override returns (uint8) {
     return 8;
   }
+
+  function bridge(uint256 dstChainId, uint256 amount) public {}
 }

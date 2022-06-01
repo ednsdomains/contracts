@@ -12,7 +12,7 @@ contract Root is IRoot, AccessControlUpgradeable {
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-  modifier requireAdmin() {
+  modifier onlyAdmin() {
     require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
@@ -38,23 +38,23 @@ contract Root is IRoot, AccessControlUpgradeable {
     address resolver_,
     bool enable_,
     bool omni_
-  ) public requireAdmin {
+  ) public onlyAdmin {
     if (omni_) {} else {
       _registry.setRecord(tld, address(this), resolver_, enable_, omni_);
     }
   }
 
-  function transfer(string memory tld) public requireAdmin {}
+  function transfer(string memory tld) public onlyAdmin {}
 
-  function reclaim(string memory tld) public requireAdmin {
+  function reclaim(string memory tld) public onlyAdmin {
     _registry.setOwner(keccak256(bytes(tld)), address(this));
   }
 
-  function setEnable(string memory tld, bool enable_) public requireAdmin {
+  function setEnable(string memory tld, bool enable_) public onlyAdmin {
     _registry.setEnable(keccak256(bytes(tld)), enable_);
   }
 
-  function setResolver(string memory tld, address resolver_) public requireAdmin {
+  function setResolver(string memory tld, address resolver_) public onlyAdmin {
     _registry.setResolver(keccak256(bytes(tld)), resolver_);
   }
 
@@ -62,9 +62,9 @@ contract Root is IRoot, AccessControlUpgradeable {
     string memory tld,
     address controller,
     bool approved
-  ) public requireAdmin {
-    if (_singletonRegistrar.exists(tld)) {
-      _singletonRegistrar.setControllerApproval(tld, controller, approved);
+  ) public onlyAdmin {
+    if (_singletonRegistrar.exists(keccak256(bytes(tld)))) {
+      _singletonRegistrar.setControllerApproval(bytes(tld), controller, approved);
     } else {
       revert("TLD_NOT_EXISTS");
     }

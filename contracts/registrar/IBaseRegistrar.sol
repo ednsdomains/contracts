@@ -13,38 +13,42 @@ interface IBaseRegistrar is IERC721Upgradeable {
 
   event SetController(bytes tld, address controller, bool approved);
 
-  function expiry(string memory domain, string memory tld) external view returns (uint256);
+  function expiry(bytes memory domain, bytes memory tld) external view returns (uint256);
 
-  function available(string memory domain, string memory tld) external view returns (bool);
+  function available(bytes memory tld) external view returns (bool);
 
-  function ownerOf(string memory domain, string memory tld) external view returns (address);
+  function available(bytes memory domain, bytes memory tld) external view returns (bool);
 
-  function exists(string memory domain, string memory tld) external view returns (bool);
+  function ownerOf(bytes memory domain, bytes memory tld) external view returns (address);
 
-  function exists(string memory tld) external view returns (bool);
+  function exists(bytes memory domain, bytes memory tld) external view returns (bool);
+
+  function exists(bytes32 tld) external view returns (bool);
+
+  function controllerApproved(bytes32 tld, address controller) external view returns (bool);
 
   function setControllerApproval(
-    string calldata tld,
+    bytes calldata tld,
     address controller,
     bool approved
   ) external;
 
   function register(
-    string calldata domain,
-    string calldata tld,
+    bytes calldata domain,
+    bytes calldata tld,
     address owner,
     uint256 duration
   ) external;
 
   function renew(
-    string calldata domain,
-    string calldata tld,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 duration
   ) external;
 
   function reclaim(
-    string calldata domain,
-    string calldata tld,
+    bytes calldata domain,
+    bytes calldata tld,
     address owner
   ) external;
 }

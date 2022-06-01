@@ -3,10 +3,14 @@ pragma solidity ^0.8.10;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ITokenPriceOracle.sol";
 
-contract TokenPriceOracle is ITokenPriceOracle, ChainlinkClient, ConfirmedOwner {
+contract TokenPriceOracle is ITokenPriceOracle, AccessControl, ChainlinkClient, ConfirmedOwner {
   using Chainlink for Chainlink.Request;
+
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 
   bytes32 private jobId;
   uint256 private fee;
@@ -22,22 +26,22 @@ contract TokenPriceOracle is ITokenPriceOracle, ChainlinkClient, ConfirmedOwner 
     address oracle,
     bytes32 jobId_
   ) ConfirmedOwner(msg.sender) {
+    _setRoleAdmin(CONTROLLER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _setupRole(ADMIN_ROLE, _msgSender());
     setChainlinkToken(token);
     setChainlinkOracle(oracle);
     jobId = jobId_;
     fee = (1 * LINK_DIVISIBILITY) / 10; // 0,1 * 10**18 (Varies by network and job)
   }
 
-  function setApiUrl(string memory url) public onlyOwner {
+  function setApiUrl(string memory url) public onlyRole(CONTROLLER_ROLE) {
     _apiUrl = url;
     emit SetApiUrl(url);
   }
 
-  function requestTokenPriceInUsd() public {
-    _requestTokenPriceInUsd();
-  }
-
-  function _requestTokenPriceInUsd() internal {
+  function requestTokenPriceInUsd() external onlyRole(CONTROLLER_ROLE) {
     if (block.timestamp + 3 minutes > _reqTime) {
       Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
       req.add("get", _apiUrl);

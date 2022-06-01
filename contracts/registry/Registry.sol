@@ -42,37 +42,37 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
 
   mapping(bytes32 => TldRecord) internal _records;
 
-  modifier requireAdmin() {
+  modifier onlyAdmin() {
     require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireRoot() {
+  modifier onlyRoot() {
     require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireRegistrar() {
+  modifier onlyRegistrar() {
     require(hasRole(REGISTRAR_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requirePublicResolver() {
+  modifier onlyResolver() {
     require(hasRole(PUBLIC_RESOLVER_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireDomainOwner(bytes32 domain, bytes32 tld) {
+  modifier onlyDomainOwner(bytes32 domain, bytes32 tld) {
     require(_msgSender() == _records[tld].domains[domain].owner, "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireDomainOperator(bytes32 domain, bytes32 tld) {
+  modifier onlyDomainOperator(bytes32 domain, bytes32 tld) {
     require(_msgSender() == _records[tld].domains[domain].owner || _records[tld].domains[domain].operators[_msgSender()], "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireHostOperator(
+  modifier onlyHostOperator(
     bytes32 host,
     bytes32 domain,
     bytes32 tld
@@ -105,7 +105,6 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-
   //Create TLD
   function setRecord(
     string memory tld,
@@ -113,7 +112,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     address resolver_,
     bool enable_,
     bool omni_
-  ) external requireRoot {
+  ) external onlyRoot {
     require(!exists(keccak256(bytes(tld))), "TLD_EXIST");
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     require(resolver_ != address(0x0), "UNDEFINED_RESOLVER");
@@ -126,7 +125,6 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     emit NewTld(tld, owner_);
   }
 
-
   //Add domain
   function setRecord(
     string memory domain,
@@ -134,7 +132,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     address owner_,
     address resolver_,
     uint256 expiry_
-  ) external requireRegistrar {
+  ) external onlyRegistrar {
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     if (resolver_ == address(0x0)) resolver_ = _records[keccak256(bytes(tld))].resolver;
     require(exists(keccak256(bytes(tld))), "TLD_NOT_EXIST");
@@ -151,7 +149,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     string memory host,
     string memory domain,
     string memory tld
-  ) external requirePublicResolver {
+  ) external onlyResolver {
     require(exists(keccak256(bytes(domain)), keccak256(bytes(tld))), "DOMAIN_NOT_EXIST");
     HostRecord storage _record = _records[keccak256(bytes(tld))].domains[keccak256(bytes(domain))].hosts[keccak256(bytes(host))];
     _record.name = host;
@@ -159,7 +157,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
   }
 
   //set tld resolve
-  function setResolver(bytes32 tld, address resolver_) external requireRoot {
+  function setResolver(bytes32 tld, address resolver_) external onlyRoot {
     require(exists(tld), "TLD_NOT_EXIST");
     _records[tld].resolver = resolver_;
     emit NewResolver(_records[tld].name, resolver_);
@@ -169,13 +167,13 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 domain,
     bytes32 tld,
     address resolver_
-  ) external requireRoot {
+  ) external onlyRoot {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].resolver = resolver_;
     emit NewResolver(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), resolver_);
   }
 
-  function setOwner(bytes32 tld, address owner_) external requireRoot {
+  function setOwner(bytes32 tld, address owner_) external onlyRoot {
     require(exists(tld), "TLD_NOT_EXIST");
     _records[tld].owner = owner_;
     emit NewOwner(string(abi.encodePacked(_records[tld].name)), owner_);
@@ -185,7 +183,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 domain,
     bytes32 tld,
     address owner_
-  ) external requireRegistrar {
+  ) external onlyRegistrar {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].owner = owner_;
     emit NewOwner(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), owner_);
@@ -196,7 +194,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 tld,
     address operator_,
     bool approved
-  ) public requireDomainOwner(domain, tld) {
+  ) public onlyDomainOwner(domain, tld) {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].operators[operator_] = approved;
     emit SetOperator(string(abi.encodePacked(_records[tld].domains[domain].name, ".", _records[tld].name)), operator_, approved);
@@ -208,7 +206,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 tld,
     address operator_,
     bool approved
-  ) public requireDomainOperator(domain, tld) {
+  ) public onlyDomainOperator(domain, tld) {
     require(exists(host, domain, tld), "HOST_NOT_EXIST");
     _records[tld].domains[domain].hosts[host].operators[operator_] = approved;
     emit SetOperator(
@@ -222,13 +220,13 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 domain,
     bytes32 tld,
     uint256 expiry_
-  ) external requireRegistrar {
+  ) external onlyRegistrar {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
     require(_records[tld].domains[domain].expiry + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
     _records[tld].domains[domain].expiry = expiry_;
   }
 
-  function setEnable(bytes32 tld, bool enable_) external requireRoot {
+  function setEnable(bytes32 tld, bool enable_) external onlyRoot {
     require(exists(tld), "TLD_NOT_EXIST");
     _records[tld].enable = enable_;
   }

@@ -41,81 +41,73 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-  modifier requireRoot() {
+  modifier onlyRoot() {
     require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireAdmin() {
+  modifier onlyAdmin() {
     require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireOwner(uint256 id) {
+  modifier onlyDomainOwner(uint256 id) {
     require(_msgSender() == ownerOf(id), "FORBIDDEN_ACCESS");
     _;
   }
 
-  modifier requireController(bytes32 tld) {
+  modifier onlyController(bytes32 tld) {
     require(controllers[_msgSender()][tld], "FORBIDDEN_ACCESS");
     _;
   }
 
-  function _expiry(bytes memory domain, bytes memory tld) internal view returns (uint256) {
+  function expiry(bytes memory domain, bytes memory tld) public view returns (uint256) {
     return _registry.expiry(keccak256(domain), keccak256(tld));
   }
 
-  function expiry(string memory domain, string memory tld) public view returns (uint256) {
-    return _expiry(bytes(domain), bytes(tld));
+  function available(bytes memory tld) public view returns (bool) {
+    return exists(keccak256(tld)) && _registry.enable(keccak256(tld));
   }
 
-  function _available(bytes memory domain, bytes memory tld) internal view returns (bool) {
-    return _expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
+  function available(bytes memory domain, bytes memory tld) public view returns (bool) {
+    return expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
   }
 
-  function available(string memory domain, string memory tld) public view returns (bool) {
-    return _available(bytes(domain), bytes(tld));
-  }
-
-  function ownerOf(string memory domain, string memory tld) public view override returns (address) {
+  function ownerOf(bytes memory domain, bytes memory tld) public view override returns (address) {
     uint256 id = uint256(keccak256(abi.encodePacked(domain, ".", tld)));
     return super.ownerOf(id);
   }
 
-  function exists(string memory domain, string memory tld) public view returns (bool) {
+  function exists(bytes memory domain, bytes memory tld) public view returns (bool) {
     uint256 id = uint256(keccak256(abi.encodePacked(domain, ".", tld)));
     return super._exists(id);
   }
 
-  function exists(string memory tld) public view returns (bool) {
-    return _registry.exists(keccak256(bytes(tld)));
+  function exists(bytes32 tld) public view returns (bool) {
+    return _registry.exists(tld);
   }
 
-  function _setControllerApproval(
+  function controllerApproved(bytes32 tld, address controller) public view returns (bool) {
+    return controllers[controller][tld];
+  }
+
+  function setControllerApproval(
     bytes memory tld,
     address controller,
     bool approved
-  ) internal {
+  ) external onlyRoot {
     controllers[controller][keccak256(tld)] = approved;
     emit SetController(tld, controller, approved);
   }
 
-  function setControllerApproval(
-    string memory tld,
-    address controller,
-    bool approved
-  ) external requireRoot {
-    _setControllerApproval(bytes(tld), controller, approved);
-  }
-
-  function _register(
+  function register(
     bytes memory domain,
     bytes memory tld,
     address owner,
     uint256 duration
-  ) internal {
+  ) external onlyController(keccak256(tld)) {
     require(_validDomain(domain), "INVALID_DOMAIN_NAME");
-    require(_available(domain, tld), "DOMAIN_NOT_AVAILABLE");
+    require(available(domain, tld), "DOMAIN_NOT_AVAILABLE");
     require(block.timestamp + duration + _registry.gracePeriod() > block.timestamp + _registry.gracePeriod(), "DURATION_TOO_SHORT");
     uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
     uint256 expiry_ = block.timestamp + duration;
@@ -127,20 +119,11 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     emit DomainRegistered(domain, tld, owner, expiry_);
   }
 
-  function register(
-    string calldata domain,
-    string calldata tld,
-    address owner,
-    uint256 duration
-  ) external requireController(keccak256(bytes(tld))) {
-    _register(bytes(domain), bytes(tld), owner, duration);
-  }
-
-  function _renew(
+  function renew(
     bytes memory domain,
     bytes memory tld,
     uint256 duration
-  ) internal {
+  ) external onlyController(keccak256(bytes(tld))) {
     bytes32 _domain = keccak256(domain);
     bytes32 _tld = keccak256(tld);
     uint256 expiry_ = _registry.expiry(_domain, _tld);
@@ -150,19 +133,11 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     emit DomainRenewed(domain, tld, expiry_ + duration);
   }
 
-  function renew(
-    string calldata domain,
-    string calldata tld,
-    uint256 duration
-  ) external requireController(keccak256(bytes(tld))) {
-    _renew(bytes(domain), bytes(tld), duration);
-  }
-
-  function _reclaim(
+  function reclaim(
     bytes memory domain,
     bytes memory tld,
     address owner
-  ) internal {
+  ) external onlyController(keccak256(bytes(tld))) {
     uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
     require(ownerOf(id) == owner, "FORBIDDEN_ACCESS");
     bytes32 _domain = keccak256(domain);
@@ -170,14 +145,6 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     require(_registry.live(_domain, _tld), "DOMAIN_EXPIRED");
     _registry.setOwner(keccak256(domain), keccak256(tld), owner);
     emit DomainReclaimed(domain, tld, owner);
-  }
-
-  function reclaim(
-    string calldata domain,
-    string calldata tld,
-    address owner
-  ) external requireController(keccak256(bytes(tld))) {
-    _reclaim(bytes(domain), bytes(tld), owner);
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC2981Upgradeable, ERC721Upgradeable, IERC165Upgradeable) returns (bool) {
