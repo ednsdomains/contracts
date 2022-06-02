@@ -1,37 +1,38 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { expect } from "chai";
-import {
-  PublicResolver, Registry,
-} from "../typechain";
-import { namehash } from "ethers/lib/utils";
-import Web3 from "web3";
-import { ethers, upgrades } from "hardhat";
-
-const tlds: string[] = ["edns"];
-const sampleDomain = {
-  name: "one2cloud",
-  tld: "edns",
-};
-
-const labelhash = (label: string) =>
-  ethers.utils.keccak256(ethers.utils.toUtf8Bytes(label));
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const ZERO_HASH =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
-const expiryDate = Date.now()
-async function setupResolver(
-  registry: Registry,
-  resolver: PublicResolver,
-  account: SignerWithAddress
-) {
-  console.log("Setting up resolver...");
-  const resolverNode = namehash("resolver");
-  const resolverLabel = labelhash("resolver");
-  await registry["setRecord(string,string,address,address,uint256)"](sampleDomain.name,sampleDomain.tld,ZERO_ADDRESS,resolver.address,expiryDate);
-  // await registry.setResolver(resolverNode, resolver.address);
-  // await resolver["setAddr(bytes32,address)"](resolverNode, resolver.address);
-}
-
+// import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+// import { expect } from "chai";
+// import {
+//   PublicResolver, Registry,
+// } from "../typechain";
+// import { namehash } from "ethers/lib/utils";
+// import Web3 from "web3";
+// import { ethers, upgrades } from "hardhat";
+//
+// const tlds: string[] = ["edns"];
+// const sampleDomain = {
+//   name: "one2cloud",
+//   tld: "edns",
+// };
+//
+// const labelhash = (label: string) =>
+//   ethers.utils.keccak256(ethers.utils.toUtf8Bytes(label));
+// const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+// const ZERO_HASH =
+//   "0x0000000000000000000000000000000000000000000000000000000000000000";
+//
+// async function setupResolver(
+//   registry: Registry,
+//   resolver: PublicResolver,
+//   account: SignerWithAddress
+// ) {
+//   console.log("Setting up resolver...");
+//   const resolverNode = namehash("resolver");
+//   const resolverLabel = labelhash("resolver");
+//
+//   // await registry.setSubnodeOwner(ZERO_HASH, resolverLabel, account.address);
+//   // await registry.setResolver(resolverNode, resolver.address);
+//   // await resolver["setAddr(bytes32,address)"](resolverNode, resolver.address);
+// }
+//
 // async function setupRegistrar(
 //   registry: EDNSRegistry,
 //   registrarController: EDNSRegistrarController,
