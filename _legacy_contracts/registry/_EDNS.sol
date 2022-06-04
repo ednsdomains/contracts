@@ -1,4 +1,4 @@
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 interface EDNS {
   // Logged when the owner of a node assigns a new owner to a subnode.

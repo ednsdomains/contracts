@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 interface IInterfaceResolver {
   event InterfaceChanged(bytes32 indexed node, bytes4 indexed interfaceID, address implementer);

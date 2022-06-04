@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 import "../registry/IRegistry.sol";
@@ -19,5 +19,9 @@ contract PublicResolver is MulticallUpgradeable, AddressResolver, NFTResolver {
 
   function __PublicResolver_init_unchained(IRegistry registry_) internal onlyInitializing {
     _registry = registry_;
+  }
+
+  function supportsInterface(bytes4 interfaceID) public view override(AddressResolver, NFTResolver) returns (bool) {
+    return super.supportsInterface(interfaceID);
   }
 }

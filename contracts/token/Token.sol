@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/presets/ERC20PresetMinterPauserUpgradeable.sol";
 import "../layerzero/NonBlockingLayerZeroApp.sol";
@@ -14,18 +14,18 @@ contract Token is IToken, ERC20PresetMinterPauserUpgradeable, NonBlockingLayerZe
 
   uint256 private _lockedBalance = 0;
 
-  uint16 public immutable chainId; // The current chain ID in LayerZero
+  uint16 public chainId; // The current chain ID in LayerZero
 
-  function initialize(uint16 lzChainId, uint16[] memory lzChainIds) public initializer {
-    __Token_init(lzChainId, lzChainIds);
+  function initialize(uint16 lzChainId) public initializer {
+    __Token_init(lzChainId);
     __ERC20PresetMinterPauser_init("Omni Name Service", "OMNS");
   }
 
-  function __Token_init(uint16 lzChainId, uint16[] memory lzChainIds) internal onlyInitializing {
-    __Token_init_unchained(lzChainId, lzChainIds);
+  function __Token_init(uint16 lzChainId) internal onlyInitializing {
+    __Token_init_unchained(lzChainId);
   }
 
-  function __Token_init_unchained(uint16 lzChainId, uint16[] memory lzChainIds) internal onlyInitializing {
+  function __Token_init_unchained(uint16 lzChainId) internal onlyInitializing {
     _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(PAUSER_ROLE, DEFAULT_ADMIN_ROLE);
     chainId = lzChainId;
@@ -56,7 +56,7 @@ contract Token is IToken, ERC20PresetMinterPauserUpgradeable, NonBlockingLayerZe
 
   function _nonblockingLzReceive(
     uint16 srcChainId,
-    bytes memory srcAddress,
+    bytes memory, // srcAddress
     uint64 nonce,
     bytes memory payload
   ) internal virtual override {

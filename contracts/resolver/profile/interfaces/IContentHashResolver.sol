@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 interface IContentHashResolver {
   event SetContentHash(bytes32 indexed node, bytes hash);

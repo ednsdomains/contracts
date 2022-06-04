@@ -1,4 +1,4 @@
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 import "../registry/EDNS.sol";
 import "../registry/ReverseRegistrar.sol";

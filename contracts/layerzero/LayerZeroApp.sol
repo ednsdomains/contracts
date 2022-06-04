@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./ILayerZeroReceiver.sol";
@@ -17,7 +17,7 @@ abstract contract LayerZeroApp is OwnableUpgradeable, ILayerZeroReceiver, ILayer
 
   event SetTrustedRemote(uint16 _srcChainId, bytes _srcAddress);
 
-  function initialize(address _endpoint) public initializer {
+  function initialize(address _endpoint) public virtual initializer {
     __LayerZeroApp_init(_endpoint);
   }
 

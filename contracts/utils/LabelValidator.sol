@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 abstract contract LabelValidator {
   uint256 public constant MAX_LABEL_LENGTH = 32;

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 interface IAddressResolver {
   event SetAddress(bytes fqdn, bytes host, bytes domain, bytes tld, uint256 coin, bytes address_);
@@ -8,7 +8,8 @@ interface IAddressResolver {
     string memory host,
     string memory domain,
     string memory tld,
-    uint256 coin
+    uint256 coin,
+    string memory address_
   ) external;
 
   function addr(

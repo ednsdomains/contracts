@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.9;
 
 interface IDNSRecordResolver {
   // DNSRecordChanged is emitted whenever a given node/name/resource's RRSET is updated.
