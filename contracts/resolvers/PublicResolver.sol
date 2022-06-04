@@ -4,20 +4,20 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 import "../registry/IRegistry.sol";
 import "./BaseResolver.sol";
+import "./profile/AddressResolver.sol";
+import "./profile/NFTResolver.sol";
 
-contract PublicResolver is MulticallUpgradeable {
-  IRegistry public registry;
-
+contract PublicResolver is MulticallUpgradeable, AddressResolver, NFTResolver {
   function initialize(IRegistry registry_) public initializer {
-    __Resolver_init(registry_);
+    __PublicResolver_init(registry_);
   }
 
-  function __Resolver_init(IRegistry registry_) internal onlyInitializing {
-    __Resolver_init_unchained(registry_);
+  function __PublicResolver_init(IRegistry registry_) internal onlyInitializing {
+    __PublicResolver_init_unchained(registry_);
     __Multicall_init_unchained();
   }
 
-  function __Resolver_init_unchained(IRegistry registry_) internal onlyInitializing {
-    registry = registry_;
+  function __PublicResolver_init_unchained(IRegistry registry_) internal onlyInitializing {
+    _registry = registry_;
   }
 }

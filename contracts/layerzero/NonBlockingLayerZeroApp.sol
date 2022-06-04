@@ -10,7 +10,18 @@ import "./LayerZeroApp.sol";
  * NOTE: if the srcAddress is not configured properly, it will still block the message pathway from (srcChainId, srcAddress)
  */
 abstract contract NonBlockingLayerZeroApp is LayerZeroApp {
-  constructor(address _endpoint) LayerZeroApp(_endpoint) {}
+  // constructor(address _endpoint) LayerZeroApp(_endpoint) {}
+
+  function initialize(address _endpoint) public override initializer {
+    __NonBlockingLayerZeroApp_init(_endpoint);
+  }
+
+  function __NonBlockingLayerZeroApp_init(address _endpoint) internal onlyInitializing {
+    __NonBlockingLayerZeroApp_init_unchained();
+    __LayerZeroApp_init_unchained(_endpoint);
+  }
+
+  function __NonBlockingLayerZeroApp_init_unchained() internal onlyInitializing {}
 
   mapping(uint16 => mapping(bytes => mapping(uint64 => bytes32))) public failedMessages;
 

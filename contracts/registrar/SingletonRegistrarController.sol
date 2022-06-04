@@ -15,9 +15,12 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   IDomainPriceOracle private _domainPrice;
   ITokenPriceOracle private _tokenPrice;
 
+  uint256 private COIN_ID;
+
   uint256 private constant MINIMUM_COMMIT_TIME = 1 minutes;
   uint256 private constant MAXIMUM_COMMIT_TIME = 1 days;
-  uint256 private constant MINIMUM_REGISTRATION_DURATION = 365 days;
+  uint256 private constant MINIMUM_REGISTRATION_DURATION = 1; // In year
+  uint256 private constant MAXIMUM_REGISTRATION_DURATION = 10; // In year
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
@@ -27,18 +30,20 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
     IERC20Upgradeable token_,
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
-    ISingletonRegistrar registrar_
+    ISingletonRegistrar registrar_,
+    uint256 coinId
   ) public initializer {
-    __SingletonRegistrarController_init(token_, domainPrice_, tokenPrice_, registrar_);
+    __SingletonRegistrarController_init(token_, domainPrice_, tokenPrice_, registrar_, coinId);
   }
 
   function __SingletonRegistrarController_init(
     IERC20Upgradeable token_,
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
-    ISingletonRegistrar registrar_
+    ISingletonRegistrar registrar_,
+    uint256 coinId
   ) internal onlyInitializing {
-    __SingletonRegistrarController_init_unchained(token_, domainPrice_, tokenPrice_, registrar_);
+    __SingletonRegistrarController_init_unchained(token_, domainPrice_, tokenPrice_, registrar_, coinId);
     __AccessControl_init();
   }
 
@@ -46,12 +51,14 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
     IERC20Upgradeable token_,
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
-    ISingletonRegistrar registrar_
+    ISingletonRegistrar registrar_,
+    uint256 coinId
   ) internal onlyInitializing {
     _token = token_;
     _domainPrice = domainPrice_;
     _tokenPrice = tokenPrice_;
     _registrar = registrar_;
+    COIN_ID = coinId;
     _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _setupRole(ADMIN_ROLE, _msgSender());
@@ -105,17 +112,26 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
     require(_commitments[commitment] + MINIMUM_COMMIT_TIME <= block.timestamp, "INVALID_COMMITMENT");
     require(_commitments[commitment] + MAXIMUM_COMMIT_TIME >= block.timestamp, "INVALID_COMMITMENT");
     require(available(domain, tld), "DOMAIN_IS_NOT_AVAIABLE");
-    require(durations >= MINIMUM_REGISTRATION_DURATION, "DURATION_TOO_SHORT");
+    require(MAXIMUM_REGISTRATION_DURATION >= durations && durations >= MINIMUM_REGISTRATION_DURATION, "DURATION_TOO_SHORT");
     delete _commitments[commitment];
   }
 
-  function registrar(
+  function register(
     string memory domain,
     string memory tld,
     address owner,
     uint256 durations,
     bytes32 commitment
-  ) public {}
+  ) public {
+    uint256 _price = price(domain, tld, durations);
+    require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
+    _consumeCommitment(domain, tld, durations, commitment);
+    // TODO: Set record in resolver
+    // TODO: Set record in reverse resolver
+    _registrar.register(bytes(domain), bytes(tld), address(this), durations);
+    _registrar.reclaim(bytes(domain), bytes(tld), owner);
+    _registrar.transferFrom(address(this), owner, _registrar.tokenId(domain, tld));
+  }
 
   function renew(
     string memory domain,

@@ -8,7 +8,7 @@ import "../oracle/ITokenPriceOracle.sol";
 contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-  // The domain price in USD
+  // The domain price in USD per year
   struct Price {
     uint256 oneLetter;
     uint256 twoLetter;
@@ -60,5 +60,9 @@ contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
     }
 
     return _price_ * _tokenPrice.getTokenPriceInUsd();
+  }
+
+  function supportsInterface(bytes4 interfaceID) public view override returns (bool) {
+    return interfaceID == type(IDomainPriceOracle).interfaceId || super.supportsInterface(interfaceID);
   }
 }

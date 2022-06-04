@@ -101,8 +101,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   function register(
-    bytes memory domain,
-    bytes memory tld,
+    bytes calldata domain,
+    bytes calldata tld,
     address owner,
     uint256 duration
   ) external onlyController(keccak256(tld)) {
@@ -111,17 +111,17 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     require(block.timestamp + duration + _registry.gracePeriod() > block.timestamp + _registry.gracePeriod(), "DURATION_TOO_SHORT");
     uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
     uint256 expiry_ = block.timestamp + duration;
-    if (super._exists(id)) {
-      super._burn(id);
+    if (_exists(id)) {
+      _burn(id);
     }
-    super._mint(owner, id);
+    _mint(owner, id);
     _registry.setRecord(string(domain), string(tld), owner, address(0), expiry_);
     emit DomainRegistered(domain, tld, owner, expiry_);
   }
 
   function renew(
-    bytes memory domain,
-    bytes memory tld,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 duration
   ) external onlyController(keccak256(bytes(tld))) {
     bytes32 _domain = keccak256(domain);
@@ -134,8 +134,8 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   function reclaim(
-    bytes memory domain,
-    bytes memory tld,
+    bytes calldata domain,
+    bytes calldata tld,
     address owner
   ) external onlyController(keccak256(bytes(tld))) {
     uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
@@ -145,6 +145,16 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
     require(_registry.live(_domain, _tld), "DOMAIN_EXPIRED");
     _registry.setOwner(keccak256(domain), keccak256(tld), owner);
     emit DomainReclaimed(domain, tld, owner);
+  }
+
+  function tokenId(string memory domain, string memory tld) public pure returns (uint256) {
+    require(_validDomain(bytes(domain)), "INVALID_DOMAIN_NAME");
+    return uint256(keccak256(abi.encodePacked(domain, ".", tld)));
+  }
+
+  function tokenId(bytes memory domain, bytes memory tld) public pure returns (uint256) {
+    require(_validDomain(bytes(domain)), "INVALID_DOMAIN_NAME");
+    return uint256(keccak256(abi.encodePacked(domain, ".", tld)));
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC2981Upgradeable, ERC721Upgradeable, IERC165Upgradeable) returns (bool) {

@@ -67,4 +67,8 @@ contract TokenPriceOracle is ITokenPriceOracle, AccessControl, ChainlinkClient, 
     LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
     require(link.transfer(msg.sender, link.balanceOf(address(this))), "Unable to transfer");
   }
+
+  function supportsInterface(bytes4 interfaceID) public view override returns (bool) {
+    return interfaceID == type(ITokenPriceOracle).interfaceId || super.supportsInterface(interfaceID);
+  }
 }

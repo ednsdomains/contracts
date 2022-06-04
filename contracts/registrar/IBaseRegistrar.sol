@@ -51,4 +51,8 @@ interface IBaseRegistrar is IERC721Upgradeable {
     bytes calldata tld,
     address owner
   ) external;
+
+  function tokenId(string memory domain, string memory tld) external pure returns (uint256);
+
+  function tokenId(bytes memory domain, bytes memory tld) external pure returns (uint256);
 }

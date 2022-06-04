@@ -26,7 +26,7 @@ interface IBaseRegistrarController {
     uint256 durations
   ) external view returns (bytes32);
 
-  function registrar(
+  function register(
     string memory domain,
     string memory tld,
     address owner,
