@@ -43,13 +43,12 @@ contract Token is IToken, ERC20PresetMinterPauserUpgradeable, NonBlockingLayerZe
   function bridge(
     address from,
     address to,
-    address payable refundAddress,
     uint16 dstChainId,
     uint256 amount
   ) public payable {
     _lock(from, amount);
     bytes memory payload = abi.encode(to, amount);
-    _lzSend(dstChainId, payload, refundAddress, address(0x0), "");
+    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "");
     uint64 nonce = lzEndpoint.getOutboundNonce(dstChainId, address(this));
     emit OutboundBridged(dstChainId, from, to, amount, nonce);
   }

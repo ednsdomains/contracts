@@ -1,8 +1,8 @@
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
-import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-etherscan";
+import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
@@ -15,7 +15,7 @@ dotenv.config();
 // https://hardhat.org/guides/compile-contracts/
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.9",
+    version: process.env.SOLIDITY_VERSION || "0.8.9",
     settings: {
       optimizer: {
         enabled: true,
@@ -24,14 +24,68 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    matic: {
+    // Ethereum
+    mainnet: {
+      chainId: 1,
+      url: ``,
+    },
+    rinkeby: {
+      chainId: 4,
+      url: ``,
+    },
+    // BNB Chain
+    bsc: {
+      chainId: 56,
+      url: ``,
+    },
+    bscTestnet: {
+      chainId: 97,
+      url: ``,
+    },
+    // Fantom
+    opera: {
+      chainId: 250,
+      url: ``,
+    },
+    ftmTestnet: {
+      chainId: 4002,
+      url: ``,
+    },
+    // Optimism
+    optimisticEthereum: {
+      chainId: 10,
+      url: ``,
+    },
+    optimisticKovan: {
+      chainId: 69,
+      url: ``,
+    },
+    // Polygon
+    polygon: {
+      chainId: 137,
       url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
     },
-    maticmum: {
+    polygonMumbai: {
+      chainId: 80001,
       url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
     },
-    goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
+    // Arbitrum
+    arbitrumOne: {
+      chainId: 42161,
+      url: ``,
+    },
+    arbitrumTestnet: {
+      chainId: 421611,
+      url: ``,
+    },
+    // Avalanche
+    avalanche: {
+      chainId: 43114,
+      url: ``,
+    },
+    avalancheFujiTestnet: {
+      chainId: 43113,
+      url: ``,
     },
   },
   gasReporter: {

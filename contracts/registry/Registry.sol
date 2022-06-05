@@ -6,11 +6,10 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./IRegistry.sol";
+import "../resolver/IPublicResolver.sol";
 
 contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
   uint256 public constant GRACE_PERIOD = 30 days;
-
-  bytes32 internal constant _AT_SIGN = keccak256("@");
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");

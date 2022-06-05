@@ -11,7 +11,6 @@ interface IToken is IERC165Upgradeable {
   function bridge(
     address from,
     address to,
-    address payable refundAddress,
     uint16 dstChainId,
     uint256 amount
   ) external payable;
