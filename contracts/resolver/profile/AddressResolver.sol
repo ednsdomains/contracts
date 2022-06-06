@@ -13,7 +13,8 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     string memory tld,
     uint256 coin,
     string memory address_
-  ) public onlyAuthorised(host, domain, tld) {
+  ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
+    _setHostRecord(host, domain, tld);
     if (keccak256(bytes(host)) == keccak256("@")) {
       bytes32 fqdn = keccak256(abi.encodePacked(domain, ".", tld));
       _addresses[fqdn][coin] = bytes(address_);
