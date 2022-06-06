@@ -14,7 +14,8 @@ contract NFTResolver is INFTResolver, BaseResolver {
     uint256 chainId,
     address contractAddress,
     uint256 tokenId
-  ) public onlyAuthorised(host, domain, tld) {
+  ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
+    _setHostRecord(host, domain, tld);
     if (keccak256(bytes(host)) == keccak256("@")) {
       bytes32 fqdn = keccak256(abi.encodePacked(domain, ".", tld));
       _nfts[fqdn][chainId] = NFT({ contractAddress: contractAddress, tokenId: tokenId });

@@ -295,22 +295,27 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     return _records[tld].domains[domain].hosts[host].operators[_msgSender()];
   }
 
+  // Get the expiry date of the domain in unix timestamp
   function expiry(bytes32 domain, bytes32 tld) public view returns (uint256) {
     return _records[tld].domains[domain].expiry;
   }
 
+  // Get the grace period
   function gracePeriod() public pure returns (uint256) {
     return GRACE_PERIOD;
   }
 
+  // Is the domain still alive (not yet expired)
   function live(bytes32 domain, bytes32 tld) public view returns (bool) {
     return _records[tld].domains[domain].expiry >= block.timestamp;
   }
 
+  // Is the TLD enable and allow to register
   function enable(bytes32 tld) public view returns (bool) {
     return _records[tld].enable;
   }
 
+  // Is the TLD an OMNI TLD
   function omni(bytes32 tld) public view returns (bool) {
     return _records[tld].omni;
   }
