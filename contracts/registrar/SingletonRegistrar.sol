@@ -57,7 +57,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   }
 
   modifier onlyController(bytes32 tld) {
-    require(controllers[_msgSender()][tld], "FORBIDDEN_ACCESS");
+    require(controllers[_msgSender()][tld], "FORBIDDEN_ACCESS(Controller)");
     _;
   }
 
@@ -86,7 +86,6 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   function exists(bytes32 tld) public view returns (bool) {
     return _registry.exists(tld);
   }
-
   function controllerApproved(bytes32 tld, address controller) public view returns (bool) {
     return controllers[controller][tld];
   }

@@ -42,27 +42,27 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
   mapping(bytes32 => TldRecord) internal _records;
 
   modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyAdmin");
     _;
   }
 
   modifier onlyRoot() {
-    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyRoot");
     _;
   }
 
   modifier onlyRegistrar() {
-    require(hasRole(REGISTRAR_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    require(hasRole(REGISTRAR_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyRegistrar");
     _;
   }
 
   modifier onlyResolver() {
-    require(hasRole(PUBLIC_RESOLVER_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    require(hasRole(PUBLIC_RESOLVER_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyResolver");
     _;
   }
 
   modifier onlyDomainOwner(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].owner, "FORBIDDEN_ACCESS");
+    require(_msgSender() == _records[tld].domains[domain].owner, "FORBIDDEN_ACCESS_onlyDomainOwner");
     _;
   }
 
