@@ -2,7 +2,7 @@ import {PublicResolver, Registry, SingletonRegistrar} from "../../typechain";
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 import {ethers} from "hardhat";
 import {expect} from "chai";
-import {utils} from "ethers";
+import {BigNumberish, utils} from "ethers";
 
 describe("SingletonRegistrar", function () {
     let resolver: PublicResolver;
@@ -51,9 +51,41 @@ describe("SingletonRegistrar", function () {
 
     it("Singleton Registrar Register", async function () {
         await singletonRegistrar.setControllerApproval(ethers.utils.toUtf8Bytes(TLD),addr1.address,true)
-        // await singletonRegistrar.setControllerApproval(ethers.utils.toUtf8Bytes(TLD),"0x0000000000000000000000000000000000000000",true)
         const expirtDate = new Date();
         expirtDate.setMonth(expirtDate.getMonth() + 1);
-        await singletonRegistrar.register(Domain_byte,ethers.utils.toUtf8Bytes(TLD),addr1.address,expirtDate.getTime())
+        await singletonRegistrar.register(Domain_byte,ethers.utils.toUtf8Bytes(TLD),addr1.address,Math.floor( expirtDate.getTime() / 1000))
     });
+    describe("Domain Managment",function (){
+        let duration:BigNumberish;
+        beforeEach(async function () {
+            await singletonRegistrar.setControllerApproval(ethers.utils.toUtf8Bytes(TLD),addr1.address,true)
+            let expirtDate = new Date();
+            expirtDate.setMonth(expirtDate.getMonth() + 1);
+            duration = expirtDate.getTime()
+            await singletonRegistrar.register(Domain_byte,ethers.utils.toUtf8Bytes(TLD),addr1.address,duration)
+
+        })
+        it("Exists",async function(){
+            expect(await singletonRegistrar["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
+        })
+        it("ownerOf",async function(){
+            expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr1.address)
+        })
+        it("expiry",async function(){
+            expect(await singletonRegistrar.expiry(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(duration)
+        })
+        it("available",async function(){
+            expect(await singletonRegistrar["available(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
+        })
+        it("Token ID",async function(){
+            expect(await singletonRegistrar["tokenId(string,string)"](Domain,TLD)).to.equal(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(Domain+"."+TLD)))
+        })
+        it("Renew", async function () {
+
+        })
+        it("Reclaim", async function () {
+
+        })
+    })
+
 });
