@@ -77,11 +77,20 @@ describe("SingletonRegistrar", function () {
             expect(await singletonRegistrar["tokenId(string,string)"](Domain,TLD)).to.equal(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(Domain+"."+TLD)))
         })
         it("Renew", async function () {
-
+            const baiseExpiryTime = await singletonRegistrar.expiry(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))
+            await singletonRegistrar.renew(
+                ethers.utils.toUtf8Bytes(Domain),
+                ethers.utils.toUtf8Bytes(TLD),
+                expirtDate.getTime()
+            )
+            const newExpiryTime = await singletonRegistrar.expiry(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))
+            expect(newExpiryTime).to.be.above(baiseExpiryTime)
         })
-        it("Reclaim", async function () {
-
-        })
+        // it("Reclaim", async function () {
+        //     expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr1.address)
+        //     await singletonRegistrar.connect(addr1).reclaim(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr2.address)
+        //     expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr2.address)
+        // })
     })
 
 });

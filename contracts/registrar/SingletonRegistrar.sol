@@ -68,7 +68,7 @@ contract SingletonRegistrar is ISingletonRegistrar, ERC721Upgradeable, ERC2981Up
   function available(bytes memory tld) public view returns (bool) {
     return exists(keccak256(tld)) && _registry.enable(keccak256(tld));
   }
-
+//If domain is using, return false.
   function available(bytes memory domain, bytes memory tld) public view returns (bool) {
     return expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
   }
