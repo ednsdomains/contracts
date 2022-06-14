@@ -19,7 +19,8 @@ abstract contract Synchronizer is NonBlockingLayerZeroApp {
     _;
   }
 
-  function exists(bytes32 reqId) public view returns (bool) {
+
+  function exists(bytes32 reqId)  public virtual view returns (bool) {
     return _history[reqId] == 0;
   }
 

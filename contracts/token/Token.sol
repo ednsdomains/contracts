@@ -16,8 +16,9 @@ contract Token is IToken, ERC20PresetMinterPauserUpgradeable, NonBlockingLayerZe
 
   uint16 public chainId; // The current chain ID in LayerZero
 
-  function initialize(uint16 lzChainId) public initializer {
+  function initialize(uint16 lzChainId, address _lzEndpoint) public initializer {
     __Token_init(lzChainId);
+    __NonBlockingLayerZeroApp_init(_lzEndpoint);
     __ERC20PresetMinterPauser_init("Omni Name Service", "OMNS");
   }
 

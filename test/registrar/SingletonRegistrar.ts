@@ -91,6 +91,15 @@ describe("SingletonRegistrar", function () {
         //     await singletonRegistrar.connect(addr1).reclaim(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr2.address)
         //     expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr2.address)
         // })
+        it("transferFrom",async function(){
+            const tokenID = await singletonRegistrar["tokenId(string,string)"](Domain,TLD)
+            expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr1.address)
+            await singletonRegistrar.transferFrom(addr1.address,addr2.address,tokenID)
+            expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr2.address)
+            await singletonRegistrar.connect(addr2).transferFrom(addr2.address,addr1.address,tokenID)
+            expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr1.address)
+        })
+
     })
 
 });

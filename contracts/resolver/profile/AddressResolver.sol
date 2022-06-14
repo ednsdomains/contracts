@@ -58,4 +58,5 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
     return interfaceID == type(IAddressResolver).interfaceId || super.supportsInterface(interfaceID);
   }
+
 }

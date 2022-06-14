@@ -102,7 +102,7 @@ const config: HardhatUserConfig = {
     alphaSort: false,
     runOnCompile: true,
     disambiguatePaths: false,
-    only: ["Registry", "SingletonRegistrar", "SingletonRegistrarController", "Token", "DomainPriceOracle", "TokenPriceOracle", "PublicResolver", "Root"],
+    only: ["Registry", "SingletonRegistrar", "SingletonRegistrarController", "Token", "DomainPriceOracle", "TokenPriceOracle", "PublicResolver", "Root","OmniRegistrar"],
   },
 };
 

@@ -17,7 +17,7 @@ abstract contract LayerZeroApp is OwnableUpgradeable, ILayerZeroReceiver, ILayer
 
   event SetTrustedRemote(uint16 _srcChainId, bytes _srcAddress);
 
-  function initialize(address _endpoint) public virtual initializer {
+  function _initialize(address _endpoint) public virtual initializer {
     __LayerZeroApp_init(_endpoint);
   }
 

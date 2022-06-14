@@ -12,9 +12,13 @@ import "./LayerZeroApp.sol";
 abstract contract NonBlockingLayerZeroApp is LayerZeroApp {
   // constructor(address _endpoint) LayerZeroApp(_endpoint) {}
 
-  function initialize(address _endpoint) public override initializer {
-    __NonBlockingLayerZeroApp_init(_endpoint);
-  }
+
+//  function initialize(address _endpoint) public override initializer {
+//    __NonBlockingLayerZeroApp_init(_endpoint);
+//  }
+//  function initialize(address _endpoint) public override initializer {
+//    __NonBlockingLayerZeroApp_init(_endpoint);
+//  }
 
   function __NonBlockingLayerZeroApp_init(address _endpoint) internal onlyInitializing {
     __NonBlockingLayerZeroApp_init_unchained();
