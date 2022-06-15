@@ -74,7 +74,7 @@ describe("SingletonRegistrar", function () {
             expect(await singletonRegistrar["available(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(false)
         })
         it("Token ID",async function(){
-            expect(await singletonRegistrar["tokenId(string,string)"](Domain,TLD)).to.equal(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(Domain+"."+TLD)))
+            expect(await singletonRegistrar.tokenId(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(Domain+"."+TLD)))
         })
         it("Renew", async function () {
             const baiseExpiryTime = await singletonRegistrar.expiry(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))
@@ -92,7 +92,7 @@ describe("SingletonRegistrar", function () {
         //     expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr2.address)
         // })
         it("transferFrom",async function(){
-            const tokenID = await singletonRegistrar["tokenId(string,string)"](Domain,TLD)
+            const tokenID = await singletonRegistrar.tokenId(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))
             expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr1.address)
             await singletonRegistrar.transferFrom(addr1.address,addr2.address,tokenID)
             expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr2.address)

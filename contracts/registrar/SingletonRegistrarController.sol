@@ -130,7 +130,7 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
     // TODO: Set record in reverse resolver
     _registrar.register(bytes(domain), bytes(tld), address(this), durations);
     _registrar.reclaim(bytes(domain), bytes(tld), owner);
-    _registrar.transferFrom(address(this), owner, _registrar.tokenId(domain, tld));
+    _registrar.transferFrom(address(this), owner, _registrar.tokenId(bytes(domain), bytes(tld)));
   }
 
   function renew(
