@@ -19,7 +19,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 100,
+        runs: 50,
       },
     },
   },
@@ -107,6 +107,7 @@ const config: HardhatUserConfig = {
     alphaSort: false,
     runOnCompile: true,
     disambiguatePaths: false,
+    only: ["Registry", "SingletonRegistrar", "SingletonRegistrarController", "Token", "DomainPriceOracle", "TokenPriceOracle", "PublicResolver", "Root", "OmniRegistrar"],
   },
 };
 
