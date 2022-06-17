@@ -165,7 +165,7 @@
 //     //   expect(tldAvailable, "TLD Available").to.equal(true);
 //
 //     //   const [owner] = await ethers.getSigners();
-//     //   const duration: number = 31104000; // 360 days;
+//     //   const durations: number = 31104000; // 360 days;
 //
 //     //   const domainValid = await registrarController.valid("one2cloud");
 //     //   expect(domainValid, "Domain Valid").to.equal(true);
@@ -181,7 +181,7 @@
 //     //       `one2cloud`,
 //     //       sampleDomain.tld,
 //     //       owner.address,
-//     //       duration,
+//     //       durations,
 //     //       publicResolver.address,
 //     //       owner.address
 //     //     );
@@ -190,7 +190,7 @@
 //     //       `12345`,
 //     //       sampleDomain.tld,
 //     //       owner.address,
-//     //       duration,
+//     //       durations,
 //     //       publicResolver.address,
 //     //       owner.address
 //     //     );
@@ -199,7 +199,7 @@
 //     //       `61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`,
 //     //       sampleDomain.tld,
 //     //       owner.address,
-//     //       duration,
+//     //       durations,
 //     //       publicResolver.address,
 //     //       owner.address
 //     //     );
@@ -208,7 +208,7 @@
 //     //       `12345`,
 //     //       sampleDomain.tld,
 //     //       owner.address,
-//     //       duration,
+//     //       durations,
 //     //       publicResolver.address,
 //     //       owner.address
 //     //     );
@@ -217,7 +217,7 @@
 //     //       `61240263049080349394223174745358196154699627257756481996476181489027925914602009235612717659113562642985821840536407225923759990`,
 //     //       sampleDomain.tld,
 //     //       owner.address,
-//     //       duration,
+//     //       durations,
 //     //       publicResolver.address,
 //     //       owner.address
 //     //     );
@@ -236,7 +236,7 @@
 //     //     sampleDomain.name,
 //     //     sampleDomain.tld,
 //     //     owner.address,
-//     //     duration,
+//     //     durations,
 //     //     publicResolver.address,
 //     //     owner.address
 //     //   );
@@ -255,13 +255,13 @@
 //
 //       await setupReverseRegistrar(registry, reverseRegistrar, owner);
 //
-//       const duration: number = 31104000; // 360 days;
+//       const durations: number = 31104000; // 360 days;
 //       console.log("Registering domain...");
 //       await registrarController.registerWithConfig(
 //         sampleDomain.name,
 //         sampleDomain.tld,
 //         owner.address,
-//         duration,
+//         durations,
 //         publicResolver.address,
 //         owner.address
 //       );

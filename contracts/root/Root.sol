@@ -2,9 +2,9 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./IRoot.sol";
+import "./interfaces/IRoot.sol";
 import "../registry/IRegistry.sol";
-import "../registrar/ISingletonRegistrar.sol";
+import "../registrar/interfaces/ISingletonRegistrar.sol";
 
 contract Root is IRoot, AccessControlUpgradeable {
   IRegistry private _registry;

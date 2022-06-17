@@ -37,13 +37,13 @@ interface IBaseRegistrar is IERC721Upgradeable {
     bytes calldata domain,
     bytes calldata tld,
     address owner,
-    uint256 duration
+    uint256 durations
   ) external;
 
   function renew(
     bytes calldata domain,
     bytes calldata tld,
-    uint256 duration
+    uint256 durations
   ) external;
 
   function reclaim(
@@ -51,7 +51,6 @@ interface IBaseRegistrar is IERC721Upgradeable {
     bytes calldata tld,
     address owner
   ) external;
-
 
   function tokenId(bytes memory domain, bytes memory tld) external pure returns (uint256);
 }

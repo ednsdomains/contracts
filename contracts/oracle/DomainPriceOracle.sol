@@ -2,8 +2,8 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./IDomainPriceOracle.sol";
-import "../oracle/ITokenPriceOracle.sol";
+import "./interfaces/IDomainPriceOracle.sol";
+import "./interfaces/ITokenPriceOracle.sol";
 
 contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -46,17 +46,18 @@ contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
     uint256 durations
   ) external view returns (uint256) {
     uint256 _price_;
-
+    // There is a condition in registrar controller require the durations must be a multiple of 365 days, so the years must be an integer
+    uint256 years_ = durations / 365 days;
     if (domain.length == 1) {
-      _price_ = _prices[tld].oneLetter * durations;
+      _price_ = _prices[tld].oneLetter * years_;
     } else if (domain.length == 2) {
-      _price_ = _prices[tld].twoLetter * durations;
+      _price_ = _prices[tld].twoLetter * years_;
     } else if (domain.length == 3) {
-      _price_ = _prices[tld].threeLetter * durations;
+      _price_ = _prices[tld].threeLetter * years_;
     } else if (domain.length == 4) {
-      _price_ = _prices[tld].fourLetter * durations;
+      _price_ = _prices[tld].fourLetter * years_;
     } else {
-      _price_ = _prices[tld].fiveLetter * durations;
+      _price_ = _prices[tld].fiveLetter * years_;
     }
 
     return _price_ * _tokenPrice.getTokenPriceInUsd();

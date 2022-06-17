@@ -19,8 +19,21 @@ abstract contract Synchronizer is NonBlockingLayerZeroApp {
     _;
   }
 
+  function __Synchronizer_init(
+    uint16 chainId_,
+    uint16[] memory chainIds_,
+    address _lzEndpoint
+  ) internal onlyInitializing {
+    __Synchronizer_init_unchained(chainId_, chainIds_);
+    __NonBlockingLayerZeroApp_init(_lzEndpoint);
+  }
 
-  function exists(bytes32 reqId)  public virtual view returns (bool) {
+  function __Synchronizer_init_unchained(uint16 chainId_, uint16[] memory chainIds_) internal onlyInitializing {
+    chainId = chainId_;
+    chainIds = chainIds_;
+  }
+
+  function _reqExists(bytes32 reqId) public view virtual returns (bool) {
     return _history[reqId] == 0;
   }
 
@@ -70,7 +83,7 @@ abstract contract Synchronizer is NonBlockingLayerZeroApp {
   }
 
   function fulfill(bytes32 reqId, uint16 chainId_) public view returns (bool) {
-    require(exists(reqId), "REQUEST_NOT_EXISTS");
+    require(_reqExists(reqId), "REQUEST_NOT_EXISTS");
     return _reqs[reqId][chainId_];
   }
 

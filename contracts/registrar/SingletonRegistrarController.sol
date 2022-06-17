@@ -3,11 +3,11 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./ISingletonRegistrar.sol";
+import "./interfaces/ISingletonRegistrar.sol";
+import "./interfaces/ISingletonRegistrarController.sol";
 import "../utils/LabelValidator.sol";
-import "../oracle/ITokenPriceOracle.sol";
-import "../oracle/IDomainPriceOracle.sol";
-import "./ISingletonRegistrarController.sol";
+import "../oracle/interfaces/ITokenPriceOracle.sol";
+import "../oracle/interfaces/IDomainPriceOracle.sol";
 
 contract SingletonRegistrarController is ISingletonRegistrarController, AccessControlUpgradeable, LabelValidator {
   IERC20Upgradeable private _token;
@@ -19,8 +19,8 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
 
   uint256 private constant MINIMUM_COMMIT_TIME = 1 minutes;
   uint256 private constant MAXIMUM_COMMIT_TIME = 1 days;
-  uint256 private constant MINIMUM_REGISTRATION_DURATION = 1; // In year
-  uint256 private constant MAXIMUM_REGISTRATION_DURATION = 10; // In year
+  uint256 private constant MINIMUM_REGISTRATION_DURATION = 365 days; // In seconds
+  uint256 private constant MAXIMUM_REGISTRATION_DURATION = 365 days * 10; // In seconds
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
@@ -123,19 +123,29 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
     uint256 durations,
     bytes32 commitment
   ) public {
+    // The durations must be multiple of 365 days
+    require(durations % 365 days == 0, "INVALID_DURATIONS");
     uint256 _price = price(domain, tld, durations);
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
     _consumeCommitment(domain, tld, durations, commitment);
     // TODO: Set record in resolver
     // TODO: Set record in reverse resolver
+    _token.transferFrom(_msgSender(), address(this), _price);
+    _registrar.transferFrom(address(this), owner, _registrar.tokenId(bytes(domain), bytes(tld)));
     _registrar.register(bytes(domain), bytes(tld), address(this), durations);
     _registrar.reclaim(bytes(domain), bytes(tld), owner);
-    _registrar.transferFrom(address(this), owner, _registrar.tokenId(bytes(domain), bytes(tld)));
   }
 
   function renew(
     string memory domain,
     string memory tld,
     uint256 durations
-  ) public {}
+  ) public {
+    // The durations must be multiple of 365 days
+    require(durations % 365 days == 0, "INVALID_DURATIONS");
+    uint256 _price = price(domain, tld, durations);
+    require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
+    _token.transferFrom(_msgSender(), address(this), _price);
+    _registrar.renew(bytes(domain), bytes(tld), durations);
+  }
 }

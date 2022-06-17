@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./ITokenPriceOracle.sol";
+import "./interfaces/ITokenPriceOracle.sol";
 
 contract TokenPriceOracle is ITokenPriceOracle, AccessControl, ChainlinkClient, ConfirmedOwner {
   using Chainlink for Chainlink.Request;
