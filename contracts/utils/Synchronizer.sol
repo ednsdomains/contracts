@@ -15,7 +15,7 @@ abstract contract Synchronizer is NonBlockingLayerZeroApp {
   mapping(bytes32 => uint256) internal _history; // The record of the sync request created at timestamp
 
   modifier onlyLayerZeroOracle() {
-    require(_msgSender() == address(lzEndpoint), "FORBIDDEN_ACCESS");
+    require(_msgSender() == address(lzEndpoint), "FORBIDDEN");
     _;
   }
 

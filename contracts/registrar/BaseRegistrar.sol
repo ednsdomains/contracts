@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "../utils/LabelValidator.sol";
 import "../registry/IRegistry.sol";
 
@@ -45,22 +44,22 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   }
 
   modifier onlyRoot() {
-    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_R");
+    require(hasRole(ROOT_ROLE, _msgSender()), "ONLY_ROOT");
     _;
   }
 
   modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_A");
+    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
     _;
   }
 
   modifier onlyDomainOwner(uint256 id) {
-    require(_msgSender() == ownerOf(id), "FORBIDDEN_D");
+    require(_msgSender() == ownerOf(id), "ONLY_OWNER");
     _;
   }
 
   modifier onlyController(bytes32 tld) {
-    require(controllers[_msgSender()][tld], "FORBIDDEN_C");
+    require(controllers[_msgSender()][tld], "ONLY_CONTROLLER");
     _;
   }
 

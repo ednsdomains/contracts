@@ -13,7 +13,7 @@ contract Root is IRoot, AccessControlUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
   modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS");
+    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN");
     _;
   }
 

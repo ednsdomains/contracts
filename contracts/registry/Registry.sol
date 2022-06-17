@@ -42,32 +42,32 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
   mapping(bytes32 => TldRecord) internal _records;
 
   modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyAdmin");
+    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
     _;
   }
 
   modifier onlyRoot() {
-    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyRoot");
+    require(hasRole(ROOT_ROLE, _msgSender()), "ONLY_ROOT");
     _;
   }
 
   modifier onlyRegistrar() {
-    require(hasRole(REGISTRAR_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyRegistrar");
+    require(hasRole(REGISTRAR_ROLE, _msgSender()), "ONLY_REGISTRAR");
     _;
   }
 
   modifier onlyResolver() {
-    require(hasRole(PUBLIC_RESOLVER_ROLE, _msgSender()), "FORBIDDEN_ACCESS_onlyResolver");
+    require(hasRole(PUBLIC_RESOLVER_ROLE, _msgSender()), "ONLY_RESOLVER");
     _;
   }
 
   modifier onlyDomainOwner(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].owner, "FORBIDDEN_ACCESS_onlyDomainOwner");
+    require(_msgSender() == _records[tld].domains[domain].owner, "ONLY_OWNER");
     _;
   }
 
   modifier onlyDomainOperator(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].owner || _records[tld].domains[domain].operators[_msgSender()], "FORBIDDEN_ACCESS");
+    require(_msgSender() == _records[tld].domains[domain].owner || _records[tld].domains[domain].operators[_msgSender()], "ONLY_OPERATOR");
     _;
   }
 
@@ -80,7 +80,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
       _msgSender() == _records[tld].domains[domain].owner ||
         _records[tld].domains[domain].operators[_msgSender()] ||
         _records[tld].domains[domain].hosts[host].operators[_msgSender()],
-      "FORBIDDEN_ACCESS"
+      "FORBIDDEN"
     );
     _;
   }

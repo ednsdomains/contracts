@@ -19,7 +19,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 100,
       },
     },
   },
@@ -27,70 +27,75 @@ const config: HardhatUserConfig = {
     // Ethereum
     mainnet: {
       chainId: 1,
-      url: ``,
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     rinkeby: {
       chainId: 4,
-      url: ``,
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // BNB Chain
-    bsc: {
+    bnb: {
       chainId: 56,
-      url: ``,
+      url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
-    bscTestnet: {
+    bnbTestnet: {
       chainId: 97,
-      url: ``,
+      url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
     // Fantom
-    opera: {
+    fantom: {
       chainId: 250,
-      url: ``,
+      url: `https://ftm.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
-    ftmTestnet: {
+    fantomTestnet: {
       chainId: 4002,
-      url: ``,
+      url: `https://rpc.testnet.fantom.network/`,
     },
     // Optimism
-    optimisticEthereum: {
+    optimisim: {
       chainId: 10,
-      url: ``,
+      url: `https://optimism-arbitrum.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    optimisticKovan: {
+    optimisimKovan: {
       chainId: 69,
-      url: ``,
+      url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Polygon
     polygon: {
       chainId: 137,
-      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
+      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     polygonMumbai: {
       chainId: 80001,
-      url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
+      url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Arbitrum
-    arbitrumOne: {
+    arbitrum: {
       chainId: 42161,
-      url: ``,
+      url: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    arbitrumTestnet: {
+    arbitrumRinkeby: {
       chainId: 421611,
-      url: ``,
+      url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Avalanche
     avalanche: {
       chainId: 43114,
-      url: ``,
+      url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
-    avalancheFujiTestnet: {
+    avalancheFuji: {
       chainId: 43113,
-      url: ``,
+      url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
+    // Gnosis Chain
+    token: "DAI",
+    gasPrice: 1.5,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY || undefined,
+    showTimeSpent: true,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
@@ -102,7 +107,6 @@ const config: HardhatUserConfig = {
     alphaSort: false,
     runOnCompile: true,
     disambiguatePaths: false,
-    only: ["Registry", "SingletonRegistrar", "SingletonRegistrarController", "Token", "DomainPriceOracle", "TokenPriceOracle", "PublicResolver", "Root","OmniRegistrar"],
   },
 };
 

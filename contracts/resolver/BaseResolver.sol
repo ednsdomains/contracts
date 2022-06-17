@@ -16,7 +16,7 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelValidator, ContextUpgr
     string memory domain,
     string memory tld
   ) {
-    require(_isAuthorised(host, domain, tld), "FORBIDDEN_ACCESS");
+    require(_isAuthorised(host, domain, tld), "FORBIDDEN");
     _;
   }
 
