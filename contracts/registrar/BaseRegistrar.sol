@@ -41,22 +41,22 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   }
 
   modifier onlyRoot() {
-    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN");
+    require(hasRole(ROOT_ROLE, _msgSender()), "FORBIDDEN_R");
     _;
   }
 
   modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN");
+    require(hasRole(ADMIN_ROLE, _msgSender()), "FORBIDDEN_A");
     _;
   }
 
   modifier onlyDomainOwner(uint256 id) {
-    require(_msgSender() == ownerOf(id), "FORBIDDEN");
+    require(_msgSender() == ownerOf(id), "FORBIDDEN_D");
     _;
   }
 
   modifier onlyController(bytes32 tld) {
-    require(controllers[_msgSender()][tld], "FORBIDDEN");
+    require(controllers[_msgSender()][tld], "FORBIDDEN_C");
     _;
   }
 
@@ -103,7 +103,7 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     bytes calldata tld,
     address owner,
     uint256 duration
-  )   internal  onlyController(keccak256(tld)) {
+  )   internal {
     require(_validDomain(domain), "INVALID_DOMAIN_NAME");
     require(available(domain, tld), "DOMAIN_NOT_AVAILABLE");
     require(block.timestamp + duration + _registry.gracePeriod() > block.timestamp + _registry.gracePeriod(), "DURATION_TOO_SHORT");
@@ -121,7 +121,7 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     bytes calldata domain,
     bytes calldata tld,
     uint256 duration
-  )  internal  onlyController(keccak256(bytes(tld))) {
+  )  internal {
     bytes32 _domain = keccak256(domain);
     bytes32 _tld = keccak256(tld);
     uint256 expiry_ = _registry.expiry(_domain, _tld);
@@ -135,7 +135,7 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     bytes calldata domain,
     bytes calldata tld,
     address owner
-  ) internal  onlyController(keccak256(bytes(tld))) {
+  ) internal {
     uint256 id = uint256(keccak256(abi.encodePacked(string(domain), ".", string(tld))));
     require(ownerOf(id) == owner, "FORBIDDEN");
     bytes32 _domain = keccak256(domain);

@@ -9,6 +9,7 @@ contract OmniRegistrar is BaseRegistrar,Synchronizer {
         __ERC721_init("Omni Name Service", "OMNS");
         __AccessControl_init();
         __NonBlockingLayerZeroApp_init(_endpoint);
+        __Ownable_init_unchained();
     }
 
 
@@ -31,7 +32,7 @@ contract OmniRegistrar is BaseRegistrar,Synchronizer {
         uint256 duration
     )  public  onlyController(keccak256(bytes(tld))) {
         _renew(domain,tld,duration);
-        _sync(abi.encode("renew(bytes,bytes,uint256)",domain,tld,duration));
+        _sync(abi.encode("_renew(bytes,bytes,uint256)",domain,tld,duration));
     }
 
     function reclaim(
@@ -40,7 +41,7 @@ contract OmniRegistrar is BaseRegistrar,Synchronizer {
         address owner
     )  public  onlyController(keccak256(bytes(tld))) {
         _reclaim(domain,tld,owner);
-        _sync(abi.encode("reclaim(bytes,bytes,address)",domain,tld,owner));
+        _sync(abi.encode("_reclaim(bytes,bytes,address)",domain,tld,owner));
     }
 
 }
