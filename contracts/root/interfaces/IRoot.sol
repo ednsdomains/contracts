@@ -3,29 +3,29 @@ pragma solidity ^0.8.9;
 
 interface IRoot {
   function register(
-    string memory tld,
+    bytes calldata tld,
     address resolver,
     bool enable_,
     bool omni_
   ) external;
 
-  function transfer(string memory tld) external;
+  function transfer(bytes calldata tld) external;
 
-  function reclaim(string memory tld) external;
+  function reclaim(bytes calldata tld) external;
 
-  function setEnable(string memory tld, bool enable) external;
+  function setEnable(bytes calldata tld, bool enable) external;
 
-  function setResolver(string memory tld, address resolver) external;
+  function setResolver(bytes calldata tld, address resolver) external;
 
   function setControllerApproval(
-    string memory tld,
+    bytes calldata tld,
     address controller,
     bool approved
   ) external;
 
-  function enable(string memory tld) external view returns (bool);
+  function enable(bytes calldata tld) external view returns (bool);
 
-  function omni(string memory tld) external view returns (bool);
+  function omni(bytes calldata tld) external view returns (bool);
 
-  function resolver(string memory tld) external view returns (address);
+  function resolver(bytes calldata tld) external view returns (address);
 }

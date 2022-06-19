@@ -34,7 +34,7 @@ abstract contract LayerZeroApp is OwnableUpgradeable, ILayerZeroReceiver, ILayer
     bytes memory _srcAddress,
     uint64 _nonce,
     bytes memory _payload
-  ) public virtual override {
+  ) external virtual override {
     // lzReceive must be called by the endpoint for security
     require(_msgSender() == address(lzEndpoint), "LzApp: invalid endpoint caller");
 

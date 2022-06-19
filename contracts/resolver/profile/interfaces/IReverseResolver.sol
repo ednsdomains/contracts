@@ -2,24 +2,21 @@
 pragma solidity ^0.8.9;
 
 interface IReverseResolver {
-  event SetReverseRecord(bytes fqdn, bytes host, bytes domain, bytes tld);
+  event SetReverseRecord(bytes host, bytes domain, bytes tld, bytes address_);
 
   function setReverseRecord(
-    string memory host,
-    string memory domain,
-    string memory tld,
-    uint256 coin,
-    string memory address_
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    bytes calldata address_
   ) external;
 
-  function reverse(
-    string memory host,
-    string memory domain,
-    string memory tld,
-    uint256 coin
-  ) external view returns (bytes memory);
+  function setReverseRecord_SYNC(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    bytes calldata address_
+  ) external;
 
-  function reverse(string memory fqdn, uint256 coin) external view returns (bytes memory);
-
-  function reverse(bytes32 fqdn, uint256 coin) external view returns (bytes memory);
+  function reverse(bytes calldata address_) external view returns (bytes memory);
 }

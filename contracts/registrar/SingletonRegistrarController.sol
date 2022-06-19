@@ -64,25 +64,25 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-  function available(string memory tld) public view returns (bool) {
+  function available(string calldata tld) public view returns (bool) {
     return _registrar.available(bytes(tld)) && _registrar.controllerApproved(keccak256(bytes(tld)), address(this));
   }
 
-  function available(string memory domain, string memory tld) public view returns (bool) {
+  function available(string calldata domain, string calldata tld) public view returns (bool) {
     return valid(domain, tld) && _registrar.available(bytes(domain), bytes(tld));
   }
 
   function price(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     uint256 durations
   ) public view returns (uint256) {
     return _domainPrice.price(bytes(domain), keccak256(bytes(tld)), durations);
   }
 
   function commit(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     address owner,
     uint256 durations
   ) public {
@@ -94,8 +94,8 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   }
 
   function makeCommitment(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     address owner,
     uint256 durations
   ) public view returns (bytes32) {
@@ -104,8 +104,8 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   }
 
   function _consumeCommitment(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     uint256 durations,
     bytes32 commitment
   ) internal {
@@ -117,8 +117,8 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   }
 
   function register(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     address owner,
     uint256 durations,
     bytes32 commitment
@@ -137,8 +137,8 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   }
 
   function renew(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     uint256 durations
   ) public {
     // The durations must be multiple of 365 days

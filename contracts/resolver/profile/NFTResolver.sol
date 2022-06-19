@@ -4,41 +4,66 @@ pragma solidity ^0.8.9;
 import "../BaseResolver.sol";
 import "./interfaces/INFTResolver.sol";
 
-contract NFTResolver is INFTResolver, BaseResolver {
+abstract contract NFTResolver is INFTResolver, BaseResolver {
   mapping(bytes32 => mapping(uint256 => NFT)) private _nfts;
 
   function setNFT(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 chainId,
-    address contractAddress,
+    address contract_,
     uint256 tokenId
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
-    _setHostRecord(host, domain, tld);
-    if (keccak256(bytes(host)) == keccak256("@")) {
-      bytes32 fqdn = keccak256(abi.encodePacked(domain, ".", tld));
-      _nfts[fqdn][chainId] = NFT({ contractAddress: contractAddress, tokenId: tokenId });
-      emit SetNFT(abi.encodePacked(domain, ".", tld), bytes(host), bytes(domain), bytes(tld), chainId, contractAddress, tokenId);
-    } else {
-      bytes32 fqdn = keccak256(abi.encodePacked(host, ".", domain, ".", tld));
-      _nfts[fqdn][chainId] = NFT({ contractAddress: contractAddress, tokenId: tokenId });
-      emit SetNFT(abi.encodePacked(host, ".", domain, ".", tld), bytes(host), bytes(domain), bytes(tld), chainId, contractAddress, tokenId);
+    _setNFT(host, domain, tld, chainId, contract_, tokenId);
+    if (_registry.omni(keccak256(tld))) {
+      _synchronizer.sync(abi.encodeWithSignature("setNFT_SYNC(bytes, bytes, bytes, uint256, address, uint256)", host, domain, tld, chainId, contract_, tokenId));
     }
   }
 
+  function setNFT_SYNC(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 chainId,
+    address contract_,
+    uint256 tokenId
+  ) public onlySynchronizer {
+    _setNFT(host, domain, tld, chainId, contract_, tokenId);
+  }
+
+  function _setNFT(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 chainId,
+    address contract_,
+    uint256 tokenId
+  ) internal {
+    _setHostRecord(host, domain, tld);
+    bytes32 fqdn;
+    if (keccak256(bytes(host)) == AT) {
+      fqdn = keccak256(abi.encodePacked(domain, DOT, tld));
+    } else {
+      require(_validHost(bytes(host)), "INVALID_HOST");
+      fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
+    }
+    _nfts[fqdn][chainId] = NFT({ contract_: contract_, tokenId: tokenId });
+    emit SetNFT(abi.encodePacked(host, DOT, domain, DOT, tld), bytes(host), bytes(domain), bytes(tld), chainId, contract_, tokenId);
+  }
+
   function nft(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 chainId
   ) public view returns (NFT memory) {
-    bytes32 fqdn = keccak256(abi.encodePacked(host, ".", domain, ".", tld));
+    bytes32 fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
     return _nfts[fqdn][chainId];
   }
 
-  function nft(string memory fqdn, uint256 chainId) public view returns (NFT memory) {
-    bytes32 fqdn_ = keccak256(bytes(fqdn));
+  function nft(bytes calldata fqdn, uint256 chainId) public view returns (NFT memory) {
+    bytes32 fqdn_ = keccak256(fqdn);
     return _nfts[fqdn_][chainId];
   }
 

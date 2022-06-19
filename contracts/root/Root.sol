@@ -34,32 +34,34 @@ contract Root is IRoot, AccessControlUpgradeable {
   }
 
   function register(
-    string memory tld,
+    bytes calldata tld,
     address resolver_,
     bool enable_,
     bool omni_
   ) public onlyAdmin {
-    if (omni_) {} else {
-      _registry.setRecord(tld, address(this), resolver_, enable_, omni_);
-    }
+    require(!_registry.exists(keccak256(tld)), "TLD_EXISTS");
+    _registry.setRecord(tld, address(this), resolver_, enable_, omni_);
+    // TODO:
+    if (omni_) {}
   }
 
-  function transfer(string memory tld) public onlyAdmin {}
+  // TODO:
+  function transfer(bytes calldata tld) public onlyAdmin {}
 
-  function reclaim(string memory tld) public onlyAdmin {
+  function reclaim(bytes calldata tld) public onlyAdmin {
     _registry.setOwner(keccak256(bytes(tld)), address(this));
   }
 
-  function setEnable(string memory tld, bool enable_) public onlyAdmin {
+  function setEnable(bytes calldata tld, bool enable_) public onlyAdmin {
     _registry.setEnable(keccak256(bytes(tld)), enable_);
   }
 
-  function setResolver(string memory tld, address resolver_) public onlyAdmin {
+  function setResolver(bytes calldata tld, address resolver_) public onlyAdmin {
     _registry.setResolver(keccak256(bytes(tld)), resolver_);
   }
 
   function setControllerApproval(
-    string memory tld,
+    bytes calldata tld,
     address controller,
     bool approved
   ) public onlyAdmin {
@@ -70,15 +72,15 @@ contract Root is IRoot, AccessControlUpgradeable {
     }
   }
 
-  function enable(string memory tld) public view returns (bool) {
+  function enable(bytes calldata tld) public view returns (bool) {
     return _registry.enable(keccak256(bytes(tld)));
   }
 
-  function omni(string memory tld) public view returns (bool) {
+  function omni(bytes calldata tld) public view returns (bool) {
     return _registry.omni(keccak256(bytes(tld)));
   }
 
-  function resolver(string memory tld) public view returns (address) {
+  function resolver(bytes calldata tld) public view returns (address) {
     return _registry.resolver(keccak256(bytes(tld)));
   }
 }

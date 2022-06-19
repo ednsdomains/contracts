@@ -5,48 +5,68 @@ import "../BaseResolver.sol";
 import "./interfaces/IAddressResolver.sol";
 
 abstract contract AddressResolver is IAddressResolver, BaseResolver {
-  mapping(bytes32 => mapping(uint256 => bytes)) private _addresses;
+  mapping(bytes32 => mapping(uint256 => bytes)) internal _addresses;
 
   function setAddr(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 coin,
-    string memory address_
+    bytes calldata address_
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
+    _setAddress(host, domain, tld, coin, address_);
+    if (_registry.omni(keccak256(tld))) _synchronizer.sync(abi.encodeWithSignature("setAddr_SYNC(bytes, bytes, bytes, uint256, bytes)", host, domain, tld, coin, address_));
+  }
+
+  function setAddr_SYNC(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 coin,
+    bytes calldata address_
+  ) public onlySynchronizer {
+    _setAddress(host, domain, tld, coin, address_);
+  }
+
+  function _setAddress(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 coin,
+    bytes calldata address_
+  ) internal {
     _setHostRecord(host, domain, tld);
-    if (keccak256(bytes(host)) == keccak256("@")) {
-      bytes32 fqdn = keccak256(abi.encodePacked(domain, ".", tld));
-      _addresses[fqdn][coin] = bytes(address_);
-      emit SetAddress(abi.encodePacked(domain, ".", tld), bytes(host), bytes(domain), bytes(tld), coin, bytes(address_));
+    bytes32 fqdn;
+    if (keccak256(bytes(host)) == AT) {
+      fqdn = keccak256(abi.encodePacked(domain, DOT, tld));
     } else {
       require(_validHost(bytes(host)), "INVALID_HOST");
-      bytes32 fqdn = keccak256(abi.encodePacked(host, ".", domain, ".", tld));
-      _addresses[fqdn][coin] = bytes(address_);
-      emit SetAddress(abi.encodePacked(host, ".", domain, ".", tld), bytes(host), bytes(domain), bytes(tld), coin, bytes(address_));
+      fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
     }
+    _addresses[fqdn][coin] = address_;
+    emit SetAddress(bytes(host), bytes(domain), bytes(tld), coin, bytes(address_));
   }
 
   function addr(
-    string memory domain,
-    string memory tld,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 coin
   ) public view returns (bytes memory) {
-    bytes32 fqdn = keccak256(abi.encodePacked(domain, ".", tld));
+    bytes32 fqdn = keccak256(abi.encodePacked(domain, DOT, tld));
     return _addresses[fqdn][coin];
   }
 
   function addr(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 coin
   ) public view returns (bytes memory) {
-    bytes32 fqdn = keccak256(abi.encodePacked(host, ".", domain, ".", tld));
+    bytes32 fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
     return _addresses[fqdn][coin];
   }
 
-  function addr(string memory fqdn_, uint256 coin) public view returns (bytes memory) {
+  function addr(bytes calldata fqdn_, uint256 coin) public view returns (bytes memory) {
     bytes32 fqdn = keccak256(bytes(fqdn_));
     return _addresses[fqdn][coin];
   }
@@ -58,5 +78,4 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
     return interfaceID == type(IAddressResolver).interfaceId || super.supportsInterface(interfaceID);
   }
-
 }

@@ -10,11 +10,11 @@ contract SingletonRegistrar is BaseRegistrar {
     __AccessControl_init();
   }
 
-  function available(bytes memory tld) public view override returns (bool) {
+  function available(bytes calldata tld) public view override returns (bool) {
     return super.available(tld) && !_registry.omni(keccak256(tld));
   }
 
-  function available(bytes memory domain, bytes memory tld) public view override returns (bool) {
+  function available(bytes calldata domain, bytes calldata tld) public view override returns (bool) {
     return super.available(domain, tld) && !_registry.omni(keccak256(tld));
   }
 

@@ -2,17 +2,17 @@
 pragma solidity ^0.8.9;
 
 interface IRegistry {
-  event NewTld(string tld, address owner);
-  event NewDomain(string domain, string tld, address owner);
-  event NewHost(string host, string domain, string tld);
+  event NewTld(bytes tld, address owner);
+  event NewDomain(bytes domain, bytes tld, address owner);
+  event NewHost(bytes host, bytes domain, bytes tld);
 
-  event NewOwner(string fqdn, address newOwner);
-  event NewResolver(string fqdn, address newResolver);
+  event NewOwner(bytes fqdn, address newOwner);
+  event NewResolver(bytes fqdn, address newResolver);
 
-  event SetOperator(string fqdn, address operator, bool approved);
+  event SetOperator(bytes fqdn, address operator, bool approved);
 
   function setRecord(
-    string memory tld,
+    bytes memory tld,
     address owner,
     address resolver,
     bool enable,
@@ -20,17 +20,17 @@ interface IRegistry {
   ) external;
 
   function setRecord(
-    string memory domain,
-    string memory tld,
+    bytes memory domain,
+    bytes memory tld,
     address owner,
     address resolver,
     uint256 expiry
   ) external;
 
   function setRecord(
-    string memory host,
-    string memory domain,
-    string memory tld
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld
   ) external;
 
   function setResolver(bytes32 tld, address resolver) external;

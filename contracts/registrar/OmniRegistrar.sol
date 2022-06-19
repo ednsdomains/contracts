@@ -2,25 +2,35 @@
 pragma solidity ^0.8.9;
 
 import "./BaseRegistrar.sol";
-import "../utils/Synchronizer.sol";
+import "./interfaces/IOmniRegistrarSynchronizer.sol";
 
-contract OmniRegistrar is BaseRegistrar, Synchronizer {
-  function initialize(
-    IRegistry registry_,
-    address _lzEndpoint,
-    uint16 _lzChainId,
-    uint16[] memory _lzChainIds
-  ) public initializer {
+contract OmniRegistrar is BaseRegistrar {
+  IOmniRegistrarSynchronizer private _synchronizer;
+
+  function initialize(IRegistry registry_, IOmniRegistrarSynchronizer synchronizer_) public initializer {
     __BaseRegistrar_init(registry_);
-    __Synchronizer_init(_lzChainId, _lzChainIds, _lzEndpoint);
+    __OmniRegistrar_init(synchronizer_);
   }
 
-  function available(bytes memory tld) public view override returns (bool) {
+  function __OmniRegistrar_init(IOmniRegistrarSynchronizer synchronizer_) internal onlyInitializing {
+    __OmniRegistrar_init_unchained(synchronizer_);
+  }
+
+  function __OmniRegistrar_init_unchained(IOmniRegistrarSynchronizer synchronizer_) internal onlyInitializing {
+    _synchronizer = synchronizer_;
+  }
+
+  function available(bytes calldata tld) public view override returns (bool) {
     return super.available(tld) && _registry.omni(keccak256(tld));
   }
 
-  function available(bytes memory domain, bytes memory tld) public view override returns (bool) {
+  function available(bytes calldata domain, bytes calldata tld) public view override returns (bool) {
     return super.available(domain, tld) && _registry.omni(keccak256(tld));
+  }
+
+  modifier onlySynchronizer() {
+    require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
+    _;
   }
 
   function register(
@@ -30,7 +40,16 @@ contract OmniRegistrar is BaseRegistrar, Synchronizer {
     uint256 durations
   ) external onlyController(keccak256(tld)) {
     _register(domain, tld, owner, durations);
-    _sync(abi.encode("_register(bytes,bytes,address,uint256)", domain, tld, owner, durations));
+    _synchronizer.sync(abi.encodeWithSignature("register_SYNC(bytes, bytes, address, uint256)", domain, tld, owner, durations));
+  }
+
+  function register_SYNC(
+    bytes calldata domain,
+    bytes calldata tld,
+    address owner,
+    uint256 durations
+  ) external onlySynchronizer {
+    _register(domain, tld, owner, durations);
   }
 
   function renew(
@@ -39,7 +58,15 @@ contract OmniRegistrar is BaseRegistrar, Synchronizer {
     uint256 durations
   ) external onlyController(keccak256(tld)) {
     _renew(domain, tld, durations);
-    _sync(abi.encode("_renew(bytes,bytes,uint256)", domain, tld, durations));
+    _synchronizer.sync(abi.encodeWithSignature("renew_SYNC(bytes, bytes, uint256)", domain, tld, durations));
+  }
+
+  function renew_SYNC(
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 durations
+  ) external onlySynchronizer {
+    _renew(domain, tld, durations);
   }
 
   function reclaim(
@@ -48,6 +75,14 @@ contract OmniRegistrar is BaseRegistrar, Synchronizer {
     address owner
   ) external onlyController(keccak256(tld)) {
     _reclaim(domain, tld, owner);
-    _sync(abi.encode("_reclaim(bytes,bytes,address)", domain, tld, owner));
+    _synchronizer.sync(abi.encodeWithSignature("reclaim_SYNC(bytes, bytes, address)", domain, tld, owner));
+  }
+
+  function reclaim_SYNC(
+    bytes calldata domain,
+    bytes calldata tld,
+    address owner
+  ) external onlySynchronizer {
+    _reclaim(domain, tld, owner);
   }
 }

@@ -32,7 +32,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
     IOmniRegistrar registrar_,
-    uint256[] memory coinIds
+    uint256[] calldata coinIds
   ) public initializer {
     __OmniRegistrarController_init(token_, domainPrice_, tokenPrice_, registrar_, coinIds);
   }
@@ -42,7 +42,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
     IOmniRegistrar registrar_,
-    uint256[] memory coinIds
+    uint256[] calldata coinIds
   ) internal onlyInitializing {
     __OmniRegistrarController_init_unchained(token_, domainPrice_, tokenPrice_, registrar_, coinIds);
     __AccessControl_init();
@@ -53,7 +53,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
     IOmniRegistrar registrar_,
-    uint256[] memory coinIds
+    uint256[] calldata coinIds
   ) internal onlyInitializing {
     _token = token_;
     _domainPrice = domainPrice_;
@@ -65,25 +65,25 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-  function available(string memory tld) public view returns (bool) {
+  function available(string calldata tld) public view returns (bool) {
     return _registrar.available(bytes(tld)) && _registrar.controllerApproved(keccak256(bytes(tld)), address(this));
   }
 
-  function available(string memory domain, string memory tld) public view returns (bool) {
+  function available(string calldata domain, string calldata tld) public view returns (bool) {
     return valid(domain, tld) && _registrar.available(bytes(domain), bytes(tld));
   }
 
   function price(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     uint256 durations
   ) public view returns (uint256) {
     return _domainPrice.price(bytes(domain), keccak256(bytes(tld)), durations);
   }
 
   function commit(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     address owner,
     uint256 durations
   ) public {
@@ -95,8 +95,8 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function makeCommitment(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     address owner,
     uint256 durations
   ) public view returns (bytes32) {
@@ -105,8 +105,8 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function _consumeCommitment(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     uint256 durations,
     bytes32 commitment
   ) internal {
@@ -118,8 +118,8 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function register(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     address owner,
     uint256 durations,
     bytes32 commitment
@@ -137,8 +137,8 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function renew(
-    string memory domain,
-    string memory tld,
+    string calldata domain,
+    string calldata tld,
     uint256 durations
   ) public {
     // The durations must be multiple of 365 days

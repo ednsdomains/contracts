@@ -5,27 +5,36 @@ interface INFTResolver {
   event SetNFT(bytes fqdn, bytes host, bytes domain, bytes tld, uint256 chainId, address contractAddress, uint256 tokenId);
 
   struct NFT {
-    address contractAddress;
+    address contract_;
     uint256 tokenId;
   }
 
   function setNFT(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 chainId,
-    address contractAddress,
+    address contract_,
+    uint256 tokenId
+  ) external;
+
+  function setNFT_SYNC(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 chainId,
+    address contract_,
     uint256 tokenId
   ) external;
 
   function nft(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 chainId
-  ) external view returns (NFT memory);
+  ) external view returns (NFT calldata);
 
-  function nft(string memory fqdn, uint256 chainId) external view returns (NFT memory);
+  function nft(bytes calldata fqdn, uint256 chainId) external view returns (NFT memory);
 
   function nft(bytes32 fqdn, uint256 chainId) external view returns (NFT memory);
 }

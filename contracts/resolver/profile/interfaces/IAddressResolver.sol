@@ -2,24 +2,32 @@
 pragma solidity ^0.8.9;
 
 interface IAddressResolver {
-  event SetAddress(bytes fqdn, bytes host, bytes domain, bytes tld, uint256 coin, bytes address_);
+  event SetAddress(bytes host, bytes domain, bytes tld, uint256 coin, bytes address_);
 
   function setAddr(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 coin,
-    string memory address_
+    bytes calldata address_
+  ) external;
+
+  function setAddr_SYNC(
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 coin,
+    bytes calldata address_
   ) external;
 
   function addr(
-    string memory host,
-    string memory domain,
-    string memory tld,
+    bytes calldata host,
+    bytes calldata domain,
+    bytes calldata tld,
     uint256 coin
   ) external view returns (bytes memory);
 
-  function addr(string memory fqdn, uint256 coin) external view returns (bytes memory);
+  function addr(bytes calldata fqdn, uint256 coin) external view returns (bytes memory);
 
   function addr(bytes32 fqdn, uint256 coin) external view returns (bytes memory);
 }
