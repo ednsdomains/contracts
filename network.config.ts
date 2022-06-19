@@ -15,6 +15,18 @@ export enum Network {
   ARBITRUM_RINKEBY = 421611,
 }
 
+export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM];
+
+export const Testnets = [
+  Network.RINKEBY,
+  Network.BNB_CHAIN_TESTNET,
+  Network.POLYGON_MUMBAI,
+  Network.AVALANCHE_FUJI,
+  Network.FANTOM_TESTNET,
+  Network.OPTIMISM_KOVAN,
+  Network.ARBITRUM_RINKEBY,
+];
+
 export interface INetworkConfig {
   [chainId: number]: {
     chainId: number;
@@ -38,10 +50,12 @@ export interface INetworkConfig {
     contract?: {
       Registry: string;
       PublicResolver: string;
+      PublicResolverSynchronizer: string;
       SingletonRegistrar: string;
       SingletonRegistrarController: string;
       OmniRegistrar: string;
       OmniRegistrarController: string;
+      omniRegistrarSynchronizer: string;
       Root: string;
       DomainPriceOracle: string;
       TokenPriceOracle: string;
@@ -50,25 +64,73 @@ export interface INetworkConfig {
   };
 }
 
-const config: INetworkConfig = {
-  [Network.ETHEREUM]: {
-    chainId: 1,
-    name: "Ethereum",
-    symbol: "ETH",
-    url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    layerzero: {
+export interface IConfig {
+  network: INetworkConfig;
+}
+
+const config: IConfig = {
+  network: {
+    [Network.ETHEREUM]: {
       chainId: 1,
-      endpoint: {
-        address: "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
+      name: "Ethereum",
+      symbol: "ETH",
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      layerzero: {
+        chainId: 1,
+        endpoint: {
+          address: "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
+        },
+      },
+      chainlink: {
+        token: {
+          name: "ChainLink Token",
+          symbol: "LINK",
+          decimals: 18,
+          address: "0x514910771af9ca656af840dff83e8264ecf986ca",
+        },
       },
     },
-    chainlink: {
-      token: {
-        name: "ChainLink Token",
-        symbol: "LINK",
-        decimals: 18,
-        address: "0x514910771af9ca656af840dff83e8264ecf986ca",
+    [Network.RINKEBY]: {
+      chainId: 4,
+      name: "Ethereum Rinkeby",
+      symbol: "rETH",
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      layerzero: {
+        chainId: 10001,
+        endpoint: {
+          address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
+        },
+      },
+      chainlink: {
+        token: {
+          name: "ChainLink Token",
+          symbol: "LINK",
+          decimals: 18,
+          address: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709",
+        },
+      },
+    },
+    [Network.BNB_CHAIN]: {
+      chainId: 56,
+      name: "BNB Chain",
+      symbol: "BNB",
+      url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      layerzero: {
+        chainId: 2,
+        endpoint: {
+          address: "0x3c2269811836af69497E5F486A85D7316753cf62",
+        },
+      },
+      chainlink: {
+        token: {
+          name: "ChainLink Token",
+          symbol: "LINK",
+          decimals: 18,
+          address: "0x404460c6a5ede2d891e8297795264fde62adbb75",
+        },
       },
     },
   },
 };
+
+export default config;
