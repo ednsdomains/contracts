@@ -61,11 +61,11 @@ describe("Omni Registrar: ", function () {
         rinkebysynchronizer.setRegistrar(omniRinkeby.address)
         binancesynchronizer.setRegistrar(omniBinance.address)
 // internal bookkeeping for endpoints (not part of a real deploy, just for this test)
-        lzEndPointRinkeby.setDestLzEndpoint(omniBinance.address,lzEndPointBinance.address)
-        lzEndPointRinkeby.setDestLzEndpoint(omniRinkeby.address,lzEndPointRinkeby.address)
+        lzEndPointRinkeby.setDestLzEndpoint(binancesynchronizer.address,lzEndPointBinance.address)
+        lzEndPointBinance.setDestLzEndpoint(rinkebysynchronizer.address,lzEndPointRinkeby.address)
 //------  setTrustedRemote(s) -------------------------------------------------------
-        await binancesynchronizer.setTrustedRemote(rinkebyChainID,lzEndPointRinkeby.address)
-        await rinkebysynchronizer.setTrustedRemote(binanceChainID,lzEndPointBinance.address)
+        await binancesynchronizer.setTrustedRemote(rinkebyChainID,rinkebysynchronizer.address)
+        await rinkebysynchronizer.setTrustedRemote(binanceChainID,binancesynchronizer.address)
 //Set Controller Role
         await omniBinance.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ROOT_ROLE")), addr1.address);
         await omniBinance.setControllerApproval(ethers.utils.toUtf8Bytes(TLD),addr1.address,true)
@@ -77,9 +77,9 @@ describe("Omni Registrar: ", function () {
         await Binregistry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("REGISTRAR_ROLE")), addr1.address);
     })
     it("sync Suc",async function(){
-        // const expirtDate = new Date();
-        // expirtDate.setMonth(expirtDate.getMonth() + 1);
-        // await omniBinance.register(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr1.address,Math.floor( expirtDate.getTime() / 1000))
+        const expirtDate = new Date();
+        expirtDate.setMonth(expirtDate.getMonth() + 1);
+        await omniBinance.register(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr1.address,Math.floor( expirtDate.getTime() / 1000))
         // expect(await omniBinance["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
         // expect(await omniRinkeby["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
     })
