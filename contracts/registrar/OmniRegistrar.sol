@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 import "./BaseRegistrar.sol";
 import "./interfaces/IOmniRegistrarSynchronizer.sol";
-
+import "hardhat/console.sol";
 
 contract OmniRegistrar is BaseRegistrar {
   IOmniRegistrarSynchronizer private _synchronizer;
@@ -24,7 +24,7 @@ contract OmniRegistrar is BaseRegistrar {
   }
 
   function available(bytes calldata domain, bytes calldata tld) public view override returns (bool) {
-    return super.available(domain, tld) && _registry.omni(keccak256(tld));
+    return super.available(domain,tld) && _registry.omni(keccak256(tld));
   }
 
   modifier onlySynchronizer() {
@@ -39,6 +39,7 @@ contract OmniRegistrar is BaseRegistrar {
     uint256 durations
   ) external onlyController(keccak256(tld)) {
     require(available(domain,tld),"Domain/TLD not available");
+    console.log(owner);
     _register(domain, tld, owner, durations);
     _synchronizer.sync(abi.encodeWithSignature("register_SYNC(bytes, bytes, address, uint256)", domain, tld, owner, durations));
   }
@@ -66,7 +67,7 @@ contract OmniRegistrar is BaseRegistrar {
     bytes calldata tld,
     uint256 durations
   ) external onlySynchronizer {
-    _renew(domain, tld, durations);
+    _renew(domain, tld,durations);
   }
 
   function reclaim(

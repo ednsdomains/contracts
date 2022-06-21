@@ -60,6 +60,8 @@ describe("Omni Registrar: ", function () {
 
         rinkebysynchronizer.setRegistrar(omniRinkeby.address)
         binancesynchronizer.setRegistrar(omniBinance.address)
+
+        
 // internal bookkeeping for endpoints (not part of a real deploy, just for this test)
         lzEndPointRinkeby.setDestLzEndpoint(binancesynchronizer.address,lzEndPointBinance.address)
         lzEndPointBinance.setDestLzEndpoint(rinkebysynchronizer.address,lzEndPointRinkeby.address)
@@ -75,12 +77,21 @@ describe("Omni Registrar: ", function () {
 
         await Binregistry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("REGISTRAR_ROLE")), omniBinance.address);
         await Binregistry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("REGISTRAR_ROLE")), addr1.address);
+        console.log("omniRinkeby",omniRinkeby.address)
+        // console.log("omniBinance",omniBinance.address)
+        // console.log("rinkebysynchronizer",rinkebysynchronizer.address)
+        // console.log("binancesynchronizer",binancesynchronizer.address)
+        // console.log("lzEndPointBinance",lzEndPointBinance.address)
+        // console.log("lzEndPointRinkeby",lzEndPointRinkeby.address)
+        // console.log("add1",addr1.address)
     })
     it("sync Suc",async function(){
+
+        
         const expirtDate = new Date();
         expirtDate.setMonth(expirtDate.getMonth() + 1);
         await omniBinance.register(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr1.address,Math.floor( expirtDate.getTime() / 1000))
-        // expect(await omniBinance["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
+        expect(await omniBinance["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
         // expect(await omniRinkeby["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
     })
     it("FK",async function(){
