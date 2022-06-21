@@ -1,12 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-
 import "./BaseRegistrar.sol";
 import "./interfaces/IOmniRegistrarSynchronizer.sol";
 
+
 contract OmniRegistrar is BaseRegistrar {
   IOmniRegistrarSynchronizer private _synchronizer;
-
   function initialize(IRegistry registry_, IOmniRegistrarSynchronizer synchronizer_) public initializer {
     __BaseRegistrar_init(registry_);
     __OmniRegistrar_init(synchronizer_);
@@ -39,6 +38,7 @@ contract OmniRegistrar is BaseRegistrar {
     address owner,
     uint256 durations
   ) external onlyController(keccak256(tld)) {
+    require(available(domain,tld),"Domain/TLD not available");
     _register(domain, tld, owner, durations);
     _synchronizer.sync(abi.encodeWithSignature("register_SYNC(bytes, bytes, address, uint256)", domain, tld, owner, durations));
   }

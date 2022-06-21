@@ -15,10 +15,13 @@ describe("Resolver", function () {
     [addr1, addr2] = await ethers.getSigners();
     await registry.initialize();
 
+    const Synchronizer = await ethers.getContractFactory("Synchronizer");
+    const synchronizer = await Synchronizer.deploy();
+
     const Resolver = await ethers.getContractFactory("PublicResolver");
     resolver = await Resolver.deploy();
     await resolver.deployed();
-    await resolver.initialize(registry.address);
+    await resolver.initialize(registry.address,synchronizer.address);
   });
 
   it("Resolver init", async function () {

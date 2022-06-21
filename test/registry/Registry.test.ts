@@ -57,13 +57,13 @@ describe("Registry", function () {
 
       expect(await registry["exists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD))), "TLD Exist").to.equal(false);
       await registry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ROOT_ROLE")), addr1.address);
-      await registry["setRecord(string,address,address,bool,bool)"](TLD, addr1.address, resolver.address, true, false);
+      await registry["setRecord(bytes,address,address,bool,bool)"](ethers.utils.toUtf8Bytes(TLD),addr1.address,resolver.address,false,true);
       expect(await registry["exists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD))), "TLD Not Exist").to.equal(true);
     });
     describe("TLD Management", async function () {
       beforeEach(async function () {
         await registry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ROOT_ROLE")), addr1.address);
-        await registry["setRecord(string,address,address,bool,bool)"](TLD, addr1.address, resolver.address, false, false);
+        await registry["setRecord(bytes,address,address,bool,bool)"](ethers.utils.toUtf8Bytes(TLD),addr1.address,resolver.address,false,true);
       });
       it("TLD EXIST", async function () {
         expect(await registry["exists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(true);
@@ -74,7 +74,7 @@ describe("Registry", function () {
         expect(await registry.enable(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(true);
       });
       it("TLD OMNI", async function () {
-        expect(await registry.omni(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(false);
+        expect(await registry.omni(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(true);
       });
       it("TLD Set Resolver", async function () {
         expect(await registry["resolver(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(resolver.address);
@@ -96,7 +96,7 @@ describe("Registry", function () {
       // const tLDresolver = await TLDResolver.deploy();
       // await tLDresolver.deployed();
       await registry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ROOT_ROLE")), addr1.address);
-      await registry["setRecord(string,address,address,bool,bool)"](TLD, addr1.address, resolver.address, true, false);
+      await registry["setRecord(bytes,address,address,bool,bool)"](ethers.utils.toUtf8Bytes(TLD),addr1.address,resolver.address,false,true);
       await registry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("REGISTRAR_ROLE")), addr1.address);
     });
 
@@ -110,7 +110,7 @@ describe("Registry", function () {
       ).to.equal(false);
       const expirtDate = new Date();
       expirtDate.setMonth(expirtDate.getMonth() + 1);
-      await registry["setRecord(string,string,address,address,uint256)"](DOMAIN, TLD, addr2.address, resolver.address, expirtDate.getTime());
+      await registry["setRecord(bytes,bytes,address,address,uint256)"](ethers.utils.toUtf8Bytes(DOMAIN),ethers.utils.toUtf8Bytes(TLD),addr1.address,resolver.address, Math.floor(expirtDate.getTime() / 1000));
       expect(
         await registry["exists(bytes32,bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(DOMAIN)), ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD))),
         "Domain Not Exist",
@@ -124,7 +124,7 @@ describe("Registry", function () {
         // await domainResolver.deployed();
         const expirtDate = new Date();
         expirtDate.setMonth(expirtDate.getMonth() + 1);
-        await registry["setRecord(string,string,address,address,uint256)"](DOMAIN, TLD, addr2.address, resolver.address, expirtDate.getTime());
+        await registry["setRecord(bytes,address,address,bool,bool)"](ethers.utils.toUtf8Bytes(TLD),addr1.address,resolver.address,false,true);
       });
       ///TODO
     });

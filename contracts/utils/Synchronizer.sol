@@ -5,7 +5,7 @@ import "./interfaces/ISynchronizer.sol";
 import "../layerzero/NonBlockingLayerZeroApp.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-abstract contract Synchronizer is ISynchronizer, NonBlockingLayerZeroApp, AccessControlUpgradeable {
+ contract Synchronizer is ISynchronizer, NonBlockingLayerZeroApp, AccessControlUpgradeable {
   event TransactionIn(uint16 srcChainId, address srcAddress, uint64 nonce);
   event Fulfilled(bytes32 reqId);
   event Callback(uint16 dstChainId, bytes32 reqId);
@@ -45,6 +45,7 @@ abstract contract Synchronizer is ISynchronizer, NonBlockingLayerZeroApp, Access
     __Synchronizer_init_unchained(chainId_, chainIds_);
     __NonBlockingLayerZeroApp_init(_lzEndpoint);
     __AccessControl_init();
+    _transferOwnership(_msgSender());
   }
 
   function __Synchronizer_init_unchained(uint16 chainId_, uint16[] memory chainIds_) internal onlyInitializing {
