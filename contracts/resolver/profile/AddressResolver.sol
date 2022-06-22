@@ -15,7 +15,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     bytes calldata address_
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
     _setAddress(host, domain, tld, coin, address_);
-    if (_registry.omni(keccak256(tld))) _synchronizer.sync(abi.encodeWithSignature("setAddr_SYNC(bytes, bytes, bytes, uint256, bytes)", host, domain, tld, coin, address_));
+    if (_registry.omni(keccak256(tld))) _synchronizer.sync(abi.encodeWithSignature("setAddr_SYNC(bytes,bytes,bytes,uint256,bytes)", host, domain, tld, coin, address_));
   }
 
   function setAddr_SYNC(

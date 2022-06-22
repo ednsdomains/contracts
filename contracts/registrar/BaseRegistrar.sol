@@ -17,9 +17,6 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   event DomainRenewed(bytes domain, bytes tld, uint256 expiry);
   event DomainReclaimed(bytes domain, bytes tld, address owner);
   event SetController(bytes tld, address controller, bool approved);
-  // future preparing for adopting LayerZero
-  // uint8 public immutable chainId; // The current chain ID in LZ
-  // uint8 public immutable chainIds; // The list of chain IDs in LZ
 
   bytes internal constant DOT = bytes(".");
 

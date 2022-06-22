@@ -17,7 +17,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
     _setNFT(host, domain, tld, chainId, contract_, tokenId);
     if (_registry.omni(keccak256(tld))) {
-      _synchronizer.sync(abi.encodeWithSignature("setNFT_SYNC(bytes, bytes, bytes, uint256, address, uint256)", host, domain, tld, chainId, contract_, tokenId));
+      _synchronizer.sync(abi.encodeWithSignature("setNFT_SYNC(bytes,bytes,bytes,uint256,address,uint256)", host, domain, tld, chainId, contract_, tokenId));
     }
   }
 

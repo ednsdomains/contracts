@@ -14,7 +14,7 @@ abstract contract ReverseResolver is IReverseResolver, BaseResolver {
     bytes calldata address_
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
     _setReverseRecord(host, domain, tld, address_);
-    if (_registry.omni(keccak256(tld))) _synchronizer.sync(abi.encodeWithSignature("setReverseRecord_SYNC(bytes, bytes, bytes, bytes)", host, domain, tld, address_));
+    if (_registry.omni(keccak256(tld))) _synchronizer.sync(abi.encodeWithSignature("setReverseRecord_SYNC(bytes,bytes,bytes,bytes)", host, domain, tld, address_));
   }
 
   function setReverseRecord_SYNC(

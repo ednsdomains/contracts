@@ -1,57 +1,59 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.9;
 
+import "./interfaces/ILayerZeroEndpoint.sol";
+import "./interfaces/ILayerZeroApp.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./ILayerZeroReceiver.sol";
-import "./ILayerZeroUserApplicationConfig.sol";
-import "./ILayerZeroEndpoint.sol";
 
-/*
- * a generic LzReceiver implementation
- */
-abstract contract LayerZeroApp is OwnableUpgradeable, ILayerZeroReceiver, ILayerZeroUserApplicationConfig {
+abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
   ILayerZeroEndpoint public lzEndpoint;
 
   mapping(uint16 => bytes) public trustedRemoteLookup;
+  mapping(uint16 => mapping(bytes => mapping(uint64 => bytes32))) public failedMessages;
 
   event SetTrustedRemote(uint16 _srcChainId, bytes _srcAddress);
-
-  function _initialize(address _endpoint) public virtual initializer {
-    __LayerZeroApp_init(_endpoint);
-  }
+  event MessageFailed(uint16 _srcChainId, bytes _srcAddress, uint64 _nonce, bytes _payload);
 
   function __LayerZeroApp_init(address _endpoint) internal onlyInitializing {
     __LayerZeroApp_init_unchained(_endpoint);
   }
 
   function __LayerZeroApp_init_unchained(address _endpoint) internal onlyInitializing {
+    __Ownable_init_unchained();
     lzEndpoint = ILayerZeroEndpoint(_endpoint);
   }
 
   function lzReceive(
     uint16 _srcChainId,
-    bytes memory _srcAddress,
+    bytes calldata _srcAddress,
     uint64 _nonce,
-    bytes memory _payload
+    bytes calldata _payload
   ) external virtual override {
-    // lzReceive must be called by the endpoint for security
-    require(_msgSender() == address(lzEndpoint), "LzApp: invalid endpoint caller");
-
+    require(_msgSender() == address(lzEndpoint), "ONLY_ENDPOINT");
     bytes memory trustedRemote = trustedRemoteLookup[_srcChainId];
-    // if will still block the message pathway from (srcChainId, srcAddress). should not receive message from untrusted remote.
-    require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "LzApp: invalid source sending contract");
-
-    _blockingLzReceive(_srcChainId, _srcAddress, _nonce, _payload);
+    require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "ONLY_TRUST_REMOTE");
+    try this.tryLzReceive(_srcChainId, _srcAddress, _nonce, _payload) {} catch {
+      failedMessages[_srcChainId][_srcAddress][_nonce] = keccak256(_payload);
+      emit MessageFailed(_srcChainId, _srcAddress, _nonce, _payload);
+    }
   }
 
-  // abstract function - the default behaviour of LayerZero is blocking. See: NonblockingLzApp if you dont need to enforce ordered messaging
-  function _blockingLzReceive(
+  function tryLzReceive(
     uint16 _srcChainId,
-    bytes memory _srcAddress,
+    bytes calldata _srcAddress,
     uint64 _nonce,
-    bytes memory _payload
-  ) internal virtual;
+    bytes calldata _payload
+  ) external {
+    require(_msgSender() == address(this), "ONLY_SELF");
+    _lzReceive(_srcChainId, _srcAddress, _nonce, _payload);
+  }
+
+  function _lzReceive(
+    uint16 _srcChainId,
+    bytes calldata _srcAddress,
+    uint64 _nonce,
+    bytes calldata _payload
+  ) internal virtual {}
 
   function _lzSend(
     uint16 _dstChainId,
@@ -61,7 +63,7 @@ abstract contract LayerZeroApp is OwnableUpgradeable, ILayerZeroReceiver, ILayer
     bytes memory _adapterParams
   ) internal virtual {
     bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
-    require(trustedRemote.length != 0, "LzApp: destination chain is not a trusted source");
+    require(trustedRemote.length != 0, "NOT_TRUST_REMOTE");
     lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
   }
 

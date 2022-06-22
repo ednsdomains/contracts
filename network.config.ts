@@ -130,6 +130,26 @@ const config: IConfig = {
         },
       },
     },
+    [Network.BNB_CHAIN_TESTNET]: {
+      chainId: 97,
+      name: "BNB Chain Testnet",
+      symbol: "tBNB",
+      url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      layerzero: {
+        chainId: 10002,
+        endpoint: {
+          address: "0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1",
+        },
+      },
+      chainlink: {
+        token: {
+          name: "ChainLink Token",
+          symbol: "LINK",
+          decimals: 18,
+          address: "0x84b9b910527ad5c03a9ca831909e21e236ea7b06",
+        },
+      },
+    },
   },
 };
 

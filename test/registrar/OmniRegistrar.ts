@@ -33,7 +33,7 @@ describe("Omni Registrar: ", function () {
         await Binregistry["setRecord(bytes,address,address,bool,bool)"](ethers.utils.toUtf8Bytes(TLD),addr1.address,resolver.address,false,true);
 
         OmniRegistrar = await ethers.getContractFactory("OmniRegistrar");
-        LZEndpointMock = await ethers.getContractFactory("LayerZeroEndpointMock")
+          = await ethers.getContractFactory("LayerZeroEndpointMock")
         const OmniRegistrarSynchronizer = await ethers.getContractFactory("OmniRegistrarSynchronizer")
         const rinkebysynchronizer = await OmniRegistrarSynchronizer.deploy()
         const binancesynchronizer = await OmniRegistrarSynchronizer.deploy()
@@ -46,10 +46,6 @@ describe("Omni Registrar: ", function () {
         rinkebysynchronizer.initialize(lzEndPointRinkeby.address,rinkebyChainID,[rinkebyChainID,binanceChainID])
         binancesynchronizer.initialize(lzEndPointBinance.address,binanceChainID,[rinkebyChainID,binanceChainID])
 
-
-
-
-
  //------  deploy: base & other chain  -------------------------------------------------------
         omniRinkeby = await OmniRegistrar.deploy()
         await omniRinkeby.deployed()
@@ -60,7 +56,6 @@ describe("Omni Registrar: ", function () {
 
         rinkebysynchronizer.setRegistrar(omniRinkeby.address)
         binancesynchronizer.setRegistrar(omniBinance.address)
-
 
 // internal bookkeeping for endpoints (not part of a real deploy, just for this test)
         lzEndPointRinkeby.setDestLzEndpoint(binancesynchronizer.address,lzEndPointBinance.address)
@@ -91,6 +86,5 @@ describe("Omni Registrar: ", function () {
     // it("FK",async function(){
     //     expect(1).to.equal(1)
     // })
-
 
 })

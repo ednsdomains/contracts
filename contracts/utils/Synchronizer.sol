@@ -1,12 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "hardhat/console.sol";
 import "./interfaces/ISynchronizer.sol";
-import "../layerzero/NonBlockingLayerZeroApp.sol";
+import "../layerzero/LayerZeroApp.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
- contract Synchronizer is ISynchronizer, NonBlockingLayerZeroApp, AccessControlUpgradeable {
+contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
   event TransactionIn(uint16 srcChainId, address srcAddress, uint64 nonce);
   event Fulfilled(bytes32 reqId);
   event Callback(uint16 dstChainId, bytes32 reqId);
@@ -38,15 +37,19 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
     _;
   }
 
+  modifier onlySelf() {
+    require(_msgSender() == address(this), "ONLY_SELF");
+    _;
+  }
+
   function __Synchronizer_init(
     uint16 chainId_,
     uint16[] memory chainIds_,
     address _lzEndpoint
   ) internal onlyInitializing {
     __Synchronizer_init_unchained(chainId_, chainIds_);
-    __NonBlockingLayerZeroApp_init(_lzEndpoint);
+    __LayerZeroApp_init(_lzEndpoint);
     __AccessControl_init();
-    _transferOwnership(_msgSender());
   }
 
   function __Synchronizer_init_unchained(uint16 chainId_, uint16[] memory chainIds_) internal onlyInitializing {
@@ -66,64 +69,34 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
     return _history[reqId] == 0;
   }
 
-  function sync(bytes calldata payload) external onlyTarget {
+  function sync(bytes memory payload) external onlyTarget {
     _sync(payload);
   }
 
-//  function _sync(bytes calldata payload) internal returns (bytes32) {
-//    require(_target != address(0), "TARGET_NOT_SET");
-//      console.log("ABI at _sync%s",string(payload));
-//    // Create a unique request ID by composite the block number, the current timestamp, and the entire payload by hashing it
-//    bytes32 _reqId = keccak256(abi.encodePacked(block.number, block.timestamp, payload));
-//    bytes memory payload_ = abi.encodePacked(_reqId, payload);
-//    // Set the request ID in the requests record history
-//    _history[_reqId] = block.timestamp;
-//    uint64[] memory _nonces = new uint64[](chainIds.length);
-//    // Start looping through the chains
-//    for (uint256 i = 0; i < chainIds.length; i++) {
-//      // Ensure the transaction will not send again to itself
-//      if (chainIds[i] != chainId) {
-//        _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), "");
-//        // Collect the nonce
-//        uint64 nonce = lzEndpoint.getOutboundNonce(chainIds[i], address(this));
-//        _nonces[i] = nonce;
-//        // Record the fulfillment state
-//        _reqs[_reqId][chainIds[i]] = false;
-//      } else {
-//        _reqs[_reqId][chainIds[i]] = true;
-//      }
-//    }
-//    emit Synchronize(_msgSender(), _reqId, _nonces);
-//    return _reqId;
-//  }
-     function _sync(bytes calldata payload) internal returns (bytes32) {
-         require(_target != address(0), "TARGET_NOT_SET");
-         console.log("ABI at _sync%s",string(payload));
-         // Create a unique request ID by composite the block number, the current timestamp, and the entire payload by hashing it
-         bytes32 _reqId = keccak256(abi.encodePacked(block.number, block.timestamp, payload));
-         console.logBytes32(_reqId);
-         bytes memory payload_ = abi.encodePacked(_reqId, payload);
-         console.log("payload_ at _sync %s",string(payload_));
-         // Set the request ID in the requests record history
-         _history[_reqId] = block.timestamp;
-         uint64[] memory _nonces = new uint64[](chainIds.length);
-         // Start looping through the chains
-         for (uint256 i = 0; i < chainIds.length; i++) {
-             // Ensure the transaction will not send again to itself
-             if (chainIds[i] != chainId) {
-                 _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), "");
-                 // Collect the nonce
-                 uint64 nonce = lzEndpoint.getOutboundNonce(chainIds[i], address(this));
-                 _nonces[i] = nonce;
-                 // Record the fulfillment state
-                 _reqs[_reqId][chainIds[i]] = false;
-             } else {
-                 _reqs[_reqId][chainIds[i]] = true;
-             }
-         }
-         emit Synchronize(_msgSender(), _reqId, _nonces);
-         return _reqId;
-     }
+  function _sync(bytes memory payload) internal returns (bytes32) {
+    // Create a unique request ID by composite the block number, the current timestamp, and the entire payload by hashing it
+    bytes32 _reqId = keccak256(abi.encodePacked(block.number, block.timestamp, payload));
+    bytes memory payload_ = abi.encodePacked(_reqId, payload);
+    // Set the request ID in the requests record history
+    _history[_reqId] = block.timestamp;
+    uint64[] memory _nonces = new uint64[](chainIds.length);
+    // Start looping through the chains
+    for (uint256 i = 0; i < chainIds.length; i++) {
+      // Ensure the transaction will not send again to itself
+      if (chainIds[i] != chainId) {
+        _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), "");
+        // Collect the nonce
+        uint64 nonce = lzEndpoint.getOutboundNonce(chainIds[i], address(this));
+        _nonces[i] = nonce;
+        // Record the fulfillment state
+        _reqs[_reqId][chainIds[i]] = false;
+      } else {
+        _reqs[_reqId][chainIds[i]] = true;
+      }
+    }
+    emit Synchronize(_msgSender(), _reqId, _nonces);
+    return _reqId;
+  }
 
   function estimateSyncFee(bytes memory payload) external view returns (uint256) {
     uint256 fee_ = 0;
@@ -138,8 +111,12 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 
   function _callback(uint16 dstChainId, bytes32 reqId) internal {
     emit Callback(dstChainId, reqId);
-    bytes memory payload = abi.encodeWithSignature("_fulfill(uint16, bytes32)", chainId, reqId);
+    bytes memory payload = abi.encodeWithSignature("fulfill_SELF(uint16,bytes32)", chainId, reqId);
     _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "");
+  }
+
+  function fulfill_SELF(uint16 srcChainId, bytes32 reqId) external onlySelf {
+    _fulfill(srcChainId, reqId);
   }
 
   function _fulfill(uint16 srcChainId, bytes32 reqId) internal {
@@ -152,34 +129,20 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
     return _reqs[reqId][chainId_];
   }
 
-  function _nonblockingLzReceive(
+  function _lzReceive(
     uint16 srcChainId,
     bytes memory srcAddress, // srcAddress
     uint64 nonce,
     bytes calldata payload_
   ) internal virtual override {
-
-    address _srcAddress;
-    assembly {
-      _srcAddress := mload(add(srcAddress, 20))
-    }
-      console.log("payload_ at _nonblockingLzReceive %s",string(payload_));
-    emit TransactionIn(srcChainId, _srcAddress, nonce);
+    // emit TransactionIn(srcChainId, _srcAddress, nonce);
     bytes32 reqId = bytes32(payload_[0:32]);
     bytes4 sig = bytes4(payload_[32:36]);
-    bytes calldata payload = payload_[259:];
-//      console.logBytes((payload_));
-
-//      console.logBytes(payload_);
-    if (sig == bytes4(keccak256("_fulfill(uint16, bytes32)")) || _target == address(0)) {
-
-      address(this).call(payload);
+    bytes calldata payload = payload_[32:];
+    if (sig == bytes4(keccak256("fulfill_SELF(uint16,bytes32)")) || _target == address(0)) {
+      (bool success, bytes memory result) = address(this).call(payload);
     } else {
-        console.logBytes(payload_);
-        console.logBytes(payload);
-      console.log("Trying to call %s to %s", string(payload), _target);
       (bool success, bytes memory result) = _target.call(payload);
-      console.log("Status:%s",success);
       _callback(srcChainId, reqId);
     }
   }

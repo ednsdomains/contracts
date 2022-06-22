@@ -3,11 +3,11 @@ pragma solidity ^0.8.9;
 
 // import "https://github.com/Arachnid/solidity-bytesutils/blob/master/bytess.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./IRegistry.sol";
+import "hardhat/console.sol";
 
-contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
+contract Registry is IRegistry, AccessControlUpgradeable {
   uint256 public constant GRACE_PERIOD = 30 days;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -93,7 +93,6 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
   function __Registry_init() internal onlyInitializing {
     __Registry_init_unchained();
     __AccessControl_init();
-    __Multicall_init();
     __ERC165_init();
   }
 
@@ -248,11 +247,11 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
   }
 
   function exists(bytes32 tld) public view returns (bool) {
-    return _records[tld].owner != address(0x0);
+    return _records[tld].name.length > 0;
   }
 
   function exists(bytes32 domain, bytes32 tld) public view returns (bool) {
-    return _records[tld].domains[domain].owner != address(0x0);
+    return _records[tld].domains[domain].name.length > 0;
   }
 
   function exists(
@@ -260,7 +259,7 @@ contract Registry is IRegistry, AccessControlUpgradeable, MulticallUpgradeable {
     bytes32 domain,
     bytes32 tld
   ) public view returns (bool) {
-    return abi.encodePacked(_records[tld].domains[domain].hosts[host].name).length > 0;
+    return _records[tld].domains[domain].hosts[host].name.length > 0;
   }
 
   function operator(
