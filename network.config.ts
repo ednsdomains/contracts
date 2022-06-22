@@ -47,6 +47,9 @@ export interface INetworkConfig {
         address: string;
       };
     };
+    slip44: {
+      coinId: number;
+    };
     contract?: {
       Registry: string;
       PublicResolver: string;
@@ -75,6 +78,9 @@ const config: IConfig = {
       name: "Ethereum",
       symbol: "ETH",
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      slip44: {
+        coinId: 60,
+      },
       layerzero: {
         chainId: 1,
         endpoint: {
@@ -95,6 +101,9 @@ const config: IConfig = {
       name: "Ethereum Rinkeby",
       symbol: "rETH",
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      slip44: {
+        coinId: 60,
+      },
       layerzero: {
         chainId: 10001,
         endpoint: {
@@ -115,6 +124,9 @@ const config: IConfig = {
       name: "BNB Chain",
       symbol: "BNB",
       url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      slip44: {
+        coinId: 714,
+      },
       layerzero: {
         chainId: 2,
         endpoint: {
@@ -135,6 +147,9 @@ const config: IConfig = {
       name: "BNB Chain Testnet",
       symbol: "tBNB",
       url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      slip44: {
+        coinId: 714,
+      },
       layerzero: {
         chainId: 10002,
         endpoint: {
