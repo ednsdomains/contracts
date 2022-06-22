@@ -3,7 +3,7 @@
 pragma solidity ^0.8.9;
 
 import "./LayerZeroApp.sol";
-
+import "hardhat/console.sol";
 /*
  * the default LayerZero messaging behaviour is blocking, i.e. any failed message will block the channel
  * this abstract class try-catch all fail messages and store locally for future retry. hence, non-blocking
@@ -51,10 +51,11 @@ abstract contract NonBlockingLayerZeroApp is LayerZeroApp {
     uint16 _srcChainId,
     bytes memory _srcAddress,
     uint64 _nonce,
-    bytes memory _payload
+    bytes calldata _payload
   ) public virtual {
     // only internal transaction
     require(_msgSender() == address(this), "NonblockingLzApp: caller must be LzApp");
+    console.log("nonblockingLzReceive _payload %s",string(_payload));
     _nonblockingLzReceive(_srcChainId, _srcAddress, _nonce, _payload);
   }
 

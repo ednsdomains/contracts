@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { ethers } from "hardhat"
+import { ethers,upgrades } from "hardhat"
 import {OmniRegistrar, PublicResolver, Registry} from "../../typechain";
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 
@@ -79,24 +79,17 @@ describe("Omni Registrar: ", function () {
         await Binregistry.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("REGISTRAR_ROLE")), addr1.address);
         console.log("omniRinkeby",omniRinkeby.address)
         console.log("omniBinance",omniBinance.address)
-        // console.log("rinkebysynchronizer",rinkebysynchronizer.address)
-        // console.log("binancesynchronizer",binancesynchronizer.address)
-        // console.log("lzEndPointBinance",lzEndPointBinance.address)
-        // console.log("lzEndPointRinkeby",lzEndPointRinkeby.address)
-        // console.log("add1",addr1.address)
     })
     it("sync Suc",async function(){
-
-
         const expirtDate = new Date();
         expirtDate.setMonth(expirtDate.getMonth() + 1);
         await omniBinance.register(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr1.address,Math.floor( expirtDate.getTime() / 1000))
         expect(await omniBinance["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
         expect(await omniRinkeby["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
     })
-    it("FK",async function(){
-        expect(1).to.equal(1)
-    })
+    // it("FK",async function(){
+    //     expect(1).to.equal(1)
+    // })
 
 
 })

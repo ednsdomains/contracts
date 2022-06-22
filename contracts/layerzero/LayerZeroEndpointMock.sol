@@ -122,41 +122,40 @@ contract LayerZeroEndpointMock is ILayerZeroEndpoint {
     bytes calldata _payload
   ) external override {
     StoredPayload storage sp = storedPayload[_srcChainId][_srcAddress];
-
     // assert and increment the nonce. no message shuffling
     require(_nonce == ++inboundNonce[_srcChainId][_srcAddress], "LayerZero: wrong nonce");
 
     // queue the following msgs inside of a stack to simulate a successful send on src, but not fully delivered on dst
-    if (sp.payloadHash != bytes32(0)) {
-      QueuedPayload[] storage msgs = msgsToDeliver[_srcChainId][_srcAddress];
-      QueuedPayload memory newMsg = QueuedPayload(_dstAddress, _nonce, _payload);
-
-      // warning, might run into gas issues trying to forward through a bunch of queued msgs
-      // shift all the msgs over so we can treat this like a fifo via array.pop()
-      if (msgs.length > 0) {
-        // extend the array
-        msgs.push(newMsg);
-
-        // shift all the indexes up for pop()
-        for (uint256 i = 0; i < msgs.length - 1; i++) {
-          msgs[i + 1] = msgs[i];
-        }
-
-        // put the newMsg at the bottom of the stack
-        msgs[0] = newMsg;
-      } else {
-        msgs.push(newMsg);
-      }
-    } else if (nextMsgBLocked) {
-      storedPayload[_srcChainId][_srcAddress] = StoredPayload(uint64(_payload.length), _dstAddress, keccak256(_payload));
-      emit PayloadStored(_srcChainId, _srcAddress, _dstAddress, _nonce, _payload, bytes(""));
-      // ensure the next msgs that go through are no longer blocked
-      nextMsgBLocked = false;
-    } else {
+//    if (sp.payloadHash != bytes32(0)) {
+//      QueuedPayload[] storage msgs = msgsToDeliver[_srcChainId][_srcAddress];
+//      QueuedPayload memory newMsg = QueuedPayload(_dstAddress, _nonce, _payload);
+//
+//      // warning, might run into gas issues trying to forward through a bunch of queued msgs
+//      // shift all the msgs over so we can treat this like a fifo via array.pop()
+//      if (msgs.length > 0) {
+//        // extend the array
+//        msgs.push(newMsg);
+//
+//        // shift all the indexes up for pop()
+//        for (uint256 i = 0; i < msgs.length - 1; i++) {
+//          msgs[i + 1] = msgs[i];
+//        }
+//
+//        // put the newMsg at the bottom of the stack
+//        msgs[0] = newMsg;
+//      } else {
+//        msgs.push(newMsg);
+//      }
+//    } else if (nextMsgBLocked) {
+//      storedPayload[_srcChainId][_srcAddress] = StoredPayload(uint64(_payload.length), _dstAddress, keccak256(_payload));
+//      emit PayloadStored(_srcChainId, _srcAddress, _dstAddress, _nonce, _payload, bytes(""));
+//      // ensure the next msgs that go through are no longer blocked
+//      nextMsgBLocked = false;
+//    } else {
       // we ignore the gas limit because this call is made in one tx due to being "same chain"
       // ILayerZeroReceiver(_dstAddress).lzReceive{gas: _gasLimit}(_srcChainId, _srcAddress, _nonce, _payload); // invoke lzReceive
       ILayerZeroReceiver(_dstAddress).lzReceive(_srcChainId, _srcAddress, _nonce, _payload); // invoke lzReceive
-    }
+//    }
   }
 
   // used to simulate messages received get stored as a payload
