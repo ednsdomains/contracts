@@ -101,6 +101,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
          console.log("ABI at _sync%s",string(payload));
          // Create a unique request ID by composite the block number, the current timestamp, and the entire payload by hashing it
          bytes32 _reqId = keccak256(abi.encodePacked(block.number, block.timestamp, payload));
+         console.logBytes32(_reqId);
          bytes memory payload_ = abi.encodePacked(_reqId, payload);
          console.log("payload_ at _sync %s",string(payload_));
          // Set the request ID in the requests record history
@@ -162,15 +163,20 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
     assembly {
       _srcAddress := mload(add(srcAddress, 20))
     }
+      console.log("payload_ at _nonblockingLzReceive %s",string(payload_));
     emit TransactionIn(srcChainId, _srcAddress, nonce);
     bytes32 reqId = bytes32(payload_[0:32]);
     bytes4 sig = bytes4(payload_[32:36]);
-    bytes calldata payload = payload_[32:];
-      console.log("payload_ at _nonblockingLzReceive %s",string(payload_));
+    bytes calldata payload = payload_[259:];
+//      console.logBytes((payload_));
+
+//      console.logBytes(payload_);
     if (sig == bytes4(keccak256("_fulfill(uint16, bytes32)")) || _target == address(0)) {
 
       address(this).call(payload);
     } else {
+        console.logBytes(payload_);
+        console.logBytes(payload);
       console.log("Trying to call %s to %s", string(payload), _target);
       (bool success, bytes memory result) = _target.call(payload);
       console.log("Status:%s",success);

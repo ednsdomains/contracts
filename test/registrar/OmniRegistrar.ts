@@ -2,7 +2,7 @@ import { expect } from "chai"
 import { ethers,upgrades } from "hardhat"
 import {OmniRegistrar, PublicResolver, Registry} from "../../typechain";
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-
+import delay from "delay";
 describe("Omni Registrar: ", function () {
     const rinkebyChainID = 10001;
     const binanceChainID = 10002;
@@ -85,6 +85,7 @@ describe("Omni Registrar: ", function () {
         expirtDate.setMonth(expirtDate.getMonth() + 1);
         await omniBinance.register(ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD),addr1.address,Math.floor( expirtDate.getTime() / 1000))
         expect(await omniBinance["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
+        await delay(8000)
         expect(await omniRinkeby["exists(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(true)
     })
     // it("FK",async function(){

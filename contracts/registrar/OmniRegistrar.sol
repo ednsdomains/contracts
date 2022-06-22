@@ -41,7 +41,7 @@ contract OmniRegistrar is BaseRegistrar {
     require(available(domain,tld),"Domain/TLD not available");
     console.log(owner);
     _register(domain, tld, owner, durations);
-    console.log("ABI at Register %s",string(abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)",domain,tld,owner,durations)));
+    console.logBytes((abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)",domain,tld,owner,durations)));
     _synchronizer.sync(abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)",domain,tld,owner,durations));
   }
 
