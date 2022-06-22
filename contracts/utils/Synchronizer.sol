@@ -129,7 +129,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
     uint64 nonce,
     bytes calldata payload_
   ) internal virtual override {
-     console.log((_target));
+
     address _srcAddress;
     assembly {
       _srcAddress := mload(add(srcAddress, 20))
@@ -139,9 +139,12 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
     bytes4 sig = bytes4(payload_[32:36]);
     bytes calldata payload = payload_[32:];
     if (sig == bytes4(keccak256("_fulfill(uint16, bytes32)")) || _target == address(0)) {
+
       address(this).call(payload);
     } else {
-      _target.call(payload);
+      console.log("Trying to call %s to %s", string(payload), _target);
+      (bool success, bytes memory result) = _target.call(payload);
+      console.log("Status:%s",success);
       _callback(srcChainId, reqId);
     }
   }
