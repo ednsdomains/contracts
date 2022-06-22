@@ -142,12 +142,34 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 
       address(this).call(payload);
     } else {
-      console.log("Trying to call %s to %s", string(payload), _target);
+      console.log("Trying to call %s to %s", string(payload_), _target);
       (bool success, bytes memory result) = _target.call(payload);
       console.log("Status:%s",success);
+        console.log("sig%s",fromCode(sig));
       _callback(srcChainId, reqId);
     }
   }
+     //For Debug sig  Start
+     function toHexDigit(uint8 d) pure internal returns (bytes1) {
+         if (0 <= d && d <= 9) {
+             return bytes1(uint8(bytes1('0')) + d);
+         } else if (10 <= uint8(d) && uint8(d) <= 15) {
+             return bytes1(uint8(bytes1('a')) + d - 10);
+         }
+         revert();
+     }
+
+     function fromCode(bytes4 code) public pure returns (string memory) {
+         bytes memory result = new bytes(10);
+         result[0] = bytes1('0');
+         result[1] = bytes1('x');
+         for (uint i = 0; i < 4; ++i) {
+             result[2 * i + 2] = toHexDigit(uint8(code[i]) / 16);
+             result[2 * i + 3] = toHexDigit(uint8(code[i]) % 16);
+         }
+         return string(result);
+     }
+     //For Debug sig End
 
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
     return interfaceID == type(ISynchronizer).interfaceId || super.supportsInterface(interfaceID);
