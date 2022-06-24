@@ -70,3 +70,5 @@ export const TestnetConfig: {
     endpoint: "0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf",
   },
 };
+
+export const DeployChainIDs = [10012,10002]

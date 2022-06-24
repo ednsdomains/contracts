@@ -10,6 +10,15 @@ import "hardhat-contract-sizer";
 import "solidity-coverage";
 
 dotenv.config();
+const mnemonic: string | undefined = process.env.MNEMONIC;
+if (!mnemonic) {
+  throw new Error("Please set your MNEMONIC in a .env file");
+}
+
+const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
+if (!infuraApiKey) {
+  // throw new Error("Please set your INFURA_API_KEY in a .env file");
+}
 
 // https://hardhat.org/config/
 // https://hardhat.org/guides/compile-contracts/

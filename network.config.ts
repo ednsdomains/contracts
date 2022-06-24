@@ -164,7 +164,31 @@ const config: IConfig = {
           address: "0x84b9b910527ad5c03a9ca831909e21e236ea7b06",
         },
       },
-    },
+    },[Network.FANTOM_TESTNET]:{
+      chainId: 0xfa2,
+      name: "Fantom testnet",
+      symbol: "FTM",
+      url: `https://rpc.testnet.fantom.network/`,
+      slip44: {
+        coinId: 1007,
+      },
+      layerzero: {
+        chainId: 10012,
+        endpoint: {
+          address: "0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf",
+        },
+      },
+      //TODO chainlink
+      chainlink: {
+        token: {
+          name: "ChainLink Token",
+          symbol: "LINK",
+          decimals: 18,
+          address: "0x84b9b910527ad5c03a9ca831909e21e236ea7b06",
+        },
+      },
+
+    }
   },
 };
 
