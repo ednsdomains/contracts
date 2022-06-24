@@ -181,10 +181,10 @@ const config: IConfig = {
       //TODO chainlink
       chainlink: {
         token: {
-          name: "ChainLink Token",
+          name: "ChainLink Token on Fantom",
           symbol: "LINK",
           decimals: 18,
-          address: "0x84b9b910527ad5c03a9ca831909e21e236ea7b06",
+          address: "0xfaFedb041c0DD4fA2Dc0d87a6B0979Ee6FA7af5F",
         },
       },
 
