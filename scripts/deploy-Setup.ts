@@ -108,7 +108,7 @@ async function main(){
         await tokenContract.setTrustedRemote(x.chainId,x.token)
         console.log("tokenContract.setTrustedRemote Done")
 
-        await lzEndpointContract.setDestLzEndpoint(x.omniRegistrarSynchronizer,x.lzEndpoint,{gasLimit:9e9})
+        await lzEndpointContract.setDestLzEndpoint(x.omniRegistrarSynchronizer,x.lzEndpoint,{gasLimit:80000000000})
         console.log("lzEndpointContract.setDestLzEndpoint(x.omniRegistrarSynchronizer,x.lzEndpoint) Done")
         await lzEndpointContract.setDestLzEndpoint(x.publicResolver,x.lzEndpoint)
         console.log("lzEndpointContract.setDestLzEndpoint(x.publicResolver,x.lzEndpoint) Done")
