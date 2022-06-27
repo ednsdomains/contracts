@@ -15,6 +15,7 @@ interface Icontract{
     omniRegistrarController:string
     root:string
     lzEndpoint:string
+    chainId:number
 }
 interface IaddressList{
     [name:string]:Icontract
@@ -34,6 +35,7 @@ const addressList:IaddressList = {
         omniRegistrarController:"0xC9457e8396197fC18ED29C019c5d4447aa238318",
         root:"0xd2DAC5FC057657fc3aFF336501241269FF9857f4",
         lzEndpoint:"0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf",
+        chainId: 10012,
     },
     bnbTestnet:{
         registry:"0xe22dD2607417f07491b86eBFf47f0A2A65341Ce2",
@@ -47,41 +49,78 @@ const addressList:IaddressList = {
         publicResolver :"0xC9457e8396197fC18ED29C019c5d4447aa238318",
         publicResolverSynchronizer: "0x51f35eb5197cAB77E6714F81Ec08937F93459804",
         root :"0x5CD95aaE9c18f2a7Ab959019a13Af5C09FA59a39",
-        lzEndpoint :"0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1"
-    }
+        lzEndpoint :"0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1",
+        chainId: 10002,
+    },
+    // rinkebyTestne:{
+    //     registry:"0xe22dD2607417f07491b86eBFf47f0A2A65341Ce2",
+    //     token :"0xB04Dbe77179D50F2c9c83070FE3d10fD200cCd9A",
+    //     domainPriceOracle: "0xC956f2c72d37D81684Bdd3E4e5AEb4846D6E377f",
+    //     singletonRegistrar: "0xd2DAC5FC057657fc3aFF336501241269FF9857f4",
+    //     singletonRegistrarController: "0xDcA0e019eE773492390302759d9cb1E901c3B5c8",
+    //     omniRegistrar :"0x472F67fF95c890E31169182d8eE8befF2852Bd6c",
+    //     omniRegistrarSynchronizer :"0xd99408604220437550f5524E2e783646BFC3EEE2",
+    //     omniRegistrarController :"0xe8BEADDB649273C8B79BCf5C300f890AcF6C567f",
+    //     publicResolver :"0xC9457e8396197fC18ED29C019c5d4447aa238318",
+    //     publicResolverSynchronizer: "0x51f35eb5197cAB77E6714F81Ec08937F93459804",
+    //     root :"0x5CD95aaE9c18f2a7Ab959019a13Af5C09FA59a39",
+    //     lzEndpoint :"0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1"
+    // }
 }
 
 async function main(){
     const TLD ="test";
-    const othersContractAddress = Object.keys(addressList).filter((key,index)=>{
-        return key != hre.network.name;
+    const othersContractAddress = new Map()
+
+        Object.keys(addressList).filter(name=>name!=hre.network.name).map(m=>{
+        othersContractAddress.set(m,addressList[m])
     })
     let currentContractAddress:Icontract = addressList[hre.network.name]
 
-    console.log(othersContractAddress)
-    console.log(currentContractAddress)
-    // const localLzEndPointAddress = (hre.network.name == "fantomTestnet") ? "0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf" : "0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1"
-    // const getConfig : Record<string, any> = {
-    //     bnbTestnet: NetworkConfig.network[Network.BNB_CHAIN_TESTNET],
-    //     fantomTestnet: NetworkConfig.network[Network.FANTOM_TESTNET],
-    // }
-    // const provider = new hre.ethers.providers.JsonRpcProvider(
-    //     getConfig[hre.network.name].url, {
-    //         chainId: getConfig[hre.network.name].chainId,
-    //         name: getConfig[hre.network.name].name,
-    //     });
-    //
-    // let walletMnemonic = Wallet.fromMnemonic(process.env.MNEMONIC!)
-    // walletMnemonic = walletMnemonic.connect(provider)
-    //
-    // const LzEndpointContract = await ethers.getContractFactory("LayerZeroEndpointMock");
-    // const lzEndpointContract = LzEndpointContract.attach(localLzEndPointAddress)
-    //
-    // await lzEndpointContract.setDestLzEndpoint(contractAddress.omniRegistrarSynchronizer,contractAddress.lzEndpoint)
-    // await lzEndpointContract.setDestLzEndpoint(contractAddress.publicResolver,contractAddress.lzEndpoint)
-    // await lzEndpointContract.setDestLzEndpoint(contractAddress.root,contractAddress.lzEndpoint)
-    //
+    // console.log(othersContractAddress)
+    // console.log(currentContractAddress)
 
+    const getConfig : Record<string, any> = {
+        bnbTestnet: NetworkConfig.network[Network.BNB_CHAIN_TESTNET],
+        fantomTestnet: NetworkConfig.network[Network.FANTOM_TESTNET],
+    }
+    const provider = new hre.ethers.providers.JsonRpcProvider(
+        getConfig[hre.network.name].url, {
+            chainId: getConfig[hre.network.name].chainId,
+            name: getConfig[hre.network.name].name,
+        });
+
+    let walletMnemonic = Wallet.fromMnemonic(process.env.MNEMONIC!)
+    walletMnemonic = walletMnemonic.connect(provider)
+    const LzEndpointContract = await ethers.getContractFactory("LayerZeroEndpointMock",walletMnemonic);
+    const PublicResolverSynchronizer = await ethers.getContractFactory("PublicResolverSynchronizer",walletMnemonic);
+    const OmniRegistrarSynchronizer = await ethers.getContractFactory("OmniRegistrarSynchronizer",walletMnemonic);
+    const Root = await ethers.getContractFactory("Root",walletMnemonic);
+    const TokenContract = await ethers.getContractFactory("Token",walletMnemonic);
+
+    const publicResolverSynchronizer = PublicResolverSynchronizer.attach(currentContractAddress.publicResolverSynchronizer)
+    const lzEndpointContract = LzEndpointContract.attach(currentContractAddress.lzEndpoint)
+    const omniRegistrarSynchronizer = OmniRegistrarSynchronizer.attach(currentContractAddress.omniRegistrarSynchronizer)
+    const root = Root.attach(currentContractAddress.root)
+    const tokenContract = TokenContract.attach(currentContractAddress.token)
+
+    othersContractAddress.forEach(async x=>{
+        await tokenContract.setTrustedRemote(x.chainId,x.token)
+        console.log("tokenContract.setTrustedRemote Done")
+
+        await lzEndpointContract.setDestLzEndpoint(x.omniRegistrarSynchronizer,x.lzEndpoint,{gasLimit:9e9})
+        console.log("lzEndpointContract.setDestLzEndpoint(x.omniRegistrarSynchronizer,x.lzEndpoint) Done")
+        await lzEndpointContract.setDestLzEndpoint(x.publicResolver,x.lzEndpoint)
+        console.log("lzEndpointContract.setDestLzEndpoint(x.publicResolver,x.lzEndpoint) Done")
+        await lzEndpointContract.setDestLzEndpoint(x.root,x.lzEndpoint)
+        console.log("lzEndpointContract.setDestLzEndpoint(x.root,x.lzEndpoint) Done")
+        await publicResolverSynchronizer.setTrustedRemote(x.chainId,x.publicResolverSynchronizer)
+        console.log("publicResolverSynchronizer.setTrustedRemote Done")
+        await omniRegistrarSynchronizer.setTrustedRemote(x.chainId,x.omniRegistrarSynchronizer)
+        console.log("omniRegistrarSynchronizer.setTrustedRemote Done")
+        await root.setTrustedRemote(x.chainId,x.root)
+        console.log("root.setTrustedRemote Done")
+    })
 }
 
 main().catch((error) => {
