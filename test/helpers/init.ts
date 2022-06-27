@@ -55,19 +55,19 @@ export const deployContracts = async (): Promise<IDeployedContractsOutput> => {
   for (const NETWORK of NETWORKS) {
     // LayerZero Endpoint Mock
     const LayerZeroEndpointMockFactory = await ethers.getContractFactory("LayerZeroEndpointMock");
-    const layerZeroEndpointMock = await LayerZeroEndpointMockFactory.deploy(NetworkConfig.network[NETWORK].layerzero.chainId);
+    const layerZeroEndpointMock = await LayerZeroEndpointMockFactory.deploy(NetworkConfig[NETWORK].layerzero.chainId);
     await layerZeroEndpointMock.deployed();
 
     // ERC-20 Token
     const TokenFactory = await ethers.getContractFactory("Token");
-    const _token = await upgrades.deployProxy(TokenFactory, [NetworkConfig.network[NETWORK].layerzero.chainId, layerZeroEndpointMock.address]);
+    const _token = await upgrades.deployProxy(TokenFactory, [NetworkConfig[NETWORK].layerzero.chainId, layerZeroEndpointMock.address]);
     const token = TokenFactory.attach(_token.address);
 
     // Token Price Oracle (Mock)
     const TokenPriceOracleFactory = await ethers.getContractFactory("TokenPriceOracleMock");
     const tokenPriceOracle = await TokenPriceOracleFactory.deploy(
-      NetworkConfig.network[NETWORK].chainlink.token.address,
-      NetworkConfig.network[NETWORK].chainlink.token.address,
+      NetworkConfig[NETWORK].chainlink.token.address,
+      NetworkConfig[NETWORK].chainlink.token.address,
       ethers.utils.keccak256(ethers.utils.toUtf8Bytes("0")),
     );
     await tokenPriceOracle.deployed();
@@ -88,8 +88,8 @@ export const deployContracts = async (): Promise<IDeployedContractsOutput> => {
     const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer");
     const _publicResolverSynchronizer = await upgrades.deployProxy(PublicResolverSynchronizerFactory, [
       layerZeroEndpointMock.address,
-      NetworkConfig.network[NETWORK].layerzero.chainId,
-      NETWORKS.map((NETWORK_) => NetworkConfig.network[NETWORK_].layerzero.chainId),
+      NetworkConfig[NETWORK].layerzero.chainId,
+      NETWORKS.map((NETWORK_) => NetworkConfig[NETWORK_].layerzero.chainId),
     ]);
     await _publicResolverSynchronizer.deployed();
     const publicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(_publicResolverSynchronizer.address);
@@ -122,8 +122,8 @@ export const deployContracts = async (): Promise<IDeployedContractsOutput> => {
     const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer");
     const _omniRegistrarSynchronizer = await upgrades.deployProxy(OmniRegistrarSynchronizerFactory, [
       layerZeroEndpointMock.address,
-      NetworkConfig.network[NETWORK].layerzero.chainId,
-      NETWORKS.map((NETWORK_) => NetworkConfig.network[NETWORK_].layerzero.chainId),
+      NetworkConfig[NETWORK].layerzero.chainId,
+      NETWORKS.map((NETWORK_) => NetworkConfig[NETWORK_].layerzero.chainId),
     ]);
     await _omniRegistrarSynchronizer.deployed();
     const omniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(_omniRegistrarSynchronizer.address);
@@ -153,8 +153,8 @@ export const deployContracts = async (): Promise<IDeployedContractsOutput> => {
       singletonRegistrar.address,
       omniRegistrar.address,
       layerZeroEndpointMock.address,
-      NetworkConfig.network[NETWORK].layerzero.chainId,
-      NETWORKS.map((NETWORK_) => NetworkConfig.network[NETWORK_].layerzero.chainId),
+      NetworkConfig[NETWORK].layerzero.chainId,
+      NETWORKS.map((NETWORK_) => NetworkConfig[NETWORK_].layerzero.chainId),
     ]);
     await _root.deployed();
     const root = RootFactory.attach(_root.address);
@@ -185,7 +185,7 @@ export const setupToken = async (contracts: IDeployedContractsOutput) => {
     // Set Trust Remote
     for (const _NETWORK of NETWORKS) {
       if (_NETWORK !== NETWORK) {
-        await contracts[NETWORK].Token.setTrustedRemote(NetworkConfig.network[_NETWORK].layerzero.chainId, contracts[_NETWORK].Token.address);
+        await contracts[NETWORK].Token.setTrustedRemote(NetworkConfig[_NETWORK].layerzero.chainId, contracts[_NETWORK].Token.address);
       }
     }
   }
@@ -212,10 +212,7 @@ export const setupPublicResolverSynchronizer = async (contracts: IDeployedContra
     // Set Trust Remote
     for (const _NETWORK of NETWORKS) {
       if (_NETWORK !== NETWORK) {
-        await contracts[NETWORK].PublicResolverSynchronizer.setTrustedRemote(
-          NetworkConfig.network[_NETWORK].layerzero.chainId,
-          contracts[_NETWORK].PublicResolverSynchronizer.address,
-        );
+        await contracts[NETWORK].PublicResolverSynchronizer.setTrustedRemote(NetworkConfig[_NETWORK].layerzero.chainId, contracts[_NETWORK].PublicResolverSynchronizer.address);
       }
     }
     // Set the `PublicResolver` address for the `Synchronizer`
@@ -256,10 +253,7 @@ export const setupOmniRegistrarSynchronizer = async (contracts: IDeployedContrac
     // Set Trust Remote
     for (const _NETWORK of NETWORKS) {
       if (_NETWORK !== NETWORK) {
-        await contracts[NETWORK].OmniRegistrarSynchronizer.setTrustedRemote(
-          NetworkConfig.network[_NETWORK].layerzero.chainId,
-          contracts[_NETWORK].OmniRegistrarSynchronizer.address,
-        );
+        await contracts[NETWORK].OmniRegistrarSynchronizer.setTrustedRemote(NetworkConfig[_NETWORK].layerzero.chainId, contracts[_NETWORK].OmniRegistrarSynchronizer.address);
       }
     }
     // Set the `OmniRegistrar` address for the `Synchronizer`
@@ -292,7 +286,7 @@ export const setupRoot = async (contracts: IDeployedContractsOutput) => {
     // Set Trust Remote
     for (const _NETWORK of NETWORKS) {
       if (_NETWORK !== NETWORK) {
-        await contracts[NETWORK].Root.setTrustedRemote(NetworkConfig.network[_NETWORK].layerzero.chainId, contracts[_NETWORK].Root.address);
+        await contracts[NETWORK].Root.setTrustedRemote(NetworkConfig[_NETWORK].layerzero.chainId, contracts[_NETWORK].Root.address);
       }
     }
   }

@@ -76,7 +76,7 @@ const config: HardhatUserConfig = {
     },
     polygonMumbai: {
       chainId: 80001,
-      url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Arbitrum
     arbitrum: {
@@ -98,11 +98,8 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
+    enabled: true,
     currency: "USD",
-    // Gnosis Chain
-    token: "DAI",
-    gasPrice: 1.5,
     coinmarketcap: process.env.COINMARKETCAP_API_KEY || undefined,
     showTimeSpent: true,
   },
