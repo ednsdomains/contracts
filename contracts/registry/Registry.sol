@@ -5,7 +5,6 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./IRegistry.sol";
-import "hardhat/console.sol";
 
 contract Registry is IRegistry, AccessControlUpgradeable {
   uint256 public constant GRACE_PERIOD = 30 days;
