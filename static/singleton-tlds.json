@@ -1,0 +1,16 @@
+{
+  "1": ["ether"],
+  "4": ["ether", "dev_ether"],
+  "56": ["bnb"],
+  "97": ["bnb", "dev_bnb"],
+  "137": ["matic"],
+  "80001": ["matic", "dev_matic"],
+  "43114": ["avax"],
+  "43113": ["avax", "dev_avax"],
+  "250": ["ftm"],
+  "4002": ["ftm", "dev_ftm"],
+  "10": ["op"],
+  "69": ["op", "dev_op"],
+  "42161": ["arb"],
+  "421611": ["arb", "dev_arb"]
+}
