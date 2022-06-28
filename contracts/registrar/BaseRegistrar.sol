@@ -1,55 +1,184 @@
-pragma solidity ^0.8.4;
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
 
-import "../registry/EDNS.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "../utils/LabelValidator.sol";
+import "../registry/IRegistry.sol";
 
-abstract contract BaseRegistrar is OwnableUpgradeable, IERC721Upgradeable {
-    uint constant public GRACE_PERIOD = 90 days;
+// TODO: Implement ERC2981 NFT Royalty Standard
+abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, LabelValidator {
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
+  event DomainRegistered(bytes domain, bytes tld, address owner, uint256 expiry);
+  event DomainRenewed(bytes domain, bytes tld, uint256 expiry);
+  event DomainReclaimed(bytes domain, bytes tld, address owner);
+  event SetController(bytes tld, address controller, bool approved);
 
-    event ControllerAdded(address indexed controller);
-    event ControllerRemoved(address indexed controller);
-    event NameMigrated(uint256 indexed id, address indexed owner, uint expires);
-    event NameRegistered(uint256 indexed id, address indexed owner, uint expires);
-    event NameRenewed(uint256 indexed id, uint expires);
+  bytes internal constant DOT = bytes(".");
 
-    // The EDNS registry
-    EDNS public edns;
+  mapping(address => mapping(bytes32 => bool)) public controllers;
 
-    // The namehash of the TLDs this registrar owns (eg, .edns)
-    mapping(bytes32=>bool) public baseNodes;
+  IRegistry internal _registry;
 
-    // A map of addresses that are authorised to register and renew names.
-    mapping(address=>bool) public controllers;
+  bytes internal __baseURI;
 
-    // Authorises a controller, who can register and renew domains.
-    function addController(address controller) virtual external;
+  function __BaseRegistrar_init(IRegistry registry_) internal onlyInitializing {
+    __BaseRegistrar_init_unchained(registry_);
+    __ERC721_init("Omni Name Service", "OMNS");
+    __AccessControl_init();
+  }
 
-    // Revoke controller permission for an address.
-    function removeController(address controller) virtual external;
+  function __BaseRegistrar_init_unchained(IRegistry registry_) internal onlyInitializing {
+    _registry = registry_;
+    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(ROOT_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _setupRole(ADMIN_ROLE, _msgSender());
+  }
 
-    // Set the resolver for the TLD this registrar manages.
-    function setResolver(bytes32 node, address resolver) virtual external;
+  modifier onlyRoot() {
+    require(hasRole(ROOT_ROLE, _msgSender()), "ONLY_ROOT");
+    _;
+  }
 
-    // Returns the expiration timestamp of the specified label hash.
-    function nameExpires(uint256 id) virtual external view returns(uint);
+  modifier onlyAdmin() {
+    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
+    _;
+  }
 
-    // Returns true iff the specified name is available for registration.
-    function available(uint256 id) virtual public view returns(bool);
+  modifier onlyDomainOwner(uint256 id) {
+    require(_msgSender() == ownerOf(id), "ONLY_OWNER");
+    _;
+  }
 
-    /**
-     * @dev Register a name.
-     */
-    function register(uint256 id, bytes32 node, address owner, uint duration) virtual external returns(uint);
+  modifier onlyController(bytes32 tld) {
+    require(controllers[_msgSender()][tld], "ONLY_CONTROLLER");
+    _;
+  }
 
-    function renew(uint256 id, bytes32 node, uint duration) virtual external returns(uint);
-    
-    function setBaseNode(bytes32 nodehash, bool available) public virtual;
+  function getDurations(uint8 years_) public pure virtual returns (uint256) {
+    return 365 days * years_;
+  }
 
-    function baseNodeAvailable(bytes32 nodehash) public virtual view returns(bool);
+  function expiry(bytes calldata domain, bytes calldata tld) public view virtual returns (uint256) {
+    return _registry.expiry(keccak256(domain), keccak256(tld));
+  }
 
-    /**
-     * @dev Reclaim ownership of a name in EDNS, if you own it in the registrar.
-     */
-    function reclaim(uint256 id, bytes32 node, address owner) virtual external;
+  function available(bytes calldata tld) public view virtual returns (bool) {
+    return exists(keccak256(tld)) && _registry.enable(keccak256(tld));
+  }
+
+  function available(bytes calldata domain, bytes calldata tld) public view virtual returns (bool) {
+    return expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
+  }
+
+  function ownerOf(bytes calldata domain, bytes calldata tld) public view virtual returns (address) {
+    uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
+    return super.ownerOf(id);
+  }
+
+  function exists(bytes calldata domain, bytes calldata tld) public view virtual returns (bool) {
+    uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
+    return super._exists(id);
+  }
+
+  function exists(bytes32 tld) public view virtual returns (bool) {
+    return _registry.exists(tld);
+  }
+
+  function controllerApproved(bytes32 tld, address controller) public view virtual returns (bool) {
+    return controllers[controller][tld];
+  }
+
+  function tokenId(bytes calldata domain, bytes calldata tld) public pure virtual returns (uint256) {
+    require(_validDomain(domain), "INVALID_DOMAIN_NAME");
+    return uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
+  }
+
+  function tokenURI(uint256 tokenId_) public view virtual override(ERC721Upgradeable) returns (string memory) {
+    require(_exists(tokenId_), "TOKEN_NOT_EXISTS");
+    // `{_baseURI}/{chainId}/{contractAddress}/{tokenId}/metadata.json`
+    return
+      string(
+        abi.encodePacked(
+          __baseURI,
+          "/",
+          block.chainid,
+          "/",
+          StringsUpgradeable.toHexString(uint160(address(this)), 20),
+          "/",
+          StringsUpgradeable.toString(tokenId_),
+          "/",
+          "metadata.json"
+        )
+      );
+  }
+
+  function setBaseURI(string calldata baseURI_) public virtual onlyAdmin {
+    __baseURI = bytes(baseURI_);
+  }
+
+  function setControllerApproval(
+    bytes calldata tld,
+    address controller,
+    bool approved
+  ) external onlyRoot {
+    controllers[controller][keccak256(tld)] = approved;
+    emit SetController(tld, controller, approved);
+  }
+
+  function _register(
+    bytes calldata domain,
+    bytes calldata tld,
+    address owner,
+    uint256 durations
+  ) internal {
+    require(_validDomain(domain), "INVALID_DOMAIN_NAME");
+    require(available(domain, tld), "DOMAIN_NOT_AVAILABLE");
+    require(block.timestamp + durations + _registry.gracePeriod() > block.timestamp + _registry.gracePeriod(), "DURATION_TOO_SHORT");
+    uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
+    uint256 expiry_ = block.timestamp + durations;
+    if (_exists(id)) {
+      _burn(id);
+    }
+    _mint(owner, id);
+    _registry.setRecord(domain, tld, owner, address(0), expiry_);
+    emit DomainRegistered(domain, tld, owner, expiry_);
+  }
+
+  function _renew(
+    bytes calldata domain,
+    bytes calldata tld,
+    uint256 durations
+  ) internal {
+    bytes32 _domain = keccak256(domain);
+    bytes32 _tld = keccak256(tld);
+    uint256 expiry_ = _registry.expiry(_domain, _tld);
+    require(expiry_ + _registry.gracePeriod() >= block.timestamp, "DOMAIN_EXPIRED");
+    require(expiry_ + durations + _registry.gracePeriod() >= durations + _registry.gracePeriod(), "DURATION_TOO_SHORT");
+    _registry.setExpiry(_domain, _tld, expiry_ + durations);
+    emit DomainRenewed(domain, tld, expiry_ + durations);
+  }
+
+  function _reclaim(
+    bytes calldata domain,
+    bytes calldata tld,
+    address owner
+  ) internal {
+    uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
+    require(ownerOf(id) == owner, "FORBIDDEN");
+    bytes32 _domain = keccak256(domain);
+    bytes32 _tld = keccak256(tld);
+    require(_registry.live(_domain, _tld), "DOMAIN_EXPIRED");
+    _registry.setOwner(keccak256(domain), keccak256(tld), owner);
+    emit DomainReclaimed(domain, tld, owner);
+  }
+
+  function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {
+    return super.supportsInterface(interfaceID);
+  }
 }
