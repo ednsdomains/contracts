@@ -7,7 +7,7 @@ interface IRoot {
     address resolver,
     bool enable_,
     bool omni_
-  ) external;
+  ) payable external;
 
   function transfer(bytes calldata tld) external;
 

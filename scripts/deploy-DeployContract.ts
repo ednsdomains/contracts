@@ -1,11 +1,11 @@
 import hre, { ethers, upgrades } from "hardhat";
 import { Wallet } from "ethers";
 import NetworkConfig, { IConfig, INetworkConfig, Network } from "../network.config";
-import { NETWORKS } from "../test/helpers/init";
+import {deployContracts, deployContractsMultiChain, NETWORKS} from "../test/helpers/init";
 import { SingletonRegistrar } from "../typechain";
 
-//npx hardhat run scripts/deploy-Test.ts --network fantomTestnet
-//npx hardhat run scripts/deploy-Test.ts --network bnbTestnet
+//npx hardhat run scripts/deploy-DeployContract.ts --network fantomTestnet
+//npx hardhat run scripts/deploy-DeployContract.ts --network bnbTestnet
 async function deploy() {
   const TLD = "test";
   const getConfig: Record<string, any> = {
@@ -141,8 +141,14 @@ async function deploy() {
 
   console.log("lzEndpoint", getConfig[hre.network.name].layerzero.endpoint.address);
 }
+
+async function deployScriptByMike() {
+  const contracts = await deployContractsMultiChain();
+  console.log(contracts)
+}
 async function main() {
   await deploy();
+  // await deployScriptByMike()
 }
 
 main().catch((error) => {

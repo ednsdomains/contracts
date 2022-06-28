@@ -14,9 +14,10 @@ import {
   Token,
   Root,
 } from "../../typechain";
-import { ethers, upgrades } from "hardhat";
+import hre, { ethers, upgrades } from "hardhat";
 import NetworkConfig from "../../network.config";
 import delay from "delay";
+import {Wallet} from "ethers";
 
 export const NETWORKS: [Network.RINKEBY, Network.BNB_CHAIN_TESTNET] = [Network.RINKEBY, Network.BNB_CHAIN_TESTNET];
 
@@ -25,7 +26,7 @@ const SINGLETON_TLDS = {
   [Network.BNB_CHAIN_TESTNET]: ["bnb"],
 };
 
-const OMNI_TLDS = ["omni"];
+export const OMNI_TLDS = ["omni"];
 
 export interface IContracts {
   LayerZeroEndpointMock: LayerZeroEndpointMock;
@@ -311,4 +312,146 @@ export const setupOmniTlds = async (contracts: IDeployedContractsOutput) => {
     console.log(NETWORKS[1], " ", await contracts[NETWORKS[1]].Registry["exists(bytes32)"](ethers.utils.keccak256(tld)));
   }
   // }
+};
+
+
+export const deployContractsMultiChain = async (): Promise<IDeployedContractsOutput> => {
+  // @ts-ignore
+  const contracts: IDeployContractsOutput = {};
+
+
+
+  for (const NETWORK of NETWORKS) {
+    const provider = new hre.ethers.providers.JsonRpcProvider(NetworkConfig[NETWORK].url, {
+      chainId: NetworkConfig[NETWORK].chainId,
+      name: NetworkConfig[NETWORK].name,
+    });
+
+    let walletMnemonic = Wallet.fromMnemonic(process.env.MNEMONIC!);
+    walletMnemonic = walletMnemonic.connect(provider);
+    // LayerZero Endpoint Mock
+    const LayerZeroEndpointMockFactory = await ethers.getContractFactory("LayerZeroEndpointMock",walletMnemonic);
+    const layerZeroEndpointMock = await LayerZeroEndpointMockFactory.deploy(NetworkConfig[NETWORK].layerzero.chainId);
+    await layerZeroEndpointMock.deployed();
+
+    // ERC-20 Token
+    const TokenFactory = await ethers.getContractFactory("Token",walletMnemonic);
+    const _token = await upgrades.deployProxy(TokenFactory, [NetworkConfig[NETWORK].layerzero.chainId, layerZeroEndpointMock.address]);
+    const token = TokenFactory.attach(_token.address);
+
+    // Token Price Oracle (Mock)
+    const TokenPriceOracleFactory = await ethers.getContractFactory("TokenPriceOracleMock",walletMnemonic);
+    const tokenPriceOracle = await TokenPriceOracleFactory.deploy(
+        NetworkConfig[NETWORK].chainlink.token.address,
+        NetworkConfig[NETWORK].chainlink.token.address,
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("0")),
+    );
+    await tokenPriceOracle.deployed();
+
+    // Domain Price Oracle
+    const DomainPriceOracleFactory = await ethers.getContractFactory("DomainPriceOracle",walletMnemonic);
+    const _domainPriceOracle = await upgrades.deployProxy(DomainPriceOracleFactory, [tokenPriceOracle.address]);
+    await _domainPriceOracle.deployed();
+    const domainPriceOracle = DomainPriceOracleFactory.attach(_domainPriceOracle.address);
+
+    // Registry
+    const RegistryFactory = await ethers.getContractFactory("Registry",walletMnemonic);
+    const _registry = await upgrades.deployProxy(RegistryFactory);
+    await _registry.deployed();
+    const registry = RegistryFactory.attach(_registry.address);
+
+    // Public Resolver Synchronizer
+    const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer",walletMnemonic);
+    const _publicResolverSynchronizer = await upgrades.deployProxy(PublicResolverSynchronizerFactory, [
+      layerZeroEndpointMock.address,
+      NetworkConfig[NETWORK].layerzero.chainId,
+      NETWORKS.map((NETWORK_) => NetworkConfig[NETWORK_].layerzero.chainId),
+    ]);
+    await _publicResolverSynchronizer.deployed();
+    const publicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(_publicResolverSynchronizer.address);
+
+    // Public Resolver
+    const PublicResolver = await ethers.getContractFactory("PublicResolver",walletMnemonic);
+    const _publicResolver = await upgrades.deployProxy(PublicResolver, [registry.address, publicResolverSynchronizer.address], { unsafeAllow: ["delegatecall"] });
+    await _publicResolver.deployed();
+    const publicResolver = PublicResolver.attach(_publicResolver.address);
+
+    // Singleton Registrar
+    const SingletonRegistrarFactory = await ethers.getContractFactory("SingletonRegistrar",walletMnemonic);
+    const _singletonRegistrar = await upgrades.deployProxy(SingletonRegistrarFactory, [registry.address]);
+    await _singletonRegistrar.deployed();
+    const singletonRegistrar = SingletonRegistrarFactory.attach(_singletonRegistrar.address);
+
+    // Singleton Registrar Controller
+    const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController",walletMnemonic);
+    const _singletonRegistrarController = await upgrades.deployProxy(SingletonRegistrarControllerFactory, [
+      token.address,
+      domainPriceOracle.address,
+      tokenPriceOracle.address,
+      singletonRegistrar.address,
+      0, // SLIP-44
+    ]);
+    await _singletonRegistrarController.deployed();
+    const singletonRegistrarController = SingletonRegistrarControllerFactory.attach(_singletonRegistrarController.address);
+
+    // Omni Registrar Synchronizer
+    const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer",walletMnemonic);
+    const _omniRegistrarSynchronizer = await upgrades.deployProxy(OmniRegistrarSynchronizerFactory, [
+      layerZeroEndpointMock.address,
+      NetworkConfig[NETWORK].layerzero.chainId,
+      NETWORKS.map((NETWORK_) => NetworkConfig[NETWORK_].layerzero.chainId),
+    ]);
+    await _omniRegistrarSynchronizer.deployed();
+    const omniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(_omniRegistrarSynchronizer.address);
+
+    // Omni Registrar
+    const OmniRegistrarFactory = await ethers.getContractFactory("OmniRegistrar",walletMnemonic);
+    const _omniRegistrar = await upgrades.deployProxy(OmniRegistrarFactory, [registry.address, omniRegistrarSynchronizer.address]);
+    await _omniRegistrar.deployed();
+    const omniRegistrar = OmniRegistrarFactory.attach(_omniRegistrar.address);
+
+    // Omni Registrar Controller
+    const OmniRegistrarControllerFactory = await ethers.getContractFactory("OmniRegistrarController",walletMnemonic);
+    const _omniRegistrarController = await upgrades.deployProxy(OmniRegistrarControllerFactory, [
+      token.address,
+      domainPriceOracle.address,
+      tokenPriceOracle.address,
+      omniRegistrar.address,
+      [0], // SLIP-44
+    ]);
+    await _omniRegistrarController.deployed();
+    const omniRegistrarController = OmniRegistrarControllerFactory.attach(_omniRegistrarController.address);
+
+    // Root
+    const RootFactory = await ethers.getContractFactory("Root",walletMnemonic);
+    const _root = await upgrades.deployProxy(RootFactory, [
+      registry.address,
+      singletonRegistrar.address,
+      omniRegistrar.address,
+      layerZeroEndpointMock.address,
+      NetworkConfig[NETWORK].layerzero.chainId,
+      NETWORKS.map((NETWORK_) => NetworkConfig[NETWORK_].layerzero.chainId),
+    ]);
+    await _root.deployed();
+    const root = RootFactory.attach(_root.address);
+
+    const _contracts: IContracts = {
+      LayerZeroEndpointMock: layerZeroEndpointMock,
+      Token: token,
+      Registry: registry,
+      PublicResolver: publicResolver,
+      PublicResolverSynchronizer: publicResolverSynchronizer,
+      SingletonRegistrar: singletonRegistrar,
+      SingletonRegistrarController: singletonRegistrarController,
+      OmniRegistrar: omniRegistrar,
+      OmniRegistrarController: omniRegistrarController,
+      OmniRegistrarSynchronizer: omniRegistrarSynchronizer,
+      TokenPriceOracle: tokenPriceOracle,
+      DomainPriceOracle: domainPriceOracle,
+      Root: root,
+    };
+    // @ts-ignore
+    contracts[NETWORK] = { ..._contracts };
+  }
+  return contracts;
 };

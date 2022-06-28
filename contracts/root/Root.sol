@@ -51,7 +51,7 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     address resolver_,
     bool enable_,
     bool omni_
-  ) public onlyAdmin {
+  )  public onlyAdmin payable {
     require(!_registry.exists(keccak256(tld)), "TLD_EXISTS");
     _register(tld, resolver_, enable_, omni_);
     if (omni_) {
