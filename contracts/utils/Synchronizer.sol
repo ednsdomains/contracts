@@ -69,11 +69,11 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
     return _history[reqId] == 0;
   }
 
-  function sync(bytes memory payload) external onlyTarget {
-    _sync(payload);
+  function sync(bytes memory payload) payable external onlyTarget {
+    _sync(payload,msg.value);
   }
 
-  function _sync(bytes memory payload) internal returns (bytes32) {
+  function _sync(bytes memory payload, uint gasfee) internal returns (bytes32) {
     // Create a unique request ID by composite the block number, the current timestamp, and the entire payload by hashing it
     bytes32 _reqId = keccak256(abi.encodePacked(block.number, block.timestamp, payload));
     bytes memory payload_ = abi.encodePacked(_reqId, payload);
@@ -84,7 +84,7 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
     for (uint256 i = 0; i < chainIds.length; i++) {
       // Ensure the transaction will not send again to itself
       if (chainIds[i] != chainId) {
-        _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), "");
+        _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), "",gasfee);
         // Collect the nonce
         uint64 nonce = lzEndpoint.getOutboundNonce(chainIds[i], address(this));
         _nonces[i] = nonce;
@@ -112,7 +112,8 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
   function _callback(uint16 dstChainId, bytes32 reqId) internal {
     emit Callback(dstChainId, reqId);
     bytes memory payload = abi.encodeWithSignature("fulfill_SELF(uint16,bytes32)", chainId, reqId);
-    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "");
+    //TODO gasfee
+    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "",1);
   }
 
   function fulfill_SELF(uint16 srcChainId, bytes32 reqId) external onlySelf {

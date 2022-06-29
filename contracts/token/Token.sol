@@ -82,7 +82,7 @@ contract Token is IToken, LayerZeroApp, AccessControlEnumerableUpgradeable, ERC2
   ) public payable {
     _lock(from, amount);
     bytes memory payload = abi.encode(to, amount);
-    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "");
+    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "",msg.value);
     uint64 nonce = lzEndpoint.getOutboundNonce(dstChainId, address(this));
     emit OutboundBridged(dstChainId, from, to, amount, nonce);
   }

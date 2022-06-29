@@ -60,11 +60,12 @@ abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
     bytes memory _payload,
     address payable _refundAddress,
     address _zroPaymentAddress,
-    bytes memory _adapterParams
+    bytes memory _adapterParams,
+    uint gasfee
   ) internal virtual {
     bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
     require(trustedRemote.length != 0, "NOT_TRUST_REMOTE");
-    lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
+    lzEndpoint.send{ value: gasfee }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
   }
 
   //---------------------------UserApplication config----------------------------------------

@@ -13,9 +13,9 @@ interface IRoot {
 
   function reclaim(bytes calldata tld) external;
 
-  function setEnable(bytes calldata tld, bool enable) external;
+  function setEnable(bytes calldata tld, bool enable) payable external;
 
-  function setResolver(bytes calldata tld, address resolver) external;
+  function setResolver(bytes calldata tld, address resolver) payable external;
 
   function setControllerApproval(
     bytes calldata tld,

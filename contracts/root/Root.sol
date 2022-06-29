@@ -55,7 +55,7 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     require(!_registry.exists(keccak256(tld)), "TLD_EXISTS");
     _register(tld, resolver_, enable_, omni_);
     if (omni_) {
-      _sync(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true));
+      _sync(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true),msg.value);
     }
   }
 
@@ -85,18 +85,18 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     _registry.setOwner(keccak256(bytes(tld)), address(this));
   }
 
-  function setEnable(bytes calldata tld, bool enable_) public onlyAdmin {
+  function setEnable(bytes calldata tld, bool enable_) payable public onlyAdmin {
     _setEnable(tld, enable_);
-    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setEnable(bytes,bool)", tld, enable_));
+    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setEnable(bytes,bool)", tld, enable_),msg.value);
   }
 
   function _setEnable(bytes calldata tld, bool enable_) internal {
     _registry.setEnable(keccak256(tld), enable_);
   }
 
-  function setResolver(bytes calldata tld, address resolver_) public onlyAdmin {
+  function setResolver(bytes calldata tld, address resolver_) payable public onlyAdmin {
     _setResolver(tld, resolver_);
-    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setResolver(bytes,bool)", tld, resolver_));
+    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setResolver(bytes,bool)", tld, resolver_),msg.value);
   }
 
   function _setResolver(bytes calldata tld, address resolver_) internal {
