@@ -12,7 +12,8 @@ import {
 import { PublicResolver } from "../typechain/PublicResolver";
 import { upgrades } from "hardhat";
 import Web3 from "web3";
-import { formatsByName, formatsByCoinType } from "@ensdomains/address-encoder";
+// import { formatsByName, formatsByCoinType } from "@ensdomains/address-encoder";
+import { AffiliateProgram } from "../typechain/AffiliateProgram";
 
 // const provider = hardhat.ethers.providers.Provider();
 // console.log(hardhat.network.name);
@@ -107,9 +108,19 @@ async function main() {
     signer
   );
 
+  const AffiliateProgramFactory = await hardhat.ethers.getContractFactory(
+    "AffiliateProgram",
+    signer
+  );
+
   console.log(
     "Gas price: ",
     ethers.utils.formatUnits(await provider.getGasPrice(), "gwei")
+  );
+
+  const affiliateProgram = await upgrades.deployProxy(AffiliateProgramFactory);
+  console.log(
+    `AffiliateProgram contract address - ${affiliateProgram.address}`
   );
   // const registry = EDNSRegistry.attach(
   //   "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12"
@@ -117,15 +128,15 @@ async function main() {
   // const resolver = PublicResolver.attach(
   //   "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144"
   // );
-  const baseRegistrar = BaseRegistrarImplementation.attach(
-    "0x53a0018f919bde9C254bda697966C5f448ffDDcB"
-  );
+  // const baseRegistrar = BaseRegistrarImplementation.attach(
+  //   "0x53a0018f919bde9C254bda697966C5f448ffDDcB"
+  // );
 
   // console.log(await baseRegistrar.supportsInterface("0x5b5e139f"));
   // console.log(await baseRegistrar.supportsInterface("0x80ac58cd"));
   // console.log(await baseRegistrar.supportsInterface("0x780e9d63"));
 
-  await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
+  // await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
 
   // console.log(
   //   await baseRegistrar.tokenURI(
