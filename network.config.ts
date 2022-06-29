@@ -13,6 +13,14 @@ export enum Network {
   OPTIMISM_KOVAN = 69,
   ARBITRUM = 42161,
   ARBITRUM_RINKEBY = 421611,
+  IOTEX = 4689,
+  IOTEX_TESTNET = 4690,
+  OKC = 66,
+  OKC_TESTNET = 65,
+  HECO = 128,
+  HECO_TESTNET = 256,
+  KCC = 321,
+  KCC_TESTNET = 322,
 }
 
 export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM];
@@ -377,7 +385,7 @@ const config: INetworkConfig = {
         address: "0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf",
       },
     },
-    //TODO: chainlink
+    // TODO: chainlink
     chainlink: {
       token: {
         name: "ChainLink Token on Fantom",

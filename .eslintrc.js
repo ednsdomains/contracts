@@ -12,6 +12,7 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    "no-unused-vars": "off",
     "node/no-unsupported-features/es-syntax": ["error", { ignores: ["modules"] }],
   },
 };
