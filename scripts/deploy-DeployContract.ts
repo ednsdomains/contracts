@@ -1,7 +1,7 @@
 import hre, { ethers, upgrades } from "hardhat";
 import { Wallet } from "ethers";
 import NetworkConfig, { IConfig, INetworkConfig, Network } from "../network.config";
-import {deployContracts, deployContractsMultiChain, NETWORKS} from "../test/helpers/init";
+import {deployContractsMultiChain, NETWORKS} from "../test/helpers/init";
 import { SingletonRegistrar } from "../typechain";
 
 //npx hardhat run scripts/deploy-DeployContract.ts --network fantomTestnet
@@ -40,6 +40,7 @@ async function deploy() {
     ethers.utils.keccak256(ethers.utils.toUtf8Bytes("0")),
   );
   await tokenPriceOracle.deployed();
+  console.log(tokenPriceOracle.address);
 
   // Domain Price Oracle
   const DomainPriceOracleFactory = await ethers.getContractFactory("DomainPriceOracle", walletMnemonic);
@@ -59,20 +60,20 @@ async function deploy() {
   console.log("publicResolverSynchronizer", _publicResolverSynchronizer.address);
 
   const PublicResolver = await ethers.getContractFactory("PublicResolver", walletMnemonic);
-  const _publicResolver = await upgrades.deployProxy(PublicResolver, [registry.address, publicResolverSynchronizer.address], { unsafeAllow: ["delegatecall"] });
+  const _publicResolver = await upgrades.deployProxy(PublicResolver, [_registry.address, _publicResolverSynchronizer.address], { unsafeAllow: ["delegatecall"] });
   await _publicResolver.deployed();
   const publicResolver = PublicResolver.attach(_publicResolver.address);
   console.log("publicResolver", _publicResolver.address);
 
   const SingletonRegistrarFactory = await ethers.getContractFactory("SingletonRegistrar", walletMnemonic);
-  const _singletonRegistrar = await upgrades.deployProxy(SingletonRegistrarFactory, [registry.address]);
+  const _singletonRegistrar = await upgrades.deployProxy(SingletonRegistrarFactory, [_registry.address]);
   await _singletonRegistrar.deployed();
   const singletonRegistrar = SingletonRegistrarFactory.attach(_singletonRegistrar.address);
   console.log("singletonRegistrar", singletonRegistrar.address);
 
   const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController", walletMnemonic);
   const _singletonRegistrarController = await upgrades.deployProxy(SingletonRegistrarControllerFactory, [
-    token.address,
+    _token.address,
     domainPriceOracle.address,
     tokenPriceOracle.address,
     singletonRegistrar.address,
@@ -122,7 +123,7 @@ async function deploy() {
   await _root.deployed();
   const root = RootFactory.attach(_root.address);
   console.log("root", _root.address);
-  //Setup
+  // Setup
 
   await publicResolverSynchronizer.setResolver(publicResolver.address);
   await registry.grantRole(await registry.ROOT_ROLE(), root.address);
@@ -131,20 +132,22 @@ async function deploy() {
   await registry.grantRole(await registry.REGISTRAR_ROLE(), singletonRegistrar.address);
 
   await singletonRegistrar.grantRole(await singletonRegistrar.ROOT_ROLE(), root.address);
-  const tld = ethers.utils.toUtf8Bytes(TLD);
+  await singletonRegistrar.setBaseURI("https://singleton.example.com");
+  const tld = ethers.utils.toUtf8Bytes("abcdde");
   await root.setControllerApproval(tld, singletonRegistrarController.address, true);
 
+  const otld = ethers.utils.toUtf8Bytes("omni");
   await omniRegistrarSynchronizer.setRegistrar(omniRegistrar.address);
   await omniRegistrar.grantRole(await omniRegistrar.ROOT_ROLE(), root.address);
-
-  await root.setControllerApproval(tld, omniRegistrarController.address, true);
+  await omniRegistrar.setBaseURI("https://omni.example.com");
+  await root.setControllerApproval(otld, omniRegistrarController.address, true);
 
   console.log("lzEndpoint", getConfig[hre.network.name].layerzero.endpoint.address);
 }
 
 async function deployScriptByMike() {
   const contracts = await deployContractsMultiChain();
-  console.log(contracts)
+  console.log(contracts);
 }
 async function main() {
   await deploy();
