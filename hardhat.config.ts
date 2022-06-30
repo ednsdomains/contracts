@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig, task } from "hardhat/config";
+import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-waffle";
@@ -8,18 +9,16 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
+import { createSigner } from "./scripts/helpers/signer";
+import { deployToken } from "./scripts/helpers/deploy";
+import { types } from "hardhat/config";
+import { Mainnets, Network, Testnets } from "./network.config";
+import { upgradeToken } from "./scripts/helpers/upgrade";
+import { load } from "./scripts/helpers/load";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 dotenv.config();
-// const mnemonic: string | undefined = process.env.MNEMONIC;
-// if (!mnemonic) {
-//   throw new Error("Please set your MNEMONIC in a .env file");
-// }
-
-// const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
-// if (!infuraApiKey) {
-//   // throw new Error("Please set your INFURA_API_KEY in a .env file");
-// }
-
 // https://hardhat.org/config/
 // https://hardhat.org/guides/compile-contracts/
 const config: HardhatUserConfig = {
@@ -129,5 +128,39 @@ const config: HardhatUserConfig = {
     ],
   },
 };
+
+const task_init = async (taskArgs: any, hre_: HardhatRuntimeEnvironment): Promise<{ signer: SignerWithAddress; network: Network; networks: Network[] }> => {
+  const networks = !!taskArgs["mainnet"] ? Mainnets : Testnets;
+  const network = hre_.network.config.chainId;
+  if (!network) throw new Error("Chain ID not set");
+  const signer = await createSigner(network);
+  if (!networks.includes(network)) throw new Error("Incorrect network");
+  return { signer, network, networks };
+};
+
+// ================================= //
+// ========== Deployment ========== //
+// ================================= //
+task("deploy:token")
+  .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
+  .setAction(async (taskArgs, hre) => {
+    const { signer, network, networks } = await task_init(taskArgs, hre);
+    await deployToken({ signer, networks, network });
+  });
+
+// =========================== //
+// ========== Setup ========== //
+// =========================== //
+
+// ============================= //
+// ========== Upgrade ========== //
+// ============================= //
+task("upgrade:token")
+  .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
+  .setAction(async (taskArgs, hre) => {
+    const { signer, network, networks } = await task_init(taskArgs, hre);
+    const contracts = await load(network, signer);
+    await upgradeToken({ signer, contracts });
+  });
 
 export default config;

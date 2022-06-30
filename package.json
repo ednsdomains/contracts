@@ -9,9 +9,14 @@
     "verify": "hardhat run scripts/verify.ts"
   },
   "devDependencies": {
+    "@chainlink/contracts": "^0.4.1",
+    "@ethersproject/hardware-wallets": "^5.6.0",
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/contracts": "^4.6.0",
+    "@openzeppelin/contracts-upgradeable": "^4.5.2",
     "@openzeppelin/hardhat-upgrades": "^1.16.1",
     "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^2.3.1",
@@ -21,6 +26,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.6",
+    "delay": "^5.0.0",
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
@@ -32,24 +38,17 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.6.2",
     "hardhat": "^2.8.4",
+    "hardhat-contract-sizer": "^2.5.1",
+    "hardhat-deploy": "^0.11.10",
     "hardhat-gas-reporter": "^1.0.7",
+    "lodash": "^4.17.21",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.19",
     "ts-node": "^10.5.0",
     "typechain": "^5.2.0",
-    "typescript": "^4.5.5"
-  },
-  "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.100.0",
-    "@chainlink/contracts": "^0.4.1",
-    "@ethersproject/hardware-wallets": "^5.6.0",
-    "@openzeppelin/contracts": "^4.6.0",
-    "@openzeppelin/contracts-upgradeable": "^4.5.2",
-    "delay": "^5.0.0",
-    "hardhat-contract-sizer": "^2.5.1",
-    "hardhat-deploy": "^0.11.10",
-    "lodash": "^4.17.21"
+    "typescript": "^4.5.5",
+    "web3": "^1.7.4"
   }
 }
