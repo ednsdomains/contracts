@@ -10,17 +10,17 @@ contract SingletonRegistrar is BaseRegistrar {
     __AccessControl_init();
   }
 
-  function available(bytes calldata tld) public view override returns (bool) {
+  function available(bytes memory tld) public view override returns (bool) {
     return super.available(tld) && !_registry.omni(keccak256(tld));
   }
 
-  function available(bytes calldata domain, bytes calldata tld) public view override returns (bool) {
+  function available(bytes memory domain, bytes memory tld) public view override returns (bool) {
     return super.available(domain, tld) && !_registry.omni(keccak256(tld));
   }
 
   function register(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     address owner,
     uint256 durations
   ) external onlyController(keccak256(tld)) {
@@ -28,16 +28,16 @@ contract SingletonRegistrar is BaseRegistrar {
   }
 
   function renew(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     uint256 durations
   ) external onlyController(keccak256(tld)) {
     _renew(domain, tld, durations);
   }
 
   function reclaim(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     address owner
   ) external onlyController(keccak256(tld)) {
     _reclaim(domain, tld, owner);

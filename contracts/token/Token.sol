@@ -82,16 +82,16 @@ contract Token is IToken, LayerZeroApp, AccessControlEnumerableUpgradeable, ERC2
   ) public payable {
     _lock(from, amount);
     bytes memory payload = abi.encode(to, amount);
-    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "",msg.value);
+    _lzSend(dstChainId, payload, payable(_msgSender()), address(0x0), "", msg.value);
     uint64 nonce = lzEndpoint.getOutboundNonce(dstChainId, address(this));
     emit OutboundBridged(dstChainId, from, to, amount, nonce);
   }
 
   function _lzReceive(
     uint16 srcChainId,
-    bytes calldata, // srcAddress
+    bytes memory, // srcAddress
     uint64 nonce,
-    bytes calldata payload
+    bytes memory payload
   ) internal virtual override {
     (bytes memory toBytes, uint256 amount) = abi.decode(payload, (bytes, uint256));
     address to;

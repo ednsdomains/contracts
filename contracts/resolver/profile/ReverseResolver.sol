@@ -8,29 +8,29 @@ abstract contract ReverseResolver is IReverseResolver, BaseResolver {
   mapping(bytes32 => bytes) internal _reverseRecords;
 
   function setReverseRecord(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
-    bytes calldata address_
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
+    bytes memory address_
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
     _setReverseRecord(host, domain, tld, address_);
     if (_registry.omni(keccak256(tld))) _synchronizer.sync(abi.encodeWithSignature("setReverseRecord_SYNC(bytes,bytes,bytes,bytes)", host, domain, tld, address_));
   }
 
   function setReverseRecord_SYNC(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
-    bytes calldata address_
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
+    bytes memory address_
   ) public onlySynchronizer {
     _setReverseRecord(host, domain, tld, address_);
   }
 
   function _setReverseRecord(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
-    bytes calldata address_
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
+    bytes memory address_
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
     _setHostRecord(host, domain, tld);
     bytes memory fqdn;
@@ -44,7 +44,7 @@ abstract contract ReverseResolver is IReverseResolver, BaseResolver {
     emit SetReverseRecord(bytes(host), bytes(domain), bytes(tld), bytes(address_));
   }
 
-  function reverse(bytes calldata address_) external view returns (bytes memory) {
+  function reverse(bytes memory address_) external view returns (bytes memory) {
     return _reverseRecords[keccak256(address_)];
   }
 

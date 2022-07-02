@@ -10,31 +10,31 @@ interface INFTResolver {
   }
 
   function setNFT(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId,
     address contract_,
     uint256 tokenId
   ) external;
 
   function setNFT_SYNC(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId,
     address contract_,
     uint256 tokenId
   ) external;
 
   function nft(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId
-  ) external view returns (NFT calldata);
+  ) external view returns (NFT memory);
 
-  function nft(bytes calldata fqdn, uint256 chainId) external view returns (NFT memory);
+  function nft(bytes memory fqdn, uint256 chainId) external view returns (NFT memory);
 
   function nft(bytes32 fqdn, uint256 chainId) external view returns (NFT memory);
 }

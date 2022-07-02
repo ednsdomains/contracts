@@ -8,9 +8,9 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
   mapping(bytes32 => mapping(uint256 => NFT)) private _nfts;
 
   function setNFT(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId,
     address contract_,
     uint256 tokenId
@@ -22,9 +22,9 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
   }
 
   function setNFT_SYNC(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId,
     address contract_,
     uint256 tokenId
@@ -33,9 +33,9 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
   }
 
   function _setNFT(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId,
     address contract_,
     uint256 tokenId
@@ -53,16 +53,16 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
   }
 
   function nft(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
     uint256 chainId
   ) public view returns (NFT memory) {
     bytes32 fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
     return _nfts[fqdn][chainId];
   }
 
-  function nft(bytes calldata fqdn, uint256 chainId) public view returns (NFT memory) {
+  function nft(bytes memory fqdn, uint256 chainId) public view returns (NFT memory) {
     bytes32 fqdn_ = keccak256(fqdn);
     return _nfts[fqdn_][chainId];
   }

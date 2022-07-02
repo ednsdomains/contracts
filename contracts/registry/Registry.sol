@@ -105,7 +105,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
 
   //Create TLD
   function setRecord(
-    bytes calldata tld,
+    bytes memory tld,
     address owner_,
     address resolver_,
     bool enable_,
@@ -125,8 +125,8 @@ contract Registry is IRegistry, AccessControlUpgradeable {
 
   //Add domain
   function setRecord(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     address owner_,
     address resolver_,
     uint256 expiry_
@@ -144,9 +144,9 @@ contract Registry is IRegistry, AccessControlUpgradeable {
 
   //Sub Domain
   function setRecord(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld
   ) external onlyResolver {
     require(exists(keccak256(domain), keccak256(tld)), "DOMAIN_NOT_EXIST");
     HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(domain)].hosts[keccak256(host)];
