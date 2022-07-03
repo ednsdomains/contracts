@@ -103,7 +103,7 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
     for (uint256 i = 0; i < chainIds.length; i++) {
       if (chainIds[i] != chainId) {
         (uint256 nativeFee, uint256 zroFee) = lzEndpoint.estimateFees(chainIds[i], address(this), payload, false, "");
-        fee_ += nativeFee;
+        fee_ += nativeFee*1005/1000;
         // require(msg.value >= nativeFee * _payload.length, "LayerZeroMock: not enough native for fees"); gas fee require at lzEndpoint
       }
     }
