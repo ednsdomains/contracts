@@ -44,16 +44,16 @@ async function main() {
   // // console.log(NETWORKS[0], " ", await registry["exists(bytes32)"](ethers.utils.keccak256(tldsingle)));
   // console.log(tldSingleRegister);
   //
+
   for (const TLD of OMNI_TLDS) {
     const tld = ethers.utils.toUtf8Bytes("TLD228");
     const payload_ = await root.populateTransaction.register_SYNC(tld, currentContractAddress.publicResolver, true, true);
     const fees = await root.estimateSyncFee(payload_.data!);
     console.log(ethers.utils.formatEther(fees));
     console.log(NETWORKS[0], " ", await registry.callStatic["exists(bytes32)"](ethers.utils.keccak256(tld)));
-    console.log(NETWORKS[1], " ", await registry.callStatic["exists(bytes32)"](ethers.utils.keccak256(tld)));
     const rootRegister = await root.register(tld, currentContractAddress.publicResolver, true, true, {
       // 0.000001660703359502
-      value: ethers.utils.parseEther("0.00000167"),
+      value: ethers.utils.parseEther("10"),
       // value: fees,
       gasLimit: 400000,
     });
@@ -65,8 +65,7 @@ async function main() {
     console.log(`root_register tx: ${rootRegister}`);
     await delay(1000);
     console.log(NETWORKS[0], " ", await registry["exists(bytes32)"](ethers.utils.keccak256(tld)));
-    console.log(NETWORKS[1], " ", await registry["exists(bytes32)"](ethers.utils.keccak256(tld)));
-    console.log(await root.estimateGas.register(tld, currentContractAddress.publicResolver, true, true));
+
   }
 }
 
