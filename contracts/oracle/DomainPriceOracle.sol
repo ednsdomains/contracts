@@ -41,7 +41,7 @@ contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
   }
 
   function price(
-    bytes calldata domain,
+    bytes memory domain,
     bytes32 tld,
     uint256 durations
   ) external view returns (uint256) {

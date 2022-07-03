@@ -129,24 +129,24 @@ const config: HardhatUserConfig = {
   },
 };
 
-const task_init = async (taskArgs: any, hre_: HardhatRuntimeEnvironment): Promise<{ signer: SignerWithAddress; network: Network; networks: Network[] }> => {
-  const networks = !!taskArgs["mainnet"] ? Mainnets : Testnets;
-  const network = hre_.network.config.chainId;
-  if (!network) throw new Error("Chain ID not set");
-  const signer = await createSigner(network);
-  if (!networks.includes(network)) throw new Error("Incorrect network");
-  return { signer, network, networks };
-};
+// const task_init = async (taskArgs: any, hre_: HardhatRuntimeEnvironment): Promise<{ signer: SignerWithAddress; network: Network; networks: Network[] }> => {
+//   const networks = !!taskArgs["mainnet"] ? Mainnets : Testnets;
+//   const network = hre_.network.config.chainId;
+//   if (!network) throw new Error("Chain ID not set");
+//   const signer = await createSigner(network);
+//   if (!networks.includes(network)) throw new Error("Incorrect network");
+//   return { signer, network, networks };
+// };
 
 // ================================= //
 // ========== Deployment ========== //
 // ================================= //
-task("deploy:token")
-  .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
-  .setAction(async (taskArgs, hre) => {
-    const { signer, network, networks } = await task_init(taskArgs, hre);
-    await deployToken({ signer, networks, network });
-  });
+// task("deploy:token")
+//   .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
+//   .setAction(async (taskArgs, hre) => {
+//     const { signer, network, networks } = await task_init(taskArgs, hre);
+//     await deployToken({ signer, networks, network });
+//   });
 
 // =========================== //
 // ========== Setup ========== //
@@ -155,12 +155,12 @@ task("deploy:token")
 // ============================= //
 // ========== Upgrade ========== //
 // ============================= //
-task("upgrade:token")
-  .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
-  .setAction(async (taskArgs, hre) => {
-    const { signer, network, networks } = await task_init(taskArgs, hre);
-    const contracts = await load(network, signer);
-    await upgradeToken({ signer, contracts });
-  });
+// task("upgrade:token")
+//   .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
+//   .setAction(async (taskArgs, hre) => {
+//     const { signer, network, networks } = await task_init(taskArgs, hre);
+//     const contracts = await load(network, signer);
+//     await upgradeToken({ signer, contracts });
+//   });
 
 export default config;

@@ -64,24 +64,24 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     return 365 days * years_;
   }
 
-  function expiry(bytes calldata domain, bytes calldata tld) public view virtual returns (uint256) {
+  function expiry(bytes memory domain, bytes memory tld) public view virtual returns (uint256) {
     return _registry.expiry(keccak256(domain), keccak256(tld));
   }
 
-  function available(bytes calldata tld) public view virtual returns (bool) {
+  function available(bytes memory tld) public view virtual returns (bool) {
     return exists(keccak256(tld)) && _registry.enable(keccak256(tld));
   }
 
-  function available(bytes calldata domain, bytes calldata tld) public view virtual returns (bool) {
+  function available(bytes memory domain, bytes memory tld) public view virtual returns (bool) {
     return expiry(domain, tld) + _registry.gracePeriod() < block.timestamp;
   }
 
-  function ownerOf(bytes calldata domain, bytes calldata tld) public view virtual returns (address) {
+  function ownerOf(bytes memory domain, bytes memory tld) public view virtual returns (address) {
     uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
     return super.ownerOf(id);
   }
 
-  function exists(bytes calldata domain, bytes calldata tld) public view virtual returns (bool) {
+  function exists(bytes memory domain, bytes memory tld) public view virtual returns (bool) {
     uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
     return super._exists(id);
   }
@@ -94,7 +94,7 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     return controllers[controller][tld];
   }
 
-  function tokenId(bytes calldata domain, bytes calldata tld) public pure virtual returns (uint256) {
+  function tokenId(bytes memory domain, bytes memory tld) public pure virtual returns (uint256) {
     require(_validDomain(domain), "INVALID_DOMAIN_NAME");
     return uint256(keccak256(abi.encodePacked(domain, DOT, tld)));
   }
@@ -118,12 +118,12 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
       );
   }
 
-  function setBaseURI(string calldata baseURI_) public virtual onlyAdmin {
+  function setBaseURI(string memory baseURI_) public virtual onlyAdmin {
     __baseURI = bytes(baseURI_);
   }
 
   function setControllerApproval(
-    bytes calldata tld,
+    bytes memory tld,
     address controller,
     bool approved
   ) external onlyRoot {
@@ -132,8 +132,8 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   }
 
   function _register(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     address owner,
     uint256 durations
   ) internal {
@@ -151,8 +151,8 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   }
 
   function _renew(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     uint256 durations
   ) internal {
     bytes32 _domain = keccak256(domain);
@@ -165,8 +165,8 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   }
 
   function _reclaim(
-    bytes calldata domain,
-    bytes calldata tld,
+    bytes memory domain,
+    bytes memory tld,
     address owner
   ) internal {
     uint256 id = uint256(keccak256(abi.encodePacked(domain, DOT, tld)));

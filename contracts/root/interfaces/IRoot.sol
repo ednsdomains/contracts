@@ -3,29 +3,29 @@ pragma solidity ^0.8.9;
 
 interface IRoot {
   function register(
-    bytes calldata tld,
+    bytes memory tld,
     address resolver,
     bool enable_,
     bool omni_
-  ) payable external;
+  ) external payable;
 
-  function transfer(bytes calldata tld) external;
+  function transfer(bytes memory tld) external;
 
-  function reclaim(bytes calldata tld) external;
+  function reclaim(bytes memory tld) external;
 
-  function setEnable(bytes calldata tld, bool enable) payable external;
+  function setEnable(bytes memory tld, bool enable) external payable;
 
-  function setResolver(bytes calldata tld, address resolver) payable external;
+  function setResolver(bytes memory tld, address resolver) external payable;
 
   function setControllerApproval(
-    bytes calldata tld,
+    bytes memory tld,
     address controller,
     bool approved
   ) external;
 
-  function enable(bytes calldata tld) external view returns (bool);
+  function enable(bytes memory tld) external view returns (bool);
 
-  function omni(bytes calldata tld) external view returns (bool);
+  function omni(bytes memory tld) external view returns (bool);
 
-  function resolver(bytes calldata tld) external view returns (address);
+  function resolver(bytes memory tld) external view returns (address);
 }

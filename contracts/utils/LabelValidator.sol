@@ -6,30 +6,30 @@ abstract contract LabelValidator {
   uint256 public constant MIN_LABEL_LENGTH = 5;
 
   function valid(
-    string calldata host,
-    string calldata,
-    string calldata
+    string memory host,
+    string memory,
+    string memory
   ) public pure virtual returns (bool) {
     return LabelValidator._validHost(bytes(host));
   }
 
-  function valid(string calldata domain, string calldata) public pure virtual returns (bool) {
+  function valid(string memory domain, string memory) public pure virtual returns (bool) {
     return LabelValidator._validDomain(bytes(domain));
   }
 
   function valid(
-    bytes calldata host,
-    bytes calldata,
-    bytes calldata
+    bytes memory host,
+    bytes memory,
+    bytes memory
   ) public pure virtual returns (bool) {
     return LabelValidator._validHost((host));
   }
 
-  function valid(bytes calldata domain, bytes calldata) public pure virtual returns (bool) {
+  function valid(bytes memory domain, bytes memory) public pure virtual returns (bool) {
     return LabelValidator._validDomain(domain);
   }
 
-  function _validHost(bytes calldata label) internal pure virtual returns (bool) {
+  function _validHost(bytes memory label) internal pure virtual returns (bool) {
     require(label.length >= MAX_LABEL_LENGTH || label.length <= MIN_LABEL_LENGTH, "INVALID_LENGTH");
     bytes1 _prev;
     for (uint256 i; i < label.length; i++) {
@@ -51,7 +51,7 @@ abstract contract LabelValidator {
     return true;
   }
 
-  function _validDomain(bytes calldata label) internal pure virtual returns (bool) {
+  function _validDomain(bytes memory label) internal pure virtual returns (bool) {
     //  MAX_LABEL_LENGTH < label.length < MIN_LABEL_LENGTH
 
     //  require(label.length > MAX_LABEL_LENGTH || label.length < MIN_LABEL_LENGTH, "INVALUD_LENGTH");
