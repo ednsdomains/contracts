@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "./interfaces/ISynchronizer.sol";
 import "../layerzero/LayerZeroApp.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-
+import "hardhat/console.sol";
 contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
   event TransactionIn(uint16 srcChainId, address srcAddress, uint64 nonce);
   event Fulfilled(bytes32 reqId);
@@ -76,7 +76,11 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
   function _sync(bytes memory payload, uint gasfee) internal returns (bytes32) {
     // Create a unique request ID by composite the block number, the current timestamp, and the entire payload by hashing it
     bytes32 _reqId = keccak256(abi.encodePacked(block.number, block.timestamp, payload));
+    console.log("_sync Payload: ");
+    console.logBytes( payload);
     bytes memory payload_ = abi.encodePacked(_reqId, payload);
+    console.log("_sync Payload with reqID: ");
+    console.logBytes(payload_);
     // Set the request ID in the requests record history
     _history[_reqId] = block.timestamp;
     uint64[] memory _nonces = new uint64[](chainIds.length);
@@ -142,6 +146,8 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
     bytes4 sig = bytes4(payload_[32:36]);
     bytes calldata payload = payload_[32:];
     if (sig == bytes4(keccak256("fulfill_SELF(uint16,bytes32)")) || _target == address(0)) {
+      console.log("_lzReceive Call Register Payload");
+      console.logBytes(payload);
       (bool success, bytes memory result) = address(this).call(payload);
     } else {
       (bool success, bytes memory result) = _target.call(payload);

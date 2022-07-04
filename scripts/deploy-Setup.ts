@@ -8,7 +8,6 @@ import {deployedChain} from "./helpers/deploy";
 
 async function main() {
   const TLDsingle = "abcdd";
-
   const otherContract = deployedChain.filter(x=>{
     return x != networkNameConverter(hre.network.name)
   })
@@ -25,19 +24,6 @@ async function main() {
 
   // let walletMnemonic = Wallet.fromMnemonic(process.env.MNEMONIC!);
   // walletMnemonic = walletMnemonic.connect(provider);
-
-
-
-  // othersContractAddress.forEach(async (x) => {
-  //   await tokenContract.setTrustedRemote(x.chainId, x.token);
-  //   console.log("tokenContract.setTrustedRemote Done");
-  //   await publicResolverSynchronizer.setTrustedRemote(x.chainId, x.publicResolverSynchronizer);
-  //   console.log("publicResolverSynchronizer.setTrustedRemote Done");
-  //   await omniRegistrarSynchronizer.setTrustedRemote(x.chainId, x.omniRegistrarSynchronizer);
-  //   console.log("omniRegistrarSynchronizer.setTrustedRemote Done");
-  //   await root.setTrustedRemote(x.chainId, x.root);
-  //   console.log("root.setTrustedRemote Done");
-  // });
 
   otherContract.map(async (x)=>{
     console.log("Network:",NetworkConfig[x].layerzero.chainId)

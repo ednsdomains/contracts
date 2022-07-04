@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "./interfaces/ILayerZeroEndpoint.sol";
 import "./interfaces/ILayerZeroApp.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
+import "hardhat/console.sol";
 abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
   ILayerZeroEndpoint public lzEndpoint;
 
@@ -32,6 +32,8 @@ abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
     require(_msgSender() == address(lzEndpoint), "ONLY_ENDPOINT");
     bytes memory trustedRemote = trustedRemoteLookup[_srcChainId];
     require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "ONLY_TRUST_REMOTE");
+    console.log("Lz Receive Payload: ");
+    console.logBytes( _payload);
     try this.tryLzReceive(_srcChainId, _srcAddress, _nonce, _payload) {} catch {
       failedMessages[_srcChainId][_srcAddress][_nonce] = keccak256(_payload);
       emit MessageFailed(_srcChainId, _srcAddress, _nonce, _payload);

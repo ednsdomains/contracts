@@ -7,6 +7,7 @@ import "../registry/IRegistry.sol";
 import "../registrar/interfaces/ISingletonRegistrar.sol";
 import "../registrar/interfaces/IOmniRegistrar.sol";
 import "../utils/Synchronizer.sol";
+import "hardhat/console.sol";
 
 contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
   IRegistry private _registry;
@@ -55,6 +56,8 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     require(!_registry.exists(keccak256(tld)), "TLD_EXISTS");
     _register(tld, resolver_, enable_, omni_);
     if (omni_) {
+      console.log("Root Register Payload: ");
+      console.logBytes(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true));
       _sync(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true), msg.value);
     }
   }

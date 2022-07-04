@@ -75,7 +75,7 @@ const config: HardhatUserConfig = {
     },
     polygonMumbai: {
       chainId: 80001,
-      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Arbitrum
     arbitrum: {
@@ -147,14 +147,14 @@ const config: HardhatUserConfig = {
 //     const { signer, network, networks } = await task_init(taskArgs, hre);
 //     await deployToken({ signer, networks, network });
 //   });
-
-// =========================== //
-// ========== Setup ========== //
-// =========================== //
-
-// ============================= //
-// ========== Upgrade ========== //
-// ============================= //
+//
+// // =========================== //
+// // ========== Setup ========== //
+// // =========================== //
+// //
+// // ============================= //
+// // ========== Upgrade ========== //
+// // ============================= //
 // task("upgrade:token")
 //   .addOptionalParam("mainnet", "Deploy on mainnet", false, types.boolean)
 //   .setAction(async (taskArgs, hre) => {

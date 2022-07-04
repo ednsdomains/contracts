@@ -239,7 +239,7 @@ const config: INetworkConfig = {
     chainId: 80001,
     name: "Polygon Mumbai",
     symbol: "MATIC",
-    url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 966,
     },

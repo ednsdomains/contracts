@@ -31,8 +31,7 @@ async function main() {
 
   for (const TLD of OMNI_TLDS) {
     console.log("PublicResolver",currentContractAddress.PublicResolver.address)
-
-    const tld = ethers.utils.toUtf8Bytes("TLD228");
+    const tld = ethers.utils.toUtf8Bytes("Text544");
     const payload_ = await currentContractAddress.Root.populateTransaction.register_SYNC(tld, currentContractAddress.PublicResolver.address, true, true);
     const fees = await currentContractAddress.Root.estimateSyncFee(payload_.data!);
     console.log(ethers.utils.formatEther(fees));
@@ -44,7 +43,6 @@ async function main() {
     });
     await rootRegister.wait();
     console.log(JSON.stringify(rootRegister, null, 2));
-    // const root_register = await root.register(tld, currentContractAddress.publicResolver, true, true, {gasLimit: 40000});
     console.log(`Regisiter: ${TLD}`);
     console.log(`root_register tx: ${rootRegister}`);
     await delay(1000);

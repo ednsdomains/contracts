@@ -5,7 +5,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./IRegistry.sol";
-
+import "hardhat/console.sol";
 contract Registry is IRegistry, AccessControlUpgradeable {
   uint256 public constant GRACE_PERIOD = 30 days;
 
@@ -114,6 +114,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     require(!exists(keccak256(tld)), "TLD_EXIST");
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     require(resolver_ != address(0x0), "UNDEFINED_RESOLVER");
+    console.log("TLD : %s", string(tld));
     TldRecord storage _record = _records[keccak256(tld)];
     _record.name = tld;
     _record.owner = owner_;
