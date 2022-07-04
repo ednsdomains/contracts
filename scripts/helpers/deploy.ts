@@ -208,3 +208,5 @@ export async function deployRoot(input: IDeployRootInput): Promise<Root> {
   console.log(`[[${NetworkConfig[input.network].name}]] Root Deployed - ${root.address}`);
   return root;
 }
+
+export const deployedChain = [Network.FANTOM_TESTNET,Network.BNB_CHAIN_TESTNET]

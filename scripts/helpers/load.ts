@@ -5,8 +5,10 @@ import { createProvider } from "../helpers/provider";
 import { ethers } from "hardhat";
 import { IDeployedContracts } from "../interfaces/deployed-contracts";
 import { IContracts } from "../interfaces/contracts";
+import {string} from "hardhat/internal/core/params/argumentTypes";
+import {Wallet} from "ethers";
 
-export const fullLoad = async (networks: Network[], signer: SignerWithAddress): Promise<IDeployedContracts> => {
+export const fullLoad = async (networks: Network[], signer: SignerWithAddress|Wallet): Promise<IDeployedContracts> => {
   const contracts: IDeployedContracts = {};
 
   for (const network of networks) {
@@ -69,7 +71,7 @@ export const fullLoad = async (networks: Network[], signer: SignerWithAddress): 
   return contracts;
 };
 
-export async function load(network: Network, signer: SignerWithAddress): Promise<IContracts> {
+export async function load(network: Network, signer: SignerWithAddress|Wallet): Promise<IContracts> {
   const contracts_ = Contracts[network];
 
   const TokenFactory = await ethers.getContractFactory("Token", signer);
