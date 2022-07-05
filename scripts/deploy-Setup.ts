@@ -24,7 +24,6 @@ async function main() {
 
   // let walletMnemonic = Wallet.fromMnemonic(process.env.MNEMONIC!);
   // walletMnemonic = walletMnemonic.connect(provider);
-
   otherContract.map(async (x)=>{
     console.log("Network:",NetworkConfig[x].layerzero.chainId)
     await currentContractAddress.Token.setTrustedRemote(NetworkConfig[x].layerzero.chainId,othersContractAddress[x].Token.address)
@@ -36,6 +35,7 @@ async function main() {
     console.log("omniRegistrarSynchronizer.setTrustedRemote Done");
     await currentContractAddress.Root.setTrustedRemote(NetworkConfig[x].layerzero.chainId,othersContractAddress[x].Root.address)
     console.log("root.setTrustedRemote Done");
+
   })
 
 

@@ -140,7 +140,7 @@ async function deploy() {
   await omniRegistrar.grantRole(await omniRegistrar.ROOT_ROLE(), root.address);
   await omniRegistrar.setBaseURI("https://omni.example.com");
   await root.setControllerApproval(otld, omniRegistrarController.address, true);
-
+  await root._setPublicResolverAddress(publicResolver.address)
   console.log("lzEndpoint", networkConfig.layerzero.endpoint.address);
 }
 
