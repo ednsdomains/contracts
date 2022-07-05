@@ -46,6 +46,9 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _setupRole(ADMIN_ROLE, _msgSender());
   }
+  function _setPublicResolverAddress(address defaultResolver_) external onlyAdmin{
+    setPublicResolverAddress(defaultResolver_);
+  }
 
   function register(
     bytes memory tld,
@@ -68,7 +71,7 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     bool enable_,
     bool omni_
   ) external onlySelf {
-    _register(tld, resolver_, enable_, omni_);
+    _register(tld, defaultPublicResolver, enable_, omni_);
   }
 
   function _register(

@@ -18,6 +18,7 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
   uint16[] public chainIds; // The chain IDs in LZ, all of the chain ID will be included
 
   address private _target;
+  address defaultPublicResolver;
 
   mapping(bytes32 => mapping(uint16 => bool)) internal _reqs;
   mapping(bytes32 => uint256) internal _history; // The record of the sync request created at timestamp
@@ -71,6 +72,10 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
 
   function sync(bytes memory payload) payable external onlyTarget {
     _sync(payload,msg.value);
+  }
+
+  function setPublicResolverAddress(address resolver) internal{
+    defaultPublicResolver = resolver;
   }
 
   function _sync(bytes memory payload, uint gasfee) internal returns (bytes32) {
