@@ -31,7 +31,7 @@ async function main() {
 
   for (const TLD of OMNI_TLDS) {
     console.log("PublicResolver",currentContractAddress.PublicResolver.address)
-    const tld = ethers.utils.toUtf8Bytes("BnBToFanAt1130");
+    const tld = ethers.utils.toUtf8Bytes("FanToBNBAt413");
     const payload_ = await currentContractAddress.Root.populateTransaction.register_SYNC(tld, currentContractAddress.PublicResolver.address, true, true);
     // console.log(payload_)
     console.log(payload_.data)

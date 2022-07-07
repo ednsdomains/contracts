@@ -58,5 +58,7 @@ describe("Deploy and Setup Contract", function () {
 
     console.log("Setting up `OmniRegistrarController`...");
     await setupOmniRegistrarController(contracts);
+
+
   });
 });

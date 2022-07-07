@@ -71,6 +71,7 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     bool enable_,
     bool omni_
   ) external onlySelf {
+    console.log("register_SYNC ");
     _register(tld, defaultPublicResolver, enable_, omni_);
   }
 

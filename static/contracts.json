@@ -42,18 +42,18 @@
     "Token": ""
   },
   "97": {
-    "Registry": "0x95476Ce78018DF17E4E2B2B2872100168504A14d",
-    "PublicResolver": "0x3E30877A443B0EbC09c773F732AE036c0274E7F2",
-    "PublicResolverSynchronizer": "0x9A00b8E6A2Ef6205020e065de058927dc6826dd6",
-    "SingletonRegistrar": "0x2d260B5d7C355A5a47F60BD6b7992370Cab253Eb",
-    "SingletonRegistrarController": "0x3944147EAf1D28D3296671e06c5FF142524De651",
+    "Registry": "0xB374D9b788d61a4782C1BC1752B473c5Bb60F81F",
+    "PublicResolver": "0xeE13D90ccBAeDAf61921a4AB8f9CE2E7450b01aD",
+    "PublicResolverSynchronizer": "0x7dc1965698226F1f4D8df2b796a55CA9176801cC",
+    "SingletonRegistrar": "0x74331d735321ed8b8deA6F7db201E9151BCC59DE",
+    "SingletonRegistrarController": "0xC5fB1bc33ce151FEfB676Ed3C7d4f303446008c0",
     "OmniRegistrar": "0x1F8cC1DCEE8E3d78776062018c5164107B021022",
     "OmniRegistrarController": "0x9Afc5c8F0c29be6818b18B75025FD10bf4c8Be13",
-    "OmniRegistrarSynchronizer": "0xF59D4Bf03A2Edc79563638FaE34dCE2Bc4EEb973",
+    "OmniRegistrarSynchronizer": "0x8e7F8ea1391404f24CCB74C9cd63C1ba0b554f0f",
     "Root": "0xe0d251AcB1B2Aad667B096EB3f8A03F723106f24",
-    "DomainPriceOracle": "0x6e238D20B6F9E5565a9D1B433f4208baA7a52d6e",
-    "TokenPriceOracle": "0x1626A17a9841b61a4E1ACBa0dab34CEF5551DaCf",
-    "Token": "0x1EEd6899ac4803c6431E6c8aC878586866De0b3b"
+    "DomainPriceOracle": "0x3e7a0e8a666791bF16d5EA75e43d0A0d18816473",
+    "TokenPriceOracle": "0xa7888F6F6EAb93e45aa812998B2faA75fBB6370f",
+    "Token": "0x5544229Fe0693248566b58ce36628F7070083457"
   },
   "137": {
     "Registry": "",
@@ -126,18 +126,18 @@
     "Token": ""
   },
   "4002": {
-    "Registry": "0x1EEd6899ac4803c6431E6c8aC878586866De0b3b",
-    "PublicResolver": "0x3944147EAf1D28D3296671e06c5FF142524De651",
-    "PublicResolverSynchronizer": "0x2d260B5d7C355A5a47F60BD6b7992370Cab253Eb",
-    "SingletonRegistrar": "0xa9a8bb3d88870Be004D9ECa3E6Ff989B4e673f8e",
-    "SingletonRegistrarController": "0xF59D4Bf03A2Edc79563638FaE34dCE2Bc4EEb973",
-    "OmniRegistrar": "0x2B295aFC93E4f9eBa1A2170D531A42C0232B2102",
-    "OmniRegistrarController": "0xe0d251AcB1B2Aad667B096EB3f8A03F723106f24",
-    "OmniRegistrarSynchronizer": "0x9Afc5c8F0c29be6818b18B75025FD10bf4c8Be13",
-    "Root": "0x60a24D1ac0B4db2B5156aC32Aa23F570f28bA677",
-    "DomainPriceOracle": "0x9A00b8E6A2Ef6205020e065de058927dc6826dd6",
-    "TokenPriceOracle": "0x7F16aE553e240D391f23788102642909cA76b85c",
-    "Token": "0x6e238D20B6F9E5565a9D1B433f4208baA7a52d6e"
+    "Registry": "0xa7888F6F6EAb93e45aa812998B2faA75fBB6370f",
+    "PublicResolver": "0xC5fB1bc33ce151FEfB676Ed3C7d4f303446008c0",
+    "PublicResolverSynchronizer": "0x74331d735321ed8b8deA6F7db201E9151BCC59DE",
+    "SingletonRegistrar": "0x178Cb64b8514cCB1189cCF65Fa7C197582Fb993C",
+    "SingletonRegistrarController": "0x8e7F8ea1391404f24CCB74C9cd63C1ba0b554f0f",
+    "OmniRegistrar": "0xff042B01A32406132A554CE48d485bBE86b333E3",
+    "OmniRegistrarController": "0x231d5d9C163F1232ed65097d248a4c4625289cf9",
+    "OmniRegistrarSynchronizer": "0x04f83FADAC3321549E13aD5Cf59Be2A60C3d0b0E",
+    "Root": "0x9ABD01843E997ce9f5079D38b6b0b5E5af51ADD4",
+    "DomainPriceOracle": "0x7dc1965698226F1f4D8df2b796a55CA9176801cC",
+    "TokenPriceOracle": "0x8dD8E14A375AFf2365B158d181A742a1636F731B",
+    "Token": "0x3e7a0e8a666791bF16d5EA75e43d0A0d18816473"
   },
   "10": {
     "Registry": "",
