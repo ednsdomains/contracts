@@ -309,6 +309,7 @@ contract AffiliateProgram is
             level: 0,
             reward: 0
         });
+        _safeMint(_profiles[id].owner, uint256(id));
         emit EnrollmentRequest(registrant, id);
         // if (allowAutoEnroll) {
         //     _profiles[id].accepted = true;

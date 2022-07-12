@@ -9,8 +9,8 @@ const provider = new hardhat.ethers.providers.InfuraProvider(
 provider.getFeeData = async () => {
   const gasPrice = await provider.getGasPrice();
   return {
-    maxFeePerGas: ethers.BigNumber.from(40000000000),
-    maxPriorityFeePerGas: ethers.BigNumber.from(40000000000),
+    maxFeePerGas: ethers.BigNumber.from(50000000000),
+    maxPriorityFeePerGas: ethers.BigNumber.from(50000000000),
     gasPrice,
   };
 };
@@ -36,6 +36,10 @@ async function main() {
     process.env.EDNS_REGISTRAR_CONTROLLER_CONTRACT_ADDRESS!;
   const REVERSE_REGISTRAR_ADDRESS =
     process.env.REVERSE_RESOLVER_CONTRACT_ADDRESS!;
+  const AFFILIATE_PROGRAM_CONTRACT_ADDRESS =
+    process.env.AFFILIATE_PROGRAM_CONTRACT_ADDRESS!;
+
+  console.log({ AFFILIATE_PROGRAM_CONTRACT_ADDRESS });
 
   const EDNSRegistry = await hardhat.ethers.getContractFactory(
     "EDNSRegistry",
@@ -58,6 +62,22 @@ async function main() {
     signer
   );
 
+  const AffiliateProgramFactory = await hardhat.ethers.getContractFactory(
+    "AffiliateProgram",
+    signer
+  );
+
+  await upgrades.forceImport(
+    AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
+    AffiliateProgramFactory
+  );
+  const _affiliateProgram = await upgrades.upgradeProxy(
+    AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
+    AffiliateProgramFactory
+  );
+  await _affiliateProgram.deployed();
+  console.log(`Affiliate Program upgraded`);
+
   // const _registry = await upgrades.upgradeProxy(EDNS_REGISTRY_ADDRESS, EDNSRegistry);
   // // await _registry.deployed();
   // console.log(`EDNS Registry upgraded`);
@@ -75,10 +95,10 @@ async function main() {
   //   BaseRegistrarImplementation
   // );
 
-  const _baseRegistrar = await upgrades.upgradeProxy(
-    BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
-    BaseRegistrarImplementation
-  );
+  // const _baseRegistrar = await upgrades.upgradeProxy(
+  //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
+  //   BaseRegistrarImplementation
+  // );
 
   // console.log("Base Registrar Implementation upgraded");
 
