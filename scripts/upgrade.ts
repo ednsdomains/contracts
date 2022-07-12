@@ -67,10 +67,6 @@ async function main() {
     signer
   );
 
-  await upgrades.forceImport(
-    AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
-    AffiliateProgramFactory
-  );
   const _affiliateProgram = await upgrades.upgradeProxy(
     AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
     AffiliateProgramFactory
