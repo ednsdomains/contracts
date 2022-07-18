@@ -31,7 +31,7 @@ async function main() {
 
   for (const TLD of OMNI_TLDS) {
     console.log("PublicResolver",currentContractAddress.PublicResolver.address)
-    const tld = ethers.utils.toUtf8Bytes("FanToBNBAt413");
+    const tld = ethers.utils.toUtf8Bytes("FantoBnb314");
     const payload_ = await currentContractAddress.Root.populateTransaction.register_SYNC(tld, currentContractAddress.PublicResolver.address, true, true);
     // console.log(payload_)
     console.log(payload_.data)
@@ -40,8 +40,9 @@ async function main() {
     console.log(await currentContractAddress.Registry.callStatic["exists(bytes32)"](ethers.utils.keccak256(tld)))
     const rootRegister = await currentContractAddress.Root.register(tld, currentContractAddress.PublicResolver.address, true, true, {
       // 0.000001660703359502
-      value: fees,
-      gasLimit: 400000,
+      value: fees.mul((BigNumber.from("2"))),
+      // value:fees,
+      gasLimit: 500000,
     });
     await rootRegister.wait();
     console.log(JSON.stringify(rootRegister, null, 2));

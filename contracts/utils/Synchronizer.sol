@@ -90,14 +90,12 @@ contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
     _history[_reqId] = block.timestamp;
     uint64[] memory _nonces = new uint64[](chainIds.length);
     // Start looping through the chains
-    uint16 version =1;
-    uint256 value = 400000;
 
     for (uint256 i = 0; i < chainIds.length; i++) {
       // Ensure the transaction will not send again to itself
       if (chainIds[i] != chainId) {
         //TODO _adapterParams
-        _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), abi.encodePacked(version,value),gasfee);
+        _lzSend(chainIds[i], payload_, payable(_msgSender()), address(0x0), "",gasfee);
         // Collect the nonce
         uint64 nonce = lzEndpoint.getOutboundNonce(chainIds[i], address(this));
         _nonces[i] = nonce;

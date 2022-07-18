@@ -34,7 +34,7 @@ async function main() {
     await currentContractAddress.OmniRegistrarSynchronizer.setTrustedRemote(NetworkConfig[x].layerzero.chainId,othersContractAddress[x].OmniRegistrarSynchronizer.address)
     console.log("omniRegistrarSynchronizer.setTrustedRemote Done");
     await currentContractAddress.Root.setTrustedRemote(NetworkConfig[x].layerzero.chainId,othersContractAddress[x].Root.address)
-    console.log("root.setTrustedRemote Done");
+    console.log("root.setTrustedRemote Done Chain ID:",NetworkConfig[x].layerzero.chainId, "Root Address:", othersContractAddress[x].Root.address);
 
   })
 
