@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./IRegistry.sol";
 import "hardhat/console.sol";
+
 contract Registry is IRegistry, AccessControlUpgradeable {
   uint256 public constant GRACE_PERIOD = 30 days;
 
@@ -17,19 +18,22 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   bytes internal constant DOT = bytes(".");
 
   struct TldRecord {
-    bytes name;
-    address owner;
-    address resolver;
-    bool enable;
+    bytes name; // The name of the TLD - '.meta' or '.ass'
+    address owner; // The owner of thr TLD, it should always be the `Root` contract address
+    address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
+    bool enable; // Is this TLD enable to register new domain
     bool omni;
+    uint64[] lzChainIds;
+    bool allowRental;
     mapping(bytes32 => DomainRecord) domains;
   }
 
   struct DomainRecord {
-    bytes name;
-    address owner;
-    address resolver;
-    uint256 expiry;
+    bytes name; // The name of the domain name, if the FQDN is `edns.meta`, then this will be `bytes('edns')`
+    address owner; // The owner of the domain
+    address resolver; //  The contract address of the resolver, it used the `PublicResolver` as default
+    uint256 expires; // The expiry unix timestamp of the domain
+    RentalRecord rental;
     mapping(address => bool) operators;
     mapping(bytes32 => HostRecord) hosts;
   }
@@ -37,6 +41,11 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   struct HostRecord {
     bytes name;
     mapping(address => bool) operators;
+  }
+
+  struct RentalRecord {
+    address user;
+    uint256 expires;
   }
 
   mapping(bytes32 => TldRecord) internal _records;
@@ -66,8 +75,13 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     _;
   }
 
+  modifier onlyDomainUser(bytes32 domain, bytes32 tld) {
+    require(_msgSender() == _records[tld].domains[domain].rental.user, "ONLY_USER");
+    _;
+  }
+
   modifier onlyDomainOperator(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].owner || _records[tld].domains[domain].operators[_msgSender()], "ONLY_OPERATOR");
+    require(_msgSender() == _records[tld].domains[domain].rental.user || _records[tld].domains[domain].operators[_msgSender()], "ONLY_OPERATOR");
     _;
   }
 
@@ -109,18 +123,19 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     address owner_,
     address resolver_,
     bool enable_,
-    bool omni_
+    bool omni_,
+    uint64[] memory lzChainIds
   ) external onlyRoot {
     require(!exists(keccak256(tld)), "TLD_EXIST");
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     require(resolver_ != address(0x0), "UNDEFINED_RESOLVER");
-    console.log("TLD : %s", string(tld));
     TldRecord storage _record = _records[keccak256(tld)];
     _record.name = tld;
     _record.owner = owner_;
     _record.resolver = resolver_;
     _record.enable = enable_;
     _record.omni = omni_;
+    _record.lzChainIds = lzChainIds;
     emit NewTld(tld, owner_);
   }
 
@@ -130,7 +145,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     bytes memory tld,
     address owner_,
     address resolver_,
-    uint256 expiry_
+    uint256 expires_
   ) external onlyRegistrar {
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     if (resolver_ == address(0x0)) resolver_ = _records[keccak256(tld)].resolver;
@@ -139,7 +154,10 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     _record.name = domain;
     _record.owner = owner_;
     _record.resolver = resolver_;
-    _record.expiry = expiry_;
+    _record.expires = expires_;
+    RentalRecord storage _rental = _records[keccak256(tld)].domains[keccak256(domain)].rental;
+    _rental.user = owner_;
+    _rental.expires = expires_;
     emit NewDomain(domain, tld, owner_);
   }
 
@@ -211,14 +229,14 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     emit SetOperator(abi.encodePacked(_records[tld].domains[domain].hosts[host].name, DOT, _records[tld].domains[domain].name, DOT, _records[tld].name), operator_, approved);
   }
 
-  function setExpiry(
+  function setExpires(
     bytes32 domain,
     bytes32 tld,
-    uint256 expiry_
+    uint256 expires_
   ) external onlyRegistrar {
     require(exists(domain, tld), "DOMAIN_NOT_EXIST");
-    require(_records[tld].domains[domain].expiry + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
-    _records[tld].domains[domain].expiry = expiry_;
+    require(_records[tld].domains[domain].expires + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
+    _records[tld].domains[domain].expires = expires_;
   }
 
   function setEnable(bytes32 tld, bool enable_) external onlyRoot {
@@ -291,9 +309,9 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].domains[domain].hosts[host].operators[_msgSender()];
   }
 
-  // Get the expiry date of the domain in unix timestamp
-  function expiry(bytes32 domain, bytes32 tld) public view returns (uint256) {
-    return _records[tld].domains[domain].expiry;
+  // Get the expires date of the domain in unix timestamp
+  function expires(bytes32 domain, bytes32 tld) public view returns (uint256) {
+    return _records[tld].domains[domain].expires;
   }
 
   // Get the grace period
@@ -303,7 +321,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
 
   // Is the domain still alive (not yet expired)
   function live(bytes32 domain, bytes32 tld) public view returns (bool) {
-    return _records[tld].domains[domain].expiry >= block.timestamp;
+    return _records[tld].domains[domain].expires >= block.timestamp;
   }
 
   // Is the TLD enable and allow to register

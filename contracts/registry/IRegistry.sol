@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 interface IRegistry {
+  /* ========== Event ==========*/
   event NewTld(bytes tld, address owner);
   event NewDomain(bytes domain, bytes tld, address owner);
   event NewHost(bytes host, bytes domain, bytes tld);
@@ -11,6 +12,7 @@ interface IRegistry {
 
   event SetOperator(bytes fqdn, address operator, bool approved);
 
+  /* ========== Mutative ==========*/
   function setRecord(
     bytes memory tld,
     address owner,
@@ -24,7 +26,8 @@ interface IRegistry {
     bytes memory tld,
     address owner,
     address resolver,
-    uint256 expiry
+    uint256 expires,
+    uint64[] memory lzChainIds
   ) external;
 
   function setRecord(
@@ -64,14 +67,21 @@ interface IRegistry {
     bool approved
   ) external;
 
-  function setExpiry(
+  function setExpires(
     bytes32 domain,
     bytes32 tld,
-    uint256 expiry
+    uint256 expires
   ) external;
 
   function setEnable(bytes32 tld, bool enable) external;
 
+  // function remove(
+  //   bytes32 host,
+  //   bytes32 domain,
+  //   bytes32 tld
+  // ) external;
+
+  /* ========== Query ==========*/
   function owner(bytes32 tld) external view returns (address);
 
   function owner(bytes32 domain, bytes32 tld) external view returns (address);
@@ -111,7 +121,7 @@ interface IRegistry {
     bytes32 tld
   ) external view returns (bool);
 
-  function expiry(bytes32 domain, bytes32 tld) external view returns (uint256);
+  function expires(bytes32 domain, bytes32 tld) external view returns (uint256);
 
   function gracePeriod() external view returns (uint256);
 

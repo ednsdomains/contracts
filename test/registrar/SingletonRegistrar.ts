@@ -82,10 +82,10 @@
 //       );
 //     });
 //     it("Renew", async function () {
-//       const baiseExpiryTime = await singletonRegistrar.expiry(ethers.utils.toUtf8Bytes(Domain), ethers.utils.toUtf8Bytes(TLD));
+//       const baiseExpiresTime = await singletonRegistrar.expires(ethers.utils.toUtf8Bytes(Domain), ethers.utils.toUtf8Bytes(TLD));
 //       await singletonRegistrar.renew(ethers.utils.toUtf8Bytes(Domain), ethers.utils.toUtf8Bytes(TLD), expirtDate.getTime());
-//       const newExpiryTime = await singletonRegistrar.expiry(ethers.utils.toUtf8Bytes(Domain), ethers.utils.toUtf8Bytes(TLD));
-//       expect(newExpiryTime).to.be.above(baiseExpiryTime);
+//       const newExpiresTime = await singletonRegistrar.expires(ethers.utils.toUtf8Bytes(Domain), ethers.utils.toUtf8Bytes(TLD));
+//       expect(newExpiresTime).to.be.above(baiseExpiresTime);
 //     });
 //     // it("Reclaim", async function () {
 //     //     expect(await singletonRegistrar["ownerOf(bytes,bytes)"](ethers.utils.toUtf8Bytes(Domain),ethers.utils.toUtf8Bytes(TLD))).to.equal(addr1.address)

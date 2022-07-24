@@ -2104,7 +2104,7 @@
                 "slot": "2"
               },
               {
-                "label": "expiry",
+                "label": "expires",
                 "type": "t_uint256",
                 "offset": 0,
                 "slot": "3"

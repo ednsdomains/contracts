@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 interface IDomainPriceOracle {
-  // function price(string memory domain, uint256 expiry) external returns (uint256);
+  // function price(string memory domain, uint256 expires) external returns (uint256);
 
   function price(
     bytes memory domain,
