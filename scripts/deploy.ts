@@ -118,19 +118,19 @@ async function main() {
     ethers.utils.formatUnits(await provider.getGasPrice(), "gwei")
   );
 
-  const affiliateProgram = await upgrades.deployProxy(AffiliateProgramFactory);
-  console.log(
-    `AffiliateProgram contract address - ${affiliateProgram.address}`
-  );
+  // const affiliateProgram = await upgrades.deployProxy(AffiliateProgramFactory);
+  // console.log(
+  //   `AffiliateProgram contract address - ${affiliateProgram.address}`
+  // );
   // const registry = EDNSRegistry.attach(
   //   "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12"
   // );
   // const resolver = PublicResolver.attach(
   //   "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144"
   // );
-  // const baseRegistrar = BaseRegistrarImplementation.attach(
-  //   "0x53a0018f919bde9C254bda697966C5f448ffDDcB"
-  // );
+  const baseRegistrar = BaseRegistrarImplementation.attach(
+    "0x53a0018f919bde9C254bda697966C5f448ffDDcB"
+  );
 
   // console.log(await baseRegistrar.supportsInterface("0x5b5e139f"));
   // console.log(await baseRegistrar.supportsInterface("0x80ac58cd"));
@@ -153,10 +153,12 @@ async function main() {
   //   "0xD986F9083F006D0E2d08c9F22247b4a0a213146D"
   // );
 
-  // const tx = await baseRegistrar.populateTransaction.transferOwnership(
-  //   "0xe3515A181D8d2F39F5f4D672457B54EeaE022b15"
-  // );
-  // console.log({ data: tx.data });
+  console.log(await baseRegistrar.owner());
+
+  const tx = await baseRegistrar.populateTransaction.transferOwnership(
+    "0x649fA3bDD2EcEC69cF5b92FF05304D24FfBe41a8"
+  );
+  console.log({ data: tx.data });
 
   // const _registry = await upgrades.deployProxy(EDNSRegistry, []);
   // await _registry.deployed();

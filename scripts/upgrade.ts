@@ -67,12 +67,12 @@ async function main() {
     signer
   );
 
-  const _affiliateProgram = await upgrades.upgradeProxy(
-    AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
-    AffiliateProgramFactory
-  );
-  await _affiliateProgram.deployed();
-  console.log(`Affiliate Program upgraded`);
+  // const _affiliateProgram = await upgrades.upgradeProxy(
+  //   AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
+  //   AffiliateProgramFactory
+  // );
+  // await _affiliateProgram.deployed();
+  // console.log(`Affiliate Program upgraded`);
 
   // const _registry = await upgrades.upgradeProxy(EDNS_REGISTRY_ADDRESS, EDNSRegistry);
   // // await _registry.deployed();
