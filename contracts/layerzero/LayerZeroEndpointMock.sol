@@ -86,7 +86,7 @@ contract LayerZeroEndpointMock is ILayerZeroEndpoint {
     require(lzEndpoint != address(0), "LayerZeroMock: destination LayerZero Endpoint not found");
 
     require(msg.value >= nativeFee * _payload.length, "LayerZeroMock: not enough native for fees");
-    console.log("sent Gas fee", msg.value);
+    // console.log("sent Gas fee", msg.value);
     uint64 nonce;
     {
       nonce = ++outboundNonce[_chainId][msg.sender];

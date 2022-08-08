@@ -2,32 +2,42 @@
 pragma solidity ^0.8.9;
 
 interface IAddressResolver {
-  event SetAddress(bytes host, bytes domain, bytes tld, uint256 coin, bytes address_);
+  event SetAddress(bytes host, bytes domain, bytes tld, address address_);
+  event SetReverseAddress(bytes host, bytes domain, bytes tld, address address_);
 
-  function setAddr(
+  function setAddress(
     bytes memory host,
     bytes memory domain,
     bytes memory tld,
-    uint256 coin,
-    bytes memory address_
+    address address_
   ) external;
 
-  function setAddr_SYNC(
+  function setAddress_SYNC(
     bytes memory host,
     bytes memory domain,
     bytes memory tld,
-    uint256 coin,
-    bytes memory address_
+    address address_
   ) external;
 
-  function addr(
+  function getAddress(
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld
+  ) external returns (address);
+
+  function setReverseAddress(
     bytes memory host,
     bytes memory domain,
     bytes memory tld,
-    uint256 coin
-  ) external view returns (bytes memory);
+    address address_
+  ) external;
 
-  function addr(bytes memory fqdn, uint256 coin) external view returns (bytes memory);
+  function setReverseAddress_SYNC(
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld,
+    address address_
+  ) external;
 
-  function addr(bytes32 fqdn, uint256 coin) external view returns (bytes memory);
+  function getReverseAddress(address address_) external returns (bytes memory);
 }

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 interface ISynchronizer {
-  function sync(bytes calldata payload) payable external;
+  function sync(uint16[] memory lzChainIds, bytes memory payload) external payable;
 
-  function estimateSyncFee(bytes calldata payload) external returns (uint256);
+  function estimateSyncFee(uint16[] memory lzChainIds, bytes memory payload) external returns (uint256);
 }

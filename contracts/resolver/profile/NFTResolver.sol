@@ -16,8 +16,9 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     uint256 tokenId
   ) public onlyLive(domain, tld) onlyAuthorised(host, domain, tld) {
     _setNFT(host, domain, tld, chainId, contract_, tokenId);
-    if (_registry.omni(keccak256(tld))) {
-      _synchronizer.sync(abi.encodeWithSignature("setNFT_SYNC(bytes,bytes,bytes,uint256,address,uint256)", host, domain, tld, chainId, contract_, tokenId));
+    if (_registry.isOmni(keccak256(tld))) {
+      uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
+      _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setNFT_SYNC(bytes,bytes,bytes,uint256,address,uint256)", host, domain, tld, chainId, contract_, tokenId));
     }
   }
 
@@ -43,31 +44,16 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     _setHostRecord(host, domain, tld);
     bytes32 fqdn;
     if (keccak256(bytes(host)) == AT) {
-      fqdn = keccak256(abi.encodePacked(domain, DOT, tld));
+      fqdn = keccak256(_join(domain, tld));
     } else {
       require(_validHost(bytes(host)), "INVALID_HOST");
-      fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
+      fqdn = keccak256(_join(host, domain, tld));
     }
     _nfts[fqdn][chainId] = NFT({ contract_: contract_, tokenId: tokenId });
-    emit SetNFT(abi.encodePacked(host, DOT, domain, DOT, tld), bytes(host), bytes(domain), bytes(tld), chainId, contract_, tokenId);
+    emit SetNFT(host, domain, tld, chainId, contract_, tokenId);
   }
 
-  function nft(
-    bytes memory host,
-    bytes memory domain,
-    bytes memory tld,
-    uint256 chainId
-  ) public view returns (NFT memory) {
-    bytes32 fqdn = keccak256(abi.encodePacked(host, DOT, domain, DOT, tld));
-    return _nfts[fqdn][chainId];
-  }
-
-  function nft(bytes memory fqdn, uint256 chainId) public view returns (NFT memory) {
-    bytes32 fqdn_ = keccak256(fqdn);
-    return _nfts[fqdn_][chainId];
-  }
-
-  function nft(bytes32 fqdn, uint256 chainId) public view returns (NFT memory) {
+  function getNFT(bytes32 fqdn, uint256 chainId) public view returns (NFT memory) {
     return _nfts[fqdn][chainId];
   }
 

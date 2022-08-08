@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 
-import { HardhatUserConfig, task } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
@@ -9,14 +9,6 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
-import { createSigner } from "./scripts/helpers/signer";
-import { deployToken } from "./scripts/helpers/deploy";
-import { types } from "hardhat/config";
-import { Mainnets, Network, Testnets } from "./network.config";
-import { upgradeToken } from "./scripts/helpers/upgrade";
-import { load } from "./scripts/helpers/load";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 dotenv.config();
 // https://hardhat.org/config/

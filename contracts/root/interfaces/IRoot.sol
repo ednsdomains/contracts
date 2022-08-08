@@ -6,7 +6,8 @@ interface IRoot {
     bytes memory tld,
     address resolver,
     bool enable_,
-    bool omni_
+    bool omni_,
+    uint16[] memory lzChainIds
   ) external payable;
 
   function transfer(bytes memory tld) external;
@@ -23,9 +24,9 @@ interface IRoot {
     bool approved
   ) external;
 
-  function enable(bytes memory tld) external view returns (bool);
+  function isEnable(bytes memory tld) external view returns (bool);
 
-  function omni(bytes memory tld) external view returns (bool);
+  function isOmni(bytes memory tld) external view returns (bool);
 
-  function resolver(bytes memory tld) external view returns (address);
+  function getResolver(bytes memory tld) external view returns (address);
 }

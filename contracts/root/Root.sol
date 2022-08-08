@@ -3,11 +3,10 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/IRoot.sol";
-import "../registry/IRegistry.sol";
+import "../registry/interfaces/IRegistry.sol";
 import "../registrar/interfaces/ISingletonRegistrar.sol";
 import "../registrar/interfaces/IOmniRegistrar.sol";
 import "../utils/Synchronizer.sol";
-import "hardhat/console.sol";
 
 contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
   IRegistry private _registry;
@@ -19,11 +18,10 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     ISingletonRegistrar singletonRegistrar_,
     IOmniRegistrar omniRegistrar_,
     address _lzEndpoint,
-    uint16 chainId_,
-    uint16[] memory chainIds_
+    uint16 chainId_
   ) public initializer {
     __Root_init(registry_, singletonRegistrar_, omniRegistrar_);
-    __Synchronizer_init(chainId_, chainIds_, _lzEndpoint);
+    __Synchronizer_init(chainId_, _lzEndpoint);
   }
 
   function __Root_init(
@@ -46,7 +44,8 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _setupRole(ADMIN_ROLE, _msgSender());
   }
-  function _setPublicResolverAddress(address defaultResolver_) external onlyAdmin{
+
+  function _setPublicResolverAddress(address defaultResolver_) external onlyAdmin {
     setPublicResolverAddress(defaultResolver_);
   }
 
@@ -54,14 +53,16 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     bytes memory tld,
     address resolver_,
     bool enable_,
-    bool omni_
+    bool omni_,
+    uint16[] memory lzChainIds
   ) public payable onlyAdmin {
-    require(!_registry.exists(keccak256(tld)), "TLD_EXISTS");
-    _register(tld, resolver_, enable_, omni_);
+    require(!_registry.isExists(keccak256(tld)), "TLD_EXISTS");
+    _register(tld, resolver_, enable_, omni_, lzChainIds);
     if (omni_) {
-      console.log("Root Register Payload: ");
-      console.logBytes(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true));
-      _sync(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true), msg.value);
+      // console.log("Root Register Payload: ");
+      // console.logBytes(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true));
+      uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+      _sync(lzChainIds_, abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true), msg.value);
     }
   }
 
@@ -69,19 +70,20 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     bytes memory tld,
     address resolver_,
     bool enable_,
-    bool omni_
+    bool omni_,
+    uint16[] memory lzChainIds
   ) external onlySelf {
-    console.log("register_SYNC ");
-    _register(tld, defaultPublicResolver, enable_, omni_);
+    _register(tld, defaultPublicResolver, enable_, omni_, lzChainIds);
   }
 
   function _register(
     bytes memory tld,
     address resolver_,
     bool enable_,
-    bool omni_
+    bool omni_,
+    uint16[] memory lzChainIds
   ) internal {
-    _registry.setRecord(tld, address(this), resolver_, enable_, omni_);
+    _registry.setRecord(tld, address(this), resolver_, enable_, omni_, lzChainIds);
   }
 
   // TODO:
@@ -94,7 +96,10 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
 
   function setEnable(bytes memory tld, bool enable_) public payable onlyAdmin {
     _setEnable(tld, enable_);
-    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setEnable(bytes,bool)", tld, enable_), msg.value);
+    if (_registry.isOmni(keccak256(tld))) {
+      uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+      _sync(lzChainIds_, abi.encodeWithSignature("_setEnable(bytes,bool)", tld, enable_), msg.value);
+    }
   }
 
   function _setEnable(bytes memory tld, bool enable_) internal {
@@ -103,7 +108,10 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
 
   function setResolver(bytes memory tld, address resolver_) public payable onlyAdmin {
     _setResolver(tld, resolver_);
-    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setResolver(bytes,bool)", tld, resolver_), msg.value);
+    if (_registry.isOmni(keccak256(tld))) {
+      uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+      _sync(lzChainIds_, abi.encodeWithSignature("_setResolver(bytes,bool)", tld, resolver_), msg.value);
+    }
   }
 
   function _setResolver(bytes memory tld, address resolver_) internal {
@@ -116,23 +124,23 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     bool approved
   ) public onlyAdmin {
     // require(_registry.exists(keccak256(tld)), "TLD_NOT_EXISTS");
-    if (_registry.omni(keccak256(tld))) {
+    if (_registry.isOmni(keccak256(tld))) {
       _omniRegistrar.setControllerApproval(tld, controller, approved);
     } else {
       _singletonRegistrar.setControllerApproval(tld, controller, approved);
     }
   }
 
-  function enable(bytes memory tld) public view returns (bool) {
-    return _registry.enable(keccak256(tld));
+  function isEnable(bytes memory tld) public view returns (bool) {
+    return _registry.isEnable(keccak256(tld));
   }
 
-  function omni(bytes memory tld) public view returns (bool) {
-    return _registry.omni(keccak256(tld));
+  function isOmni(bytes memory tld) public view returns (bool) {
+    return _registry.isOmni(keccak256(tld));
   }
 
-  function resolver(bytes memory tld) public view returns (address) {
-    return _registry.resolver(keccak256(tld));
+  function getResolver(bytes memory tld) public view returns (address) {
+    return _registry.getResolver(keccak256(tld));
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, Synchronizer) returns (bool) {

@@ -18,7 +18,8 @@ interface IRegistry {
     address owner,
     address resolver,
     bool enable,
-    bool omni
+    bool omni,
+    uint16[] memory lzChainIds
   ) external;
 
   function setRecord(
@@ -26,8 +27,7 @@ interface IRegistry {
     bytes memory tld,
     address owner,
     address resolver,
-    uint256 expires,
-    uint64[] memory lzChainIds
+    uint256 expires
   ) external;
 
   function setRecord(
@@ -81,53 +81,58 @@ interface IRegistry {
   //   bytes32 tld
   // ) external;
 
-  /* ========== Query ==========*/
-  function owner(bytes32 tld) external view returns (address);
+  /* ========== Query - Genereal ==========*/
 
-  function owner(bytes32 domain, bytes32 tld) external view returns (address);
+  function getOwner(bytes32 tld) external view returns (address);
 
-  function resolver(bytes32 tld) external view returns (address);
+  function getOwner(bytes32 domain, bytes32 tld) external view returns (address);
 
-  function resolver(bytes32 domain, bytes32 tld) external view returns (address);
+  function getResolver(bytes32 tld) external view returns (address);
 
-  function exists(bytes32 tld) external view returns (bool);
+  function getResolver(bytes32 domain, bytes32 tld) external view returns (address);
 
-  function exists(bytes32 domain, bytes32 tld) external view returns (bool);
+  function getExpires(bytes32 domain, bytes32 tld) external view returns (uint256);
 
-  function exists(
+  function getGracePeriod() external view returns (uint256);
+
+  function getLzChainIds(bytes32 tld) external view returns (uint16[] memory);
+
+  /* ========== Query - Boolean ==========*/
+
+  function isExists(bytes32 tld) external view returns (bool);
+
+  function isExists(bytes32 domain, bytes32 tld) external view returns (bool);
+
+  function isExists(
     bytes32 host,
     bytes32 domain,
     bytes32 tld
   ) external view returns (bool);
 
-  function operator(
+  function isOperator(
     bytes32 domain,
     bytes32 tld,
     address _operator
   ) external view returns (bool);
 
-  function operator(
+  function isOperator(
     bytes32 host,
     bytes32 domain,
     bytes32 tld,
     address _operator
   ) external view returns (bool);
 
-  function operator(bytes32 domain, bytes32 tld) external view returns (bool);
+  function isOperator(bytes32 domain, bytes32 tld) external view returns (bool);
 
-  function operator(
+  function isOperator(
     bytes32 host,
     bytes32 domain,
     bytes32 tld
   ) external view returns (bool);
 
-  function expires(bytes32 domain, bytes32 tld) external view returns (uint256);
+  function isLive(bytes32 domain, bytes32 tld) external view returns (bool);
 
-  function gracePeriod() external view returns (uint256);
+  function isEnable(bytes32 tld) external view returns (bool);
 
-  function live(bytes32 domain, bytes32 tld) external view returns (bool);
-
-  function enable(bytes32 tld) external view returns (bool);
-
-  function omni(bytes32 tld) external view returns (bool);
+  function isOmni(bytes32 tld) external view returns (bool);
 }

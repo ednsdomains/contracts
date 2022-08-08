@@ -4,12 +4,11 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import "../utils/LabelValidator.sol";
-import "../registry/IRegistry.sol";
+import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IPublicResolverSynchronizer.sol";
 
 abstract contract BaseResolver is ERC165Upgradeable, LabelValidator, ContextUpgradeable {
   bytes32 internal constant AT = keccak256(bytes("@"));
-  bytes internal constant DOT = bytes(".");
 
   IRegistry internal _registry;
 
@@ -47,13 +46,13 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelValidator, ContextUpgr
     bytes32 host_ = keccak256(host);
     bytes32 domain_ = keccak256(domain);
     bytes32 tld_ = keccak256(tld);
-    return _registry.owner(domain_, tld_) == _msgSender() || _registry.operator(domain_, tld_, _msgSender()) || _registry.operator(host_, domain_, tld_, _msgSender());
+    return _registry.getOwner(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
   }
 
   function _isLive(bytes memory domain, bytes memory tld) internal view returns (bool) {
     bytes32 domain_ = keccak256(domain);
     bytes32 tld_ = keccak256(tld);
-    return _registry.live(domain_, tld_);
+    return _registry.isLive(domain_, tld_);
   }
 
   function _setHostRecord(
@@ -64,6 +63,6 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelValidator, ContextUpgr
     bytes32 host_ = keccak256(host);
     bytes32 domain_ = keccak256(domain);
     bytes32 tld_ = keccak256(tld);
-    if (!_registry.exists(host_, domain_, tld_)) _registry.setRecord(host, domain, tld);
+    if (!_registry.isExists(host_, domain_, tld_)) _registry.setRecord(host, domain, tld);
   }
 }

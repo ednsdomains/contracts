@@ -20,11 +20,11 @@ contract OmniRegistrar is BaseRegistrar {
   }
 
   function available(bytes memory tld) public view override returns (bool) {
-    return super.available(tld) && _registry.omni(keccak256(tld));
+    return super.available(tld) && _registry.isOmni(keccak256(tld));
   }
 
   function available(bytes memory domain, bytes memory tld) public view override returns (bool) {
-    return super.available(domain, tld) && _registry.omni(keccak256(tld));
+    return super.available(domain, tld) && _registry.isOmni(keccak256(tld));
   }
 
   modifier onlySynchronizer() {
@@ -40,7 +40,8 @@ contract OmniRegistrar is BaseRegistrar {
   ) external onlyController(keccak256(tld)) {
     require(available(domain, tld), "NOT_AVAILABLE");
     _register(domain, tld, owner, durations);
-    _synchronizer.sync(abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)", domain, tld, owner, durations));
+    uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)", domain, tld, owner, durations));
   }
 
   function register_SYNC(
@@ -58,7 +59,8 @@ contract OmniRegistrar is BaseRegistrar {
     uint256 durations
   ) external onlyController(keccak256(tld)) {
     _renew(domain, tld, durations);
-    _synchronizer.sync(abi.encodeWithSignature("renew_SYNC(bytes, bytes, uint256)", domain, tld, durations));
+    uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("renew_SYNC(bytes, bytes, uint256)", domain, tld, durations));
   }
 
   function renew_SYNC(
@@ -75,7 +77,8 @@ contract OmniRegistrar is BaseRegistrar {
     address owner
   ) external onlyController(keccak256(tld)) {
     _reclaim(domain, tld, owner);
-    _synchronizer.sync(abi.encodeWithSignature("reclaim_SYNC(bytes, bytes, address)", domain, tld, owner));
+    uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("reclaim_SYNC(bytes, bytes, address)", domain, tld, owner));
   }
 
   function reclaim_SYNC(

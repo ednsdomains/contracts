@@ -2,11 +2,11 @@
 pragma solidity ^0.8.9;
 
 interface IBaseRegistrarController {
-  function available(string memory domain, string memory tld) external returns (bool);
+  function isAvailable(string memory domain, string memory tld) external returns (bool);
 
-  function available(string memory tld) external returns (bool);
+  function isAvailable(string memory tld) external returns (bool);
 
-  function price(
+  function getPrice(
     string memory domain,
     string memory tld,
     uint256 durations

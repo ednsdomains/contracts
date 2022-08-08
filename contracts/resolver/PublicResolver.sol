@@ -2,14 +2,14 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
-import "../registry/IRegistry.sol";
+import "../registry/interfaces/IRegistry.sol";
 import "./BaseResolver.sol";
 import "./interfaces/IPublicResolver.sol";
 import "./profile/AddressResolver.sol";
+import "./profile/MultiCoinAddressResolver.sol";
 import "./profile/NFTResolver.sol";
-import "./profile/ReverseResolver.sol";
 
-contract PublicResolver is IPublicResolver, MulticallUpgradeable, AddressResolver, NFTResolver, ReverseResolver {
+contract PublicResolver is IPublicResolver, MulticallUpgradeable, AddressResolver, MultiCoinAddressResolver, NFTResolver {
   function initialize(IRegistry registry_, IPublicResolverSynchronizer synchronizer_) public initializer {
     __PublicResolver_init(registry_, synchronizer_);
   }
@@ -23,7 +23,7 @@ contract PublicResolver is IPublicResolver, MulticallUpgradeable, AddressResolve
     __BaseResolver_init_unchained(registry_, synchronizer_);
   }
 
-  function supportsInterface(bytes4 interfaceID) public view override(ReverseResolver, AddressResolver, NFTResolver) returns (bool) {
+  function supportsInterface(bytes4 interfaceID) public view override(AddressResolver, MultiCoinAddressResolver, NFTResolver) returns (bool) {
     return interfaceID == type(IPublicResolver).interfaceId || super.supportsInterface(interfaceID);
   }
 }

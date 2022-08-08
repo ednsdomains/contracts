@@ -13,19 +13,19 @@ interface IBaseRegistrar is IERC721Upgradeable {
 
   event SetController(bytes tld, address controller, bool approved);
 
-  function expires(bytes memory domain, bytes memory tld) external view returns (uint256);
+  function getExpires(bytes memory domain, bytes memory tld) external view returns (uint256);
 
-  function available(bytes memory tld) external view returns (bool);
+  function isAvailable(bytes memory tld) external view returns (bool);
 
-  function available(bytes memory domain, bytes memory tld) external view returns (bool);
+  function isAvailable(bytes memory domain, bytes memory tld) external view returns (bool);
 
   function ownerOf(bytes memory domain, bytes memory tld) external view returns (address);
 
-  function exists(bytes memory domain, bytes memory tld) external view returns (bool);
+  function isExists(bytes memory domain, bytes memory tld) external view returns (bool);
 
-  function exists(bytes32 tld) external view returns (bool);
+  function isExists(bytes32 tld) external view returns (bool);
 
-  function controllerApproved(bytes32 tld, address controller) external view returns (bool);
+  function isControllerApproved(bytes32 tld, address controller) external view returns (bool);
 
   function setControllerApproval(
     bytes memory tld,

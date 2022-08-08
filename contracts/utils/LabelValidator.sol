@@ -2,8 +2,9 @@
 pragma solidity ^0.8.9;
 
 abstract contract LabelValidator {
-  uint256 public constant MAX_LABEL_LENGTH = 32;
+  uint256 public constant MAX_LABEL_LENGTH = 64;
   uint256 public constant MIN_LABEL_LENGTH = 5;
+  bytes internal constant DOT = bytes(".");
 
   function valid(
     string memory host,
@@ -63,5 +64,17 @@ abstract contract LabelValidator {
       );
     }
     return true;
+  }
+
+  function _join(
+    bytes memory host,
+    bytes memory domain,
+    bytes memory tld
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(host, DOT, domain, DOT, tld);
+  }
+
+  function _join(bytes memory domain, bytes memory tld) internal pure returns (bytes memory) {
+    return abi.encodePacked(domain, DOT, tld);
   }
 }

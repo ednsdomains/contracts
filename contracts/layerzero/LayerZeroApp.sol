@@ -32,8 +32,6 @@ abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
     require(_msgSender() == address(lzEndpoint), "ONLY_ENDPOINT");
     bytes memory trustedRemote = trustedRemoteLookup[_srcChainId];
     require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "ONLY_TRUST_REMOTE");
-    console.log("Lz Receive Payload: ");
-    console.logBytes( _payload);
     try this.tryLzReceive(_srcChainId, _srcAddress, _nonce, _payload) {} catch {
       failedMessages[_srcChainId][_srcAddress][_nonce] = keccak256(_payload);
       emit MessageFailed(_srcChainId, _srcAddress, _nonce, _payload);
@@ -69,7 +67,7 @@ abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
     require(trustedRemote.length != 0, "NOT_TRUST_REMOTE");
     uint16 version =1;
     uint256 value = 400000;
-    console.logBytes(abi.encodePacked(version,value));
+    // console.logBytes(abi.encodePacked(version,value));
     lzEndpoint.send{ value: gasfee }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, abi.encodePacked(version,value));
   }
 

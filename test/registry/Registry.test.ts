@@ -76,7 +76,7 @@
 //         expect(await registry.enable(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(true);
 //       });
 //       it("TLD OMNI", async function () {
-//         expect(await registry.omni(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(true);
+//         expect(await registry.isOmni(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(true);
 //       });
 //       it("TLD Set Resolver", async function () {
 //         expect(await registry["resolver(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(TLD)))).to.equal(resolver.address);

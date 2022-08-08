@@ -4,8 +4,7 @@ pragma solidity ^0.8.9;
 // import "https://github.com/Arachnid/solidity-bytesutils/blob/master/bytess.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./IRegistry.sol";
-import "hardhat/console.sol";
+import "./interfaces/IRegistry.sol";
 
 contract Registry is IRegistry, AccessControlUpgradeable {
   uint256 public constant GRACE_PERIOD = 30 days;
@@ -23,7 +22,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
     bool enable; // Is this TLD enable to register new domain
     bool omni;
-    uint64[] lzChainIds;
+    uint16[] lzChainIds;
     bool allowRental;
     mapping(bytes32 => DomainRecord) domains;
   }
@@ -49,6 +48,8 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   }
 
   mapping(bytes32 => TldRecord) internal _records;
+
+  /* ========== Validator ==========*/
 
   modifier onlyAdmin() {
     require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
@@ -99,6 +100,8 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     _;
   }
 
+  /* ========== Initializer ==========*/
+
   function initialize() public initializer {
     __Registry_init();
   }
@@ -117,6 +120,8 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
+  /* ========== Mutative ==========*/
+
   //Create TLD
   function setRecord(
     bytes memory tld,
@@ -124,9 +129,9 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     address resolver_,
     bool enable_,
     bool omni_,
-    uint64[] memory lzChainIds
+    uint16[] memory lzChainIds
   ) external onlyRoot {
-    require(!exists(keccak256(tld)), "TLD_EXIST");
+    require(!isExists(keccak256(tld)), "TLD_EXIST");
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     require(resolver_ != address(0x0), "UNDEFINED_RESOLVER");
     TldRecord storage _record = _records[keccak256(tld)];
@@ -149,7 +154,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   ) external onlyRegistrar {
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     if (resolver_ == address(0x0)) resolver_ = _records[keccak256(tld)].resolver;
-    require(exists(keccak256(tld)), "TLD_NOT_EXIST");
+    require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
     DomainRecord storage _record = _records[keccak256(tld)].domains[keccak256(domain)];
     _record.name = domain;
     _record.owner = owner_;
@@ -167,7 +172,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     bytes memory domain,
     bytes memory tld
   ) external onlyResolver {
-    require(exists(keccak256(domain), keccak256(tld)), "DOMAIN_NOT_EXIST");
+    require(isExists(keccak256(domain), keccak256(tld)), "DOMAIN_NOT_EXIST");
     HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(domain)].hosts[keccak256(host)];
     _record.name = host;
     emit NewHost(host, domain, tld);
@@ -175,7 +180,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
 
   //set tld resolve
   function setResolver(bytes32 tld, address resolver_) external onlyRoot {
-    require(exists(tld), "TLD_NOT_EXIST");
+    require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].resolver = resolver_;
     emit NewResolver(_records[tld].name, resolver_);
   }
@@ -185,13 +190,13 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     bytes32 tld,
     address resolver_
   ) external onlyRoot {
-    require(exists(domain, tld), "DOMAIN_NOT_EXIST");
+    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].resolver = resolver_;
     emit NewResolver(abi.encodePacked(_records[tld].domains[domain].name, DOT, _records[tld].name), resolver_);
   }
 
   function setOwner(bytes32 tld, address owner_) external onlyRoot {
-    require(exists(tld), "TLD_NOT_EXIST");
+    require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].owner = owner_;
     emit NewOwner(abi.encodePacked(_records[tld].name), owner_);
   }
@@ -201,7 +206,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     bytes32 tld,
     address owner_
   ) external onlyRegistrar {
-    require(exists(domain, tld), "DOMAIN_NOT_EXIST");
+    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].owner = owner_;
     emit NewOwner(abi.encodePacked(_records[tld].domains[domain].name, DOT, _records[tld].name), owner_);
   }
@@ -212,7 +217,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     address operator_,
     bool approved
   ) public onlyDomainOwner(domain, tld) {
-    require(exists(domain, tld), "DOMAIN_NOT_EXIST");
+    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[domain].operators[operator_] = approved;
     emit SetOperator(abi.encodePacked(_records[tld].domains[domain].name, DOT, _records[tld].name), operator_, approved);
   }
@@ -224,7 +229,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     address operator_,
     bool approved
   ) public onlyDomainOperator(domain, tld) {
-    require(exists(host, domain, tld), "HOST_NOT_EXIST");
+    require(isExists(host, domain, tld), "HOST_NOT_EXIST");
     _records[tld].domains[domain].hosts[host].operators[operator_] = approved;
     emit SetOperator(abi.encodePacked(_records[tld].domains[domain].hosts[host].name, DOT, _records[tld].domains[domain].name, DOT, _records[tld].name), operator_, approved);
   }
@@ -234,45 +239,63 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     bytes32 tld,
     uint256 expires_
   ) external onlyRegistrar {
-    require(exists(domain, tld), "DOMAIN_NOT_EXIST");
+    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
     require(_records[tld].domains[domain].expires + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
     _records[tld].domains[domain].expires = expires_;
   }
 
   function setEnable(bytes32 tld, bool enable_) external onlyRoot {
-    require(exists(tld), "TLD_NOT_EXIST");
+    require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].enable = enable_;
   }
 
-  function owner(bytes32 tld) public view returns (address) {
-    require(exists(tld), "TLD_NOT_FOUND");
+  /* ========== Getter - General ==========*/
+
+  function getOwner(bytes32 tld) public view returns (address) {
+    require(isExists(tld), "TLD_NOT_FOUND");
     return _records[tld].owner;
   }
 
-  function owner(bytes32 domain, bytes32 tld) public view returns (address) {
-    require(exists(domain, tld), "DOMAIN_NOT_FOUND");
+  function getOwner(bytes32 domain, bytes32 tld) public view returns (address) {
+    require(isExists(domain, tld), "DOMAIN_NOT_FOUND");
     return _records[tld].domains[domain].owner;
   }
 
-  function resolver(bytes32 tld) public view returns (address) {
-    require(exists(tld), "TLD_NOT_FOUND");
+  function getResolver(bytes32 tld) public view returns (address) {
+    require(isExists(tld), "TLD_NOT_FOUND");
     return _records[tld].resolver;
   }
 
-  function resolver(bytes32 domain, bytes32 tld) public view returns (address) {
-    require(exists(domain, tld), "DOMAIN_NOT_FOUND");
+  function getResolver(bytes32 domain, bytes32 tld) public view returns (address) {
+    require(isExists(domain, tld), "DOMAIN_NOT_FOUND");
     return _records[tld].domains[domain].resolver;
   }
 
-  function exists(bytes32 tld) public view returns (bool) {
+  // Get the expires date of the domain in unix timestamp
+  function getExpires(bytes32 domain, bytes32 tld) public view returns (uint256) {
+    return _records[tld].domains[domain].expires;
+  }
+
+  // Get the grace period
+  function getGracePeriod() public pure returns (uint256) {
+    return GRACE_PERIOD;
+  }
+
+  function getLzChainIds(bytes32 tld) public view returns (uint16[] memory) {
+    return _records[tld].lzChainIds;
+  }
+
+  /* ========== Getter - Boolean ==========*/
+
+  function isExists(bytes32 tld) public view returns (bool) {
     return _records[tld].name.length > 0;
   }
 
-  function exists(bytes32 domain, bytes32 tld) public view returns (bool) {
+  function isExists(bytes32 domain, bytes32 tld) public view returns (bool) {
     return _records[tld].domains[domain].name.length > 0;
   }
 
-  function exists(
+  function isExists(
     bytes32 host,
     bytes32 domain,
     bytes32 tld
@@ -280,7 +303,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].domains[domain].hosts[host].name.length > 0;
   }
 
-  function operator(
+  function isOperator(
     bytes32 domain,
     bytes32 tld,
     address _operator
@@ -288,7 +311,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].domains[domain].operators[_operator];
   }
 
-  function operator(
+  function isOperator(
     bytes32 host,
     bytes32 domain,
     bytes32 tld,
@@ -297,11 +320,11 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].domains[domain].hosts[host].operators[_operator];
   }
 
-  function operator(bytes32 domain, bytes32 tld) public view returns (bool) {
+  function isOperator(bytes32 domain, bytes32 tld) public view returns (bool) {
     return _records[tld].domains[domain].operators[_msgSender()];
   }
 
-  function operator(
+  function isOperator(
     bytes32 host,
     bytes32 domain,
     bytes32 tld
@@ -309,28 +332,18 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].domains[domain].hosts[host].operators[_msgSender()];
   }
 
-  // Get the expires date of the domain in unix timestamp
-  function expires(bytes32 domain, bytes32 tld) public view returns (uint256) {
-    return _records[tld].domains[domain].expires;
-  }
-
-  // Get the grace period
-  function gracePeriod() public pure returns (uint256) {
-    return GRACE_PERIOD;
-  }
-
   // Is the domain still alive (not yet expired)
-  function live(bytes32 domain, bytes32 tld) public view returns (bool) {
+  function isLive(bytes32 domain, bytes32 tld) public view returns (bool) {
     return _records[tld].domains[domain].expires >= block.timestamp;
   }
 
   // Is the TLD enable and allow to register
-  function enable(bytes32 tld) public view returns (bool) {
+  function isEnable(bytes32 tld) public view returns (bool) {
     return _records[tld].enable;
   }
 
   // Is the TLD an OMNI TLD
-  function omni(bytes32 tld) public view returns (bool) {
+  function isOmni(bytes32 tld) public view returns (bool) {
     return _records[tld].omni;
   }
 

@@ -11,11 +11,11 @@ contract SingletonRegistrar is BaseRegistrar {
   }
 
   function available(bytes memory tld) public view override returns (bool) {
-    return super.available(tld) && !_registry.omni(keccak256(tld));
+    return super.available(tld) && !_registry.isOmni(keccak256(tld));
   }
 
   function available(bytes memory domain, bytes memory tld) public view override returns (bool) {
-    return super.available(domain, tld) && !_registry.omni(keccak256(tld));
+    return super.available(domain, tld) && !_registry.isOmni(keccak256(tld));
   }
 
   function register(
