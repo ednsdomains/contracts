@@ -6,11 +6,11 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "./interfaces/IOmniRegistrarController.sol";
 import "../registrar/interfaces/IOmniRegistrar.sol";
 import "../utils/Synchronizer.sol";
-import "../utils/LabelValidator.sol";
+import "../utils/LabelOperator.sol";
 import "../oracle/interfaces/ITokenPriceOracle.sol";
 import "../oracle/interfaces/IDomainPriceOracle.sol";
 
-contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgradeable, LabelValidator {
+contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgradeable, LabelOperator {
   IERC20Upgradeable private _token;
   IOmniRegistrar private _registrar;
   IDomainPriceOracle private _domainPrice;
@@ -65,15 +65,15 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-  function available(string memory tld) public view returns (bool) {
-    return _registrar.available(bytes(tld)) && _registrar.controllerApproved(keccak256(bytes(tld)), address(this));
+  function isAvailable(string memory tld) public view returns (bool) {
+    return _registrar.isAvailable(bytes(tld)) && _registrar.isControllerApproved(keccak256(bytes(tld)), address(this));
   }
 
-  function available(string memory domain, string memory tld) public view returns (bool) {
-    return valid(domain, tld) && _registrar.available(bytes(domain), bytes(tld));
+  function isAvailable(string memory domain, string memory tld) public view returns (bool) {
+    return valid(domain, tld) && _registrar.isAvailable(bytes(domain), bytes(tld));
   }
 
-  function price(
+  function getPrice(
     string memory domain,
     string memory tld,
     uint256 durations
@@ -87,7 +87,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     address owner,
     uint256 durations
   ) public {
-    require(available(tld), "TLD_NOT_AVAILABLE");
+    require(isAvailable(tld), "TLD_NOT_AVAILABLE");
     bytes32 commitment = makeCommitment(domain, tld, owner, durations);
     require(_commitments[commitment] + MAXIMUM_COMMIT_TIME < block.timestamp, "INVALID_COMMIT");
     _tokenPrice.requestTokenPriceInUsd();
@@ -100,7 +100,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     address owner,
     uint256 durations
   ) public view returns (bytes32) {
-    require(_registrar.exists(keccak256(bytes(tld))) && _registrar.controllerApproved(keccak256(bytes(tld)), address(this)), "TLD_NOT_AVAILABLE");
+    require(_registrar.isExists(keccak256(bytes(tld))) && _registrar.isControllerApproved(keccak256(bytes(tld)), address(this)), "TLD_NOT_AVAILABLE");
     return keccak256(abi.encodePacked(domain, tld, owner, durations, _msgSender()));
   }
 
@@ -112,7 +112,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   ) internal {
     require(_commitments[commitment] + MINIMUM_COMMIT_TIME <= block.timestamp, "INVALID_COMMITMENT");
     require(_commitments[commitment] + MAXIMUM_COMMIT_TIME >= block.timestamp, "INVALID_COMMITMENT");
-    require(available(domain, tld), "DOMAIN_IS_NOT_AVAIABLE");
+    require(isAvailable(domain, tld), "DOMAIN_IS_NOT_AVAIABLE");
     require(MAXIMUM_REGISTRATION_DURATION >= durations && durations >= MINIMUM_REGISTRATION_DURATION, "DURATION_TOO_SHORT");
     delete _commitments[commitment];
   }
@@ -126,7 +126,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   ) public {
     // The durations must be multiple of 365 days
     require(durations % 365 days == 0, "INVALID_DURATIONS");
-    uint256 _price = price(domain, tld, durations);
+    uint256 _price = getPrice(domain, tld, durations);
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
     _consumeCommitment(domain, tld, durations, commitment);
     // TODO: Set record in resolver
@@ -143,7 +143,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   ) public {
     // The durations must be multiple of 365 days
     require(durations % 365 days == 0, "INVALID_DURATIONS");
-    uint256 _price = price(domain, tld, durations);
+    uint256 _price = getPrice(domain, tld, durations);
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
     _token.transferFrom(_msgSender(), address(this), _price);
     _registrar.renew(bytes(domain), bytes(tld), durations);

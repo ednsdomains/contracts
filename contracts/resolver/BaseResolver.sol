@@ -3,11 +3,11 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import "../utils/LabelValidator.sol";
+import "../utils/LabelOperator.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IPublicResolverSynchronizer.sol";
 
-abstract contract BaseResolver is ERC165Upgradeable, LabelValidator, ContextUpgradeable {
+abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgradeable {
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   IRegistry internal _registry;

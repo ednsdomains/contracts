@@ -6,11 +6,11 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "../utils/LabelValidator.sol";
+import "../utils/LabelOperator.sol";
 import "../registry/interfaces/IRegistry.sol";
 
 // TODO: Implement ERC2981 NFT Royalty Standard
-abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, LabelValidator {
+abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, LabelOperator {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
   event DomainRegistered(bytes domain, bytes tld, address owner, uint256 expires);

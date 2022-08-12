@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-abstract contract LabelValidator {
+abstract contract LabelOperator {
   uint256 public constant MAX_LABEL_LENGTH = 64;
   uint256 public constant MIN_LABEL_LENGTH = 5;
   bytes internal constant DOT = bytes(".");
@@ -11,11 +11,11 @@ abstract contract LabelValidator {
     string memory,
     string memory
   ) public pure virtual returns (bool) {
-    return LabelValidator._validHost(bytes(host));
+    return _validHost(bytes(host));
   }
 
   function valid(string memory domain, string memory) public pure virtual returns (bool) {
-    return LabelValidator._validDomain(bytes(domain));
+    return _validDomain(bytes(domain));
   }
 
   function valid(
@@ -23,11 +23,11 @@ abstract contract LabelValidator {
     bytes memory,
     bytes memory
   ) public pure virtual returns (bool) {
-    return LabelValidator._validHost((host));
+    return _validHost((host));
   }
 
   function valid(bytes memory domain, bytes memory) public pure virtual returns (bool) {
-    return LabelValidator._validDomain(domain);
+    return _validDomain(domain);
   }
 
   function _validHost(bytes memory label) internal pure virtual returns (bool) {
@@ -54,7 +54,6 @@ abstract contract LabelValidator {
 
   function _validDomain(bytes memory label) internal pure virtual returns (bool) {
     //  MAX_LABEL_LENGTH < label.length < MIN_LABEL_LENGTH
-
     //  require(label.length > MAX_LABEL_LENGTH || label.length < MIN_LABEL_LENGTH, "INVALUD_LENGTH");
     require(label.length < MAX_LABEL_LENGTH && label.length > MIN_LABEL_LENGTH, "INVALUD_LENGTH");
     for (uint256 i; i < label.length; i++) {
@@ -77,4 +76,16 @@ abstract contract LabelValidator {
   function _join(bytes memory domain, bytes memory tld) internal pure returns (bytes memory) {
     return abi.encodePacked(domain, DOT, tld);
   }
+
+  // function _reorg(bytes memory fqdn)
+  //   internal
+  //   pure
+  //   returns (
+  //     bytes memory host,
+  //     bytes memory domain,
+  //     bytes memory tld
+  //   )
+  // {
+  //   bytes[] memory labels = new bytes[];
+  // }
 }
