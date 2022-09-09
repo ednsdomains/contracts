@@ -275,7 +275,7 @@ export const setupOmniRegistrarController = async (contracts: IDeployedContracts
     for (const NETWORK of NETWORKS) {
         for (const TLD of OMNI_TLDS) {
             const tld = ethers.utils.toUtf8Bytes(TLD);
-            const isTldExists = await contracts[NETWORK].Registry["exists(bytes32)"](ethers.utils.keccak256(tld));
+            const isTldExists = await contracts[NETWORK].Registry["isExists(bytes32)"](ethers.utils.keccak256(tld));
             console.log({
                 isTldExists,
                 NETWORK,
@@ -303,7 +303,7 @@ export const setupSingletonTlds = async (contracts: IDeployedContractsOutput) =>
     for (const NETWORK of NETWORKS) {
         for (const TLD of SINGLETON_TLDS[NETWORK]) {
             const tld = ethers.utils.toUtf8Bytes(TLD);
-            await contracts[NETWORK].Root.register(tld, contracts[NETWORK].PublicResolver.address, true, false);
+            await contracts[NETWORK].Root.register(tld, contracts[NETWORK].PublicResolver.address, true, false, [10002, 10012]);
         }
     }
 };
@@ -312,13 +312,13 @@ export const setupOmniTlds = async (contracts: IDeployedContractsOutput) => {
     // for (const NETWORK of NETWORKS) {
     for (const TLD of OMNI_TLDS) {
         const tld = ethers.utils.toUtf8Bytes(TLD);
-        const payload_ = await await contracts[NETWORKS[0]].Root.populateTransaction.register_SYNC(tld, contracts[NETWORKS[0]].PublicResolver.address, true, true);
-        const fees = await contracts[NETWORKS[0]].Root.estimateSyncFee(payload_.data!);
+        const payload_ = await await contracts[NETWORKS[0]].Root.populateTransaction.register_SYNC(tld, contracts[NETWORKS[0]].PublicResolver.address, true, true,[10002, 10012]);
+        const fees = await contracts[NETWORKS[0]].Root.estimateSyncFee([10002, 10012],payload_.data!);
         console.log(fees)
-        await contracts[NETWORKS[0]].Root.register(tld, contracts[NETWORKS[0]].PublicResolver.address, true, true, {value: 10});
+        await contracts[NETWORKS[0]].Root.register(tld, contracts[NETWORKS[0]].PublicResolver.address, true, true, [10002, 10012]);
         await delay(1000);
-        console.log(NETWORKS[0], " ", await contracts[NETWORKS[0]].Registry["exists(bytes32)"](ethers.utils.keccak256(tld)));
-        console.log(NETWORKS[1], " ", await contracts[NETWORKS[1]].Registry["exists(bytes32)"](ethers.utils.keccak256(tld)));
+        console.log(NETWORKS[0], " ", await contracts[NETWORKS[0]].Registry["isExists(bytes32)"](ethers.utils.keccak256(tld)));
+        console.log(NETWORKS[1], " ", await contracts[NETWORKS[1]].Registry["isExists(bytes32)"](ethers.utils.keccak256(tld)));
     }
     // }
 };

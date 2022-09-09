@@ -28,9 +28,9 @@ interface INFTResolver {
   ) external;
 
   function getNFT(
-    bytes memory host,
-    bytes memory domain,
-    bytes memory tld,
+    bytes32 fqdn,
+//    bytes memory domain,
+//    bytes memory tld,
     uint256 chainId
   ) external view returns (NFT memory);
 }

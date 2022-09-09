@@ -11,7 +11,8 @@ contract PublicResolverSynchronizer is IPublicResolverSynchronizer, Synchronizer
     uint16 _lzChainId,
     uint16[] memory _lzChainIds
   ) public initializer {
-    __Synchronizer_init(_lzChainId, _lzChainIds, _lzEndpoint);
+//    __Synchronizer_init(_lzChainId, _lzChainIds, _lzEndpoint);
+    __Synchronizer_init(_lzChainId, _lzEndpoint);
   }
 
   function setResolver(IPublicResolver resolver_) public onlyAdmin {
