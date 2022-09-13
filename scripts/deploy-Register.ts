@@ -35,10 +35,10 @@ async function main() {
     const payload_ = await currentContractAddress.Root.populateTransaction.register_SYNC(tld, currentContractAddress.PublicResolver.address, true, true);
     // console.log(payload_)
     console.log(payload_.data)
-    const fees = await currentContractAddress.Root.estimateSyncFee(payload_.data!);
+    const fees = await currentContractAddress.Root.estimateSyncFee(    [10002, 10012],payload_.data!);
     console.log(ethers.utils.formatEther(fees));
-    console.log(await currentContractAddress.Registry.callStatic["exists(bytes32)"](ethers.utils.keccak256(tld)))
-    const rootRegister = await currentContractAddress.Root.register(tld, currentContractAddress.PublicResolver.address, true, true, {
+    console.log(await currentContractAddress.Registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tld)))
+    const rootRegister = await currentContractAddress.Root.register(tld, currentContractAddress.PublicResolver.address, true, true,     [10002, 10012],{
       // 0.000001660703359502
       value: fees.mul((BigNumber.from("2"))),
       // value:fees,
@@ -49,7 +49,7 @@ async function main() {
     console.log(`Regisiter: ${TLD}`);
     console.log(`root_register tx: ${rootRegister}`);
     await delay(1000);
-    console.log(await currentContractAddress.Registry.callStatic["exists(bytes32)"](ethers.utils.keccak256(tld)))
+    console.log(await currentContractAddress.Registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tld)))
   }
 }
 

@@ -86,7 +86,7 @@ async function deploy() {
   const _omniRegistrarSynchronizer = await upgrades.deployProxy(OmniRegistrarSynchronizerFactory, [
     networkConfig.layerzero.endpoint.address,
     networkConfig.layerzero.chainId,
-    [10002, 10012],
+    // [10002, 10012],
   ]);
   await _omniRegistrarSynchronizer.deployed();
   const omniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(_omniRegistrarSynchronizer.address);
@@ -117,7 +117,7 @@ async function deploy() {
     omniRegistrar.address,
     networkConfig.layerzero.endpoint.address,
     networkConfig.layerzero.chainId,
-    [10002, 10012],
+    // [10002, 10012],
   ]);
   await _root.deployed();
   const root = RootFactory.attach(_root.address);
