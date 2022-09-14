@@ -4,8 +4,8 @@ pragma solidity ^0.8.9;
 interface IRegistry {
   /* ========== Event ==========*/
   event NewTld(bytes tld, address owner);
-  event NewDomain(bytes domain, bytes tld, address owner);
-  event NewHost(bytes host, bytes domain, bytes tld);
+  event NewDomain(bytes name, bytes tld, address owner);
+  event NewHost(bytes host, bytes name, bytes tld);
 
   event NewOwner(bytes fqdn, address newOwner);
   event NewResolver(bytes fqdn, address newResolver);
@@ -23,7 +23,7 @@ interface IRegistry {
   ) external;
 
   function setRecord(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner,
     address resolver,
@@ -32,14 +32,14 @@ interface IRegistry {
 
   function setRecord(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) external;
 
   function setResolver(bytes32 tld, address resolver) external;
 
   function setResolver(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address resolver
   ) external;
@@ -47,13 +47,13 @@ interface IRegistry {
   function setOwner(bytes32 tld, address owner) external;
 
   function setOwner(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address owner
   ) external;
 
   function setOperator(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address operator,
     bool approved
@@ -61,14 +61,14 @@ interface IRegistry {
 
   function setOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address operator,
     bool approved
   ) external;
 
   function setExpires(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     uint256 expires
   ) external;
@@ -77,7 +77,7 @@ interface IRegistry {
 
   // function remove(
   //   bytes32 host,
-  //   bytes32 domain,
+  //   bytes32 name,
   //   bytes32 tld
   // ) external;
 
@@ -85,13 +85,13 @@ interface IRegistry {
 
   function getOwner(bytes32 tld) external view returns (address);
 
-  function getOwner(bytes32 domain, bytes32 tld) external view returns (address);
+  function getOwner(bytes32 name, bytes32 tld) external view returns (address);
 
   function getResolver(bytes32 tld) external view returns (address);
 
-  function getResolver(bytes32 domain, bytes32 tld) external view returns (address);
+  function getResolver(bytes32 name, bytes32 tld) external view returns (address);
 
-  function getExpires(bytes32 domain, bytes32 tld) external view returns (uint256);
+  function getExpires(bytes32 name, bytes32 tld) external view returns (uint256);
 
   function getGracePeriod() external view returns (uint256);
 
@@ -101,36 +101,36 @@ interface IRegistry {
 
   function isExists(bytes32 tld) external view returns (bool);
 
-  function isExists(bytes32 domain, bytes32 tld) external view returns (bool);
+  function isExists(bytes32 name, bytes32 tld) external view returns (bool);
 
   function isExists(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld
   ) external view returns (bool);
 
   function isOperator(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address _operator
   ) external view returns (bool);
 
   function isOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address _operator
   ) external view returns (bool);
 
-  function isOperator(bytes32 domain, bytes32 tld) external view returns (bool);
+  function isOperator(bytes32 name, bytes32 tld) external view returns (bool);
 
   function isOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld
   ) external view returns (bool);
 
-  function isLive(bytes32 domain, bytes32 tld) external view returns (bool);
+  function isLive(bytes32 name, bytes32 tld) external view returns (bool);
 
   function isEnable(bytes32 tld) external view returns (bool);
 

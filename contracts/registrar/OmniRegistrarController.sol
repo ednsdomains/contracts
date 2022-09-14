@@ -65,12 +65,12 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
-  function isAvailable(string memory tld) public view returns (bool) {
-    return _registrar.isAvailable(bytes(tld)) && _registrar.isControllerApproved(keccak256(bytes(tld)), address(this));
+  function isAvailable(bytes memory tld) public view returns (bool) {
+    return _registrar.isAvailable(tld) && _registrar.isControllerApproved(keccak256(tld), address(this));
   }
 
-  function isAvailable(string memory domain, string memory tld) public view returns (bool) {
-    return valid(domain, tld) && _registrar.isAvailable(bytes(domain), bytes(tld));
+  function isAvailable(bytes memory name, bytes memory tld) public view returns (bool) {
+    return valid(name, tld) && _registrar.isAvailable(name, tld);
   }
 
   function getPrice(
@@ -82,8 +82,8 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function commit(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     address owner,
     uint256 durations
   ) public {
@@ -95,57 +95,57 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function makeCommitment(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     address owner,
     uint256 durations
   ) public view returns (bytes32) {
-    require(_registrar.isExists(keccak256(bytes(tld))) && _registrar.isControllerApproved(keccak256(bytes(tld)), address(this)), "TLD_NOT_AVAILABLE");
-    return keccak256(abi.encodePacked(domain, tld, owner, durations, _msgSender()));
+    require(_registrar.isExists(keccak256(tld)) && _registrar.isControllerApproved(keccak256(tld), address(this)), "TLD_NOT_AVAILABLE");
+    return keccak256(abi.encodePacked(name, tld, owner, durations, _msgSender()));
   }
 
   function _consumeCommitment(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     uint256 durations,
     bytes32 commitment
   ) internal {
     require(_commitments[commitment] + MINIMUM_COMMIT_TIME <= block.timestamp, "INVALID_COMMITMENT");
     require(_commitments[commitment] + MAXIMUM_COMMIT_TIME >= block.timestamp, "INVALID_COMMITMENT");
-    require(isAvailable(domain, tld), "DOMAIN_IS_NOT_AVAIABLE");
+    require(isAvailable(name, tld), "DOMAIN_IS_NOT_AVAIABLE");
     require(MAXIMUM_REGISTRATION_DURATION >= durations && durations >= MINIMUM_REGISTRATION_DURATION, "DURATION_TOO_SHORT");
     delete _commitments[commitment];
   }
 
   function register(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     address owner,
     uint256 durations,
     bytes32 commitment
   ) public {
     // The durations must be multiple of 365 days
     require(durations % 365 days == 0, "INVALID_DURATIONS");
-    uint256 _price = getPrice(domain, tld, durations);
+    uint256 _price = _domainPrice.getPrice(name, keccak256(tld), durations) + _domainPrice.getFee(keccak256(tld));
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
-    _consumeCommitment(domain, tld, durations, commitment);
+    _consumeCommitment(name, tld, durations, commitment);
     // TODO: Set record in resolver
     // TODO: Set record in reverse resolver
-    _registrar.register(bytes(domain), bytes(tld), address(this), durations);
-    _registrar.reclaim(bytes(domain), bytes(tld), owner);
-    _registrar.transferFrom(address(this), owner, _registrar.tokenId(bytes(domain), bytes(tld)));
+    _registrar.register(name, tld, address(this), durations);
+    _registrar.reclaim(name, tld, owner);
+    _registrar.transferFrom(address(this), owner, _registrar.tokenId(name, tld));
   }
 
   function renew(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     uint256 durations
   ) public {
     // The durations must be multiple of 365 days
     require(durations % 365 days == 0, "INVALID_DURATIONS");
-    uint256 _price = getPrice(domain, tld, durations);
+    uint256 _price = _domainPrice.getPrice(name, keccak256(tld), durations);
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
     _token.transferFrom(_msgSender(), address(this), _price);
-    _registrar.renew(bytes(domain), bytes(tld), durations);
+    _registrar.renew(name, tld, durations);
   }
 }

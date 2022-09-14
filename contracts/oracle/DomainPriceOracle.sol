@@ -19,6 +19,7 @@ contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
 
   ITokenPriceOracle private _tokenPrice;
   mapping(bytes32 => Price) private _prices;
+  mapping(bytes32 => uint256) private _fees;
 
   function initialize(ITokenPriceOracle tokenPrice_) public initializer {
     __DomainPriceOracle_init(tokenPrice_);
@@ -35,31 +36,38 @@ contract DomainPriceOracle is IDomainPriceOracle, AccessControlUpgradeable {
     _setupRole(ADMIN_ROLE, _msgSender());
   }
 
+  function setFee(bytes32 tld, uint256 fee) public onlyRole(ADMIN_ROLE) {
+    _fees[tld] = fee;
+  }
+
+  function getFee(bytes32 tld) public view returns (uint256) {
+    return _fees[tld];
+  }
+
   function setPrice(bytes32 tld, uint256[] memory price_) public onlyRole(ADMIN_ROLE) {
     require(price_.length == 5, "LENGTH_NOT_MATCH");
     _prices[tld] = Price({ oneLetter: price_[0], twoLetter: price_[1], threeLetter: price_[3], fourLetter: price_[4], fiveLetter: price_[5] });
   }
 
-  function price(
-    bytes memory domain,
+  function getPrice(
+    bytes memory name,
     bytes32 tld,
     uint256 durations
   ) external view returns (uint256) {
     uint256 _price_;
     // There is a condition in registrar controller require the durations must be a multiple of 365 days, so the years must be an integer
     uint256 years_ = durations / 365 days;
-    if (domain.length == 1) {
+    if (name.length == 1) {
       _price_ = _prices[tld].oneLetter * years_;
-    } else if (domain.length == 2) {
+    } else if (name.length == 2) {
       _price_ = _prices[tld].twoLetter * years_;
-    } else if (domain.length == 3) {
+    } else if (name.length == 3) {
       _price_ = _prices[tld].threeLetter * years_;
-    } else if (domain.length == 4) {
+    } else if (name.length == 4) {
       _price_ = _prices[tld].fourLetter * years_;
     } else {
       _price_ = _prices[tld].fiveLetter * years_;
     }
-
     return _price_ * _tokenPrice.getTokenPriceInUsd();
   }
 

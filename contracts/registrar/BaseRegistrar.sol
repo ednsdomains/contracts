@@ -13,9 +13,9 @@ import "../registry/interfaces/IRegistry.sol";
 abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, LabelOperator {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
-  event DomainRegistered(bytes domain, bytes tld, address owner, uint256 expires);
-  event DomainRenewed(bytes domain, bytes tld, uint256 expires);
-  event DomainReclaimed(bytes domain, bytes tld, address owner);
+  event DomainRegistered(bytes name, bytes tld, address owner, uint256 expires);
+  event DomainRenewed(bytes name, bytes tld, uint256 expires);
+  event DomainReclaimed(bytes name, bytes tld, address owner);
   event SetController(bytes tld, address controller, bool approved);
 
   mapping(address => mapping(bytes32 => bool)) public controllers;
@@ -68,25 +68,25 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     return 365 days * years_;
   }
 
-  function getExpires(bytes memory domain, bytes memory tld) public view virtual returns (uint256) {
-    return _registry.getExpires(keccak256(domain), keccak256(tld));
+  function getExpires(bytes memory name, bytes memory tld) public view virtual returns (uint256) {
+    return _registry.getExpires(keccak256(name), keccak256(tld));
   }
 
   function isAvailable(bytes memory tld) public view virtual returns (bool) {
     return isExists(keccak256(tld)) && _registry.isEnable(keccak256(tld));
   }
 
-  function isAvailable(bytes memory domain, bytes memory tld) public view virtual returns (bool) {
-    return getExpires(domain, tld) + _registry.getGracePeriod() < block.timestamp;
+  function isAvailable(bytes memory name, bytes memory tld) public view virtual returns (bool) {
+    return getExpires(name, tld) + _registry.getGracePeriod() < block.timestamp;
   }
 
-  function ownerOf(bytes memory domain, bytes memory tld) public view virtual returns (address) {
-    uint256 id = uint256(keccak256(_join(domain, tld)));
+  function ownerOf(bytes memory name, bytes memory tld) public view virtual returns (address) {
+    uint256 id = uint256(keccak256(_join(name, tld)));
     return super.ownerOf(id);
   }
 
-  function isExists(bytes memory domain, bytes memory tld) public view virtual returns (bool) {
-    uint256 id = uint256(keccak256(_join(domain, tld)));
+  function isExists(bytes memory name, bytes memory tld) public view virtual returns (bool) {
+    uint256 id = uint256(keccak256(_join(name, tld)));
     return super._exists(id);
   }
 
@@ -98,9 +98,9 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     return controllers[controller][tld];
   }
 
-  function tokenId(bytes memory domain, bytes memory tld) public pure virtual returns (uint256) {
-    require(_validDomain(domain), "INVALID_DOMAIN_NAME");
-    return uint256(keccak256(_join(domain, tld)));
+  function tokenId(bytes memory name, bytes memory tld) public pure virtual returns (uint256) {
+    require(_validDomain(name), "INVALID_DOMAIN_NAME");
+    return uint256(keccak256(_join(name, tld)));
   }
 
   function tokenURI(uint256 tokenId_) public view virtual override(ERC721Upgradeable) returns (string memory) {
@@ -136,50 +136,50 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
   }
 
   function _register(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner,
     uint256 durations
   ) internal {
-    require(_validDomain(domain), "INVALID_DOMAIN_NAME");
-    require(isAvailable(domain, tld), "DOMAIN_NOT_AVAILABLE");
+    require(_validDomain(name), "INVALID_DOMAIN_NAME");
+    require(isAvailable(name, tld), "DOMAIN_NOT_AVAILABLE");
     require(block.timestamp + durations + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
-    uint256 id = uint256(keccak256(_join(domain, tld)));
+    uint256 id = uint256(keccak256(_join(name, tld)));
     uint256 expires_ = block.timestamp + durations;
     if (_exists(id)) {
       _burn(id);
     }
     _mint(owner, id);
-    _registry.setRecord(domain, tld, owner, address(0), expires_);
-    emit DomainRegistered(domain, tld, owner, expires_);
+    _registry.setRecord(name, tld, owner, address(0), expires_);
+    emit DomainRegistered(name, tld, owner, expires_);
   }
 
   function _renew(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 durations
   ) internal {
-    bytes32 _domain = keccak256(domain);
+    bytes32 _domain = keccak256(name);
     bytes32 _tld = keccak256(tld);
     uint256 expires_ = _registry.getExpires(_domain, _tld);
     require(expires_ + _registry.getGracePeriod() >= block.timestamp, "DOMAIN_EXPIRED");
     require(expires_ + durations + _registry.getGracePeriod() >= durations + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
     _registry.setExpires(_domain, _tld, expires_ + durations);
-    emit DomainRenewed(domain, tld, expires_ + durations);
+    emit DomainRenewed(name, tld, expires_ + durations);
   }
 
   function _reclaim(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner
   ) internal {
-    uint256 id = uint256(keccak256(_join(domain, tld)));
+    uint256 id = uint256(keccak256(_join(name, tld)));
     require(ownerOf(id) == owner, "FORBIDDEN");
-    bytes32 _domain = keccak256(domain);
+    bytes32 _domain = keccak256(name);
     bytes32 _tld = keccak256(tld);
     require(_registry.isLive(_domain, _tld), "DOMAIN_EXPIRED");
-    _registry.setOwner(keccak256(domain), keccak256(tld), owner);
-    emit DomainReclaimed(domain, tld, owner);
+    _registry.setOwner(keccak256(name), keccak256(tld), owner);
+    emit DomainReclaimed(name, tld, owner);
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {

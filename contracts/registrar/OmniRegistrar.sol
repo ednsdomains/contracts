@@ -19,12 +19,12 @@ contract OmniRegistrar is BaseRegistrar {
     _synchronizer = synchronizer_;
   }
 
-  function available(bytes memory tld) public view override returns (bool) {
-    return super.available(tld) && _registry.isOmni(keccak256(tld));
+  function isAvailable(bytes memory tld) public view override returns (bool) {
+    return super.isAvailable(tld) && _registry.isOmni(keccak256(tld));
   }
 
-  function available(bytes memory domain, bytes memory tld) public view override returns (bool) {
-    return super.available(domain, tld) && _registry.isOmni(keccak256(tld));
+  function isAvailable(bytes memory name, bytes memory tld) public view override returns (bool) {
+    return super.isAvailable(name, tld) && _registry.isOmni(keccak256(tld));
   }
 
   modifier onlySynchronizer() {
@@ -33,59 +33,59 @@ contract OmniRegistrar is BaseRegistrar {
   }
 
   function register(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner,
     uint256 durations
   ) external onlyController(keccak256(tld)) {
-    require(available(domain, tld), "NOT_AVAILABLE");
-    _register(domain, tld, owner, durations);
+    require(isAvailable(name, tld), "NOT_AVAILABLE");
+    _register(name, tld, owner, durations);
     uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
-    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)", domain, tld, owner, durations));
+    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("register_SYNC(bytes,bytes,address,uint256)", name, tld, owner, durations));
   }
 
   function register_SYNC(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner,
     uint256 durations
   ) external onlySynchronizer {
-    _register(domain, tld, owner, durations);
+    _register(name, tld, owner, durations);
   }
 
   function renew(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 durations
   ) external onlyController(keccak256(tld)) {
-    _renew(domain, tld, durations);
+    _renew(name, tld, durations);
     uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
-    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("renew_SYNC(bytes, bytes, uint256)", domain, tld, durations));
+    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("renew_SYNC(bytes, bytes, uint256)", name, tld, durations));
   }
 
   function renew_SYNC(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 durations
   ) external onlySynchronizer {
-    _renew(domain, tld, durations);
+    _renew(name, tld, durations);
   }
 
   function reclaim(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner
   ) external onlyController(keccak256(tld)) {
-    _reclaim(domain, tld, owner);
+    _reclaim(name, tld, owner);
     uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
-    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("reclaim_SYNC(bytes, bytes, address)", domain, tld, owner));
+    _synchronizer.sync(lzChainIds_, abi.encodeWithSignature("reclaim_SYNC(bytes, bytes, address)", name, tld, owner));
   }
 
   function reclaim_SYNC(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner
   ) external onlySynchronizer {
-    _reclaim(domain, tld, owner);
+    _reclaim(name, tld, owner);
   }
 }

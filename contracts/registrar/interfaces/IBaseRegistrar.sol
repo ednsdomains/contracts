@@ -7,21 +7,21 @@ interface IBaseRegistrar is IERC721Upgradeable {
   // event ControllerAdded(address controller, bytes tld);
   // event ControllerRemoved(address controller, bytes tld);
 
-  event DomainRegistered(bytes domain, bytes tld, address owner, uint256 expires);
-  event DomainRenewed(bytes domain, bytes tld, uint256 expires);
-  event DomainReclaimed(bytes domain, bytes tld, address owner);
+  event DomainRegistered(bytes name, bytes tld, address owner, uint256 expires);
+  event DomainRenewed(bytes name, bytes tld, uint256 expires);
+  event DomainReclaimed(bytes name, bytes tld, address owner);
 
   event SetController(bytes tld, address controller, bool approved);
 
-  function getExpires(bytes memory domain, bytes memory tld) external view returns (uint256);
+  function getExpires(bytes memory name, bytes memory tld) external view returns (uint256);
 
   function isAvailable(bytes memory tld) external view returns (bool);
 
-  function isAvailable(bytes memory domain, bytes memory tld) external view returns (bool);
+  function isAvailable(bytes memory name, bytes memory tld) external view returns (bool);
 
-  function ownerOf(bytes memory domain, bytes memory tld) external view returns (address);
+  function ownerOf(bytes memory name, bytes memory tld) external view returns (address);
 
-  function isExists(bytes memory domain, bytes memory tld) external view returns (bool);
+  function isExists(bytes memory name, bytes memory tld) external view returns (bool);
 
   function isExists(bytes32 tld) external view returns (bool);
 
@@ -34,23 +34,23 @@ interface IBaseRegistrar is IERC721Upgradeable {
   ) external;
 
   function register(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner,
     uint256 durations
   ) external;
 
   function renew(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 durations
   ) external;
 
   function reclaim(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner
   ) external;
 
-  function tokenId(bytes memory domain, bytes memory tld) external pure returns (uint256);
+  function tokenId(bytes memory name, bytes memory tld) external pure returns (uint256);
 }

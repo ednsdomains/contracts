@@ -20,7 +20,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     bytes name; // The name of the TLD - '.meta' or '.ass'
     address owner; // The owner of thr TLD, it should always be the `Root` contract address
     address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
-    bool enable; // Is this TLD enable to register new domain
+    bool enable; // Is this TLD enable to register new name
     bool omni;
     uint16[] lzChainIds;
     bool allowRental;
@@ -28,10 +28,10 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   }
 
   struct DomainRecord {
-    bytes name; // The name of the domain name, if the FQDN is `edns.meta`, then this will be `bytes('edns')`
-    address owner; // The owner of the domain
+    bytes name; // The name of the name name, if the FQDN is `edns.meta`, then this will be `bytes('edns')`
+    address owner; // The owner of the name
     address resolver; //  The contract address of the resolver, it used the `PublicResolver` as default
-    uint256 expires; // The expiry unix timestamp of the domain
+    uint256 expires; // The expiry unix timestamp of the name
     RentalRecord rental;
     mapping(address => bool) operators;
     mapping(bytes32 => HostRecord) hosts;
@@ -71,30 +71,30 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     _;
   }
 
-  modifier onlyDomainOwner(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].owner, "ONLY_OWNER");
+  modifier onlyDomainOwner(bytes32 name, bytes32 tld) {
+    require(_msgSender() == _records[tld].domains[name].owner, "ONLY_OWNER");
     _;
   }
 
-  modifier onlyDomainUser(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].rental.user, "ONLY_USER");
+  modifier onlyDomainUser(bytes32 name, bytes32 tld) {
+    require(_msgSender() == _records[tld].domains[name].rental.user, "ONLY_USER");
     _;
   }
 
-  modifier onlyDomainOperator(bytes32 domain, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[domain].rental.user || _records[tld].domains[domain].operators[_msgSender()], "ONLY_OPERATOR");
+  modifier onlyDomainOperator(bytes32 name, bytes32 tld) {
+    require(_msgSender() == _records[tld].domains[name].rental.user || _records[tld].domains[name].operators[_msgSender()], "ONLY_OPERATOR");
     _;
   }
 
   modifier onlyHostOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld
   ) {
     require(
-      _msgSender() == _records[tld].domains[domain].owner ||
-        _records[tld].domains[domain].operators[_msgSender()] ||
-        _records[tld].domains[domain].hosts[host].operators[_msgSender()],
+      _msgSender() == _records[tld].domains[name].owner ||
+        _records[tld].domains[name].operators[_msgSender()] ||
+        _records[tld].domains[name].hosts[host].operators[_msgSender()],
       "FORBIDDEN"
     );
     _;
@@ -144,9 +144,9 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     emit NewTld(tld, owner_);
   }
 
-  //Add domain
+  //Add name
   function setRecord(
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     address owner_,
     address resolver_,
@@ -155,27 +155,27 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     if (resolver_ == address(0x0)) resolver_ = _records[keccak256(tld)].resolver;
     require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
-    DomainRecord storage _record = _records[keccak256(tld)].domains[keccak256(domain)];
-    _record.name = domain;
+    DomainRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)];
+    _record.name = name;
     _record.owner = owner_;
     _record.resolver = resolver_;
     _record.expires = expires_;
-    RentalRecord storage _rental = _records[keccak256(tld)].domains[keccak256(domain)].rental;
+    RentalRecord storage _rental = _records[keccak256(tld)].domains[keccak256(name)].rental;
     _rental.user = owner_;
     _rental.expires = expires_;
-    emit NewDomain(domain, tld, owner_);
+    emit NewDomain(name, tld, owner_);
   }
 
   //Sub Domain
   function setRecord(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) external onlyResolver {
-    require(isExists(keccak256(domain), keccak256(tld)), "DOMAIN_NOT_EXIST");
-    HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(domain)].hosts[keccak256(host)];
+    require(isExists(keccak256(name), keccak256(tld)), "DOMAIN_NOT_EXIST");
+    HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)];
     _record.name = host;
-    emit NewHost(host, domain, tld);
+    emit NewHost(host, name, tld);
   }
 
   //set tld resolve
@@ -186,13 +186,13 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   }
 
   function setResolver(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address resolver_
   ) external onlyRoot {
-    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
-    _records[tld].domains[domain].resolver = resolver_;
-    emit NewResolver(abi.encodePacked(_records[tld].domains[domain].name, DOT, _records[tld].name), resolver_);
+    require(isExists(name, tld), "DOMAIN_NOT_EXIST");
+    _records[tld].domains[name].resolver = resolver_;
+    emit NewResolver(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), resolver_);
   }
 
   function setOwner(bytes32 tld, address owner_) external onlyRoot {
@@ -202,46 +202,46 @@ contract Registry is IRegistry, AccessControlUpgradeable {
   }
 
   function setOwner(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address owner_
   ) external onlyRegistrar {
-    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
-    _records[tld].domains[domain].owner = owner_;
-    emit NewOwner(abi.encodePacked(_records[tld].domains[domain].name, DOT, _records[tld].name), owner_);
+    require(isExists(name, tld), "DOMAIN_NOT_EXIST");
+    _records[tld].domains[name].owner = owner_;
+    emit NewOwner(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), owner_);
   }
 
   function setOperator(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address operator_,
     bool approved
-  ) public onlyDomainOwner(domain, tld) {
-    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
-    _records[tld].domains[domain].operators[operator_] = approved;
-    emit SetOperator(abi.encodePacked(_records[tld].domains[domain].name, DOT, _records[tld].name), operator_, approved);
+  ) public onlyDomainOwner(name, tld) {
+    require(isExists(name, tld), "DOMAIN_NOT_EXIST");
+    _records[tld].domains[name].operators[operator_] = approved;
+    emit SetOperator(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), operator_, approved);
   }
 
   function setOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address operator_,
     bool approved
-  ) public onlyDomainOperator(domain, tld) {
-    require(isExists(host, domain, tld), "HOST_NOT_EXIST");
-    _records[tld].domains[domain].hosts[host].operators[operator_] = approved;
-    emit SetOperator(abi.encodePacked(_records[tld].domains[domain].hosts[host].name, DOT, _records[tld].domains[domain].name, DOT, _records[tld].name), operator_, approved);
+  ) public onlyDomainOperator(name, tld) {
+    require(isExists(host, name, tld), "HOST_NOT_EXIST");
+    _records[tld].domains[name].hosts[host].operators[operator_] = approved;
+    emit SetOperator(abi.encodePacked(_records[tld].domains[name].hosts[host].name, DOT, _records[tld].domains[name].name, DOT, _records[tld].name), operator_, approved);
   }
 
   function setExpires(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     uint256 expires_
   ) external onlyRegistrar {
-    require(isExists(domain, tld), "DOMAIN_NOT_EXIST");
-    require(_records[tld].domains[domain].expires + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
-    _records[tld].domains[domain].expires = expires_;
+    require(isExists(name, tld), "DOMAIN_NOT_EXIST");
+    require(_records[tld].domains[name].expires + GRACE_PERIOD >= block.timestamp, "DOMAIN_EXPIRED");
+    _records[tld].domains[name].expires = expires_;
   }
 
   function setEnable(bytes32 tld, bool enable_) external onlyRoot {
@@ -256,9 +256,9 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].owner;
   }
 
-  function getOwner(bytes32 domain, bytes32 tld) public view returns (address) {
-    require(isExists(domain, tld), "DOMAIN_NOT_FOUND");
-    return _records[tld].domains[domain].owner;
+  function getOwner(bytes32 name, bytes32 tld) public view returns (address) {
+    require(isExists(name, tld), "DOMAIN_NOT_FOUND");
+    return _records[tld].domains[name].owner;
   }
 
   function getResolver(bytes32 tld) public view returns (address) {
@@ -266,14 +266,14 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].resolver;
   }
 
-  function getResolver(bytes32 domain, bytes32 tld) public view returns (address) {
-    require(isExists(domain, tld), "DOMAIN_NOT_FOUND");
-    return _records[tld].domains[domain].resolver;
+  function getResolver(bytes32 name, bytes32 tld) public view returns (address) {
+    require(isExists(name, tld), "DOMAIN_NOT_FOUND");
+    return _records[tld].domains[name].resolver;
   }
 
-  // Get the expires date of the domain in unix timestamp
-  function getExpires(bytes32 domain, bytes32 tld) public view returns (uint256) {
-    return _records[tld].domains[domain].expires;
+  // Get the expires date of the name in unix timestamp
+  function getExpires(bytes32 name, bytes32 tld) public view returns (uint256) {
+    return _records[tld].domains[name].expires;
   }
 
   // Get the grace period
@@ -291,50 +291,50 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     return _records[tld].name.length > 0;
   }
 
-  function isExists(bytes32 domain, bytes32 tld) public view returns (bool) {
-    return _records[tld].domains[domain].name.length > 0;
+  function isExists(bytes32 name, bytes32 tld) public view returns (bool) {
+    return _records[tld].domains[name].name.length > 0;
   }
 
   function isExists(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld
   ) public view returns (bool) {
-    return _records[tld].domains[domain].hosts[host].name.length > 0;
+    return _records[tld].domains[name].hosts[host].name.length > 0;
   }
 
   function isOperator(
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address _operator
   ) public view returns (bool) {
-    return _records[tld].domains[domain].operators[_operator];
+    return _records[tld].domains[name].operators[_operator];
   }
 
   function isOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld,
     address _operator
   ) public view returns (bool) {
-    return _records[tld].domains[domain].hosts[host].operators[_operator];
+    return _records[tld].domains[name].hosts[host].operators[_operator];
   }
 
-  function isOperator(bytes32 domain, bytes32 tld) public view returns (bool) {
-    return _records[tld].domains[domain].operators[_msgSender()];
+  function isOperator(bytes32 name, bytes32 tld) public view returns (bool) {
+    return _records[tld].domains[name].operators[_msgSender()];
   }
 
   function isOperator(
     bytes32 host,
-    bytes32 domain,
+    bytes32 name,
     bytes32 tld
   ) public view returns (bool) {
-    return _records[tld].domains[domain].hosts[host].operators[_msgSender()];
+    return _records[tld].domains[name].hosts[host].operators[_msgSender()];
   }
 
-  // Is the domain still alive (not yet expired)
-  function isLive(bytes32 domain, bytes32 tld) public view returns (bool) {
-    return _records[tld].domains[domain].expires >= block.timestamp;
+  // Is the name still alive (not yet expired)
+  function isLive(bytes32 name, bytes32 tld) public view returns (bool) {
+    return _records[tld].domains[name].expires >= block.timestamp;
   }
 
   // Is the TLD enable and allow to register
