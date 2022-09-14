@@ -73,11 +73,11 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   }
 
   function getPrice(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     uint256 durations
   ) public view returns (uint256) {
-    return _domainPrice.price(bytes(domain), keccak256(bytes(tld)), durations);
+    return _domainPrice.getPrice(name, keccak256(tld), durations);
   }
 
   function commit(
@@ -125,7 +125,7 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   ) public {
     // The durations must be multiple of 365 days
     require(durations % 365 days == 0, "INVALID_DURATIONS");
-    uint256 _price = getPrice(domain, tld, durations);
+    uint256 _price = getPrice(name, tld, durations);
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
     _consumeCommitment(name, tld, durations, commitment);
     // TODO: Set record in resolver
@@ -143,7 +143,7 @@ contract SingletonRegistrarController is ISingletonRegistrarController, AccessCo
   ) public {
     // The durations must be multiple of 365 days
     require(durations % 365 days == 0, "INVALID_DURATIONS");
-    uint256 _price = getPrice(domain, tld, durations);
+    uint256 _price = getPrice(name, tld, durations);
     require(_token.allowance(_msgSender(), address(this)) >= _price, "INSUFFICIENT_BALANCE");
     _token.transferFrom(_msgSender(), address(this), _price);
     _registrar.renew(name, tld, durations);

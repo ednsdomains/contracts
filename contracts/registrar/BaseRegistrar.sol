@@ -37,10 +37,12 @@ abstract contract BaseRegistrar is ERC721Upgradeable, AccessControlUpgradeable, 
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _setupRole(ADMIN_ROLE, _msgSender());
   }
+
   function available(bytes memory tld) public view virtual returns (bool) {
     return true;
   }
-  function available(bytes memory domain, bytes memory tld) public view virtual returns (bool) {
+
+  function available(bytes memory name, bytes memory tld) public view virtual returns (bool) {
     return true;
   }
 

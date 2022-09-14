@@ -74,11 +74,11 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
   }
 
   function getPrice(
-    string memory domain,
-    string memory tld,
+    bytes memory name,
+    bytes memory tld,
     uint256 durations
   ) public view returns (uint256) {
-    return _domainPrice.price(bytes(domain), keccak256(bytes(tld)), durations);
+    return _domainPrice.getPrice(name, keccak256(tld), durations);
   }
 
   function commit(
@@ -88,7 +88,7 @@ contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgra
     uint256 durations
   ) public {
     require(isAvailable(tld), "TLD_NOT_AVAILABLE");
-    bytes32 commitment = makeCommitment(domain, tld, owner, durations);
+    bytes32 commitment = makeCommitment(name, tld, owner, durations);
     require(_commitments[commitment] + MAXIMUM_COMMIT_TIME < block.timestamp, "INVALID_COMMIT");
     _tokenPrice.requestTokenPriceInUsd();
     _commitments[commitment] = block.timestamp;

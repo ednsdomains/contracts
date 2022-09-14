@@ -2,11 +2,11 @@
 pragma solidity ^0.8.9;
 
 interface IMultiCoinAddressResolver {
-  event SetMultiCoinAddress(bytes host, bytes domain, bytes tld, uint256 coin, bytes address_);
+  event SetMultiCoinAddress(bytes host, bytes name, bytes tld, uint256 coin, bytes address_);
 
   function setMultiCoinAddress(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 coin,
     bytes memory address_
@@ -14,7 +14,7 @@ interface IMultiCoinAddressResolver {
 
   function setMultiCoinAddress_SYNC(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 coin,
     bytes memory address_
@@ -22,7 +22,7 @@ interface IMultiCoinAddressResolver {
 
   function getMultiCoinAddress(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     uint256 coin
   ) external view returns (bytes memory);

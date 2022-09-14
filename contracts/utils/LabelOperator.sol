@@ -14,8 +14,8 @@ abstract contract LabelOperator {
     return _validHost(bytes(host));
   }
 
-  function valid(string memory domain, string memory) public pure virtual returns (bool) {
-    return _validDomain(bytes(domain));
+  function valid(string memory name, string memory) public pure virtual returns (bool) {
+    return _validDomain(bytes(name));
   }
 
   function valid(
@@ -26,8 +26,8 @@ abstract contract LabelOperator {
     return _validHost((host));
   }
 
-  function valid(bytes memory domain, bytes memory) public pure virtual returns (bool) {
-    return _validDomain(domain);
+  function valid(bytes memory name, bytes memory) public pure virtual returns (bool) {
+    return _validDomain(name);
   }
 
   function _validHost(bytes memory label) internal pure virtual returns (bool) {
@@ -67,14 +67,14 @@ abstract contract LabelOperator {
 
   function _join(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(host, DOT, domain, DOT, tld);
+    return abi.encodePacked(host, DOT, name, DOT, tld);
   }
 
-  function _join(bytes memory domain, bytes memory tld) internal pure returns (bytes memory) {
-    return abi.encodePacked(domain, DOT, tld);
+  function _join(bytes memory name, bytes memory tld) internal pure returns (bytes memory) {
+    return abi.encodePacked(name, DOT, tld);
   }
 
   // function _reorg(bytes memory fqdn)
@@ -82,7 +82,7 @@ abstract contract LabelOperator {
   //   pure
   //   returns (
   //     bytes memory host,
-  //     bytes memory domain,
+  //     bytes memory name,
   //     bytes memory tld
   //   )
   // {

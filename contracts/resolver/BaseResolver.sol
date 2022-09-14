@@ -16,15 +16,15 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
 
   modifier onlyAuthorised(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) {
-    require(_isAuthorised(host, domain, tld), "FORBIDDEN");
+    require(_isAuthorised(host, name, tld), "FORBIDDEN");
     _;
   }
 
-  modifier onlyLive(bytes memory domain, bytes memory tld) {
-    require(_isLive(domain, tld), "DOMAIN_EXPIRED");
+  modifier onlyLive(bytes memory name, bytes memory tld) {
+    require(_isLive(name, tld), "DOMAIN_EXPIRED");
     _;
   }
 
@@ -40,29 +40,29 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
 
   function _isAuthorised(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) internal view returns (bool) {
     bytes32 host_ = keccak256(host);
-    bytes32 domain_ = keccak256(domain);
+    bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
     return _registry.getOwner(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
   }
 
-  function _isLive(bytes memory domain, bytes memory tld) internal view returns (bool) {
-    bytes32 domain_ = keccak256(domain);
+  function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
+    bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
     return _registry.isLive(domain_, tld_);
   }
 
   function _setHostRecord(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) internal {
     bytes32 host_ = keccak256(host);
-    bytes32 domain_ = keccak256(domain);
+    bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    if (!_registry.isExists(host_, domain_, tld_)) _registry.setRecord(host, domain, tld);
+    if (!_registry.isExists(host_, domain_, tld_)) _registry.setRecord(host, name, tld);
   }
 }

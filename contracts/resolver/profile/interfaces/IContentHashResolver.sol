@@ -14,27 +14,27 @@ interface IContentHashResolver {
 
   function setContentHash(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
     bytes memory hash
   ) external;
 
   function setContentHash_SYNC(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
     bytes memory hash
   ) external;
 
   function getContentHash(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld
   ) external view returns (bytes memory);
 
   function setTypedContentHash(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
     ContentHashProtocol type_,
     bytes memory hash
@@ -42,7 +42,7 @@ interface IContentHashResolver {
 
   function setTypedContentHash_SYNC(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
     ContentHashProtocol type_,
     bytes memory hash
@@ -50,7 +50,7 @@ interface IContentHashResolver {
 
   function getTypedContentHash(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     ContentHashProtocol type_
   ) external view returns (bytes memory);
