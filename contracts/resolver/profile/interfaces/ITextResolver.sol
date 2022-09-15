@@ -6,7 +6,7 @@ interface ITextResolver {
 
   function setText(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
     bytes32 type_,
     bytes memory text
@@ -14,7 +14,7 @@ interface ITextResolver {
 
   function setText_SYNC(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
     bytes32 type_,
     bytes memory text
@@ -22,7 +22,7 @@ interface ITextResolver {
 
   function getText(
     bytes memory host,
-    bytes memory domain,
+    bytes memory name,
     bytes memory tld,
     bytes32 type_
   ) external view returns (bytes memory);
