@@ -1,20 +1,23 @@
 import hre, { ethers, upgrades } from "hardhat";
 import { Wallet } from "ethers";
-import NetworkConfig, { IConfig, INetworkConfig, Network } from "../network.config";
-import {deployContractsMultiChain, NETWORKS} from "../test/helpers/init";
-import { SingletonRegistrar } from "../typechain";
-import {networkNameConverter} from "./function/networkNameConverter";
+import NetworkConfig, { IConfig, INetworkConfig, Network } from "../../network.config";
+import {deployContractsMultiChain, NETWORKS} from "../../test/helpers/init";
+import { SingletonRegistrar } from "../../typechain";
+import {networkNameConverter} from "../function/networkNameConverter";
 
-//npx hardhat run scripts/deploy-DeployContract.ts --network fantomTestnet
-//npx hardhat run scripts/deploy-DeployContract.ts --network bnbTestnet
+//npx hardhat run scripts/test/deploy.ts --network fantomTestnet
+//npx hardhat run scripts/test/deploy.ts --network bnbTestnet
+//npx hardhat run scripts/test/deploy.ts --network rinkeby
 async function deploy() {
   const TLD = "test";
   console.log("Deploy to :",networkNameConverter(hre.network.name))
   const networkConfig = NetworkConfig[networkNameConverter(hre.network.name)]
+
   const provider = new hre.ethers.providers.JsonRpcProvider(networkConfig.url, {
     chainId: networkConfig.chainId,
     name: networkConfig.name,
   });
+
   let walletWithProvider = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
   // let walletMnemonic = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
   // let walletMnemonic = Wallet.fromMnemonic(process.env.MNEMONIC!,);
@@ -119,9 +122,11 @@ async function deploy() {
     networkConfig.layerzero.chainId,
     // [10002, 10012],
   ]);
+  //TODO Chain ID
   await _root.deployed();
   const root = RootFactory.attach(_root.address);
   console.log("root", _root.address);
+  console.log("root chainId", networkConfig.layerzero.chainId);
   // Setup
 
   await publicResolverSynchronizer.setResolver(publicResolver.address);

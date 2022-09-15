@@ -140,7 +140,7 @@ contract Registry is IRegistry, AccessControlUpgradeable {
     _record.resolver = resolver_;
     _record.enable = enable_;
     _record.omni = omni_;
-    _record.lzChainIds = lzChainIds;
+    _record.lzChainIds = [uint16(10002), uint16(10001)];
     emit NewTld(tld, owner_);
   }
 

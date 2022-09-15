@@ -1,11 +1,11 @@
 import hre, {ethers} from "hardhat";
-import NetworkConfig, {Network} from "../network.config";
-import {networkNameConverter} from "./function/networkNameConverter";
-import {fullLoad, load} from "./helpers/load";
-import {deployedChain} from "./helpers/deploy";
-// npx hardhat run scripts/deploy-Setup.ts --network fantomTestnet
-// npx hardhat run scripts/deploy-Setup.ts --network bnbTestnet
-
+import NetworkConfig, {Network} from "../../network.config";
+import {networkNameConverter} from "../function/networkNameConverter";
+import {fullLoad, load} from "../helpers/load";
+import {deployedChain} from "../helpers/deploy";
+// npx hardhat run scripts/test/lzSetup.ts --network fantomTestnet
+// npx hardhat run scripts/test/lzSetup.ts --network bnbTestnet
+// npx hardhat run scripts/test/lzSetup.ts --network rinkeby
 async function main() {
   const TLDsingle = "abcdd";
   const otherContract = deployedChain.filter(x=>{

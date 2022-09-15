@@ -61,8 +61,11 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     if (omni_) {
       // console.log("Root Register Payload: ");
       // console.logBytes(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true));
-      uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
-      _sync(lzChainIds_, abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true), msg.value);
+//      uint16[] memory lzChainIds_ = _registry.getLzChainIds(keccak256(tld));
+
+
+      _sync(lzChainIds, abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool,uint16[])", tld, resolver_, enable_, true,lzChainIds), msg.value);
+//      register_SYNC( tld, resolver_, enable_, true,lzChainIds);
     }
   }
 
@@ -72,8 +75,9 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
     bool enable_,
     bool omni_,
     uint16[] memory lzChainIds
-  ) external onlySelf {
-    _register(tld, defaultPublicResolver, enable_, omni_, lzChainIds);
+//  ) external onlySelf {
+  ) public {
+    _register(tld, defaultPublicResolver, enable_, omni_,lzChainIds);
   }
 
   function _register(
@@ -146,4 +150,5 @@ contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, Synchronizer) returns (bool) {
     return interfaceID == type(IRoot).interfaceId || super.supportsInterface(interfaceID);
   }
+
 }

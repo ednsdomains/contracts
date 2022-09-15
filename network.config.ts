@@ -101,7 +101,7 @@ const config: INetworkConfig = {
     chainId: 4,
     name: "Ethereum Rinkeby",
     symbol: "rETH",
-    url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 60,
     },
