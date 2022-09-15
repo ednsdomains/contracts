@@ -21,5 +21,5 @@ interface INFTResolver {
         uint256 tokenId
     ) external;
 
-    function getNFT(bytes32 node) external returns (NFT memory);
+    function getNFT(bytes32 node,uint256 chainID) external returns (NFT memory);
 }
