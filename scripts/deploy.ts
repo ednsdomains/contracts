@@ -1,3 +1,4 @@
+//@ts-nocheck
 import hardhat from "hardhat";
 import { keccak_256 as sha3 } from "js-sha3";
 import uts46 from "idna-uts46-hx";
@@ -8,12 +9,13 @@ import {
   EDNSRegistrarController,
   EDNSRegistry,
   ReverseRegistrar,
-} from "../typechain";
-import { PublicResolver } from "../typechain/PublicResolver";
+} from "../../../sdk/packages/lookup/src/typechain";
+import { PublicResolver } from "../../../sdk/packages/lookup/src/typechain/PublicResolver";
 import { upgrades } from "hardhat";
 import Web3 from "web3";
 // import { formatsByName, formatsByCoinType } from "@ensdomains/address-encoder";
-import { AffiliateProgram } from "../typechain/AffiliateProgram";
+import { AffiliateProgram } from "../../../sdk/packages/lookup/src/typechain/AffiliateProgram";
+import {formatsByName} from "@ensdomains/address-encoder";
 
 // const provider = hardhat.ethers.providers.Provider();
 // console.log(hardhat.network.name);
@@ -122,14 +124,14 @@ async function main() {
   // console.log(
   //   `AffiliateProgram contract address - ${affiliateProgram.address}`
   // );
-  // const registry = EDNSRegistry.attach(
-  //   "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12"
-  // );
-  // const resolver = PublicResolver.attach(
-  //   "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144"
-  // );
+  const registry = EDNSRegistry.attach(
+    "0x467cfd51c227b334D8c71d843BCE54b235092a66"
+  );
+  const resolver = PublicResolver.attach(
+    "0x87EEBE3c2bEDE909A9825977df5E852Df3314BcF"
+  );
   const baseRegistrar = BaseRegistrarImplementation.attach(
-    "0x53a0018f919bde9C254bda697966C5f448ffDDcB"
+    "0xafFDDAd389bEe8a2AcBa0367dFAE5609B93c7F9b"
   );
 
   // console.log(await baseRegistrar.supportsInterface("0x5b5e139f"));
@@ -146,25 +148,25 @@ async function main() {
   //   )
   // );
 
-  // const registrarController = EDNSRegistrarController.attach(
-  //   "0x8C856f71d71e8CF4AD9A44cDC426b09e315c6A6a"
-  // );
-  // const reverseRegistrar = ReverseRegistrar.attach(
-  //   "0xD986F9083F006D0E2d08c9F22247b4a0a213146D"
-  // );
-
-  console.log(await baseRegistrar.owner());
-
-  const tx = await baseRegistrar.populateTransaction.transferOwnership(
-    "0x649fA3bDD2EcEC69cF5b92FF05304D24FfBe41a8"
+  const registrarController = EDNSRegistrarController.attach(
+    "0xb977101Fba674a61c2a999CA36438FCB28E69e3b"
   );
-  console.log({ data: tx.data });
+  const reverseRegistrar = ReverseRegistrar.attach(
+    "0x5716EBAe036AE2c3652902dd89EeD1c73c74384D"
+  );
+
+  // console.log(await baseRegistrar.owner());
+  //
+  // const tx = await baseRegistrar.populateTransaction.transferOwnership(
+  //   "0x649fA3bDD2EcEC69cF5b92FF05304D24FfBe41a8"
+  // );
+  // console.log({ data: tx.data });
 
   // const _registry = await upgrades.deployProxy(EDNSRegistry, []);
   // await _registry.deployed();
   // console.log(`Registry deployed [${_registry.address}]`);
   // const registry = EDNSRegistry.attach(_registry.address);
-
+  //
   // const _resolver = await upgrades.deployProxy(PublicResolver, [
   //   registry.address,
   //   ZERO_ADDRESS,
@@ -172,7 +174,7 @@ async function main() {
   // await _resolver.deployed();
   // console.log(`Resolver deployed [${_resolver.address}]`);
   // const resolver = PublicResolver.attach(_resolver.address);
-
+  //
   // const _baseRegistrar = await upgrades.deployProxy(
   //   BaseRegistrarImplementation,
   //   [registry.address]
@@ -182,7 +184,7 @@ async function main() {
   // const baseRegistrar = BaseRegistrarImplementation.attach(
   //   _baseRegistrar.address
   // );
-
+  //
   // const _registrarController = await upgrades.deployProxy(
   //   EDNSRegistrarController,
   //   [baseRegistrar.address]
@@ -193,6 +195,7 @@ async function main() {
   //   _registrarController.address
   // );
 
+
   // const _reverseRegistrar = await upgrades.deployProxy(ReverseRegistrar, [
   //   registry.address,
   //   resolver.address,
@@ -201,38 +204,40 @@ async function main() {
   // console.log(`Reverse registrar deployed [${_reverseRegistrar.address}]`);
   // const reverseRegistrar = ReverseRegistrar.attach(_reverseRegistrar.address);
 
+
   // await setupRegistrar(registrarController, registry, baseRegistrar);
   // console.log("Finished setup registrar");
-  // await setupResolver(registry, resolver);
+  // let ts = await setupResolver(registry, resolver);
   // console.log("Finish setup resolver");
   // await setupReverseRegistrar(registry, reverseRegistrar);
   // console.log("Finished setup reverse registrar");
 
   // await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
+  // console.log("Finished setup setBaseURI");
+  const _saddr = await signer.getAddress();
 
-  // const _saddr = await signer.getAddress();
+  await registrarController.registerWithConfig(
+    "abcdefghijkl",
+    "test1",
+    _saddr,
+    31104000,
+    resolver.address,
+    _saddr
+  );
+  console.log("Finished registerWithConfig");
+  const nodehash = namehash("test1");
+  const label = Web3.utils.soliditySha3("abcdefghijkl", nodehash);
+  const hash = Web3.utils.soliditySha3(nodehash, label!);
 
-  // await registrarController.registerWithConfig(
-  //   "abcdefghijkl",
-  //   "test1",
-  //   _saddr,
-  //   31104000,
-  //   resolver.address,
-  //   _saddr
-  // );
-
-  // const nodehash = namehash("test1");
-  // const label = Web3.utils.soliditySha3("abcdefghijkl", nodehash);
-  // const hash = Web3.utils.soliditySha3(nodehash, label!);
-
-  // const addr = formatsByName["MATIC"].decoder(await signer.getAddress());
-  // await resolver["setAddr(bytes32,uint256,bytes)"](hash!, 966, addr);
-
-  // await resolver["setAddr(bytes32,address)"](hash!, await signer.getAddress());
+  const addr = formatsByName["MATIC"].decoder(await signer.getAddress());
+  await resolver["setAddr(bytes32,uint256,bytes)"](hash!, 966, addr);
+  console.log("Finished setAddr(bytes32,uint256,bytes)");
+  await resolver["setAddr(bytes32,address)"](hash!, await signer.getAddress());
+  console.log("Finished setAddr(bytes32,address)");
 }
 
 const overrides: Overrides = {
-  // gasLimit: 20000000,
+  gasLimit: 20000000,
 };
 
 async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver) {
