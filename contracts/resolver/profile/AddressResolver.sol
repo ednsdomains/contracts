@@ -33,10 +33,10 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setAddress(host, name, tld, address_);
-    if (_registry.isOmni(keccak256(tld))) {
-      uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
-      _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setAddress_SYNC(bytes,bytes,bytes,address)", host, name, tld, address_));
-    }
+    // if (_registry.isOmni(keccak256(tld))) {
+    //   uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
+    //   _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setAddress_SYNC(bytes,bytes,bytes,address)", host, name, tld, address_));
+    // }
   }
 
   function setAddress_SYNC(
@@ -86,10 +86,10 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setReverseAddress(host, name, tld, address_);
-    if (_registry.isOmni(keccak256(tld))) {
-      uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
-      _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setAddress_SYNC(bytes,bytes,bytes,address)", host, name, tld, address_));
-    }
+    // if (_registry.isOmni(keccak256(tld))) {
+    //   uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
+    //   _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setAddress_SYNC(bytes,bytes,bytes,address)", host, name, tld, address_));
+    // }
   }
 
   function setReverseAddress_SYNC(

@@ -1,7 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 
-interface IRegistry {
+import "./IERC4907.sol";
+
+interface IRegistry is IERC721Upgradeable, IERC4907 {
   /* ========== Event ==========*/
   event NewTld(bytes tld, address owner);
   event NewDomain(bytes name, bytes tld, address owner);
@@ -12,14 +15,70 @@ interface IRegistry {
 
   event SetOperator(bytes fqdn, address operator, bool approved);
 
+  /* ========== ERC721 -Event ==========*/
+  // event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+  // event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+  // event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+  /* ========== ERC4907 -Event ==========*/
+  // event UpdateUser(uint256 indexed tokenId, address indexed user, uint64 expires);
+
+  /* ========== Enum ==========*/
+  enum TldType {
+    CLASSICAL,
+    SINGLETON,
+    OMNI
+  }
+
+  enum RecordType {
+    TLD,
+    DOMAIN,
+    HOST
+  }
+
+  /* ========== Struct ==========*/
+  struct TokenRecord {
+    RecordType type_;
+    bytes32 tld;
+    bytes32 domain;
+    bytes32 host;
+  }
+  struct TldRecord {
+    bytes name; // The name of the TLD - '.meta' or '.ass'
+    address owner; // The owner of thr TLD, it should always be the `Root` contract address
+    address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
+    bool enable; // Is this TLD enable to register new name
+    TldType type_;
+    mapping(bytes32 => DomainRecord) domains;
+  }
+  struct DomainRecord {
+    bytes name; // The name of the name name, if the FQDN is `edns.meta`, then this will be `bytes('edns')`
+    address owner; // The owner of the name
+    address resolver; //  The contract address of the resolver, it used the `PublicResolver` as default
+    uint64 expires; // The expiry unix timestamp of the name
+    Rental rental;
+    mapping(address => bool) operators;
+    mapping(bytes32 => HostRecord) hosts;
+  }
+
+  struct HostRecord {
+    bytes name;
+    Rental rental;
+    mapping(address => bool) operators;
+  }
+
+  struct Rental {
+    address user;
+    uint64 expires;
+  }
+
   /* ========== Mutative ==========*/
   function setRecord(
     bytes memory tld,
     address owner,
     address resolver,
     bool enable,
-    bool omni,
-    uint16[] memory lzChainIds
+    TldType type_
   ) external;
 
   function setRecord(
@@ -27,7 +86,7 @@ interface IRegistry {
     bytes memory tld,
     address owner,
     address resolver,
-    uint256 expires
+    uint64 expires
   ) external;
 
   function setRecord(
@@ -70,16 +129,18 @@ interface IRegistry {
   function setExpires(
     bytes32 name,
     bytes32 tld,
-    uint256 expires
+    uint64 expires
   ) external;
 
   function setEnable(bytes32 tld, bool enable) external;
 
-  // function remove(
-  //   bytes32 host,
-  //   bytes32 name,
-  //   bytes32 tld
-  // ) external;
+  function remove(bytes32 name, bytes32 tld) external;
+
+  function remove(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external;
 
   /* ========== Query - Genereal ==========*/
 
@@ -91,11 +152,13 @@ interface IRegistry {
 
   function getResolver(bytes32 name, bytes32 tld) external view returns (address);
 
-  function getExpires(bytes32 name, bytes32 tld) external view returns (uint256);
+  function getExpires(bytes32 name, bytes32 tld) external view returns (uint64);
 
   function getGracePeriod() external view returns (uint256);
 
-  function getLzChainIds(bytes32 tld) external view returns (uint16[] memory);
+  // function getLzChainIds(bytes32 tld) external view returns (uint16[] memory);
+
+  function getTldType(bytes32 tld) external view returns (TldType);
 
   /* ========== Query - Boolean ==========*/
 
@@ -134,5 +197,5 @@ interface IRegistry {
 
   function isEnable(bytes32 tld) external view returns (bool);
 
-  function isOmni(bytes32 tld) external view returns (bool);
+  // function isOmni(bytes32 tld) external view returns (bool);
 }

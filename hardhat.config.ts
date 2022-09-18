@@ -106,6 +106,7 @@ const config: HardhatUserConfig = {
     disambiguatePaths: false,
     only: [
       "Registry",
+      "BaseRegistrar",
       "SingletonRegistrar",
       "SingletonRegistrarController",
       "Token",

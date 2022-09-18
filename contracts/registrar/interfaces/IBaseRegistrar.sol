@@ -1,9 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-
-interface IBaseRegistrar is IERC721Upgradeable {
+interface IBaseRegistrar {
   // event ControllerAdded(address controller, bytes tld);
   // event ControllerRemoved(address controller, bytes tld);
 
@@ -37,20 +35,20 @@ interface IBaseRegistrar is IERC721Upgradeable {
     bytes memory name,
     bytes memory tld,
     address owner,
-    uint256 durations
+    uint64 expires
   ) external;
 
   function renew(
     bytes memory name,
     bytes memory tld,
-    uint256 durations
+    uint64 expires
   ) external;
 
-  function reclaim(
-    bytes memory name,
-    bytes memory tld,
-    address owner
-  ) external;
+  // function reclaim(
+  //   bytes memory name,
+  //   bytes memory tld,
+  //   address owner
+  // ) external;
 
-  function tokenId(bytes memory name, bytes memory tld) external pure returns (uint256);
+  // function tokenId(bytes memory name, bytes memory tld) external pure returns (uint256);
 }

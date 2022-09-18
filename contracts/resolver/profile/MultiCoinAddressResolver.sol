@@ -34,10 +34,10 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     bytes memory address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setMultiCoinAddress(host, name, tld, coin, address_);
-    if (_registry.isOmni(keccak256(tld))) {
-      uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
-      _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setMultiCoinAddress_SYNC(bytes,bytes,bytes,uint256,bytes)", host, name, tld, coin, address_));
-    }
+    // if (_registry.isOmni(keccak256(tld))) {
+    //   uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
+    //   _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setMultiCoinAddress_SYNC(bytes,bytes,bytes,uint256,bytes)", host, name, tld, coin, address_));
+    // }
   }
 
   function setMultiCoinAddress_SYNC(
