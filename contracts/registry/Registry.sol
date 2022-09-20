@@ -4,15 +4,12 @@ pragma solidity ^0.8.9;
 // import "https://github.com/Arachnid/solidity-bytesutils/blob/master/bytess.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
-
 import "../utils/LabelOperator.sol";
-
 import "./interfaces/IRegistry.sol";
+import "./lib/TldClass.sol";
 
 contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   using AddressUpgradeable for address;
@@ -114,7 +111,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     address owner_,
     address resolver_,
     bool enable_,
-    TldType type_
+    TldClass.TldClass class_
   ) external onlyRoot {
     require(!isExists(keccak256(tld)), "TLD_EXIST");
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
@@ -125,11 +122,11 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     _record.owner = owner_;
     _record.resolver = resolver_;
     _record.enable = enable_;
-    _record.type_ = type_;
+    _record.class_ = class_;
     emit NewTld(tld, owner_);
 
     TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
-    _tokenRecord.type_ = RecordType.TLD;
+    _tokenRecord.class_ = RecordType.TLD;
     _tokenRecord.tld = keccak256(tld);
   }
 
@@ -170,7 +167,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     emit NewDomain(name, tld, owner_);
 
     TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
-    _tokenRecord.type_ = RecordType.DOMAIN;
+    _tokenRecord.class_ = RecordType.DOMAIN;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
   }
@@ -199,7 +196,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     emit NewHost(host, name, tld);
 
     TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
-    _tokenRecord.type_ = RecordType.HOST;
+    _tokenRecord.class_ = RecordType.HOST;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
     _tokenRecord.host = keccak256(host);
@@ -322,8 +319,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     return GRACE_PERIOD;
   }
 
-  function getTldType(bytes32 tld) external view returns (TldType) {
-    return _records[tld].type_;
+  function getTldClass(bytes32 tld) external view returns (TldClass.TldClass) {
+    return _records[tld].class_;
   }
 
   function _getTokenRecord(uint256 tokenId_) internal view returns (TokenRecord memory) {
@@ -396,9 +393,9 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function ownerOf(uint256 tokenId_) public view returns (address) {
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.TLD) {
+    if (tRecord_.class_ == RecordType.TLD) {
       return _records[tRecord_.tld].owner;
-    } else if (tRecord_.type_ == RecordType.DOMAIN || tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.DOMAIN || tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].owner;
     } else {
       revert(""); // TODO:
@@ -465,11 +462,11 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function _exists(uint256 tokenId_) internal view virtual returns (bool) {
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.TLD) {
+    if (tRecord_.class_ == RecordType.TLD) {
       return _records[tRecord_.tld].owner != address(0);
-    } else if (tRecord_.type_ == RecordType.DOMAIN) {
+    } else if (tRecord_.class_ == RecordType.DOMAIN) {
       return _records[tRecord_.tld].domains[tRecord_.domain].owner != address(0);
-    } else if (tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].name.length > 0;
     }
   }
@@ -503,11 +500,11 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     require(ownerOf(tokenId_) == from, "ERC721: transfer from incorrect owner");
     require(to != address(0), "ERC721: transfer to the zero address");
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.TLD) {
+    if (tRecord_.class_ == RecordType.TLD) {
       _records[tRecord_.tld].owner = to;
-    } else if (tRecord_.type_ == RecordType.DOMAIN) {
+    } else if (tRecord_.class_ == RecordType.DOMAIN) {
       _records[tRecord_.tld].domains[tRecord_.domain].owner = to;
-    } else if (tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.HOST) {
       revert("ERC721: cannot transfer a host");
     }
     _approve(address(0), tokenId_);
@@ -518,11 +515,11 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function _approve(address to, uint256 tokenId_) internal virtual {
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.DOMAIN) {
+    if (tRecord_.class_ == RecordType.DOMAIN) {
       _records[tRecord_.tld].domains[tRecord_.domain].operators[to] = true;
-    } else if (tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.HOST) {
       _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].operators[to] = true;
-    } else if (tRecord_.type_ == RecordType.TLD) {
+    } else if (tRecord_.class_ == RecordType.TLD) {
       revert("ERC721: cannot approve for TLD");
     }
     emit Approval(ownerOf(tokenId_), to, tokenId_);
@@ -602,12 +599,12 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   ) public {
     require(userOf(tokenId_) == _msgSender(), "ERC4907: incorrect owner");
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.DOMAIN) {
+    if (tRecord_.class_ == RecordType.DOMAIN) {
       require(expires <= _records[tRecord_.tld].domains[tRecord_.domain].rental.expires, "ERC4907: exceed expires");
       _records[tRecord_.tld].domains[tRecord_.domain].rental.user = user;
       _records[tRecord_.tld].domains[tRecord_.domain].rental.expires = expires;
       emit UpdateUser(tokenId_, user, expires);
-    } else if (tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.HOST) {
       require(expires <= _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.expires, "ERC4907: exceed expires");
       _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.user = user;
       _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.expires = expires;
@@ -618,9 +615,9 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function userOf(uint256 tokenId_) public view returns (address) {
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.DOMAIN) {
+    if (tRecord_.class_ == RecordType.DOMAIN) {
       return _records[tRecord_.tld].domains[tRecord_.domain].rental.user;
-    } else if (tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.user;
     } else {
       revert("ERC4907: cannot get user of TLD of host");
@@ -629,9 +626,9 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function userExpires(uint256 tokenId_) public view returns (uint256) {
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.type_ == RecordType.DOMAIN) {
+    if (tRecord_.class_ == RecordType.DOMAIN) {
       return _records[tRecord_.tld].domains[tRecord_.domain].rental.expires;
-    } else if (tRecord_.type_ == RecordType.HOST) {
+    } else if (tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.expires;
     } else {
       revert("ERC4907: cannot get user expiures of TLD of host");

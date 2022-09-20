@@ -209,4 +209,4 @@ export async function deployRoot(input: IDeployRootInput): Promise<Root> {
   return root;
 }
 
-export const deployedChain = [Network.RINKEBY,Network.BNB_CHAIN_TESTNET]
+export const deployedChain = [Network.RINKEBY, Network.BNB_CHAIN_TESTNET];

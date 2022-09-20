@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-
+import "../lib/TldClass.sol";
 import "./IERC4907.sol";
 
 interface IRegistry is IERC721Upgradeable, IERC4907 {
@@ -23,13 +23,6 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
   /* ========== ERC4907 -Event ==========*/
   // event UpdateUser(uint256 indexed tokenId, address indexed user, uint64 expires);
 
-  /* ========== Enum ==========*/
-  enum TldType {
-    CLASSICAL,
-    SINGLETON,
-    OMNI
-  }
-
   enum RecordType {
     TLD,
     DOMAIN,
@@ -38,7 +31,7 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
 
   /* ========== Struct ==========*/
   struct TokenRecord {
-    RecordType type_;
+    RecordType class_;
     bytes32 tld;
     bytes32 domain;
     bytes32 host;
@@ -48,7 +41,7 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
     address owner; // The owner of thr TLD, it should always be the `Root` contract address
     address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
     bool enable; // Is this TLD enable to register new name
-    TldType type_;
+    TldClass.TldClass class_;
     mapping(bytes32 => DomainRecord) domains;
   }
   struct DomainRecord {
@@ -78,7 +71,7 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
     address owner,
     address resolver,
     bool enable,
-    TldType type_
+    TldClass.TldClass class_
   ) external;
 
   function setRecord(
@@ -158,7 +151,7 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
 
   // function getLzChainIds(bytes32 tld) external view returns (uint16[] memory);
 
-  function getTldType(bytes32 tld) external view returns (TldType);
+  function getTldClass(bytes32 tld) external view returns (TldClass.TldClass);
 
   /* ========== Query - Boolean ==========*/
 

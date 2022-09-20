@@ -54,7 +54,7 @@ const config: HardhatUserConfig = {
     // Optimism
     optimisim: {
       chainId: 10,
-      url: `https://optimism-arbitrum.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://optimism-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     optimisimKovan: {
       chainId: 69,

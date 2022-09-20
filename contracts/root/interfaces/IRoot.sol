@@ -1,18 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "../../registry/lib/TldClass.sol";
+
 interface IRoot {
   function register(
     bytes memory tld,
     address resolver,
     bool enable_,
-    bool omni_,
-    uint16[] memory lzChainIds
+    TldClass.TldClass class_
   ) external payable;
 
   function transfer(bytes memory tld) external;
-
-  function reclaim(bytes memory tld) external;
 
   function setEnable(bytes memory tld, bool enable) external payable;
 
@@ -25,8 +24,6 @@ interface IRoot {
   ) external;
 
   function isEnable(bytes memory tld) external view returns (bool);
-
-  function isOmni(bytes memory tld) external view returns (bool);
 
   function getResolver(bytes memory tld) external view returns (address);
 }
