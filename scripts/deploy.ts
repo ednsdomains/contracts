@@ -9,8 +9,8 @@ import {
   EDNSRegistrarController,
   EDNSRegistry,
   ReverseRegistrar,
-} from "../../../sdk/packages/lookup/src/typechain";
-import { PublicResolver } from "../../../sdk/packages/lookup/src/typechain/PublicResolver";
+} from "../typechain";
+import { PublicResolver } from "../typechain";
 import { upgrades } from "hardhat";
 import Web3 from "web3";
 // import { formatsByName, formatsByCoinType } from "@ensdomains/address-encoder";
@@ -74,9 +74,22 @@ function normalize(name: string) {
 //   "meta",
 //   "music",
 //   "ass",
-//   "shit"
 // ];
-const tlds: string[] = ["edns"];
+const tlds: string[] = [
+  "test1",
+  "test2",
+  "test3",
+  "ass",
+  "meta",
+  "404",
+  "music",
+  "sandbox",
+];
+// const tlds: string[] = [
+//   "sandbox",
+// ];
+
+// const tlds: string[] = ["edns"];
 const labelhash = (label: string) =>
   hardhat.ethers.utils.keccak256(hardhat.ethers.utils.toUtf8Bytes(label));
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -205,8 +218,8 @@ async function main() {
   // const reverseRegistrar = ReverseRegistrar.attach(_reverseRegistrar.address);
 
 
-  // await setupRegistrar(registrarController, registry, baseRegistrar);
-  // console.log("Finished setup registrar");
+  await setupRegistrar(registrarController, registry, baseRegistrar);
+  console.log("Finished setup registrar");
   // let ts = await setupResolver(registry, resolver);
   // console.log("Finish setup resolver");
   // await setupReverseRegistrar(registry, reverseRegistrar);
@@ -214,26 +227,26 @@ async function main() {
 
   // await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
   // console.log("Finished setup setBaseURI");
-  const _saddr = await signer.getAddress();
-
-  await registrarController.registerWithConfig(
-    "abcdefghijkl",
-    "test1",
-    _saddr,
-    31104000,
-    resolver.address,
-    _saddr
-  );
-  console.log("Finished registerWithConfig");
-  const nodehash = namehash("test1");
-  const label = Web3.utils.soliditySha3("abcdefghijkl", nodehash);
-  const hash = Web3.utils.soliditySha3(nodehash, label!);
-
-  const addr = formatsByName["MATIC"].decoder(await signer.getAddress());
-  await resolver["setAddr(bytes32,uint256,bytes)"](hash!, 966, addr);
-  console.log("Finished setAddr(bytes32,uint256,bytes)");
-  await resolver["setAddr(bytes32,address)"](hash!, await signer.getAddress());
-  console.log("Finished setAddr(bytes32,address)");
+  // const _saddr = await signer.getAddress();
+  //
+  // await registrarController.registerWithConfig(
+  //   "abcdefghijkl",
+  //   "test1",
+  //   _saddr,
+  //   31104000,
+  //   resolver.address,
+  //   _saddr
+  // );
+  // console.log("Finished registerWithConfig");
+  // const nodehash = namehash("test1");
+  // const label = Web3.utils.soliditySha3("abcdefghijkl", nodehash);
+  // const hash = Web3.utils.soliditySha3(nodehash, label!);
+  //
+  // const addr = formatsByName["MATIC"].decoder(await signer.getAddress());
+  // await resolver["setAddr(bytes32,uint256,bytes)"](hash!, 966, addr);
+  // console.log("Finished setAddr(bytes32,uint256,bytes)");
+  // await resolver["setAddr(bytes32,address)"](hash!, await signer.getAddress());
+  // console.log("Finished setAddr(bytes32,address)");
 }
 
 const overrides: Overrides = {
@@ -264,11 +277,13 @@ async function setupRegistrar(
 ) {
   await registrar.addController(registrarController.address);
   await registrarController.setNameLengthLimit(5, 128);
-  // for (let tld of tlds) {
-  //   await registrarController.setTld(tld, namehash(tld), overrides);
-  //   await registrar.setBaseNode(namehash(tld), true, overrides);
-  //   await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address, overrides);
-  // }
+  for (let tld of tlds) {
+    // await registrarController.setTld(tld, namehash(tld), overrides);
+    // await registrar.setBaseNode(namehash(tld), true, overrides);
+    // await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address, overrides);
+    // console.log(tld, " | ", await registrarController.callStatic.tldAvailable(tld))
+    console.log("whycant.".concat(tld), " | ", await registrarController.callStatic.available("whycant",tld))
+  }
 }
 
 async function setupReverseRegistrar(
