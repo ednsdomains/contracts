@@ -27,14 +27,27 @@ const config: HardhatUserConfig = {
   solidity: "0.8.10",
   networks: {
     matic: {
-      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
+      url:
+        `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}` ||
+        "",
     },
     maticmum: {
-      url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
+      url:
+        `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}` ||
+        "",
     },
     goerli: {
       url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}` || "",
-    }
+    },
+    iotexTestnet: {
+      url: `https://babel-api.testnet.iotex.io`,
+      chainId: 4690,
+      gas: 8500000,
+      gasPrice: 1000000000000,
+    },
+    iotex: {
+      url: `https://babel-api.mainnet.iotex.io`,
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

@@ -1,4 +1,3 @@
-//@ts-nocheck
 import hardhat from "hardhat";
 import { keccak_256 as sha3 } from "js-sha3";
 import uts46 from "idna-uts46-hx";
@@ -14,32 +13,52 @@ import { PublicResolver } from "../typechain";
 import { upgrades } from "hardhat";
 import Web3 from "web3";
 // import { formatsByName, formatsByCoinType } from "@ensdomains/address-encoder";
-import { AffiliateProgram } from "../../../sdk/packages/lookup/src/typechain/AffiliateProgram";
-import {formatsByName} from "@ensdomains/address-encoder";
+// import { AffiliateProgram } from "../../../sdk/packages/lookup/src/typechain/AffiliateProgram";
+import { formatsByName } from "@ensdomains/address-encoder";
 
 // const provider = hardhat.ethers.providers.Provider();
 // console.log(hardhat.network.name);
-const provider = new hardhat.ethers.providers.InfuraProvider(
-  hardhat.network.name,
-  process.env.INFURA_API_KEY
-);
+// const provider = new hardhat.ethers.providers.InfuraProvider(
+//   hardhat.network.name,
+//   process.env.INFURA_API_KEY
+// );
 // const provider = new hardhat.ethers.providers.JsonRpcProvider(
 //   "https://polygon-rpc.com/",
 //   { name: "Polygon Mainnet", chainId: 137 }
 // );
-provider.getFeeData = async () => {
-  const gasPrice = await provider.getGasPrice();
-  return {
-    maxFeePerGas: ethers.BigNumber.from(60000000000),
-    maxPriorityFeePerGas: ethers.BigNumber.from(60000000000),
-    gasPrice,
-  };
-};
-let signer = new AwsKmsSigner({
-  region: "ap-southeast-1",
-  keyId: process.env.KMS_SIGNER_KEY_ARN!,
-});
-signer = signer.connect(provider);
+// const provider = hardhat.ethers.getDefaultProvider({
+//   name: "iotexTestnet",
+//   chainId: 4690,
+//   _defaultProvider: (provider: typeof ethers.providers) =>
+//     new provider.JsonRpcProvider("https://babel-api.testnet.iotex.io"),
+// });
+
+const provider = new hardhat.ethers.providers.JsonRpcProvider(
+  "https://babel-api.testnet.iotex.io",
+  {
+    name: "IoTeX Testnet",
+    chainId: 4690,
+  }
+);
+// provider.getGasPrice = async () => {
+//   return hardhat.ethers.BigNumber.from(1000000000000);
+// };
+
+// provider.getFeeData = async () => {
+//   const gasPrice = await provider.getGasPrice();
+//   return {
+//     maxFeePerGas: ethers.BigNumber.from(60000000000),
+//     maxPriorityFeePerGas: ethers.BigNumber.from(60000000000),
+//     gasPrice,
+//   };
+// };
+const signer = new AwsKmsSigner(
+  {
+    region: "ap-southeast-1",
+    keyId: process.env.KMS_SIGNER_KEY_ARN!,
+  },
+  provider
+);
 
 export function namehash(inputName: string) {
   // Reject empty names:
@@ -95,6 +114,11 @@ const labelhash = (label: string) =>
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const ZERO_HASH =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+const overrides: Overrides = {
+  gasPrice: 1000000000000,
+};
+
 async function main() {
   console.log("Signer Address:", await signer.getAddress());
   console.log(
@@ -123,29 +147,29 @@ async function main() {
     signer
   );
 
-  const AffiliateProgramFactory = await hardhat.ethers.getContractFactory(
-    "AffiliateProgram",
-    signer
-  );
+  // const AffiliateProgramFactory = await hardhat.ethers.getContractFactory(
+  //   "AffiliateProgram",
+  //   signer
+  // );
 
   console.log(
     "Gas price: ",
-    ethers.utils.formatUnits(await provider.getGasPrice(), "gwei")
+    ethers.utils.formatUnits(await signer.getGasPrice(), "gwei")
   );
 
   // const affiliateProgram = await upgrades.deployProxy(AffiliateProgramFactory);
   // console.log(
   //   `AffiliateProgram contract address - ${affiliateProgram.address}`
   // );
-  const registry = EDNSRegistry.attach(
-    "0x467cfd51c227b334D8c71d843BCE54b235092a66"
-  );
-  const resolver = PublicResolver.attach(
-    "0x87EEBE3c2bEDE909A9825977df5E852Df3314BcF"
-  );
-  const baseRegistrar = BaseRegistrarImplementation.attach(
-    "0xafFDDAd389bEe8a2AcBa0367dFAE5609B93c7F9b"
-  );
+  // const registry = EDNSRegistry.attach(
+  //   "0x467cfd51c227b334D8c71d843BCE54b235092a66"
+  // );
+  // const resolver = PublicResolver.attach(
+  //   "0x87EEBE3c2bEDE909A9825977df5E852Df3314BcF"
+  // );
+  // const baseRegistrar = BaseRegistrarImplementation.attach(
+  //   "0xafFDDAd389bEe8a2AcBa0367dFAE5609B93c7F9b"
+  // );
 
   // console.log(await baseRegistrar.supportsInterface("0x5b5e139f"));
   // console.log(await baseRegistrar.supportsInterface("0x80ac58cd"));
@@ -161,12 +185,12 @@ async function main() {
   //   )
   // );
 
-  const registrarController = EDNSRegistrarController.attach(
-    "0xb977101Fba674a61c2a999CA36438FCB28E69e3b"
-  );
-  const reverseRegistrar = ReverseRegistrar.attach(
-    "0x5716EBAe036AE2c3652902dd89EeD1c73c74384D"
-  );
+  // const registrarController = EDNSRegistrarController.attach(
+  //   "0xb977101Fba674a61c2a999CA36438FCB28E69e3b"
+  // );
+  // const reverseRegistrar = ReverseRegistrar.attach(
+  //   "0x5716EBAe036AE2c3652902dd89EeD1c73c74384D"
+  // );
 
   // console.log(await baseRegistrar.owner());
   //
@@ -174,12 +198,13 @@ async function main() {
   //   "0x649fA3bDD2EcEC69cF5b92FF05304D24FfBe41a8"
   // );
   // console.log({ data: tx.data });
+  // ethers.utils.serializeTransaction({});
 
-  // const _registry = await upgrades.deployProxy(EDNSRegistry, []);
-  // await _registry.deployed();
-  // console.log(`Registry deployed [${_registry.address}]`);
-  // const registry = EDNSRegistry.attach(_registry.address);
-  //
+  const _registry = await upgrades.deployProxy(EDNSRegistry, []);
+  await _registry.deployed();
+  console.log(`Registry deployed [${_registry.address}]`);
+  const registry = EDNSRegistry.attach(_registry.address);
+
   // const _resolver = await upgrades.deployProxy(PublicResolver, [
   //   registry.address,
   //   ZERO_ADDRESS,
@@ -187,7 +212,7 @@ async function main() {
   // await _resolver.deployed();
   // console.log(`Resolver deployed [${_resolver.address}]`);
   // const resolver = PublicResolver.attach(_resolver.address);
-  //
+
   // const _baseRegistrar = await upgrades.deployProxy(
   //   BaseRegistrarImplementation,
   //   [registry.address]
@@ -197,7 +222,7 @@ async function main() {
   // const baseRegistrar = BaseRegistrarImplementation.attach(
   //   _baseRegistrar.address
   // );
-  //
+
   // const _registrarController = await upgrades.deployProxy(
   //   EDNSRegistrarController,
   //   [baseRegistrar.address]
@@ -208,7 +233,6 @@ async function main() {
   //   _registrarController.address
   // );
 
-
   // const _reverseRegistrar = await upgrades.deployProxy(ReverseRegistrar, [
   //   registry.address,
   //   resolver.address,
@@ -217,9 +241,8 @@ async function main() {
   // console.log(`Reverse registrar deployed [${_reverseRegistrar.address}]`);
   // const reverseRegistrar = ReverseRegistrar.attach(_reverseRegistrar.address);
 
-
-  await setupRegistrar(registrarController, registry, baseRegistrar);
-  console.log("Finished setup registrar");
+  // await setupRegistrar(registrarController, registry, baseRegistrar);
+  // console.log("Finished setup registrar");
   // let ts = await setupResolver(registry, resolver);
   // console.log("Finish setup resolver");
   // await setupReverseRegistrar(registry, reverseRegistrar);
@@ -249,60 +272,60 @@ async function main() {
   // console.log("Finished setAddr(bytes32,address)");
 }
 
-const overrides: Overrides = {
-  gasLimit: 20000000,
-};
+// async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver) {
+//   const resolverNode = namehash("resolver");
+//   const resolverLabel = labelhash("resolver");
+//   await registry.setSubnodeOwner(
+//     ZERO_HASH,
+//     resolverLabel,
+//     await signer.getAddress(),
+//     overrides
+//   );
+//   await registry.setResolver(resolverNode, resolver.address, overrides);
+//   await resolver["setAddr(bytes32,address)"](
+//     resolverNode,
+//     resolver.address,
+//     overrides
+//   );
+// }
 
-async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver) {
-  const resolverNode = namehash("resolver");
-  const resolverLabel = labelhash("resolver");
-  await registry.setSubnodeOwner(
-    ZERO_HASH,
-    resolverLabel,
-    await signer.getAddress(),
-    overrides
-  );
-  await registry.setResolver(resolverNode, resolver.address, overrides);
-  await resolver["setAddr(bytes32,address)"](
-    resolverNode,
-    resolver.address,
-    overrides
-  );
-}
+// async function setupRegistrar(
+//   registrarController: EDNSRegistrarController,
+//   registry: EDNSRegistry,
+//   registrar: BaseRegistrarImplementation
+// ) {
+//   await registrar.addController(registrarController.address);
+//   await registrarController.setNameLengthLimit(5, 128);
+//   for (let tld of tlds) {
+//     // await registrarController.setTld(tld, namehash(tld), overrides);
+//     // await registrar.setBaseNode(namehash(tld), true, overrides);
+//     // await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address, overrides);
+//     // console.log(tld, " | ", await registrarController.callStatic.tldAvailable(tld))
+//     console.log(
+//       "whycant.".concat(tld),
+//       " | ",
+//       await registrarController.callStatic.available("whycant", tld)
+//     );
+//   }
+// }
 
-async function setupRegistrar(
-  registrarController: EDNSRegistrarController,
-  registry: EDNSRegistry,
-  registrar: BaseRegistrarImplementation
-) {
-  await registrar.addController(registrarController.address);
-  await registrarController.setNameLengthLimit(5, 128);
-  for (let tld of tlds) {
-    // await registrarController.setTld(tld, namehash(tld), overrides);
-    // await registrar.setBaseNode(namehash(tld), true, overrides);
-    // await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address, overrides);
-    // console.log(tld, " | ", await registrarController.callStatic.tldAvailable(tld))
-    console.log("whycant.".concat(tld), " | ", await registrarController.callStatic.available("whycant",tld))
-  }
-}
-
-async function setupReverseRegistrar(
-  registry: EDNSRegistry,
-  reverseRegistrar: ReverseRegistrar
-) {
-  await registry.setSubnodeOwner(
-    ZERO_HASH,
-    labelhash("reverse"),
-    await signer.getAddress(),
-    overrides
-  );
-  await registry.setSubnodeOwner(
-    namehash("reverse"),
-    labelhash("addr"),
-    reverseRegistrar.address,
-    overrides
-  );
-}
+// async function setupReverseRegistrar(
+//   registry: EDNSRegistry,
+//   reverseRegistrar: ReverseRegistrar
+// ) {
+//   await registry.setSubnodeOwner(
+//     ZERO_HASH,
+//     labelhash("reverse"),
+//     await signer.getAddress(),
+//     overrides
+//   );
+//   await registry.setSubnodeOwner(
+//     namehash("reverse"),
+//     labelhash("addr"),
+//     reverseRegistrar.address,
+//     overrides
+//   );
+// }
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
