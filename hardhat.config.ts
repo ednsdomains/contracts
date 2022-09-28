@@ -48,6 +48,10 @@ const config: HardhatUserConfig = {
     iotex: {
       url: `https://babel-api.mainnet.iotex.io`,
     },
+    okcTestnet: {
+      url: `https://exchaintestrpc.okex.org`,
+      chainId: 65,
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
