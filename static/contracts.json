@@ -87,6 +87,50 @@
     "TokenPriceOracle": "",
     "Token": ""
   },
+  "100": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "106": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "111": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "128": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
   "137": {
     "Registry": "",
     "PublicResolver": "",
@@ -99,6 +143,61 @@
     "Token": ""
   },
   "250": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "256": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "321": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "322": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "1284": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "1285": {
     "Registry": "",
     "PublicResolver": "",
     "BaseRegistrar": "",

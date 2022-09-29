@@ -11,7 +11,7 @@ interface IRoot {
     TldClass.TldClass class_
   ) external payable;
 
-  function transfer(bytes memory tld) external;
+  function transfer(bytes memory tld, address newOwner) external;
 
   function setEnable(bytes memory tld, bool enable) external payable;
 

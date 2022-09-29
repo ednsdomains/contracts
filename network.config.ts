@@ -17,13 +17,15 @@ export enum Network {
   IOTEX_TESTNET = 4690,
   OKC = 66,
   OKC_TESTNET = 65,
-  // HECO = 128,
-  // HECO_TESTNET = 256,
-  // KCC = 321,
-  // KCC_TESTNET = 322,
-  // VELAS = 106,
-  // VELAS_TESTNET = 111,
-  // GNOSIS_CHAIN = 100,
+  HECO = 128,
+  HECO_TESTNET = 256,
+  KCC = 321,
+  KCC_TESTNET = 322,
+  VELAS = 106,
+  VELAS_TESTNET = 111,
+  GNOSIS_CHAIN = 100,
+  MOONBEAM = 1284,
+  MOONRIVER = 1285,
 }
 
 export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM];
@@ -122,7 +124,7 @@ const config: INetworkConfig = {
     // },
   },
   [Network.BNB_CHAIN]: {
-    chainId: 56,
+    chainId: Network.BNB_CHAIN,
     name: "BNB Chain",
     symbol: "BNB",
     url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -145,7 +147,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.BNB_CHAIN_TESTNET]: {
-    chainId: 97,
+    chainId: Network.BNB_CHAIN_TESTNET,
     name: "BNB Chain Testnet",
     symbol: "tBNB",
     url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -168,7 +170,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.AVALANCHE]: {
-    chainId: 43114,
+    chainId: Network.AVALANCHE,
     name: "Avalanche C-Chain",
     symbol: "AVAX",
     url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -191,7 +193,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.AVALANCHE_FUJI]: {
-    chainId: 43113,
+    chainId: Network.AVALANCHE_FUJI,
     name: "Avalanche Fuji",
     symbol: "AVAX",
     url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -214,7 +216,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.POLYGON]: {
-    chainId: 137,
+    chainId: Network.POLYGON,
     name: "Polygon",
     symbol: "MATIC",
     url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -237,7 +239,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.POLYGON_MUMBAI]: {
-    chainId: 80001,
+    chainId: Network.POLYGON_MUMBAI,
     name: "Polygon Mumbai",
     symbol: "MATIC",
     url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -260,7 +262,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.ARBITRUM]: {
-    chainId: 42161,
+    chainId: Network.ARBITRUM,
     name: "Arbitrum",
     symbol: "ETH",
     url: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -283,7 +285,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.ARBITRUM_RINKEBY]: {
-    chainId: 421611,
+    chainId: Network.ARBITRUM_RINKEBY,
     name: "Arbitrum Rinkeby",
     symbol: "ETH",
     url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -306,7 +308,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.OPTIMISM]: {
-    chainId: 10,
+    chainId: Network.OPTIMISM,
     name: "Optimism",
     symbol: "ETH",
     url: `https://optimism-arbitrum.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -329,7 +331,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.OPTIMISM_KOVAN]: {
-    chainId: 69,
+    chainId: Network.OPTIMISM_KOVAN,
     name: "Optimism Kovan",
     symbol: "ETH",
     url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -352,7 +354,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.FANTOM]: {
-    chainId: 250,
+    chainId: Network.FANTOM,
     name: "Fantom",
     symbol: "FTM",
     url: `https://ftm.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -428,24 +430,63 @@ const config: INetworkConfig = {
     symbol: "OKT",
     url: `https://exchainrpc.okex.org`,
   },
-  // [Network.KCC_TESTNET]: {
-  //   chainId: Network.KCC_TESTNET,
-  //   name: "KCC Testnet",
-  //   symbol: "KCS",
-  //   url: `https://rpc-testnet.kcc.network`,
-  // },
-  // [Network.KCC]: {
-  //   chainId: Network.KCC,
-  //   name: "KCC Mainnet",
-  //   symbol: "KCS",
-  //   url: `https://rpc-mainnet.kcc.network	`,
-  // },
-  // [Network.GNOSIS_CHAIN]: {
-  //   chainId: Network.GNOSIS_CHAIN,
-  //   name: "Gnosis Chain",
-  //   symbol: "XDAI",
-  //   url: `https://rpc.gnosischain.com`,
-  // },
+  [Network.HECO_TESTNET]: {
+    chainId: Network.HECO_TESTNET,
+    name: "HECO Testnet",
+    symbol: "HT",
+    url: `https://http-testnet.hecochain.com/`,
+  },
+  [Network.HECO]: {
+    chainId: Network.HECO,
+    name: "HECO Mainnet",
+    symbol: "HT",
+    url: `https://http-mainnet.hecochain.com`,
+  },
+  [Network.KCC_TESTNET]: {
+    chainId: Network.KCC_TESTNET,
+    name: "KCC Testnet",
+    symbol: "KCS",
+    url: `https://rpc-testnet.kcc.network`,
+    slip44: {
+      coinId: 641,
+    },
+  },
+  [Network.KCC]: {
+    chainId: Network.KCC,
+    name: "KCC Mainnet",
+    symbol: "KCS",
+    url: `https://rpc-mainnet.kcc.network	`,
+    slip44: {
+      coinId: 641,
+    },
+  },
+  [Network.GNOSIS_CHAIN]: {
+    chainId: Network.GNOSIS_CHAIN,
+    name: "Gnosis Chain",
+    symbol: "XDAI",
+    url: `https://rpc.gnosischain.com`,
+    slip44: {
+      coinId: 700,
+    },
+  },
+  [Network.MOONBEAM]: {
+    chainId: Network.MOONBEAM,
+    name: "Moonbeam",
+    symbol: "GLMR",
+    url: `https://rpc.api.moonbeam.network`,
+    slip44: {
+      coinId: 1284,
+    },
+  },
+  [Network.MOONRIVER]: {
+    chainId: Network.MOONRIVER,
+    name: "Moonriver",
+    symbol: "MOVR",
+    url: `https://rpc.api.moonriver.moonbeam.network`,
+    slip44: {
+      coinId: 1285,
+    },
+  },
 };
 
 export default config;

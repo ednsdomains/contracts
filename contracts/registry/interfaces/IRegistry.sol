@@ -191,4 +191,16 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
   function isEnable(bytes32 tld) external view returns (bool);
 
   // function isOmni(bytes32 tld) external view returns (bool);
+
+  /* ========== Utils ==========*/
+
+  function getTokenId(bytes memory tld) external returns (uint256);
+
+  function getTokenId(bytes memory name, bytes memory tld) external returns (uint256);
+
+  function getTokenId(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld
+  ) external returns (uint256);
 }
