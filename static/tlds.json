@@ -1,0 +1,61 @@
+{
+  "classical": {
+    "mainnet": {
+      "1": ["ether", "ethereum"],
+      "10": ["op", "optimism"],
+      "25": ["cro", "cronos"],
+      "56": ["bnb", "bsc", "binance"],
+      "66": ["okc", "okt", "okex"],
+      "100": ["xdai", "gnosis", "stable"],
+      "106": ["velas"],
+      "128": ["ht", "heco"],
+      "137": ["matic", "polygon"],
+      "250": ["ftm", "fantom"],
+      "321": ["kcc", "kcs", "kucoin"],
+      "4689": ["iotx", "iotex"],
+      "9001": ["evmos"],
+      "42161": ["arb", "arbitrum"],
+      "42220": ["celo"],
+      "43114": ["avax", "avalanche"]
+    },
+    "testnet": {
+      "5": ["ether"],
+      "65": ["okc", "okt"],
+      "69": ["op", "optimism"],
+      "97": ["bnb", "bsc"],
+      "111": ["velas"],
+      "256": ["ht", "heco"],
+      "322": ["kcc", "kcs", "kucoin"],
+      "338": ["cro", "cronos"],
+      "4002": ["ftm", "fantom"],
+      "4690": ["iotx", "iotex"],
+      "9000": ["evmos"],
+      "44787": ["celo"],
+      "43113": ["avax", "avalanche"],
+      "80001": ["matic", "poly", "polygon"],
+      "421611": ["arb", "arbitrum"]
+    }
+  },
+  "singleton": {
+    "mainnet": [
+      {
+        "name": "layer2",
+        "chainIds": [10, 137, 42161]
+      },
+      {
+        "name": "layerzero",
+        "chainIds": [1, 10, 56, 137, 250, 42161, 43114]
+      }
+    ],
+    "testnet": [
+      {
+        "name": "layer2",
+        "chainIds": [69, 80001, 421611]
+      },
+      {
+        "name": "layerzero",
+        "chainIds": [5, 69, 97, 4002, 43113, 80001, 421611]
+      }
+    ]
+  }
+}

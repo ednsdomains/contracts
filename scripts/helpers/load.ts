@@ -1,18 +1,18 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Network } from "../../network.config";
 import Contracts from "../../static/contracts.json";
-import { createProvider } from "../helpers/provider";
+import { getProvider } from "./get-provider";
 import { ethers } from "hardhat";
 import { IDeployedContracts } from "../interfaces/deployed-contracts";
 import { IContracts } from "../interfaces/contracts";
-import {string} from "hardhat/internal/core/params/argumentTypes";
-import {Wallet} from "ethers";
+import { string } from "hardhat/internal/core/params/argumentTypes";
+import { Wallet } from "ethers";
 
-export const fullLoad = async (networks: Network[], signer: SignerWithAddress|Wallet): Promise<IDeployedContracts> => {
+export const fullLoad = async (networks: Network[], signer: SignerWithAddress | Wallet): Promise<IDeployedContracts> => {
   const contracts: IDeployedContracts = {};
 
   for (const network of networks) {
-    const provider_ = createProvider(network);
+    const provider_ = getProvider(network);
     const signer_ = signer.connect(provider_);
     const contracts_ = Contracts[network];
 
@@ -71,7 +71,7 @@ export const fullLoad = async (networks: Network[], signer: SignerWithAddress|Wa
   return contracts;
 };
 
-export async function load(network: Network, signer: SignerWithAddress|Wallet): Promise<IContracts> {
+export async function load(network: Network, signer: SignerWithAddress | Wallet): Promise<IContracts> {
   const contracts_ = Contracts[network];
 
   const TokenFactory = await ethers.getContractFactory("Token", signer);

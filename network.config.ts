@@ -1,6 +1,6 @@
 export enum Network {
   ETHEREUM = 1,
-  RINKEBY = 4,
+  GOERLI = 5,
   BNB_CHAIN = 56,
   BNB_CHAIN_TESTNET = 97,
   POLYGON = 137,
@@ -13,22 +13,23 @@ export enum Network {
   OPTIMISM_KOVAN = 69,
   ARBITRUM = 42161,
   ARBITRUM_RINKEBY = 421611,
-  // IOTEX = 4689,
-  // IOTEX_TESTNET = 4690,
-  // OKC = 66,
-  // OKC_TESTNET = 65,
-  // HECO = 128,
-  // HECO_TESTNET = 256,
-  // KCC = 321,
-  // KCC_TESTNET = 322,
-  // VELAS = 106,
-  // VELAS_TESTNET = 111,
+  IOTEX = 4689,
+  IOTEX_TESTNET = 4690,
+  OKC = 66,
+  OKC_TESTNET = 65,
+  HECO = 128,
+  HECO_TESTNET = 256,
+  KCC = 321,
+  KCC_TESTNET = 322,
+  VELAS = 106,
+  VELAS_TESTNET = 111,
+  GNOSIS_CHAIN = 100,
 }
 
 export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM];
 
 export const Testnets = [
-  Network.RINKEBY,
+  Network.GOERLI,
   Network.BNB_CHAIN_TESTNET,
   Network.POLYGON_MUMBAI,
   Network.AVALANCHE_FUJI,
@@ -43,13 +44,13 @@ export interface INetworkConfig {
     name: string;
     symbol: string;
     url: string;
-    layerzero: {
+    layerzero?: {
       chainId: number;
       endpoint: {
         address: string;
       };
     };
-    chainlink: {
+    chainlink?: {
       token: {
         name: string;
         symbol: string;
@@ -63,7 +64,7 @@ export interface INetworkConfig {
         jobId: string;
       };
     };
-    slip44: {
+    slip44?: {
       coinId: number;
     };
   };
@@ -97,28 +98,28 @@ const config: INetworkConfig = {
       },
     },
   },
-  [Network.RINKEBY]: {
-    chainId: 4,
-    name: "Ethereum Rinkeby",
-    symbol: "rETH",
-    url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+  [Network.GOERLI]: {
+    chainId: 5,
+    name: "Ethereum Goerli",
+    symbol: "gETH",
+    url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 60,
     },
-    layerzero: {
-      chainId: 10001,
-      endpoint: {
-        address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
-      },
-    },
-    chainlink: {
-      token: {
-        name: "ChainLink Token",
-        symbol: "LINK",
-        decimals: 18,
-        address: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709",
-      },
-    },
+    // layerzero: {
+    //   chainId: 10001,
+    //   endpoint: {
+    //     address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
+    //   },
+    // },
+    // chainlink: {
+    //   token: {
+    //     name: "ChainLink Token",
+    //     symbol: "LINK",
+    //     decimals: 18,
+    //     address: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709",
+    //   },
+    // },
   },
   [Network.BNB_CHAIN]: {
     chainId: 56,
@@ -374,7 +375,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.FANTOM_TESTNET]: {
-    chainId: 0xfa2,
+    chainId: Network.FANTOM_TESTNET,
     name: "Fantom testnet",
     symbol: "FTM",
     url: `https://rpc.testnet.fantom.network/`,
@@ -396,6 +397,54 @@ const config: INetworkConfig = {
         address: "0xfaFedb041c0DD4fA2Dc0d87a6B0979Ee6FA7af5F",
       },
     },
+  },
+  [Network.IOTEX_TESTNET]: {
+    chainId: Network.IOTEX_TESTNET,
+    name: "IoTeX Testnet",
+    symbol: "IOTX-T",
+    url: `https://babel-api.testnet.iotex.io`,
+    slip44: {
+      coinId: 304,
+    },
+  },
+  [Network.IOTEX]: {
+    chainId: Network.IOTEX,
+    name: "IoTeX Mainnet",
+    symbol: "IOTX",
+    url: `https://babel-api.mainnet.iotex.io`,
+    slip44: {
+      coinId: 304,
+    },
+  },
+  [Network.OKC_TESTNET]: {
+    chainId: Network.OKC_TESTNET,
+    name: "OKC Testnet",
+    symbol: "OKT",
+    url: `https://exchaintestrpc.okex.org`,
+  },
+  [Network.OKC]: {
+    chainId: Network.OKC,
+    name: "OKC Mainnet",
+    symbol: "OKT",
+    url: `https://exchainrpc.okex.org`,
+  },
+  [Network.KCC_TESTNET]: {
+    chainId: Network.KCC_TESTNET,
+    name: "KCC Testnet",
+    symbol: "KCS",
+    url: `https://rpc-testnet.kcc.network`,
+  },
+  [Network.KCC]: {
+    chainId: Network.KCC,
+    name: "KCC Mainnet",
+    symbol: "KCS",
+    url: `https://rpc-mainnet.kcc.network	`,
+  },
+  [Network.GNOSIS_CHAIN]: {
+    chainId: Network.GNOSIS_CHAIN,
+    name: "Gnosis Chain",
+    symbol: "XDAI",
+    url: `https://rpc.gnosischain.com`,
   },
 };
 
