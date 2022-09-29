@@ -17,13 +17,13 @@ export enum Network {
   IOTEX_TESTNET = 4690,
   OKC = 66,
   OKC_TESTNET = 65,
-  HECO = 128,
-  HECO_TESTNET = 256,
-  KCC = 321,
-  KCC_TESTNET = 322,
-  VELAS = 106,
-  VELAS_TESTNET = 111,
-  GNOSIS_CHAIN = 100,
+  // HECO = 128,
+  // HECO_TESTNET = 256,
+  // KCC = 321,
+  // KCC_TESTNET = 322,
+  // VELAS = 106,
+  // VELAS_TESTNET = 111,
+  // GNOSIS_CHAIN = 100,
 }
 
 export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM];
@@ -428,24 +428,24 @@ const config: INetworkConfig = {
     symbol: "OKT",
     url: `https://exchainrpc.okex.org`,
   },
-  [Network.KCC_TESTNET]: {
-    chainId: Network.KCC_TESTNET,
-    name: "KCC Testnet",
-    symbol: "KCS",
-    url: `https://rpc-testnet.kcc.network`,
-  },
-  [Network.KCC]: {
-    chainId: Network.KCC,
-    name: "KCC Mainnet",
-    symbol: "KCS",
-    url: `https://rpc-mainnet.kcc.network	`,
-  },
-  [Network.GNOSIS_CHAIN]: {
-    chainId: Network.GNOSIS_CHAIN,
-    name: "Gnosis Chain",
-    symbol: "XDAI",
-    url: `https://rpc.gnosischain.com`,
-  },
+  // [Network.KCC_TESTNET]: {
+  //   chainId: Network.KCC_TESTNET,
+  //   name: "KCC Testnet",
+  //   symbol: "KCS",
+  //   url: `https://rpc-testnet.kcc.network`,
+  // },
+  // [Network.KCC]: {
+  //   chainId: Network.KCC,
+  //   name: "KCC Mainnet",
+  //   symbol: "KCS",
+  //   url: `https://rpc-mainnet.kcc.network	`,
+  // },
+  // [Network.GNOSIS_CHAIN]: {
+  //   chainId: Network.GNOSIS_CHAIN,
+  //   name: "Gnosis Chain",
+  //   symbol: "XDAI",
+  //   url: `https://rpc.gnosischain.com`,
+  // },
 };
 
 export default config;

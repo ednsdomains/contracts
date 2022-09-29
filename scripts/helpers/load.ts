@@ -5,7 +5,6 @@ import { getProvider } from "./get-provider";
 import { ethers } from "hardhat";
 import { IDeployedContracts } from "../interfaces/deployed-contracts";
 import { IContracts } from "../interfaces/contracts";
-import { string } from "hardhat/internal/core/params/argumentTypes";
 import { Wallet } from "ethers";
 
 export const fullLoad = async (networks: Network[], signer: SignerWithAddress | Wallet): Promise<IDeployedContracts> => {
@@ -28,26 +27,32 @@ export const fullLoad = async (networks: Network[], signer: SignerWithAddress | 
     const RegistryFactory = await ethers.getContractFactory("Registry", signer_);
     const Registry = RegistryFactory.attach(contracts_.Registry);
 
-    const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer", signer_);
-    const PublicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(contracts_.PublicResolverSynchronizer);
+    // const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer", signer_);
+    // const PublicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(contracts_.PublicResolverSynchronizer);
 
     const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", signer_);
     const PublicResolver = PublicResolverFactory.attach(contracts_.PublicResolver);
 
-    const SingletonRegistrarFactory = await ethers.getContractFactory("SingletonRegistrar", signer_);
-    const SingletonRegistrar = SingletonRegistrarFactory.attach(contracts_.SingletonRegistrar);
+    // const SingletonRegistrarFactory = await ethers.getContractFactory("SingletonRegistrar", signer_);
+    // const SingletonRegistrar = SingletonRegistrarFactory.attach(contracts_.SingletonRegistrar);
 
-    const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController", signer_);
-    const SingletonRegistrarController = SingletonRegistrarControllerFactory.attach(contracts_.SingletonRegistrarController);
+    const BaseRegistrarFactory = await ethers.getContractFactory("BaseRegistrar", signer_);
+    const BaseRegistrar = BaseRegistrarFactory.attach(contracts_.BaseRegistrar);
 
-    const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer", signer_);
-    const OmniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(contracts_.OmniRegistrarSynchronizer);
+    const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", signer_);
+    const ClassicalRegistrarController = ClassicalRegistrarControllerFactory.attach(contracts_.ClassicalRegistrarController);
 
-    const OmniRegistrarFactory = await ethers.getContractFactory("OmniRegistrar", signer_);
-    const OmniRegistrar = OmniRegistrarFactory.attach(contracts_.OmniRegistrar);
+    // const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController", signer_);
+    // const SingletonRegistrarController = SingletonRegistrarControllerFactory.attach(contracts_.SingletonRegistrarController);
 
-    const OmniRegistrarControllerFactory = await ethers.getContractFactory("OmniRegistrarController", signer_);
-    const OmniRegistrarController = OmniRegistrarControllerFactory.attach(contracts_.OmniRegistrarController);
+    // const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer", signer_);
+    // const OmniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(contracts_.OmniRegistrarSynchronizer);
+
+    // const OmniRegistrarFactory = await ethers.getContractFactory("OmniRegistrar", signer_);
+    // const OmniRegistrar = OmniRegistrarFactory.attach(contracts_.OmniRegistrar);
+
+    // const OmniRegistrarControllerFactory = await ethers.getContractFactory("OmniRegistrarController", signer_);
+    // const OmniRegistrarController = OmniRegistrarControllerFactory.attach(contracts_.OmniRegistrarController);
 
     const RootFactory = await ethers.getContractFactory("Root", signer_);
     const Root = RootFactory.attach(contracts_.Root);
@@ -56,12 +61,12 @@ export const fullLoad = async (networks: Network[], signer: SignerWithAddress | 
       Token,
       Registry,
       PublicResolver,
-      PublicResolverSynchronizer,
-      SingletonRegistrar,
-      SingletonRegistrarController,
-      OmniRegistrar,
-      OmniRegistrarController,
-      OmniRegistrarSynchronizer,
+      BaseRegistrar,
+      ClassicalRegistrarController,
+      // SingletonRegistrarController,
+      // OmniRegistrar,
+      // OmniRegistrarController,
+      // OmniRegistrarSynchronizer,
       TokenPriceOracle,
       DomainPriceOracle,
       Root,
@@ -86,26 +91,26 @@ export async function load(network: Network, signer: SignerWithAddress | Wallet)
   const RegistryFactory = await ethers.getContractFactory("Registry", signer);
   const Registry = RegistryFactory.attach(contracts_.Registry);
 
-  const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer", signer);
-  const PublicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(contracts_.PublicResolverSynchronizer);
+  // const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer", signer);
+  // const PublicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(contracts_.PublicResolverSynchronizer);
 
   const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", signer);
   const PublicResolver = PublicResolverFactory.attach(contracts_.PublicResolver);
 
-  const SingletonRegistrarFactory = await ethers.getContractFactory("SingletonRegistrar", signer);
-  const SingletonRegistrar = SingletonRegistrarFactory.attach(contracts_.SingletonRegistrar);
+  const BaseRegistrarFactory = await ethers.getContractFactory("BaseRegistrar", signer);
+  const BaseRegistrar = BaseRegistrarFactory.attach(contracts_.BaseRegistrar);
 
-  const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController", signer);
-  const SingletonRegistrarController = SingletonRegistrarControllerFactory.attach(contracts_.SingletonRegistrarController);
+  const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", signer);
+  const ClassicalRegistrarController = ClassicalRegistrarControllerFactory.attach(contracts_.ClassicalRegistrarController);
 
-  const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer", signer);
-  const OmniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(contracts_.OmniRegistrarSynchronizer);
+  // const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController", signer);
+  // const SingletonRegistrarController = SingletonRegistrarControllerFactory.attach(contracts_.SingletonRegistrarController);
 
-  const OmniRegistrarFactory = await ethers.getContractFactory("OmniRegistrar", signer);
-  const OmniRegistrar = OmniRegistrarFactory.attach(contracts_.OmniRegistrar);
+  // const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer", signer);
+  // const OmniRegistrarSynchronizer = OmniRegistrarSynchronizerFactory.attach(contracts_.OmniRegistrarSynchronizer);
 
-  const OmniRegistrarControllerFactory = await ethers.getContractFactory("OmniRegistrarController", signer);
-  const OmniRegistrarController = OmniRegistrarControllerFactory.attach(contracts_.OmniRegistrarController);
+  // const OmniRegistrarControllerFactory = await ethers.getContractFactory("OmniRegistrarController", signer);
+  // const OmniRegistrarController = OmniRegistrarControllerFactory.attach(contracts_.OmniRegistrarController);
 
   const RootFactory = await ethers.getContractFactory("Root", signer);
   const Root = RootFactory.attach(contracts_.Root);
@@ -114,12 +119,8 @@ export async function load(network: Network, signer: SignerWithAddress | Wallet)
     Token,
     Registry,
     PublicResolver,
-    PublicResolverSynchronizer,
-    SingletonRegistrar,
-    SingletonRegistrarController,
-    OmniRegistrar,
-    OmniRegistrarController,
-    OmniRegistrarSynchronizer,
+    BaseRegistrar,
+    ClassicalRegistrarController,
     TokenPriceOracle,
     DomainPriceOracle,
     Root,

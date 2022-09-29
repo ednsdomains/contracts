@@ -2,11 +2,8 @@ import {
   Registry,
   PublicResolver,
   PublicResolverSynchronizer,
-  SingletonRegistrar,
-  SingletonRegistrarController,
-  OmniRegistrar,
-  OmniRegistrarController,
-  OmniRegistrarSynchronizer,
+  BaseRegistrar,
+  ClassicalRegistrarController,
   Root,
   DomainPriceOracle,
   TokenPriceOracle,
@@ -16,12 +13,9 @@ import {
 export interface IContracts {
   Registry: Registry;
   PublicResolver: PublicResolver;
-  PublicResolverSynchronizer: PublicResolverSynchronizer;
-  SingletonRegistrar: SingletonRegistrar;
-  SingletonRegistrarController: SingletonRegistrarController;
-  OmniRegistrar: OmniRegistrar;
-  OmniRegistrarController: OmniRegistrarController;
-  OmniRegistrarSynchronizer: OmniRegistrarSynchronizer;
+  // PublicResolverSynchronizer: PublicResolverSynchronizer;
+  BaseRegistrar: BaseRegistrar;
+  ClassicalRegistrarController: ClassicalRegistrarController;
   Root: Root;
   DomainPriceOracle: DomainPriceOracle;
   TokenPriceOracle: TokenPriceOracle;

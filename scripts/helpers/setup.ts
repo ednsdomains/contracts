@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 import NetworkConfig, { Network } from "../../network.config";
-import SingletonTlds from "../../static/singleton-tlds.json";
-import OmniTlds from "../../static/omni-tlds.json";
+import Tlds from "../../static/tlds.json";
 import { IDeployedContracts } from "../interfaces/deployed-contracts";
 
 export interface ISetupInput {
@@ -10,16 +9,16 @@ export interface ISetupInput {
   networks: Network[];
 }
 
-export const setupToken = async (input: ISetupInput) => {
-  for (const network_ of input.networks) {
-    if (network_ !== input.network) {
-      const isTrustedRemote = await input.contracts[input.network].Token.isTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Token.address);
-      if (isTrustedRemote) {
-        await input.contracts[input.network].Token.setTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Token.address);
-      }
-    }
-  }
-};
+// export const setupToken = async (input: ISetupInput) => {
+//   for (const network_ of input.networks) {
+//     if (network_ !== input.network) {
+//       const isTrustedRemote = await input.contracts[input.network].Token.isTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Token.address);
+//       if (isTrustedRemote) {
+//         await input.contracts[input.network].Token.setTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Token.address);
+//       }
+//     }
+//   }
+// };
 
 // TODO:
 export const setupDomainPriceOracle = async (input: ISetupInput) => {};

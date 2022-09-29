@@ -2,6 +2,7 @@
   "1": {
     "Registry": "",
     "PublicResolver": "",
+    "BaseRegistrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -12,86 +13,7 @@
   "5": {
     "Registry": "",
     "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "56": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "97": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "137": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "80001": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "43114": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "43113": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "250": {
-    "Registry": "",
-    "PublicResolver": "",
-    "ClassicalRegistrarController": "",
-    "SingletonRegistrarController": "",
-    "Root": "",
-    "DomainPriceOracle": "",
-    "TokenPriceOracle": "",
-    "Token": ""
-  },
-  "4002": {
-    "Registry": "",
-    "PublicResolver": "",
+    "BaseRegistrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -102,6 +24,40 @@
   "10": {
     "Registry": "",
     "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "56": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "65": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "66": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -112,6 +68,107 @@
   "69": {
     "Registry": "",
     "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "97": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "137": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "250": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "4689": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "4690": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "80001": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "43114": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+  "43113": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
+    "ClassicalRegistrarController": "",
+    "SingletonRegistrarController": "",
+    "Root": "",
+    "DomainPriceOracle": "",
+    "TokenPriceOracle": "",
+    "Token": ""
+  },
+
+  "4002": {
+    "Registry": "",
+    "PublicResolver": "",
+    "BaseRegistrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -122,6 +179,7 @@
   "42161": {
     "Registry": "",
     "PublicResolver": "",
+    "BaseRegistrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -132,6 +190,7 @@
   "421611": {
     "Registry": "",
     "PublicResolver": "",
+    "BaseRegistrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
