@@ -58,7 +58,7 @@ abstract contract LabelOperator {
     require(label.length < MAX_LABEL_LENGTH && label.length > MIN_LABEL_LENGTH, "INVALUD_LENGTH");
     for (uint256 i; i < label.length; i++) {
       require(
-        (label[i] >= bytes1("a") && label[i] <= bytes1("z")) || (label[i] >= bytes1("0") && label[i] <= bytes1("9")) || label[i] == bytes1("-") || label[i] == bytes1("_"),
+        (label[i] >= bytes1("a") && label[i] <= bytes1("z")) || (label[i] >= bytes1("0") && label[i] <= bytes1("9")) || label[i] == bytes1("-") || label[i] == bytes1("_")||label[i] == 0x00,
         "INVALID_CHARACTER"
       );
     }

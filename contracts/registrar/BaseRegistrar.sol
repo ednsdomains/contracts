@@ -17,6 +17,10 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
 
   IRegistry private _registry;
 
+  function initialize(IRegistry registry_) public initializer {
+    __BaseRegistrar_init(registry_);
+  }
+
   function __BaseRegistrar_init(IRegistry registry_) internal onlyInitializing {
     __BaseRegistrar_init_unchained(registry_);
     __AccessControl_init();

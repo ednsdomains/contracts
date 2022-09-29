@@ -572,19 +572,19 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     require(_exists(tokenId_), "ERC721Metadata: URI query for nonexistent token");
     // `{_baseURI}/{chainId}/{contractAddress}/{tokenId}/metadata.json`
     return
-      string(
-        abi.encodePacked(
-          __baseURI,
-          "/",
-          block.chainid,
-          "/",
-          StringsUpgradeable.toHexString(uint160(address(this)), 20),
-          "/",
-          StringsUpgradeable.toString(tokenId_),
-          "/",
-          "metadata.json"
-        )
-      );
+    string(
+      abi.encodePacked(
+        __baseURI,
+        "/",
+        block.chainid,
+        "/",
+        StringsUpgradeable.toHexString(uint160(address(this)), 20),
+        "/",
+        StringsUpgradeable.toString(tokenId_),
+        "/",
+        "metadata.json"
+      )
+    );
   }
 
   function setBaseURI(string memory baseURI_) public virtual onlyAdmin {
@@ -658,10 +658,10 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function supportsInterface(bytes4 interfaceID) public view override(IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
     return
-      interfaceID == type(IERC4907).interfaceId ||
-      interfaceID == type(IERC721Upgradeable).interfaceId ||
-      interfaceID == type(IERC721MetadataUpgradeable).interfaceId ||
-      interfaceID == type(IRegistry).interfaceId ||
-      super.supportsInterface(interfaceID);
+    interfaceID == type(IERC4907).interfaceId ||
+    interfaceID == type(IERC721Upgradeable).interfaceId ||
+    interfaceID == type(IERC721MetadataUpgradeable).interfaceId ||
+    interfaceID == type(IRegistry).interfaceId ||
+    super.supportsInterface(interfaceID);
   }
 }
