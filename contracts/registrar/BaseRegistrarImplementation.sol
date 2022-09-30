@@ -251,6 +251,10 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
         return expiries[id];
     }
 
+    function deregister(uint256 id) external onlyController {
+        _burn(id);
+    }
+
     /**
      * @dev Reclaim ownership of a name in EDNS, if you own it in the registrar.
      */
