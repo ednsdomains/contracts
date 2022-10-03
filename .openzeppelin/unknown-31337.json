@@ -452,17 +452,17 @@
     },
     {
       "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
-      "txHash": "0xc940ed33fb73cf75efec345d4a532a49b945407100e657cb72f379dee068b259",
+      "txHash": "0x40d54ade497846f510c93f03249a497730ce109ced8e29365a1f34f36041cd2e",
       "kind": "transparent"
     },
     {
       "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
-      "txHash": "0x13d24c2e92c8d192dc4a1df5bf00531f2e9ecf840166de16480c106e6d41f003",
+      "txHash": "0x2939eb3506937961cbe6646e7cd9f6e62a231a569d176d1f0f3f73efb78e78b9",
       "kind": "transparent"
     },
     {
       "address": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
-      "txHash": "0xc374f738fc0b80dd80be8d17bbbef0565137934c9502b31f1cbed4d4f1d28e76",
+      "txHash": "0x479e819308c2451df7c4ac39a8fa8c1e7342e8ddf0eafa2aecc2c79a240dbec1",
       "kind": "transparent"
     }
   ],
@@ -2159,7 +2159,7 @@
             "label": "lzEndpoint",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(ILayerZeroEndpoint)7600",
+            "type": "t_contract(ILayerZeroEndpoint)7716",
             "contract": "LayerZeroApp",
             "src": "contracts/layerzero/LayerZeroApp.sol:9"
           },
@@ -2353,7 +2353,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(ILayerZeroEndpoint)7600": {
+          "t_contract(ILayerZeroEndpoint)7716": {
             "label": "contract ILayerZeroEndpoint",
             "numberOfBytes": "20"
           },
@@ -2521,7 +2521,7 @@
             "label": "_tokenPrice",
             "offset": 0,
             "slot": "151",
-            "type": "t_contract(ITokenPriceOracle)8247",
+            "type": "t_contract(ITokenPriceOracle)8394",
             "contract": "DomainPriceOracle",
             "src": "contracts/oracle/DomainPriceOracle.sol:20"
           },
@@ -2529,7 +2529,7 @@
             "label": "_prices",
             "offset": 0,
             "slot": "152",
-            "type": "t_mapping(t_bytes32,t_struct(Price)7670_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(Price)7817_storage)",
             "contract": "DomainPriceOracle",
             "src": "contracts/oracle/DomainPriceOracle.sol:21"
           },
@@ -2563,7 +2563,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(ITokenPriceOracle)8247": {
+          "t_contract(ITokenPriceOracle)8394": {
             "label": "contract ITokenPriceOracle",
             "numberOfBytes": "20"
           },
@@ -2571,7 +2571,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(Price)7670_storage)": {
+          "t_mapping(t_bytes32,t_struct(Price)7817_storage)": {
             "label": "mapping(bytes32 => struct DomainPriceOracle.Price)",
             "numberOfBytes": "32"
           },
@@ -2583,7 +2583,7 @@
             "label": "mapping(bytes32 => uint256)",
             "numberOfBytes": "32"
           },
-          "t_struct(Price)7670_storage": {
+          "t_struct(Price)7817_storage": {
             "label": "struct DomainPriceOracle.Price",
             "members": [
               {
@@ -2693,7 +2693,7 @@
             "label": "lzEndpoint",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(ILayerZeroEndpoint)7600",
+            "type": "t_contract(ILayerZeroEndpoint)7716",
             "contract": "LayerZeroApp",
             "src": "contracts/layerzero/LayerZeroApp.sol:9"
           },
@@ -2807,7 +2807,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(ILayerZeroEndpoint)7600": {
+          "t_contract(ILayerZeroEndpoint)7716": {
             "label": "contract ILayerZeroEndpoint",
             "numberOfBytes": "20"
           },
@@ -2880,9 +2880,145 @@
         }
       }
     },
-    "3bf596646f2ab759584e1b689621867df3b6325cb445dfc28c28029b1691fbd3": {
+    "df5479ad010ab8dedea66d2ad1f1febdf91f018d8f539340bf98dcdb9343643f": {
+      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      "txHash": "0x7a1d92bc4602975da488d954316a71639642834f6f1efd17bffec46d29baefbe",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)2553_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:235"
+          },
+          {
+            "label": "controllers",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_bool))",
+            "contract": "BaseRegistrar",
+            "src": "contracts/registrar/BaseRegistrar.sol:16"
+          },
+          {
+            "label": "_registry",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_contract(IRegistry)12760",
+            "contract": "BaseRegistrar",
+            "src": "contracts/registrar/BaseRegistrar.sol:18"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IRegistry)12760": {
+            "label": "contract IRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_bool))": {
+            "label": "mapping(address => mapping(bytes32 => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)2553_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)2553_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "d25a6fdca6efacc5b2c6624e9e91d9e38dd5859589ba048dfa8d658761d865b3": {
       "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0x785ee7de4821ba3e5fbb96addd0cde3aa7faa26093cde9a7ba8284bf7a742a96",
+      "txHash": "0xa489a039cdf9da9eed7c6b7540f3c79656a88000ade94a0ce6cc0bc4bc47bed6",
       "layout": {
         "storage": [
           {
@@ -2969,7 +3105,7 @@
             "label": "_records",
             "offset": 0,
             "slot": "155",
-            "type": "t_mapping(t_bytes32,t_struct(TldRecord)12287_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(TldRecord)12431_storage)",
             "contract": "Registry",
             "src": "contracts/registry/Registry.sol:30"
           },
@@ -2977,7 +3113,7 @@
             "label": "_tokenRecords",
             "offset": 0,
             "slot": "156",
-            "type": "t_mapping(t_uint256,t_struct(TokenRecord)12270_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TokenRecord)12414_storage)",
             "contract": "Registry",
             "src": "contracts/registry/Registry.sol:31"
           },
@@ -3015,7 +3151,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(RecordType)12260": {
+          "t_enum(RecordType)12404": {
             "label": "enum IRegistry.RecordType",
             "members": [
               "TLD",
@@ -3024,7 +3160,7 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_enum(TldClass)12595": {
+          "t_enum(TldClass)12766": {
             "label": "enum TldClass.TldClass",
             "members": [
               "CLASSICAL",
@@ -3045,11 +3181,11 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(DomainRecord)12308_storage)": {
+          "t_mapping(t_bytes32,t_struct(DomainRecord)12452_storage)": {
             "label": "mapping(bytes32 => struct IRegistry.DomainRecord)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(HostRecord)12318_storage)": {
+          "t_mapping(t_bytes32,t_struct(HostRecord)12462_storage)": {
             "label": "mapping(bytes32 => struct IRegistry.HostRecord)",
             "numberOfBytes": "32"
           },
@@ -3057,11 +3193,11 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(TldRecord)12287_storage)": {
+          "t_mapping(t_bytes32,t_struct(TldRecord)12431_storage)": {
             "label": "mapping(bytes32 => struct IRegistry.TldRecord)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(TokenRecord)12270_storage)": {
+          "t_mapping(t_uint256,t_struct(TokenRecord)12414_storage)": {
             "label": "mapping(uint256 => struct IRegistry.TokenRecord)",
             "numberOfBytes": "32"
           },
@@ -3069,7 +3205,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(DomainRecord)12308_storage": {
+          "t_struct(DomainRecord)12452_storage": {
             "label": "struct IRegistry.DomainRecord",
             "members": [
               {
@@ -3098,7 +3234,7 @@
               },
               {
                 "label": "rental",
-                "type": "t_struct(Rental)12323_storage",
+                "type": "t_struct(Rental)12467_storage",
                 "offset": 0,
                 "slot": "3"
               },
@@ -3110,14 +3246,14 @@
               },
               {
                 "label": "hosts",
-                "type": "t_mapping(t_bytes32,t_struct(HostRecord)12318_storage)",
+                "type": "t_mapping(t_bytes32,t_struct(HostRecord)12462_storage)",
                 "offset": 0,
                 "slot": "5"
               }
             ],
             "numberOfBytes": "192"
           },
-          "t_struct(HostRecord)12318_storage": {
+          "t_struct(HostRecord)12462_storage": {
             "label": "struct IRegistry.HostRecord",
             "members": [
               {
@@ -3128,7 +3264,7 @@
               },
               {
                 "label": "rental",
-                "type": "t_struct(Rental)12323_storage",
+                "type": "t_struct(Rental)12467_storage",
                 "offset": 0,
                 "slot": "1"
               },
@@ -3141,7 +3277,7 @@
             ],
             "numberOfBytes": "96"
           },
-          "t_struct(Rental)12323_storage": {
+          "t_struct(Rental)12467_storage": {
             "label": "struct IRegistry.Rental",
             "members": [
               {
@@ -3177,7 +3313,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(TldRecord)12287_storage": {
+          "t_struct(TldRecord)12431_storage": {
             "label": "struct IRegistry.TldRecord",
             "members": [
               {
@@ -3206,25 +3342,25 @@
               },
               {
                 "label": "class_",
-                "type": "t_enum(TldClass)12595",
+                "type": "t_enum(TldClass)12766",
                 "offset": 21,
                 "slot": "2"
               },
               {
                 "label": "domains",
-                "type": "t_mapping(t_bytes32,t_struct(DomainRecord)12308_storage)",
+                "type": "t_mapping(t_bytes32,t_struct(DomainRecord)12452_storage)",
                 "offset": 0,
                 "slot": "3"
               }
             ],
             "numberOfBytes": "128"
           },
-          "t_struct(TokenRecord)12270_storage": {
+          "t_struct(TokenRecord)12414_storage": {
             "label": "struct IRegistry.TokenRecord",
             "members": [
               {
                 "label": "class_",
-                "type": "t_enum(RecordType)12260",
+                "type": "t_enum(RecordType)12404",
                 "offset": 0,
                 "slot": "0"
               },
@@ -3260,317 +3396,9 @@
         }
       }
     },
-    "ba5324ce23123a2b6898326cced2a337690d84b4b5471fc9c273aa74ba76dd0b": {
-      "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-      "txHash": "0x7d3916af3acdf603e647c3f410ceeafcd3554f367631f5fb714996ac535677ea",
-      "layout": {
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "MulticallUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol:50"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "_registry",
-            "offset": 0,
-            "slot": "151",
-            "type": "t_contract(IRegistry)12589",
-            "contract": "BaseResolver",
-            "src": "contracts/resolver/BaseResolver.sol:13"
-          },
-          {
-            "label": "_synchronizer",
-            "offset": 0,
-            "slot": "152",
-            "type": "t_contract(IPublicResolverSynchronizer)13000",
-            "contract": "BaseResolver",
-            "src": "contracts/resolver/BaseResolver.sol:15"
-          },
-          {
-            "label": "_addresses",
-            "offset": 0,
-            "slot": "153",
-            "type": "t_mapping(t_bytes32,t_address)",
-            "contract": "AddressResolver",
-            "src": "contracts/resolver/profile/AddressResolver.sol:8"
-          },
-          {
-            "label": "_reverseAddresses",
-            "offset": 0,
-            "slot": "154",
-            "type": "t_mapping(t_address,t_bytes_storage)",
-            "contract": "AddressResolver",
-            "src": "contracts/resolver/profile/AddressResolver.sol:9"
-          },
-          {
-            "label": "_multiCoinAddresses",
-            "offset": 0,
-            "slot": "155",
-            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))",
-            "contract": "MultiCoinAddressResolver",
-            "src": "contracts/resolver/profile/MultiCoinAddressResolver.sol:8"
-          },
-          {
-            "label": "_nfts",
-            "offset": 0,
-            "slot": "156",
-            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14176_storage))",
-            "contract": "NFTResolver",
-            "src": "contracts/resolver/profile/NFTResolver.sol:8"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_bytes_storage": {
-            "label": "bytes",
-            "numberOfBytes": "32"
-          },
-          "t_contract(IPublicResolverSynchronizer)13000": {
-            "label": "contract IPublicResolverSynchronizer",
-            "numberOfBytes": "20"
-          },
-          "t_contract(IRegistry)12589": {
-            "label": "contract IRegistry",
-            "numberOfBytes": "20"
-          },
-          "t_mapping(t_address,t_bytes_storage)": {
-            "label": "mapping(address => bytes)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_address)": {
-            "label": "mapping(bytes32 => address)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))": {
-            "label": "mapping(bytes32 => mapping(uint256 => bytes))",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14176_storage))": {
-            "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_bytes_storage)": {
-            "label": "mapping(uint256 => bytes)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_struct(NFT)14176_storage)": {
-            "label": "mapping(uint256 => struct INFTResolver.NFT)",
-            "numberOfBytes": "32"
-          },
-          "t_struct(NFT)14176_storage": {
-            "label": "struct INFTResolver.NFT",
-            "members": [
-              {
-                "label": "contract_",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "tokenId",
-                "type": "t_uint256",
-                "offset": 0,
-                "slot": "1"
-              }
-            ],
-            "numberOfBytes": "64"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          }
-        }
-      }
-    },
-    "df5479ad010ab8dedea66d2ad1f1febdf91f018d8f539340bf98dcdb9343643f": {
-      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
-      "txHash": "0x45cc7fc171a9957134f7396fc2ecdea50ce689ad31319bb7a52a6757bbb194f8",
-      "layout": {
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
-          },
-          {
-            "label": "_roles",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_mapping(t_bytes32,t_struct(RoleData)2553_storage)",
-            "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "102",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:235"
-          },
-          {
-            "label": "controllers",
-            "offset": 0,
-            "slot": "151",
-            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_bool))",
-            "contract": "BaseRegistrar",
-            "src": "contracts/registrar/BaseRegistrar.sol:16"
-          },
-          {
-            "label": "_registry",
-            "offset": 0,
-            "slot": "152",
-            "type": "t_contract(IRegistry)12589",
-            "contract": "BaseRegistrar",
-            "src": "contracts/registrar/BaseRegistrar.sol:18"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_contract(IRegistry)12589": {
-            "label": "contract IRegistry",
-            "numberOfBytes": "20"
-          },
-          "t_mapping(t_address,t_bool)": {
-            "label": "mapping(address => bool)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_address,t_mapping(t_bytes32,t_bool))": {
-            "label": "mapping(address => mapping(bytes32 => bool))",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_bool)": {
-            "label": "mapping(bytes32 => bool)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(RoleData)2553_storage)": {
-            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
-            "numberOfBytes": "32"
-          },
-          "t_struct(RoleData)2553_storage": {
-            "label": "struct AccessControlUpgradeable.RoleData",
-            "members": [
-              {
-                "label": "members",
-                "type": "t_mapping(t_address,t_bool)",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "adminRole",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "1"
-              }
-            ],
-            "numberOfBytes": "64"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          }
-        }
-      }
-    },
-    "eb8f85afad0f5a5e8afc3835dea9b0c452d4793aec0487bad5355a6b81778364": {
+    "c428894b3a052815dbf74982f307f5a7aa2cc0f78856e43f92adbb208aaef64f": {
       "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
-      "txHash": "0x18f8bbe20ae4a10919481c26dca41191d4d27c49571a5b287691b68de9a4ae39",
+      "txHash": "0xa42668750960707ddad318e9c45e8a1aa1d06c75dab2cdae27b35bbd03ea63ce",
       "layout": {
         "storage": [
           {
@@ -3633,7 +3461,7 @@
             "label": "_registrar",
             "offset": 0,
             "slot": "152",
-            "type": "t_contract(IBaseRegistrar)9294",
+            "type": "t_contract(IBaseRegistrar)9438",
             "contract": "ClassicalRegistrarController",
             "src": "contracts/registrar/ClassicalRegistrarController.sol:14"
           },
@@ -3641,7 +3469,7 @@
             "label": "_domainPrice",
             "offset": 0,
             "slot": "153",
-            "type": "t_contract(IDomainPriceOracle)8221",
+            "type": "t_contract(IDomainPriceOracle)8368",
             "contract": "ClassicalRegistrarController",
             "src": "contracts/registrar/ClassicalRegistrarController.sol:15"
           },
@@ -3649,7 +3477,7 @@
             "label": "_tokenPrice",
             "offset": 0,
             "slot": "154",
-            "type": "t_contract(ITokenPriceOracle)8247",
+            "type": "t_contract(ITokenPriceOracle)8394",
             "contract": "ClassicalRegistrarController",
             "src": "contracts/registrar/ClassicalRegistrarController.sol:16"
           },
@@ -3691,11 +3519,11 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IBaseRegistrar)9294": {
+          "t_contract(IBaseRegistrar)9438": {
             "label": "contract IBaseRegistrar",
             "numberOfBytes": "20"
           },
-          "t_contract(IDomainPriceOracle)8221": {
+          "t_contract(IDomainPriceOracle)8368": {
             "label": "contract IDomainPriceOracle",
             "numberOfBytes": "20"
           },
@@ -3703,7 +3531,7 @@
             "label": "contract IERC20Upgradeable",
             "numberOfBytes": "20"
           },
-          "t_contract(ITokenPriceOracle)8247": {
+          "t_contract(ITokenPriceOracle)8394": {
             "label": "contract ITokenPriceOracle",
             "numberOfBytes": "20"
           },
@@ -3731,6 +3559,194 @@
               {
                 "label": "adminRole",
                 "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "1d7b30b61ecd129a815dd561809c1cfe3e53b848754733fbd304fb7da518428f": {
+      "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      "txHash": "0xb9d9e0a099fccef11648d3f42af5b542a86db9f073415d9314a29c5bc23c5cd9",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "MulticallUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol:50"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_registry",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_contract(IRegistry)12760",
+            "contract": "BaseResolver",
+            "src": "contracts/resolver/BaseResolver.sol:13"
+          },
+          {
+            "label": "_synchronizer",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_contract(IPublicResolverSynchronizer)13175",
+            "contract": "BaseResolver",
+            "src": "contracts/resolver/BaseResolver.sol:15"
+          },
+          {
+            "label": "_addresses",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_mapping(t_bytes32,t_address)",
+            "contract": "AddressResolver",
+            "src": "contracts/resolver/profile/AddressResolver.sol:8"
+          },
+          {
+            "label": "_reverseAddresses",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_address,t_bytes_storage)",
+            "contract": "AddressResolver",
+            "src": "contracts/resolver/profile/AddressResolver.sol:9"
+          },
+          {
+            "label": "_multiCoinAddresses",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))",
+            "contract": "MultiCoinAddressResolver",
+            "src": "contracts/resolver/profile/MultiCoinAddressResolver.sol:8"
+          },
+          {
+            "label": "_nfts",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14351_storage))",
+            "contract": "NFTResolver",
+            "src": "contracts/resolver/profile/NFTResolver.sol:8"
+          },
+          {
+            "label": "_texts",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_mapping(t_bytes32,t_string_storage)",
+            "contract": "TextResolver",
+            "src": "contracts/resolver/profile/TextResolver.sol:9"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IPublicResolverSynchronizer)13175": {
+            "label": "contract IPublicResolverSynchronizer",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistry)12760": {
+            "label": "contract IRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bytes_storage)": {
+            "label": "mapping(address => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_address)": {
+            "label": "mapping(bytes32 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))": {
+            "label": "mapping(bytes32 => mapping(uint256 => bytes))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14351_storage))": {
+            "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_string_storage)": {
+            "label": "mapping(bytes32 => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes_storage)": {
+            "label": "mapping(uint256 => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(NFT)14351_storage)": {
+            "label": "mapping(uint256 => struct INFTResolver.NFT)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(NFT)14351_storage": {
+            "label": "struct INFTResolver.NFT",
+            "members": [
+              {
+                "label": "contract_",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint256",
                 "offset": 0,
                 "slot": "1"
               }
