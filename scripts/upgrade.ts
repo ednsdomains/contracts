@@ -1,17 +1,46 @@
 import hardhat, { ethers } from "hardhat";
 import { AwsKmsSigner } from "ethers-aws-kms-signer";
 import { upgrades } from "hardhat";
+import axios from "axios";
 
-const provider = new hardhat.ethers.providers.InfuraProvider(
-  hardhat.network.name,
-  process.env.INFURA_API_KEY
+interface GasStationResponse {
+  safeLow: {
+    maxPriorityFee: number;
+    maxFee: number;
+  };
+  standard: {
+    maxPriorityFee: number;
+    maxFee: number;
+  };
+  fast: {
+    maxPriorityFee: number;
+    maxFee: number;
+  };
+  estimatedBaseFee: number;
+  blockTime: number;
+  blockNumber: number;
+}
+
+const provider = new hardhat.ethers.providers.JsonRpcProvider(
+  "https://polygon-rpc.com/",
+  { name: "Polygon Mainnet", chainId: 137 }
 );
 provider.getFeeData = async () => {
   const gasPrice = await provider.getGasPrice();
+  const response = await axios.get<GasStationResponse>(
+    "https://gasstation-mainnet.matic.network/v2"
+  );
   return {
-    maxFeePerGas: ethers.BigNumber.from(50000000000),
-    maxPriorityFeePerGas: ethers.BigNumber.from(50000000000),
+    maxFeePerGas: ethers.utils.parseUnits(
+      Math.ceil(response.data.fast.maxFee) + "",
+      "gwei"
+    ),
+    maxPriorityFeePerGas: ethers.utils.parseUnits(
+      Math.ceil(response.data.fast.maxPriorityFee) + "",
+      "gwei"
+    ),
     gasPrice,
+    lastBaseFeePerGas: null,
   };
 };
 
@@ -28,18 +57,14 @@ async function main() {
     hardhat.ethers.utils.formatEther(await signer.getBalance())
   );
 
-  const EDNS_REGISTRY_ADDRESS = process.env.EDNS_REGISTRY_CONTRACT_ADDRESS!;
-  const PUBLIC_RESOLVER_ADDRESS = process.env.PUBLIC_RESOLVER_CONTRACT_ADDRESS!;
+  const EDNS_REGISTRY_ADDRESS = "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12";
+  const PUBLIC_RESOLVER_ADDRESS = "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144";
   const BASE_REGISTRAR_IMPLEMENTATION_ADDRESS =
-    process.env.BASE_REGISTRAR_IMPLEMENTATION_CONTRACT_ADDRESS!;
+    "0x53a0018f919bde9C254bda697966C5f448ffDDcB";
   const EDNS_REGISTRAR_CONTROLLER_ADDRESS =
-    process.env.EDNS_REGISTRAR_CONTROLLER_CONTRACT_ADDRESS!;
+    "0x8C856f71d71e8CF4AD9A44cDC426b09e315c6A6a";
   const REVERSE_REGISTRAR_ADDRESS =
-    process.env.REVERSE_RESOLVER_CONTRACT_ADDRESS!;
-  const AFFILIATE_PROGRAM_CONTRACT_ADDRESS =
-    process.env.AFFILIATE_PROGRAM_CONTRACT_ADDRESS!;
-
-  console.log({ AFFILIATE_PROGRAM_CONTRACT_ADDRESS });
+    "0xD986F9083F006D0E2d08c9F22247b4a0a213146D";
 
   const EDNSRegistry = await hardhat.ethers.getContractFactory(
     "EDNSRegistry",
@@ -62,11 +87,6 @@ async function main() {
     signer
   );
 
-  const AffiliateProgramFactory = await hardhat.ethers.getContractFactory(
-    "AffiliateProgram",
-    signer
-  );
-
   // const _affiliateProgram = await upgrades.upgradeProxy(
   //   AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
   //   AffiliateProgramFactory
@@ -78,8 +98,13 @@ async function main() {
   // // await _registry.deployed();
   // console.log(`EDNS Registry upgraded`);
 
-  // const _resolver = await upgrades.upgradeProxy(PUBLIC_RESOLVER_ADDRESS, PublicResolver);
-  // console.log("Public Resolver upgraded");
+  const __resolver = await upgrades.forceImport(
+    PUBLIC_RESOLVER_ADDRESS,
+    PublicResolver
+  );
+
+  const _resolver = await upgrades.upgradeProxy(__resolver, PublicResolver);
+  console.log("Public Resolver upgraded");
 
   // const __baseRegistrar = await upgrades.forceImport(
   //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,

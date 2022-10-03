@@ -29,6 +29,7 @@ interface BaseRegistrarImplementationInterface extends ethers.utils.Interface {
     "baseNodeAvailable(bytes32)": FunctionFragment;
     "baseNodes(bytes32)": FunctionFragment;
     "controllers(address)": FunctionFragment;
+    "deregister(uint256)": FunctionFragment;
     "edns()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "initialize(address)": FunctionFragment;
@@ -81,6 +82,10 @@ interface BaseRegistrarImplementationInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "controllers", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "deregister",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "edns", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
@@ -180,6 +185,7 @@ interface BaseRegistrarImplementationInterface extends ethers.utils.Interface {
     functionFragment: "controllers",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "deregister", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "edns", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
@@ -389,6 +395,11 @@ export class BaseRegistrarImplementation extends BaseContract {
 
     controllers(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
+    deregister(
+      id: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     edns(overrides?: CallOverrides): Promise<[string]>;
 
     getApproved(
@@ -549,6 +560,11 @@ export class BaseRegistrarImplementation extends BaseContract {
 
   controllers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
+  deregister(
+    id: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   edns(overrides?: CallOverrides): Promise<string>;
 
   getApproved(
@@ -696,6 +712,8 @@ export class BaseRegistrarImplementation extends BaseContract {
     baseNodes(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     controllers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
+    deregister(id: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     edns(overrides?: CallOverrides): Promise<string>;
 
@@ -984,6 +1002,11 @@ export class BaseRegistrarImplementation extends BaseContract {
 
     controllers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    deregister(
+      id: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     edns(overrides?: CallOverrides): Promise<BigNumber>;
 
     getApproved(
@@ -1155,6 +1178,11 @@ export class BaseRegistrarImplementation extends BaseContract {
     controllers(
       arg0: string,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    deregister(
+      id: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     edns(overrides?: CallOverrides): Promise<PopulatedTransaction>;

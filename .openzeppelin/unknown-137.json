@@ -1,0 +1,329 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x4DBF8e91a085523226e338141fDaCaa03E5Fe7c7"
+  },
+  "proxies": [
+    {
+      "address": "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "d6a084b5fbea6d88503b4827c781df16aaa27d3014251f828e9a4099d8e7f272": {
+      "address": "0x6CfcCD07f5461755E1a02E00CDaEEdf2bC2A5Eed",
+      "layout": {
+        "storage": [
+          {
+            "label": "nfts",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)13984_storage))",
+            "contract": "NFTResolver",
+            "src": "contracts/resolvers/profiles/NFTResolver.sol:7"
+          },
+          {
+            "label": "abis",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))",
+            "contract": "ABIResolver",
+            "src": "contracts/resolvers/profiles/ABIResolver.sol:8"
+          },
+          {
+            "label": "_addresses",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))",
+            "contract": "AddrResolver",
+            "src": "contracts/resolvers/profiles/AddrResolver.sol:11"
+          },
+          {
+            "label": "hashes",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_bytes32,t_bytes_storage)",
+            "contract": "ContentHashResolver",
+            "src": "contracts/resolvers/profiles/ContentHashResolver.sol:8"
+          },
+          {
+            "label": "zonehashes",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_bytes32,t_bytes_storage)",
+            "contract": "DNSResolver",
+            "src": "contracts/resolvers/profiles/DNSResolver.sol:17"
+          },
+          {
+            "label": "versions",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_bytes32,t_uint256)",
+            "contract": "DNSResolver",
+            "src": "contracts/resolvers/profiles/DNSResolver.sol:23"
+          },
+          {
+            "label": "records",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_mapping(t_bytes32,t_mapping(t_uint16,t_bytes_storage))))",
+            "contract": "DNSResolver",
+            "src": "contracts/resolvers/profiles/DNSResolver.sol:27"
+          },
+          {
+            "label": "nameEntriesCount",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_mapping(t_bytes32,t_uint16)))",
+            "contract": "DNSResolver",
+            "src": "contracts/resolvers/profiles/DNSResolver.sol:32"
+          },
+          {
+            "label": "interfaces",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_bytes32,t_mapping(t_bytes4,t_address))",
+            "contract": "InterfaceResolver",
+            "src": "contracts/resolvers/profiles/InterfaceResolver.sol:10"
+          },
+          {
+            "label": "names",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_bytes32,t_string_storage)",
+            "contract": "NameResolver",
+            "src": "contracts/resolvers/profiles/NameResolver.sol:8"
+          },
+          {
+            "label": "pubkeys",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_bytes32,t_struct(PublicKey)14423_storage)",
+            "contract": "PubkeyResolver",
+            "src": "contracts/resolvers/profiles/PubkeyResolver.sol:13"
+          },
+          {
+            "label": "texts",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_mapping(t_bytes32,t_mapping(t_string_memory_ptr,t_string_storage))",
+            "contract": "TextResolver",
+            "src": "contracts/resolvers/profiles/TextResolver.sol:8"
+          },
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "12",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "edns",
+            "offset": 2,
+            "slot": "12",
+            "type": "t_contract(EDNS)11304",
+            "contract": "PublicResolver",
+            "src": "contracts/resolvers/PublicResolver.sol:37"
+          },
+          {
+            "label": "nameWrapper",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_contract(INameWrapper)12504",
+            "contract": "PublicResolver",
+            "src": "contracts/resolvers/PublicResolver.sol:38"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "PublicResolver",
+            "src": "contracts/resolvers/PublicResolver.sol:46"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes4": {
+            "label": "bytes4",
+            "numberOfBytes": "4"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_contract(EDNS)11304": {
+            "label": "contract EDNS",
+            "numberOfBytes": "20"
+          },
+          "t_contract(INameWrapper)12504": {
+            "label": "contract INameWrapper",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bytes_storage)": {
+            "label": "mapping(bytes32 => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_bytes4,t_address))": {
+            "label": "mapping(bytes32 => mapping(bytes4 => address))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_string_memory_ptr,t_string_storage))": {
+            "label": "mapping(bytes32 => mapping(string => string))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint16,t_bytes_storage))": {
+            "label": "mapping(bytes32 => mapping(uint16 => bytes))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))": {
+            "label": "mapping(bytes32 => mapping(uint256 => bytes))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_mapping(t_bytes32,t_mapping(t_uint16,t_bytes_storage))))": {
+            "label": "mapping(bytes32 => mapping(uint256 => mapping(bytes32 => mapping(uint16 => bytes))))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_mapping(t_bytes32,t_uint16)))": {
+            "label": "mapping(bytes32 => mapping(uint256 => mapping(bytes32 => uint16)))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)13984_storage))": {
+            "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_string_storage)": {
+            "label": "mapping(bytes32 => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(PublicKey)14423_storage)": {
+            "label": "mapping(bytes32 => struct PubkeyResolver.PublicKey)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint16)": {
+            "label": "mapping(bytes32 => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes4,t_address)": {
+            "label": "mapping(bytes4 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_string_storage)": {
+            "label": "mapping(string => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint16,t_bytes_storage)": {
+            "label": "mapping(uint16 => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes_storage)": {
+            "label": "mapping(uint256 => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_bytes32,t_mapping(t_uint16,t_bytes_storage)))": {
+            "label": "mapping(uint256 => mapping(bytes32 => mapping(uint16 => bytes)))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_bytes32,t_uint16))": {
+            "label": "mapping(uint256 => mapping(bytes32 => uint16))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(NFT)13984_storage)": {
+            "label": "mapping(uint256 => struct INFTResolver.NFT)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(NFT)13984_storage": {
+            "label": "struct INFTResolver.NFT",
+            "members": [
+              {
+                "label": "chainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "contractAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(PublicKey)14423_storage": {
+            "label": "struct PubkeyResolver.PublicKey",
+            "members": [
+              {
+                "label": "x",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "y",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}
