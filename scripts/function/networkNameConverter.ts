@@ -3,7 +3,7 @@ import NetworkConfig, { Network } from "../../network.config";
 export function networkNameConverter(networkName: string) {
   const getConfig: Record<string, Network> = {
     mainnet: Network.ETHEREUM,
-    rinkeby: Network.RINKEBY,
+    goerli: Network.GOERLI,
     bnb: Network.BNB_CHAIN,
     bnbTestnet: Network.BNB_CHAIN_TESTNET,
     avalanche: Network.AVALANCHE,

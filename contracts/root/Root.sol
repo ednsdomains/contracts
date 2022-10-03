@@ -50,7 +50,11 @@ contract Root is IRoot, AccessControlUpgradeable {
   }
 
   // TODO:
-  function transfer(bytes memory tld) public onlyAdmin {}
+  function transfer(bytes memory tld, address newOwner) public onlyAdmin {
+    uint256 tokenId = _registry.getTokenId(tld);
+    require(_registry.ownerOf(tokenId) == address(this), "ROOT_NOT_USER_OF_TLD");
+    _registry.transferFrom(address(this), newOwner, tokenId);
+  }
 
   function setEnable(bytes memory tld, bool enable_) public payable onlyAdmin {
     _registry.setEnable(keccak256(tld), enable_);

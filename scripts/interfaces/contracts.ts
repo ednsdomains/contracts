@@ -1,27 +1,10 @@
-import {
-  Registry,
-  PublicResolver,
-  PublicResolverSynchronizer,
-  SingletonRegistrar,
-  SingletonRegistrarController,
-  OmniRegistrar,
-  OmniRegistrarController,
-  OmniRegistrarSynchronizer,
-  Root,
-  DomainPriceOracle,
-  TokenPriceOracle,
-  Token,
-} from "../../typechain";
+import { Registry, PublicResolver, BaseRegistrar, ClassicalRegistrarController, Root, DomainPriceOracle, TokenPriceOracle, Token } from "../../typechain";
 
 export interface IContracts {
   Registry: Registry;
   PublicResolver: PublicResolver;
-  PublicResolverSynchronizer: PublicResolverSynchronizer;
-  SingletonRegistrar: SingletonRegistrar;
-  SingletonRegistrarController: SingletonRegistrarController;
-  OmniRegistrar: OmniRegistrar;
-  OmniRegistrarController: OmniRegistrarController;
-  OmniRegistrarSynchronizer: OmniRegistrarSynchronizer;
+  BaseRegistrar: BaseRegistrar;
+  ClassicalRegistrarController: ClassicalRegistrarController;
   Root: Root;
   DomainPriceOracle: DomainPriceOracle;
   TokenPriceOracle: TokenPriceOracle;

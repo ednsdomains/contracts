@@ -3,17 +3,17 @@ import NetworkConfig, { Network } from "../../network.config";
 import { BigNumber, Wallet } from "ethers";
 import delay from "delay";
 import { NETWORKS, OMNI_TLDS } from "../../test/helpers/init";
-import {networkNameConverter} from "../function/networkNameConverter";
+import { networkNameConverter } from "../function/networkNameConverter";
 import Contracts from "../../static/contracts.json";
-import {load} from "../helpers/load";
-import {expect} from "chai";
+import { load } from "../helpers/get-contracts";
+import { expect } from "chai";
 // npx hardhat run scripts/test/register.ts --network fantomTestnet
 // npx hardhat run scripts/test/register.ts --network bnbTestnet
 // npx hardhat run scripts/test/register.ts --network rinkeby
 async function main() {
   const TLDsingle = "test";
 
-  const networkConfig = NetworkConfig[networkNameConverter(hre.network.name)]
+  const networkConfig = NetworkConfig[networkNameConverter(hre.network.name)];
   const provider = new hre.ethers.providers.JsonRpcProvider(networkConfig.url, {
     chainId: networkConfig.chainId,
     name: networkConfig.name,
@@ -31,18 +31,18 @@ async function main() {
   //
 
   for (const TLD of OMNI_TLDS) {
-    console.log("PublicResolver",currentContractAddress.PublicResolver.address)
+    console.log("PublicResolver", currentContractAddress.PublicResolver.address);
     const tld = ethers.utils.toUtf8Bytes("BnbtoRink1111");
-    const payload_ = await currentContractAddress.Root.populateTransaction.register(tld, currentContractAddress.PublicResolver.address, true, true,     [10002, 10001]);
+    const payload_ = await currentContractAddress.Root.populateTransaction.register(tld, currentContractAddress.PublicResolver.address, true, true, [10002, 10001]);
     // console.log(payload_)
-    console.log(payload_.data)
-    const fees = await currentContractAddress.Root.estimateSyncFee(    [10002, 10012],payload_.data!);
+    console.log(payload_.data);
+    const fees = await currentContractAddress.Root.estimateSyncFee([10002, 10012], payload_.data!);
     console.log(ethers.utils.formatEther(fees));
-    console.log(await currentContractAddress.Registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tld)))
-    const rootRegister = await currentContractAddress.Root.register(tld, currentContractAddress.PublicResolver.address, true, true,[10002, 10001],{
+    console.log(await currentContractAddress.Registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tld)));
+    const rootRegister = await currentContractAddress.Root.register(tld, currentContractAddress.PublicResolver.address, true, true, [10002, 10001], {
       // 0.000001660703359502
       // value: fees.mul((BigNumber.from("2"))),
-      value:BigNumber.from("100000000000000000"),
+      value: BigNumber.from("100000000000000000"),
       // value:fees,
       gasLimit: 500000,
     });
@@ -51,7 +51,7 @@ async function main() {
     console.log(`Regisiter: ${TLD}`);
     console.log(`root_register tx: ${rootRegister}`);
     await delay(1000);
-    console.log(await currentContractAddress.Registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tld)))
+    console.log(await currentContractAddress.Registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tld)));
   }
 }
 

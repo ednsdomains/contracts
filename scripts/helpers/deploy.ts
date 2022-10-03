@@ -105,7 +105,7 @@ export async function deployClassicalRegistrarController(input: IDeployClassical
     input.BaseRegistrar.address,
   ]);
   await _classicalRegistrarController.deployed();
-  const classicalRegistrarController = ClassicalRegistrarController__factory.attach(_classicalRegistrarController.address);
+  const classicalRegistrarController = ClassicalRegistrarController__factory.connect(_classicalRegistrarController.address, input.signer);
   console.log(`[[${NetworkConfig[input.network].name}]] ClassicalRegistrarController Deployed - ${classicalRegistrarController.address}`);
   return classicalRegistrarController;
 }
