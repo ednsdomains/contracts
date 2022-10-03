@@ -83,7 +83,7 @@ describe("Classical Test", function () {
 
         await publicResolverSynchronizer.setResolver(use_publicResolver.address);
         await use_registry.grantRole(await use_registry.PUBLIC_RESOLVER_ROLE(), use_publicResolver.address);
-        await use_registry.grantRole(await use_registry.REGISTRAR_ROLE(), use_classicalRegistrarController.address);
+        await use_registry.grantRole(await use_registry.REGISTRAR_ROLE(), use_baseRegistrar.address);
         await use_registry.grantRole(await use_registry.ROOT_ROLE(), addr1[0].address);
         await use_baseRegistrar.grantRole(await use_baseRegistrar.ROOT_ROLE(),addr1[0].address )
     });
@@ -105,13 +105,20 @@ describe("Classical Test", function () {
         approved = await use_baseRegistrar.isControllerApproved(ethers.utils.keccak256(tldByte),use_classicalRegistrarController.address)
         expect(approved).to.equal(true)
     })
-    it("Regisiter Domain", async ()=>{
+
+    it("Simple Regisiter Domain", async ()=>{
         const domainByte = ethers.utils.formatBytes32String("domain")
         const tldByte = ethers.utils.formatBytes32String("classicalTLD")
-        console.log(domainByte)
-        await use_classicalRegistrarController.register((domainByte),tldByte,addr1[0].address,9999999)
+        await use_classicalRegistrarController.register((domainByte),tldByte,addr1[0].address,999999999999999)
     })
 
+    it("Set Text Record", async ()=>{
+        const [name, tld] = ("domain.classicalTLD").split('.');
+        const basenode = ethers.utils.namehash(tld);
+        const labelhash = ethers.utils.solidityKeccak256(['string', 'bytes32'], [name, basenode]);
+        const nodehash = ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [basenode, labelhash]);
+        
+    })
 
 
 })
