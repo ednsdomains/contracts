@@ -1,9 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
+import "hardhat/console.sol";
 
 abstract contract LabelOperator {
-  uint256 public constant MAX_LABEL_LENGTH = 64;
-  uint256 public constant MIN_LABEL_LENGTH = 5;
+  uint256 public constant MAX_LABEL_LENGTH = 65;
+  uint256 public constant MIN_LABEL_LENGTH = 4;
   bytes internal constant DOT = bytes(".");
 
   function valid(
@@ -55,13 +56,18 @@ abstract contract LabelOperator {
   function _validDomain(bytes memory label) internal pure virtual returns (bool) {
     //  MAX_LABEL_LENGTH < label.length < MIN_LABEL_LENGTH
     //  require(label.length > MAX_LABEL_LENGTH || label.length < MIN_LABEL_LENGTH, "INVALUD_LENGTH");
-    require(label.length < MAX_LABEL_LENGTH && label.length > MIN_LABEL_LENGTH, "INVALUD_LENGTH");
+
+    uint a = 0 ;
     for (uint256 i; i < label.length; i++) {
       require(
         (label[i] >= bytes1("a") && label[i] <= bytes1("z")) || (label[i] >= bytes1("0") && label[i] <= bytes1("9")) || label[i] == bytes1("-") || label[i] == bytes1("_")||label[i] == 0x00,
         "INVALID_CHARACTER"
       );
+      if(label[i] != 0x00){
+        a +=1;
+      }
     }
+    require(a < MAX_LABEL_LENGTH && a > MIN_LABEL_LENGTH, "INVALUD_LENGTH");
     return true;
   }
 

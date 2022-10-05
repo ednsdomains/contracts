@@ -418,6 +418,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     //solhint-disable-next-line max-line-length
     require(_isApprovedOrOwner(_msgSender(), tokenId_), "ERC721: transfer caller is not owner nor approved");
     _transfer(from, to, tokenId_);
+
   }
 
   function approve(address to, uint256 tokenId_) public virtual override {

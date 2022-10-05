@@ -2,28 +2,28 @@
 pragma solidity ^0.8.9;
 
 interface ITextResolver {
-  event SetText(bytes32 indexed node, bytes text);
+  event SetText(bytes host, bytes name, bytes tld, string text);
 
   function setText(
-    string memory host,
-    string memory name,
-    string memory tld,
-    bytes32 type_,
-    bytes memory text
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld,
+//    bytes32 type_,
+    string memory text
   ) external;
 
   function setText_SYNC(
-    string memory host,
-    string memory name,
-    string memory tld,
-    bytes32 type_,
-    bytes memory text
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld,
+//    bytes32 type_,
+    string memory text
   ) external;
 
   function getText(
     bytes memory host,
     bytes memory name,
-    bytes memory tld,
-    bytes32 type_
-  ) external view returns (bytes memory);
+    bytes memory tld
+//    bytes32 type_
+  ) external view returns (string memory);
 }

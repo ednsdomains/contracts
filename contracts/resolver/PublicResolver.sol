@@ -8,8 +8,9 @@ import "./interfaces/IPublicResolver.sol";
 import "./profile/AddressResolver.sol";
 import "./profile/MultiCoinAddressResolver.sol";
 import "./profile/NFTResolver.sol";
+import "./profile/TextResolver.sol";
 
-contract PublicResolver is IPublicResolver, MulticallUpgradeable, AddressResolver, MultiCoinAddressResolver, NFTResolver {
+contract PublicResolver is IPublicResolver, MulticallUpgradeable, AddressResolver, MultiCoinAddressResolver, NFTResolver,TextResolver {
   function initialize(IRegistry registry_, IPublicResolverSynchronizer synchronizer_) public initializer {
     __PublicResolver_init(registry_, synchronizer_);
   }
@@ -23,7 +24,7 @@ contract PublicResolver is IPublicResolver, MulticallUpgradeable, AddressResolve
     __BaseResolver_init_unchained(registry_, synchronizer_);
   }
 
-  function supportsInterface(bytes4 interfaceID) public view override(AddressResolver, MultiCoinAddressResolver, NFTResolver) returns (bool) {
+  function supportsInterface(bytes4 interfaceID) public view override(AddressResolver, MultiCoinAddressResolver, NFTResolver,TextResolver) returns (bool) {
     return interfaceID == type(IPublicResolver).interfaceId || super.supportsInterface(interfaceID);
   }
 }
