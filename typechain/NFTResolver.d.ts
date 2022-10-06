@@ -22,6 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface NFTResolverInterface extends ethers.utils.Interface {
   functions: {
     "getNFT(bytes32,uint256)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "setNFT(bytes32,uint256,address,uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
@@ -29,6 +30,10 @@ interface NFTResolverInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getNFT",
     values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setNFT",
@@ -40,6 +45,10 @@ interface NFTResolverInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "getNFT", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setNFT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
@@ -120,6 +129,11 @@ export class NFTResolver extends BaseContract {
       ]
     >;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     setNFT(
       node: BytesLike,
       chainId: BigNumberish,
@@ -146,6 +160,8 @@ export class NFTResolver extends BaseContract {
     }
   >;
 
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
   setNFT(
     node: BytesLike,
     chainId: BigNumberish,
@@ -171,6 +187,8 @@ export class NFTResolver extends BaseContract {
         tokenId: BigNumber;
       }
     >;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     setNFT(
       node: BytesLike,
@@ -225,6 +243,11 @@ export class NFTResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setNFT(
       node: BytesLike,
       chainId: BigNumberish,
@@ -243,6 +266,11 @@ export class NFTResolver extends BaseContract {
     getNFT(
       node: BytesLike,
       chainID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

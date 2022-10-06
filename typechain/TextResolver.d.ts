@@ -21,11 +21,16 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface TextResolverInterface extends ethers.utils.Interface {
   functions: {
+    "isAuthorised(bytes32)": FunctionFragment;
     "setText(bytes32,string,string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "text(bytes32,string)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "setText",
     values: [BytesLike, string, string]
@@ -39,6 +44,10 @@ interface TextResolverInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setText", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
@@ -101,6 +110,11 @@ export class TextResolver extends BaseContract {
   interface: TextResolverInterface;
 
   functions: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     setText(
       node: BytesLike,
       key: string,
@@ -119,6 +133,8 @@ export class TextResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
   };
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   setText(
     node: BytesLike,
@@ -139,6 +155,8 @@ export class TextResolver extends BaseContract {
   ): Promise<string>;
 
   callStatic: {
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
     setText(
       node: BytesLike,
       key: string,
@@ -179,6 +197,11 @@ export class TextResolver extends BaseContract {
   };
 
   estimateGas: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setText(
       node: BytesLike,
       key: string,
@@ -199,6 +222,11 @@ export class TextResolver extends BaseContract {
   };
 
   populateTransaction: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setText(
       node: BytesLike,
       key: string,

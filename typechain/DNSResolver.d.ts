@@ -24,6 +24,7 @@ interface DNSResolverInterface extends ethers.utils.Interface {
     "clearDNSZone(bytes32)": FunctionFragment;
     "dnsRecord(bytes32,bytes32,uint16)": FunctionFragment;
     "hasDNSRecords(bytes32,bytes32)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "setDNSRecords(bytes32,bytes)": FunctionFragment;
     "setZonehash(bytes32,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -41,6 +42,10 @@ interface DNSResolverInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "hasDNSRecords",
     values: [BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setDNSRecords",
@@ -63,6 +68,10 @@ interface DNSResolverInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "dnsRecord", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "hasDNSRecords",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -177,6 +186,11 @@ export class DNSResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     setDNSRecords(
       node: BytesLike,
       data: BytesLike,
@@ -215,6 +229,8 @@ export class DNSResolver extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
   setDNSRecords(
     node: BytesLike,
     data: BytesLike,
@@ -249,6 +265,8 @@ export class DNSResolver extends BaseContract {
       name: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     setDNSRecords(
       node: BytesLike,
@@ -355,6 +373,11 @@ export class DNSResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setDNSRecords(
       node: BytesLike,
       data: BytesLike,
@@ -391,6 +414,11 @@ export class DNSResolver extends BaseContract {
     hasDNSRecords(
       node: BytesLike,
       name: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -22,6 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface ABIResolverInterface extends ethers.utils.Interface {
   functions: {
     "ABI(bytes32,uint256)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "setABI(bytes32,uint256,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
@@ -29,6 +30,10 @@ interface ABIResolverInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "ABI",
     values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setABI",
@@ -40,6 +45,10 @@ interface ABIResolverInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "ABI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setABI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
@@ -107,6 +116,11 @@ export class ABIResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, string]>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     setABI(
       node: BytesLike,
       contentType: BigNumberish,
@@ -126,6 +140,8 @@ export class ABIResolver extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, string]>;
 
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
   setABI(
     node: BytesLike,
     contentType: BigNumberish,
@@ -144,6 +160,8 @@ export class ABIResolver extends BaseContract {
       contentTypes: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, string]>;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     setABI(
       node: BytesLike,
@@ -183,6 +201,11 @@ export class ABIResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setABI(
       node: BytesLike,
       contentType: BigNumberish,
@@ -200,6 +223,11 @@ export class ABIResolver extends BaseContract {
     ABI(
       node: BytesLike,
       contentTypes: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

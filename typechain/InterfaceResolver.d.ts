@@ -23,6 +23,7 @@ interface InterfaceResolverInterface extends ethers.utils.Interface {
   functions: {
     "addr(bytes32)": FunctionFragment;
     "interfaceImplementer(bytes32,bytes4)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "setAddr(bytes32,uint256,bytes)": FunctionFragment;
     "setInterface(bytes32,bytes4,address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -32,6 +33,10 @@ interface InterfaceResolverInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "interfaceImplementer",
     values: [BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setAddr",
@@ -49,6 +54,10 @@ interface InterfaceResolverInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "addr", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "interfaceImplementer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setAddr", data: BytesLike): Result;
@@ -153,6 +162,11 @@ export class InterfaceResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     "setAddr(bytes32,uint256,bytes)"(
       node: BytesLike,
       coinType: BigNumberish,
@@ -192,6 +206,8 @@ export class InterfaceResolver extends BaseContract {
     interfaceID: BytesLike,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   "setAddr(bytes32,uint256,bytes)"(
     node: BytesLike,
@@ -235,6 +251,8 @@ export class InterfaceResolver extends BaseContract {
       interfaceID: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     "setAddr(bytes32,uint256,bytes)"(
       node: BytesLike,
@@ -328,6 +346,11 @@ export class InterfaceResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     "setAddr(bytes32,uint256,bytes)"(
       node: BytesLike,
       coinType: BigNumberish,
@@ -369,6 +392,11 @@ export class InterfaceResolver extends BaseContract {
     interfaceImplementer(
       node: BytesLike,
       interfaceID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

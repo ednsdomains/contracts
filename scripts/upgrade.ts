@@ -87,46 +87,63 @@ async function main() {
     signer
   );
 
-  // const _affiliateProgram = await upgrades.upgradeProxy(
-  //   AFFILIATE_PROGRAM_CONTRACT_ADDRESS,
-  //   AffiliateProgramFactory
+  // const _registry = await upgrades.upgradeProxy(
+  //   EDNS_REGISTRY_ADDRESS,
+  //   EDNSRegistry
   // );
-  // await _affiliateProgram.deployed();
-  // console.log(`Affiliate Program upgraded`);
-
-  // const _registry = await upgrades.upgradeProxy(EDNS_REGISTRY_ADDRESS, EDNSRegistry);
-  // // await _registry.deployed();
+  // await _registry.deployed();
   // console.log(`EDNS Registry upgraded`);
 
-  const __resolver = await upgrades.forceImport(
+  const _resolver = await upgrades.upgradeProxy(
     PUBLIC_RESOLVER_ADDRESS,
     PublicResolver
   );
-
-  const _resolver = await upgrades.upgradeProxy(__resolver, PublicResolver);
+  await _resolver.deployed();
   console.log("Public Resolver upgraded");
 
   // const __baseRegistrar = await upgrades.forceImport(
   //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
   //   BaseRegistrarImplementation
   // );
-
   // const _baseRegistrar = await upgrades.upgradeProxy(
   //   __baseRegistrar,
   //   BaseRegistrarImplementation
   // );
+  // // const _baseRegistrar = await upgrades.upgradeProxy(
+  // //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
+  // //   BaseRegistrarImplementation
+  // // );
+  // await _baseRegistrar.deployed();
+  // console.log("Base Registrar upgraded");
 
-  // const _baseRegistrar = await upgrades.upgradeProxy(
-  //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
-  //   BaseRegistrarImplementation
+  // const __registrarController = await upgrades.forceImport(
+  //   EDNS_REGISTRAR_CONTROLLER_ADDRESS,
+  //   EDNSRegistrarController
   // );
-
-  // console.log("Base Registrar Implementation upgraded");
-
-  // const _registrarController = await upgrades.upgradeProxy(EDNS_REGISTRAR_CONTROLLER_ADDRESS, EDNSRegistrarController);
+  // const _registrarController = await upgrades.upgradeProxy(
+  //   __registrarController,
+  //   EDNSRegistrarController
+  // );
+  // const _registrarController = await upgrades.upgradeProxy(
+  //   EDNS_REGISTRAR_CONTROLLER_ADDRESS,
+  //   EDNSRegistrarController
+  // );
+  // await _registrarController.deployed();
   // console.log("EDNS Registry Controller upgraded");
 
-  // const _reverseRegistrar = await upgrades.upgradeProxy(REVERSE_REGISTRAR_ADDRESS, ReverseRegistrar);
+  // const __reverseRegistrar = await upgrades.forceImport(
+  //   REVERSE_REGISTRAR_ADDRESS,
+  //   ReverseRegistrar
+  // );
+  // const _reverseRegistrar = await upgrades.upgradeProxy(
+  //   __reverseRegistrar,
+  //   ReverseRegistrar
+  // );
+  // const _reverseRegistrar = await upgrades.upgradeProxy(
+  //   REVERSE_REGISTRAR_ADDRESS,
+  //   ReverseRegistrar
+  // );
+  // _reverseRegistrar.deployed();
   // console.log("Reverse Registry upgraded");
 }
 

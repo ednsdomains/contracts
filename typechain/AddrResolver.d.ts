@@ -22,11 +22,16 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface AddrResolverInterface extends ethers.utils.Interface {
   functions: {
     "addr(bytes32)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "setAddr(bytes32,uint256,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "addr", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "setAddr",
     values: [BytesLike, BigNumberish, BytesLike]
@@ -37,6 +42,10 @@ interface AddrResolverInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "addr", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setAddr", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
@@ -119,6 +128,11 @@ export class AddrResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     "setAddr(bytes32,uint256,bytes)"(
       node: BytesLike,
       coinType: BigNumberish,
@@ -145,6 +159,8 @@ export class AddrResolver extends BaseContract {
     coinType: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   "setAddr(bytes32,uint256,bytes)"(
     node: BytesLike,
@@ -175,6 +191,8 @@ export class AddrResolver extends BaseContract {
       coinType: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     "setAddr(bytes32,uint256,bytes)"(
       node: BytesLike,
@@ -237,6 +255,11 @@ export class AddrResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     "setAddr(bytes32,uint256,bytes)"(
       node: BytesLike,
       coinType: BigNumberish,
@@ -265,6 +288,11 @@ export class AddrResolver extends BaseContract {
     "addr(bytes32,uint256)"(
       node: BytesLike,
       coinType: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

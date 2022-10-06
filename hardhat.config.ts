@@ -47,6 +47,7 @@ const config: HardhatUserConfig = {
     },
     iotex: {
       url: `https://babel-api.mainnet.iotex.io`,
+      chainId: 4689,
     },
     okcTestnet: {
       url: `https://exchaintestrpc.okex.org`,

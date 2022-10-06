@@ -22,12 +22,17 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface ContentHashResolverInterface extends ethers.utils.Interface {
   functions: {
     "contenthash(bytes32)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "setContenthash(bytes32,bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "contenthash",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
@@ -41,6 +46,10 @@ interface ContentHashResolverInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "contenthash",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -109,6 +118,11 @@ export class ContentHashResolver extends BaseContract {
   functions: {
     contenthash(node: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     setContenthash(
       node: BytesLike,
       hash: BytesLike,
@@ -123,6 +137,8 @@ export class ContentHashResolver extends BaseContract {
 
   contenthash(node: BytesLike, overrides?: CallOverrides): Promise<string>;
 
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
   setContenthash(
     node: BytesLike,
     hash: BytesLike,
@@ -136,6 +152,8 @@ export class ContentHashResolver extends BaseContract {
 
   callStatic: {
     contenthash(node: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     setContenthash(
       node: BytesLike,
@@ -164,6 +182,11 @@ export class ContentHashResolver extends BaseContract {
   estimateGas: {
     contenthash(node: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setContenthash(
       node: BytesLike,
       hash: BytesLike,
@@ -178,6 +201,11 @@ export class ContentHashResolver extends BaseContract {
 
   populateTransaction: {
     contenthash(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
       node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

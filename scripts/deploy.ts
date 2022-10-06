@@ -4,11 +4,16 @@ import uts46 from "idna-uts46-hx";
 import { BigNumber, ethers, Overrides } from "ethers";
 import { AwsKmsSigner } from "ethers-aws-kms-signer";
 import {
-  BaseRegistrarImplementation__factory as BaseRegistrarImplementation,
-  EDNSRegistrarController__factory as EDNSRegistrarController,
-  EDNSRegistry__factory as EDNSRegistry,
-  ReverseRegistrar__factory as ReverseRegistrar,
-  PublicResolver__factory as PublicResolver,
+  BaseRegistrarImplementation,
+  EDNSRegistrarController,
+  EDNSRegistry,
+  ReverseRegistrar,
+  PublicResolver,
+  BaseRegistrarImplementation__factory as BaseRegistrarImplementation_Factory,
+  EDNSRegistrarController__factory as EDNSRegistrarController_Factory,
+  EDNSRegistry__factory as EDNSRegistry_Factory,
+  ReverseRegistrar__factory as ReverseRegistrar_Factory,
+  PublicResolver__factory as PublicResolver_Factory,
 } from "../typechain";
 // import {  } from "../typechain";
 import { upgrades } from "hardhat";
@@ -17,6 +22,7 @@ import { upgrades } from "hardhat";
 // import { AffiliateProgram } from "../../../sdk/packages/lookup/src/typechain/AffiliateProgram";
 // import { formatsByName } from "@ensdomains/address-encoder";
 import axios from "axios";
+import { EDNS } from "../typechain/EDNS";
 
 interface GasStationResponse {
   safeLow: {
@@ -59,12 +65,13 @@ provider.getFeeData = async () => {
   };
 };
 
-// const provider = hardhat.ethers.getDefaultProvider({
-//   name: "iotexTestnet",
-//   chainId: 4690,
-//   _defaultProvider: (provider: typeof ethers.providers) =>
-//     new provider.JsonRpcProvider("https://babel-api.testnet.iotex.io"),
-// });
+// const provider = new hardhat.ethers.providers.JsonRpcProvider(
+//   { url: "https://babel-api.mainnet.iotex.io" },
+//   {
+//     name: "IoTeX Mainnet",
+//     chainId: 4689,
+//   }
+// );
 
 // const provider = new hardhat.ethers.providers.JsonRpcProvider(
 //   { url: "https://exchaintestrpc.okex.org", timeout: 600 },
@@ -127,16 +134,16 @@ function normalize(name: string) {
 //   "music",
 //   "ass",
 // ];
-const tlds: string[] = [
-  "test1",
-  "test2",
-  "test3",
-  "ass",
-  "meta",
-  "404",
-  "music",
-  "sandbox",
-];
+// const tlds: string[] = [
+//   "test1",
+//   "test2",
+//   "test3",
+//   "ass",
+//   "meta",
+//   "404",
+//   "music",
+//   "sandbox",
+// ];
 // const tlds: string[] = [
 //   "sandbox",
 // ];
@@ -149,7 +156,7 @@ const ZERO_HASH =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 const overrides: Overrides = {
-  gasPrice: 1000000000000,
+  // gasPrice: 1000000000000,
 };
 
 async function main() {
@@ -190,31 +197,31 @@ async function main() {
     ethers.utils.formatUnits(await signer.getGasPrice(), "gwei")
   );
 
-  // const registry = EDNSRegistry.connect(
-  //   "0x0d33ECCcc3629B33a9CeE62108Ef39deD736d4E0",
-  //   signer
-  // );
-  // const resolver = PublicResolver.connect(
-  //   "0x4ECAafcc6Aa082F14C98e2bC7A37a35Dc30B13C5",
-  //   signer
-  // );
-  const baseRegistrar = BaseRegistrarImplementation.connect(
+  const registry = EDNSRegistry_Factory.connect(
+    "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12",
+    signer
+  );
+  const resolver = PublicResolver_Factory.connect(
+    "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144",
+    signer
+  );
+  const baseRegistrar = BaseRegistrarImplementation_Factory.connect(
     "0x53a0018f919bde9C254bda697966C5f448ffDDcB",
     signer
   );
-  // const registrarController = EDNSRegistrarController.connect(
-  //   "0xb3BF41C4B2A53D34296F7F237C4CcE145631d96D",
-  //   signer
-  // );
-  // const reverseRegistrar = ReverseRegistrar.connect(
-  //   "0xBF962734Abb798807a2875595cefE86FDF6726cc",
-  //   signer
-  // );
-
-  const tx = await baseRegistrar.transferOwnership(
-    "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad"
+  const registrarController = EDNSRegistrarController_Factory.connect(
+    "0x8C856f71d71e8CF4AD9A44cDC426b09e315c6A6a",
+    signer
   );
-  await tx.wait();
+  const reverseRegistrar = ReverseRegistrar_Factory.connect(
+    "0xD986F9083F006D0E2d08c9F22247b4a0a213146D",
+    signer
+  );
+
+  // const tx = await baseRegistrar.transferOwnership(
+  //   "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad"
+  // );
+  // await tx.wait();
 
   // const _registry = await upgrades.deployProxy(EDNSRegistry, []);
   // await _registry.deployed();
@@ -259,11 +266,11 @@ async function main() {
 
   // await setupRegistrar(registrarController, registry, baseRegistrar);
   // console.log("Finished setup registrar");
-  // await setupResolver(registry, resolver);
-  // console.log("Finish setup resolver");
+  await setupResolver(registry, resolver);
+  console.log("Finish setup resolver");
   // await setupReverseRegistrar(registry, reverseRegistrar);
   // console.log("Finished setup reverse registrar");
-  // await baseRegistrar.setBaseURI("https://api.devnet.edns.domains/metadata");
+  // await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
 
   // console.log("Finished setup setBaseURI");
   // const _saddr = await signer.getAddress();
@@ -288,24 +295,30 @@ async function main() {
   // console.log("Finished setAddr(bytes32,address)");
 }
 
-async function setupResolver(
-  registry: ethers.Contract,
-  resolver: ethers.Contract
-) {
+async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver) {
   const resolverNode = namehash("resolver");
   const resolverLabel = labelhash("resolver");
-  await registry.setSubnodeOwner(
-    ZERO_HASH,
-    resolverLabel,
-    await signer.getAddress(),
-    overrides
-  );
-  await registry.setResolver(resolverNode, resolver.address, overrides);
-  await resolver["setAddr(bytes32,address)"](
+  // const tx1 = await registry.setSubnodeOwner(
+  //   ZERO_HASH,
+  //   resolverLabel,
+  //   await signer.getAddress()
+  // );
+  // await tx1.wait();
+  // console.log("tx1 done");
+  // const tx2 = await registry.setResolver(resolverNode, resolver.address);
+  // await tx2.wait();
+  // console.log("tx2 done");
+  // const tx111 = await resolver.setEDNSRegistry(registry.address);
+  // await tx111.wait();
+  // console.log("done");
+  // console.log(await resolver.isAuthorised(resolverNode));
+  const tx3 = await resolver["setAddr(bytes32,uint256,bytes)"](
     resolverNode,
-    resolver.address,
-    overrides
+    137,
+    resolver.address
   );
+  await tx3.wait();
+  console.log("tx3 done");
 }
 
 async function setupRegistrar(
@@ -313,8 +326,10 @@ async function setupRegistrar(
   registry: ethers.Contract,
   registrar: ethers.Contract
 ) {
-  await registrar.addController(registrarController.address);
-  await registrarController.setNameLengthLimit(5, 128);
+  const tx1 = await registrar.addController(registrarController.address);
+  await tx1.wait();
+  const tx2 = await registrarController.setNameLengthLimit(5, 128);
+  await tx2.wait();
   // for (let tld of tlds) {
   //   // await registrarController.setTld(tld, namehash(tld), overrides);
   //   // await registrar.setBaseNode(namehash(tld), true, overrides);
@@ -332,18 +347,20 @@ async function setupReverseRegistrar(
   registry: ethers.Contract,
   reverseRegistrar: ethers.Contract
 ) {
-  await registry.setSubnodeOwner(
+  const tx1 = await registry.setSubnodeOwner(
     ZERO_HASH,
     labelhash("reverse"),
     await signer.getAddress(),
     overrides
   );
-  await registry.setSubnodeOwner(
+  await tx1.wait();
+  const tx2 = await registry.setSubnodeOwner(
     namehash("reverse"),
     labelhash("addr"),
     reverseRegistrar.address,
     overrides
   );
+  await tx2.wait();
 }
 
 // We recommend this pattern to be able to use async/await everywhere

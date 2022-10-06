@@ -23,7 +23,6 @@ interface INameWrapper {
  */
 contract PublicResolver is
     Multicallable,
-    NFTResolver,
     ABIResolver,
     AddrResolver,
     ContentHashResolver,
@@ -32,6 +31,7 @@ contract PublicResolver is
     NameResolver,
     PubkeyResolver,
     TextResolver,
+    NFTResolver,
     Initializable
 {
     EDNS edns;
@@ -57,31 +57,21 @@ contract PublicResolver is
     //     nameWrapper = wrapperAddress;
     // }
 
-    function initialize(EDNS _edns, INameWrapper wrapperAddress)
-        public
-        initializer
-    {
-        __PublicResolver_init(_edns, wrapperAddress);
+    function initialize(EDNS _edns) public initializer {
+        __PublicResolver_init(_edns);
     }
 
-    function __PublicResolver_init(EDNS _edns, INameWrapper wrapperAddress)
+    function __PublicResolver_init(EDNS _edns) internal onlyInitializing {
+        __PublicResolver_init_unchained(_edns);
+    }
+
+    function __PublicResolver_init_unchained(EDNS _edns)
         internal
         onlyInitializing
     {
-        __PublicResolver_init_unchained(_edns, wrapperAddress);
-    }
-
-    function __PublicResolver_init_unchained(
-        EDNS _edns,
-        INameWrapper wrapperAddress
-    ) internal onlyInitializing {
         edns = _edns;
-        nameWrapper = wrapperAddress;
     }
 
-    /**
-     * @dev See {IERC1155-setApprovalForAll}.
-     */
     function setApprovalForAll(address operator, bool approved) external {
         require(
             msg.sender != operator,
@@ -92,13 +82,14 @@ contract PublicResolver is
         emit ApprovalForAll(msg.sender, operator, approved);
     }
 
-    function isAuthorised(bytes32 node) internal view override returns (bool) {
+    function isAuthorised(bytes32 node) public view override returns (bool) {
         address owner = edns.owner(node);
-        if (owner == address(nameWrapper)) {
-            owner = nameWrapper.ownerOf(uint256(node));
-        }
         return owner == msg.sender || isApprovedForAll(owner, msg.sender);
     }
+
+    // function setEDNSRegistry(EDNS _edns) private {
+    //     edns = _edns;
+    // }
 
     /**
      * @dev See {IERC1155-isApprovedForAll}.

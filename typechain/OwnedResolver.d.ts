@@ -28,6 +28,7 @@ interface OwnedResolverInterface extends ethers.utils.Interface {
     "dnsRecord(bytes32,bytes32,uint16)": FunctionFragment;
     "hasDNSRecords(bytes32,bytes32)": FunctionFragment;
     "interfaceImplementer(bytes32,bytes4)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "name(bytes32)": FunctionFragment;
     "owner()": FunctionFragment;
     "pubkey(bytes32)": FunctionFragment;
@@ -71,6 +72,10 @@ interface OwnedResolverInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "interfaceImplementer",
     values: [BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "name", values: [BytesLike]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -146,6 +151,10 @@ interface OwnedResolverInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "interfaceImplementer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
@@ -372,6 +381,11 @@ export class OwnedResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    isAuthorised(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     name(node: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
@@ -509,6 +523,8 @@ export class OwnedResolver extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  isAuthorised(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
   name(node: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
@@ -645,6 +661,8 @@ export class OwnedResolver extends BaseContract {
       interfaceID: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    isAuthorised(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     name(node: BytesLike, overrides?: CallOverrides): Promise<string>;
 
@@ -985,6 +1003,11 @@ export class OwnedResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isAuthorised(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     name(node: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1123,6 +1146,11 @@ export class OwnedResolver extends BaseContract {
     interfaceImplementer(
       node: BytesLike,
       interfaceID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

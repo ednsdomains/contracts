@@ -121,12 +121,12 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
     }
 
     modifier live(bytes32 node) {
-        require(edns.owner(node) == address(this));
+        require(edns.owner(node) == address(this), "Domain is not live");
         _;
     }
 
     modifier onlyController() {
-        require(controllers[msg.sender]);
+        require(controllers[msg.sender], "Only controller");
         _;
     }
 

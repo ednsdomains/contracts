@@ -21,11 +21,16 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface PubkeyResolverInterface extends ethers.utils.Interface {
   functions: {
+    "isAuthorised(bytes32)": FunctionFragment;
     "pubkey(bytes32)": FunctionFragment;
     "setPubkey(bytes32,bytes32,bytes32)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(functionFragment: "pubkey", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "setPubkey",
@@ -36,6 +41,10 @@ interface PubkeyResolverInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "pubkey", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setPubkey", data: BytesLike): Result;
   decodeFunctionResult(
@@ -98,6 +107,11 @@ export class PubkeyResolver extends BaseContract {
   interface: PubkeyResolverInterface;
 
   functions: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     pubkey(
       node: BytesLike,
       overrides?: CallOverrides
@@ -115,6 +129,8 @@ export class PubkeyResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
   };
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   pubkey(
     node: BytesLike,
@@ -134,6 +150,8 @@ export class PubkeyResolver extends BaseContract {
   ): Promise<boolean>;
 
   callStatic: {
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
     pubkey(
       node: BytesLike,
       overrides?: CallOverrides
@@ -173,6 +191,11 @@ export class PubkeyResolver extends BaseContract {
   };
 
   estimateGas: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     pubkey(node: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     setPubkey(
@@ -189,6 +212,11 @@ export class PubkeyResolver extends BaseContract {
   };
 
   populateTransaction: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     pubkey(
       node: BytesLike,
       overrides?: CallOverrides

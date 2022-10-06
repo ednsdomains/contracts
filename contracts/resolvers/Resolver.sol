@@ -44,7 +44,7 @@ interface Resolver is
 
     function setAddr(
         bytes32 node,
-        uint256 coinType,
+        uint coinType,
         bytes calldata a
     ) external;
 

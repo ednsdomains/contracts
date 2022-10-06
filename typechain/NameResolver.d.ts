@@ -21,18 +21,47 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface NameResolverInterface extends ethers.utils.Interface {
   functions: {
+    "isAuthorised(bytes32)": FunctionFragment;
+    "name(bytes32)": FunctionFragment;
     "setName(bytes32,string)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "name", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "setName",
     values: [BytesLike, string]
   ): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
 
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setName", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
 
-  events: {};
+  events: {
+    "NameChanged(bytes32,string)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "NameChanged"): EventFragment;
 }
+
+export type NameChangedEvent = TypedEvent<
+  [string, string] & { node: string; name: string }
+>;
 
 export class NameResolver extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -78,42 +107,109 @@ export class NameResolver extends BaseContract {
   interface: NameResolverInterface;
 
   functions: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    name(node: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
     setName(
       node: BytesLike,
-      name: string,
+      newName: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    supportsInterface(
+      interfaceID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
   };
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+  name(node: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   setName(
     node: BytesLike,
-    name: string,
+    newName: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  supportsInterface(
+    interfaceID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   callStatic: {
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+    name(node: BytesLike, overrides?: CallOverrides): Promise<string>;
+
     setName(
       node: BytesLike,
-      name: string,
+      newName: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    supportsInterface(
+      interfaceID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
   };
 
-  filters: {};
+  filters: {
+    "NameChanged(bytes32,string)"(
+      node?: BytesLike | null,
+      name?: null
+    ): TypedEventFilter<[string, string], { node: string; name: string }>;
+
+    NameChanged(
+      node?: BytesLike | null,
+      name?: null
+    ): TypedEventFilter<[string, string], { node: string; name: string }>;
+  };
 
   estimateGas: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    name(node: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
     setName(
       node: BytesLike,
-      name: string,
+      newName: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceID: BytesLike,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    name(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setName(
       node: BytesLike,
-      name: string,
+      newName: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    supportsInterface(
+      interfaceID: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

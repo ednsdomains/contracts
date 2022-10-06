@@ -43,6 +43,25 @@ const _abi = [
         type: "bytes32",
       },
     ],
+    name: "isAuthorised",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "node",
+        type: "bytes32",
+      },
+    ],
     name: "pubkey",
     outputs: [
       {

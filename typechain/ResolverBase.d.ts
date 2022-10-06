@@ -20,14 +20,23 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ResolverBaseInterface extends ethers.utils.Interface {
   functions: {
+    "isAuthorised(bytes32)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -80,11 +89,18 @@ export class ResolverBase extends BaseContract {
   interface: ResolverBaseInterface;
 
   functions: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     supportsInterface(
       interfaceID: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
   };
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   supportsInterface(
     interfaceID: BytesLike,
@@ -92,6 +108,8 @@ export class ResolverBase extends BaseContract {
   ): Promise<boolean>;
 
   callStatic: {
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
     supportsInterface(
       interfaceID: BytesLike,
       overrides?: CallOverrides
@@ -101,6 +119,11 @@ export class ResolverBase extends BaseContract {
   filters: {};
 
   estimateGas: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     supportsInterface(
       interfaceID: BytesLike,
       overrides?: CallOverrides
@@ -108,6 +131,11 @@ export class ResolverBase extends BaseContract {
   };
 
   populateTransaction: {
+    isAuthorised(
+      node: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(
       interfaceID: BytesLike,
       overrides?: CallOverrides

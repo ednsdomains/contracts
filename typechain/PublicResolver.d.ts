@@ -28,9 +28,10 @@ interface PublicResolverInterface extends ethers.utils.Interface {
     "dnsRecord(bytes32,bytes32,uint16)": FunctionFragment;
     "getNFT(bytes32,uint256)": FunctionFragment;
     "hasDNSRecords(bytes32,bytes32)": FunctionFragment;
-    "initialize(address,address)": FunctionFragment;
+    "initialize(address)": FunctionFragment;
     "interfaceImplementer(bytes32,bytes4)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "isAuthorised(bytes32)": FunctionFragment;
     "multicall(bytes[])": FunctionFragment;
     "name(bytes32)": FunctionFragment;
     "pubkey(bytes32)": FunctionFragment;
@@ -75,10 +76,7 @@ interface PublicResolverInterface extends ethers.utils.Interface {
     functionFragment: "hasDNSRecords",
     values: [BytesLike, BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "initialize",
-    values: [string, string]
-  ): string;
+  encodeFunctionData(functionFragment: "initialize", values: [string]): string;
   encodeFunctionData(
     functionFragment: "interfaceImplementer",
     values: [BytesLike, BytesLike]
@@ -86,6 +84,10 @@ interface PublicResolverInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAuthorised",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "multicall",
@@ -170,6 +172,10 @@ interface PublicResolverInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isAuthorised",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "multicall", data: BytesLike): Result;
@@ -418,7 +424,6 @@ export class PublicResolver extends BaseContract {
 
     initialize(
       _edns: string,
-      wrapperAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -431,6 +436,11 @@ export class PublicResolver extends BaseContract {
     isApprovedForAll(
       account: string,
       operator: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
@@ -587,7 +597,6 @@ export class PublicResolver extends BaseContract {
 
   initialize(
     _edns: string,
-    wrapperAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -602,6 +611,8 @@ export class PublicResolver extends BaseContract {
     operator: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   multicall(
     data: BytesLike[],
@@ -754,11 +765,7 @@ export class PublicResolver extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    initialize(
-      _edns: string,
-      wrapperAddress: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    initialize(_edns: string, overrides?: CallOverrides): Promise<void>;
 
     interfaceImplementer(
       node: BytesLike,
@@ -771,6 +778,8 @@ export class PublicResolver extends BaseContract {
       operator: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    isAuthorised(node: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     multicall(data: BytesLike[], overrides?: CallOverrides): Promise<string[]>;
 
@@ -1152,7 +1161,6 @@ export class PublicResolver extends BaseContract {
 
     initialize(
       _edns: string,
-      wrapperAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1165,6 +1173,11 @@ export class PublicResolver extends BaseContract {
     isApprovedForAll(
       account: string,
       operator: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1319,7 +1332,6 @@ export class PublicResolver extends BaseContract {
 
     initialize(
       _edns: string,
-      wrapperAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1332,6 +1344,11 @@ export class PublicResolver extends BaseContract {
     isApprovedForAll(
       account: string,
       operator: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAuthorised(
+      node: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

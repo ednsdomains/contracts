@@ -4,7 +4,8 @@ import "../ResolverBase.sol";
 import "./INFTResolver.sol";
 
 abstract contract NFTResolver is INFTResolver, ResolverBase {
-    mapping(bytes32=>mapping(uint256=>NFT)) nfts;
+    mapping(bytes32 => mapping(uint256 => NFT)) nfts;
+
     function setNFT(
         bytes32 node,
         uint256 chainId,
@@ -19,7 +20,12 @@ abstract contract NFTResolver is INFTResolver, ResolverBase {
         emit NFTChanged(node, chainId, contractAddress, tokenId);
     }
 
-    function getNFT(bytes32 node,uint256 chainID) public view virtual returns (NFT memory) {
+    function getNFT(bytes32 node, uint256 chainID)
+        public
+        view
+        virtual
+        returns (NFT memory)
+    {
         return nfts[node][chainID];
     }
 
