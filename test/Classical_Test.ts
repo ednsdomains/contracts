@@ -11,6 +11,10 @@ describe("Classical Test", function () {
     let use_publicResolver:PublicResolver
     let use_baseRegistrar:BaseRegistrar
     let use_classicalRegistrarController : ClassicalRegistrarController
+    const hostNode = ethers.utils.toUtf8Bytes("@");
+    const subHostNode = ethers.utils.toUtf8Bytes("sub");
+    const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
+    const nameNode = ethers.utils.toUtf8Bytes("domain");
     it("Deploy Contract", async () => {
         const srcChainID = 1
         addr1 = await ethers.getSigners();
@@ -116,61 +120,61 @@ describe("Classical Test", function () {
 
     it("Set Text Record", async ()=>{
         // const [name, tld] = ("domain.classicalTLD").split('.');
-        const hostNode = ethers.utils.toUtf8Bytes("@");
-        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
-        const nameNode = ethers.utils.toUtf8Bytes("domain");
         await use_publicResolver.setText(hostNode,nameNode,tldNode,"Text Set Text")
         expect(await use_publicResolver.getText(hostNode,nameNode,tldNode)).to.equal("Text Set Text")
         // const labelhash = ethers.utils.solidityKeccak256(['string', 'bytes32'], [name, basenode]);
         // const nodehash = ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [basenode, labelhash]);
     })
     it("Set Multi Text", async ()=>{
-        const hostNode = ethers.utils.toUtf8Bytes("@");
-        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
-        const nameNode = ethers.utils.toUtf8Bytes("domain");
         await use_publicResolver.setMultiText(hostNode,nameNode,tldNode,"github","0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
         expect((await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
     })
 
     it("Set Coins Address Record", async ()=>{
-        const hostNode = ethers.utils.toUtf8Bytes("@");
-        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
-        const nameNode = ethers.utils.toUtf8Bytes("domain");
         // await use_publicResolver.setMultiCoinAddress()
         await use_publicResolver.setAddress(hostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
         expect(await  use_publicResolver.getAddress(hostNode,nameNode,tldNode)).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
     })
 
     it("Set Multi Coin Record", async ()=>{
-        const hostNode = ethers.utils.toUtf8Bytes("@");
-        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
-        const nameNode = ethers.utils.toUtf8Bytes("domain");
         await use_publicResolver.setMultiCoinAddress(hostNode,nameNode,tldNode,1,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
         expect((await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,1)).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
     })
 
 
     it("ReverseAddress",async ()=>{
-        const hostNode = ethers.utils.toUtf8Bytes("@");
-        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
-        const nameNode = ethers.utils.toUtf8Bytes("domain");
         await use_publicResolver.setReverseAddress(hostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
         expect((await use_publicResolver.getReverseAddress("0x14A1A496fABc43bFAfC358005dE336a7B5222b20"))).to.equal("domain.classicalTLD")
     })
 
     it("ReverseAddress-SubDomain",async ()=>{
-        const hostNode = ethers.utils.toUtf8Bytes("sub");
-        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
-        const nameNode = ethers.utils.toUtf8Bytes("domain");
-        await use_publicResolver.setReverseAddress(hostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        await use_publicResolver.setReverseAddress(subHostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
         expect((await use_publicResolver.getReverseAddress("0x14A1A496fABc43bFAfC358005dE336a7B5222b20"))).to.equal("sub.domain.classicalTLD")
     })
 
 
-    it("Transfer Domain",async ()=>{
-        //TODO
+    it("Owner of Domain",async ()=>{
+        const owner = await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode));
+        expect(owner).to.equal(addr1[0].address)
     })
 
+    it("Transfer",async ()=>{
+        // await use_classicalRegistrarController.register((nameNode),tldNode,addr1[0].address,999999999999999)
+        // console.log(await use_baseRegistrar["isExists(bytes,bytes)"](nameNode, tldNode));
+        // console.log(await use_classicalRegistrarController["isAvailable(bytes,bytes)"](nameNode,tldNode));
+       const tokenId = await use_registry["getTokenId(bytes,bytes)"]((nameNode),(tldNode))
+        // console.log(await use_registry.ownerOf(tokenId))
+        await use_registry.transferFrom(addr1[0].address,addr1[1].address,tokenId)
+        expect((await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode)))).to.equal(addr1[1].address)
+    })
+
+    it("Set Record with wrong owner",async ()=>{
+        try {
+            await use_publicResolver.setMultiText(hostNode,nameNode,tldNode,"github","new Owner")
+        }catch (e){
+            expect((await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
+        }
+    })
 
 
 

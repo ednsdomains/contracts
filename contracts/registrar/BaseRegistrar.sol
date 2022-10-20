@@ -6,8 +6,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../utils/LabelOperator.sol";
 import "../registry/interfaces/IRegistry.sol";
-
 import "./interfaces/IBaseRegistrar.sol";
+import "hardhat/console.sol";
 
 contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperator {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -73,6 +73,7 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
 
   function isExists(bytes memory name, bytes memory tld) public view virtual returns (bool) {
     uint256 id = uint256(keccak256(_join(name, tld)));
+    console.logAddress(_registry.ownerOf(id));
     return _registry.ownerOf(id) != address(0);
   }
 

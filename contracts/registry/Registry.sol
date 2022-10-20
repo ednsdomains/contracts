@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "../utils/LabelOperator.sol";
 import "./interfaces/IRegistry.sol";
 import "./lib/TldClass.sol";
+import "hardhat/console.sol";
 
 contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   using AddressUpgradeable for address;
@@ -147,7 +148,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
     bool isExists_ = isExists(keccak256(name), keccak256(tld));
 
-    uint256 id = uint256(keccak256(_join(name, tld)));
+//    uint256 id = uint256(keccak256(_join(name, tld)));
+    uint256 id  = getTokenId(name,tld);
     if (isExists_) {
       _burn(id);
     }
@@ -166,7 +168,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     }
     emit NewDomain(name, tld, owner_);
 
-    TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
+    TokenRecord storage _tokenRecord = _tokenRecords[id];
     _tokenRecord.class_ = RecordType.DOMAIN;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
@@ -398,7 +400,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     } else if (tRecord_.class_ == RecordType.DOMAIN || tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].owner;
     } else {
-      revert(""); // TODO:
+      revert("hhh"); // TODO:
     }
   }
 
