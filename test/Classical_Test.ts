@@ -127,6 +127,7 @@ describe("Classical Test", function () {
     })
     it("Set Multi Text", async ()=>{
         await use_publicResolver.setMultiText(hostNode,nameNode,tldNode,"github","0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        await use_publicResolver.setMultiText(subHostNode,nameNode,tldNode,"github","0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
         expect((await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
     })
 
@@ -172,11 +173,20 @@ describe("Classical Test", function () {
         try {
             await use_publicResolver.setMultiText(hostNode,nameNode,tldNode,"github","new Owner")
         }catch (e){
+            console.log("Error Log:")
+            console.log({e})
             expect((await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
         }
     })
 
-
-
+    it("Set Record with wrong owner (sub domain)",async ()=>{
+        try {
+            await use_publicResolver.setMultiText(subHostNode,nameNode,tldNode,"github","new Owner")
+        }catch (e){
+            console.log("Error Log:")
+            console.log({e})
+            expect((await use_publicResolver.getMultiText(subHostNode,nameNode,tldNode,"github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
+        }
+    })
 
 })
