@@ -101,8 +101,8 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     _setReverseAddress(host, name, tld, address_);
   }
 
-  function getReverseAddress(address address_) public view returns (bytes memory) {
-    return _reverseAddresses[address_];
+  function getReverseAddress(address address_) public view returns (string memory) {
+    return string(_reverseAddresses[address_]);
   }
 
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {

@@ -39,5 +39,5 @@ interface IAddressResolver {
     address address_
   ) external;
 
-  function getReverseAddress(address address_) external returns (bytes memory);
+  function getReverseAddress(address address_) external returns (string memory);
 }

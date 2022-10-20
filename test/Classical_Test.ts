@@ -124,6 +124,13 @@ describe("Classical Test", function () {
         // const labelhash = ethers.utils.solidityKeccak256(['string', 'bytes32'], [name, basenode]);
         // const nodehash = ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [basenode, labelhash]);
     })
+    it("Set Multi Text", async ()=>{
+        const hostNode = ethers.utils.toUtf8Bytes("@");
+        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
+        const nameNode = ethers.utils.toUtf8Bytes("domain");
+        await use_publicResolver.setMultiText(hostNode,nameNode,tldNode,"github","0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        expect((await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
+    })
 
     it("Set Coins Address Record", async ()=>{
         const hostNode = ethers.utils.toUtf8Bytes("@");
@@ -134,7 +141,7 @@ describe("Classical Test", function () {
         expect(await  use_publicResolver.getAddress(hostNode,nameNode,tldNode)).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
     })
 
-    it("Set Coins Address Record", async ()=>{
+    it("Set Multi Coin Record", async ()=>{
         const hostNode = ethers.utils.toUtf8Bytes("@");
         const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
         const nameNode = ethers.utils.toUtf8Bytes("domain");
@@ -142,9 +149,28 @@ describe("Classical Test", function () {
         expect((await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,1)).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
     })
 
+
+    it("ReverseAddress",async ()=>{
+        const hostNode = ethers.utils.toUtf8Bytes("@");
+        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
+        const nameNode = ethers.utils.toUtf8Bytes("domain");
+        await use_publicResolver.setReverseAddress(hostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        expect((await use_publicResolver.getReverseAddress("0x14A1A496fABc43bFAfC358005dE336a7B5222b20"))).to.equal("domain.classicalTLD")
+    })
+
+    it("ReverseAddress-SubDomain",async ()=>{
+        const hostNode = ethers.utils.toUtf8Bytes("sub");
+        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
+        const nameNode = ethers.utils.toUtf8Bytes("domain");
+        await use_publicResolver.setReverseAddress(hostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        expect((await use_publicResolver.getReverseAddress("0x14A1A496fABc43bFAfC358005dE336a7B5222b20"))).to.equal("sub.domain.classicalTLD")
+    })
+
+
     it("Transfer Domain",async ()=>{
         //TODO
     })
+
 
 
 

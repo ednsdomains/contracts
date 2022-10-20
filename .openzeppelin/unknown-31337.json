@@ -452,17 +452,17 @@
     },
     {
       "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
-      "txHash": "0x40d54ade497846f510c93f03249a497730ce109ced8e29365a1f34f36041cd2e",
+      "txHash": "0x2929dc7d4378d73e9bea4af039e47b520263af541bc681d2194841b47d84a347",
       "kind": "transparent"
     },
     {
       "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
-      "txHash": "0x2939eb3506937961cbe6646e7cd9f6e62a231a569d176d1f0f3f73efb78e78b9",
+      "txHash": "0xb07ea31116491f1f5d4a0bab60a80b3c52b9370765f03b9f0452742478901447",
       "kind": "transparent"
     },
     {
       "address": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
-      "txHash": "0x479e819308c2451df7c4ac39a8fa8c1e7342e8ddf0eafa2aecc2c79a240dbec1",
+      "txHash": "0x2b566f24a525060ac47bff3ec4eac52406c4c4d27244b23b9b95dce702db638e",
       "kind": "transparent"
     }
   ],
@@ -2646,7 +2646,7 @@
     },
     "a6c2b93662c07fd8c13c0a67c6f3c746d78f52b8745750771f75b2fbf8bbc703": {
       "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
-      "txHash": "0x938566f35471c3d1db78e6fde6ced0ce7944292fed460e512b8691eaec6accff",
+      "txHash": "0xb62142bfc4545b2f0404ad95c94412d19e35548c2aab30f61f847c7f2f9fb6c9",
       "layout": {
         "storage": [
           {
@@ -2882,7 +2882,7 @@
     },
     "df5479ad010ab8dedea66d2ad1f1febdf91f018d8f539340bf98dcdb9343643f": {
       "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
-      "txHash": "0x7a1d92bc4602975da488d954316a71639642834f6f1efd17bffec46d29baefbe",
+      "txHash": "0xcfed16b023dbc54f01d3d13813a6db501322cf978c3539a01b2909d40b09e89c",
       "layout": {
         "storage": [
           {
@@ -3398,7 +3398,7 @@
     },
     "c428894b3a052815dbf74982f307f5a7aa2cc0f78856e43f92adbb208aaef64f": {
       "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
-      "txHash": "0xa42668750960707ddad318e9c45e8a1aa1d06c75dab2cdae27b35bbd03ea63ce",
+      "txHash": "0xde38cc5ec2abbdc203a79652ade15b8d74739fce537b09d4f01ac8baf02bbf80",
       "layout": {
         "storage": [
           {
@@ -3572,9 +3572,9 @@
         }
       }
     },
-    "1d7b30b61ecd129a815dd561809c1cfe3e53b848754733fbd304fb7da518428f": {
+    "01b5b14da87a652782ea63e35ef8b2d5e8d50a151eb2630a3f654ed0b1e2dfe1": {
       "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-      "txHash": "0xb9d9e0a099fccef11648d3f42af5b542a86db9f073415d9314a29c5bc23c5cd9",
+      "txHash": "0xf77fd9a71d88e83d49aa98c279e1dd3a5404b343221ad6ebcd4ba3b23e0cfd63",
       "layout": {
         "storage": [
           {
@@ -3629,7 +3629,7 @@
             "label": "_synchronizer",
             "offset": 0,
             "slot": "152",
-            "type": "t_contract(IPublicResolverSynchronizer)13192",
+            "type": "t_contract(IPublicResolverSynchronizer)13196",
             "contract": "BaseResolver",
             "src": "contracts/resolver/BaseResolver.sol:15"
           },
@@ -3661,7 +3661,7 @@
             "label": "_nfts",
             "offset": 0,
             "slot": "156",
-            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14368_storage))",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14666_storage))",
             "contract": "NFTResolver",
             "src": "contracts/resolver/profile/NFTResolver.sol:8"
           },
@@ -3672,6 +3672,14 @@
             "type": "t_mapping(t_bytes32,t_string_storage)",
             "contract": "TextResolver",
             "src": "contracts/resolver/profile/TextResolver.sol:9"
+          },
+          {
+            "label": "texts",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_mapping(t_bytes32,t_mapping(t_string_memory_ptr,t_string_storage))",
+            "contract": "MultiTextResolver",
+            "src": "contracts/resolver/profile/MutiliTextResolver.sol:8"
           }
         ],
         "types": {
@@ -3695,7 +3703,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(IPublicResolverSynchronizer)13192": {
+          "t_contract(IPublicResolverSynchronizer)13196": {
             "label": "contract IPublicResolverSynchronizer",
             "numberOfBytes": "20"
           },
@@ -3711,11 +3719,15 @@
             "label": "mapping(bytes32 => address)",
             "numberOfBytes": "32"
           },
+          "t_mapping(t_bytes32,t_mapping(t_string_memory_ptr,t_string_storage))": {
+            "label": "mapping(bytes32 => mapping(string => string))",
+            "numberOfBytes": "32"
+          },
           "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))": {
             "label": "mapping(bytes32 => mapping(uint256 => bytes))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14368_storage))": {
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14666_storage))": {
             "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
             "numberOfBytes": "32"
           },
@@ -3723,19 +3735,27 @@
             "label": "mapping(bytes32 => string)",
             "numberOfBytes": "32"
           },
+          "t_mapping(t_string_memory_ptr,t_string_storage)": {
+            "label": "mapping(string => string)",
+            "numberOfBytes": "32"
+          },
           "t_mapping(t_uint256,t_bytes_storage)": {
             "label": "mapping(uint256 => bytes)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(NFT)14368_storage)": {
+          "t_mapping(t_uint256,t_struct(NFT)14666_storage)": {
             "label": "mapping(uint256 => struct INFTResolver.NFT)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
             "numberOfBytes": "32"
           },
           "t_string_storage": {
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(NFT)14368_storage": {
+          "t_struct(NFT)14666_storage": {
             "label": "struct INFTResolver.NFT",
             "members": [
               {
