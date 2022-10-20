@@ -119,15 +119,30 @@ describe("Classical Test", function () {
         const hostNode = ethers.utils.toUtf8Bytes("@");
         const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
         const nameNode = ethers.utils.toUtf8Bytes("domain");
-        console.log(ethers.utils.keccak256(hostNode))
         await use_publicResolver.setText(hostNode,nameNode,tldNode,"Text Set Text")
         expect(await use_publicResolver.getText(hostNode,nameNode,tldNode)).to.equal("Text Set Text")
         // const labelhash = ethers.utils.solidityKeccak256(['string', 'bytes32'], [name, basenode]);
         // const nodehash = ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [basenode, labelhash]);
-
-
-
     })
+
+    it("Set Coins Address Record", async ()=>{
+        const hostNode = ethers.utils.toUtf8Bytes("@");
+        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
+        const nameNode = ethers.utils.toUtf8Bytes("domain");
+        // await use_publicResolver.setMultiCoinAddress()
+        await use_publicResolver.setAddress(hostNode,nameNode,tldNode,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        expect(await  use_publicResolver.getAddress(hostNode,nameNode,tldNode)).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+    })
+
+    it("Set Coins Address Record", async ()=>{
+        const hostNode = ethers.utils.toUtf8Bytes("@");
+        const tldNode = ethers.utils.toUtf8Bytes("classicalTLD");
+        const nameNode = ethers.utils.toUtf8Bytes("domain");
+        await use_publicResolver.setMultiCoinAddress(hostNode,nameNode,tldNode,1,"0x14A1A496fABc43bFAfC358005dE336a7B5222b20")
+        expect((await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,1)).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
+    })
+
+
 
 
 })

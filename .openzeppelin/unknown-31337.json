@@ -2159,7 +2159,7 @@
             "label": "lzEndpoint",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(ILayerZeroEndpoint)7716",
+            "type": "t_contract(ILayerZeroEndpoint)7600",
             "contract": "LayerZeroApp",
             "src": "contracts/layerzero/LayerZeroApp.sol:9"
           },
@@ -2353,7 +2353,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(ILayerZeroEndpoint)7716": {
+          "t_contract(ILayerZeroEndpoint)7600": {
             "label": "contract ILayerZeroEndpoint",
             "numberOfBytes": "20"
           },
@@ -2521,7 +2521,7 @@
             "label": "_tokenPrice",
             "offset": 0,
             "slot": "151",
-            "type": "t_contract(ITokenPriceOracle)8394",
+            "type": "t_contract(ITokenPriceOracle)8411",
             "contract": "DomainPriceOracle",
             "src": "contracts/oracle/DomainPriceOracle.sol:20"
           },
@@ -2529,7 +2529,7 @@
             "label": "_prices",
             "offset": 0,
             "slot": "152",
-            "type": "t_mapping(t_bytes32,t_struct(Price)7817_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(Price)7834_storage)",
             "contract": "DomainPriceOracle",
             "src": "contracts/oracle/DomainPriceOracle.sol:21"
           },
@@ -2563,7 +2563,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(ITokenPriceOracle)8394": {
+          "t_contract(ITokenPriceOracle)8411": {
             "label": "contract ITokenPriceOracle",
             "numberOfBytes": "20"
           },
@@ -2571,7 +2571,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(Price)7817_storage)": {
+          "t_mapping(t_bytes32,t_struct(Price)7834_storage)": {
             "label": "mapping(bytes32 => struct DomainPriceOracle.Price)",
             "numberOfBytes": "32"
           },
@@ -2583,7 +2583,7 @@
             "label": "mapping(bytes32 => uint256)",
             "numberOfBytes": "32"
           },
-          "t_struct(Price)7817_storage": {
+          "t_struct(Price)7834_storage": {
             "label": "struct DomainPriceOracle.Price",
             "members": [
               {
@@ -2693,7 +2693,7 @@
             "label": "lzEndpoint",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(ILayerZeroEndpoint)7716",
+            "type": "t_contract(ILayerZeroEndpoint)7600",
             "contract": "LayerZeroApp",
             "src": "contracts/layerzero/LayerZeroApp.sol:9"
           },
@@ -2807,7 +2807,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(ILayerZeroEndpoint)7716": {
+          "t_contract(ILayerZeroEndpoint)7600": {
             "label": "contract ILayerZeroEndpoint",
             "numberOfBytes": "20"
           },
@@ -2945,7 +2945,7 @@
             "label": "_registry",
             "offset": 0,
             "slot": "152",
-            "type": "t_contract(IRegistry)12760",
+            "type": "t_contract(IRegistry)12777",
             "contract": "BaseRegistrar",
             "src": "contracts/registrar/BaseRegistrar.sol:18"
           }
@@ -2971,7 +2971,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IRegistry)12760": {
+          "t_contract(IRegistry)12777": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
@@ -3105,7 +3105,7 @@
             "label": "_records",
             "offset": 0,
             "slot": "155",
-            "type": "t_mapping(t_bytes32,t_struct(TldRecord)12431_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(TldRecord)12448_storage)",
             "contract": "Registry",
             "src": "contracts/registry/Registry.sol:30"
           },
@@ -3113,7 +3113,7 @@
             "label": "_tokenRecords",
             "offset": 0,
             "slot": "156",
-            "type": "t_mapping(t_uint256,t_struct(TokenRecord)12414_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TokenRecord)12431_storage)",
             "contract": "Registry",
             "src": "contracts/registry/Registry.sol:31"
           },
@@ -3151,7 +3151,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_enum(RecordType)12404": {
+          "t_enum(RecordType)12421": {
             "label": "enum IRegistry.RecordType",
             "members": [
               "TLD",
@@ -3160,7 +3160,7 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_enum(TldClass)12766": {
+          "t_enum(TldClass)12783": {
             "label": "enum TldClass.TldClass",
             "members": [
               "CLASSICAL",
@@ -3181,11 +3181,11 @@
             "label": "mapping(address => uint256)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(DomainRecord)12452_storage)": {
+          "t_mapping(t_bytes32,t_struct(DomainRecord)12469_storage)": {
             "label": "mapping(bytes32 => struct IRegistry.DomainRecord)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(HostRecord)12462_storage)": {
+          "t_mapping(t_bytes32,t_struct(HostRecord)12479_storage)": {
             "label": "mapping(bytes32 => struct IRegistry.HostRecord)",
             "numberOfBytes": "32"
           },
@@ -3193,11 +3193,11 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(TldRecord)12431_storage)": {
+          "t_mapping(t_bytes32,t_struct(TldRecord)12448_storage)": {
             "label": "mapping(bytes32 => struct IRegistry.TldRecord)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(TokenRecord)12414_storage)": {
+          "t_mapping(t_uint256,t_struct(TokenRecord)12431_storage)": {
             "label": "mapping(uint256 => struct IRegistry.TokenRecord)",
             "numberOfBytes": "32"
           },
@@ -3205,7 +3205,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(DomainRecord)12452_storage": {
+          "t_struct(DomainRecord)12469_storage": {
             "label": "struct IRegistry.DomainRecord",
             "members": [
               {
@@ -3234,7 +3234,7 @@
               },
               {
                 "label": "rental",
-                "type": "t_struct(Rental)12467_storage",
+                "type": "t_struct(Rental)12484_storage",
                 "offset": 0,
                 "slot": "3"
               },
@@ -3246,14 +3246,14 @@
               },
               {
                 "label": "hosts",
-                "type": "t_mapping(t_bytes32,t_struct(HostRecord)12462_storage)",
+                "type": "t_mapping(t_bytes32,t_struct(HostRecord)12479_storage)",
                 "offset": 0,
                 "slot": "5"
               }
             ],
             "numberOfBytes": "192"
           },
-          "t_struct(HostRecord)12462_storage": {
+          "t_struct(HostRecord)12479_storage": {
             "label": "struct IRegistry.HostRecord",
             "members": [
               {
@@ -3264,7 +3264,7 @@
               },
               {
                 "label": "rental",
-                "type": "t_struct(Rental)12467_storage",
+                "type": "t_struct(Rental)12484_storage",
                 "offset": 0,
                 "slot": "1"
               },
@@ -3277,7 +3277,7 @@
             ],
             "numberOfBytes": "96"
           },
-          "t_struct(Rental)12467_storage": {
+          "t_struct(Rental)12484_storage": {
             "label": "struct IRegistry.Rental",
             "members": [
               {
@@ -3313,7 +3313,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(TldRecord)12431_storage": {
+          "t_struct(TldRecord)12448_storage": {
             "label": "struct IRegistry.TldRecord",
             "members": [
               {
@@ -3342,25 +3342,25 @@
               },
               {
                 "label": "class_",
-                "type": "t_enum(TldClass)12766",
+                "type": "t_enum(TldClass)12783",
                 "offset": 21,
                 "slot": "2"
               },
               {
                 "label": "domains",
-                "type": "t_mapping(t_bytes32,t_struct(DomainRecord)12452_storage)",
+                "type": "t_mapping(t_bytes32,t_struct(DomainRecord)12469_storage)",
                 "offset": 0,
                 "slot": "3"
               }
             ],
             "numberOfBytes": "128"
           },
-          "t_struct(TokenRecord)12414_storage": {
+          "t_struct(TokenRecord)12431_storage": {
             "label": "struct IRegistry.TokenRecord",
             "members": [
               {
                 "label": "class_",
-                "type": "t_enum(RecordType)12404",
+                "type": "t_enum(RecordType)12421",
                 "offset": 0,
                 "slot": "0"
               },
@@ -3461,7 +3461,7 @@
             "label": "_registrar",
             "offset": 0,
             "slot": "152",
-            "type": "t_contract(IBaseRegistrar)9438",
+            "type": "t_contract(IBaseRegistrar)9455",
             "contract": "ClassicalRegistrarController",
             "src": "contracts/registrar/ClassicalRegistrarController.sol:14"
           },
@@ -3469,7 +3469,7 @@
             "label": "_domainPrice",
             "offset": 0,
             "slot": "153",
-            "type": "t_contract(IDomainPriceOracle)8368",
+            "type": "t_contract(IDomainPriceOracle)8385",
             "contract": "ClassicalRegistrarController",
             "src": "contracts/registrar/ClassicalRegistrarController.sol:15"
           },
@@ -3477,7 +3477,7 @@
             "label": "_tokenPrice",
             "offset": 0,
             "slot": "154",
-            "type": "t_contract(ITokenPriceOracle)8394",
+            "type": "t_contract(ITokenPriceOracle)8411",
             "contract": "ClassicalRegistrarController",
             "src": "contracts/registrar/ClassicalRegistrarController.sol:16"
           },
@@ -3519,11 +3519,11 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IBaseRegistrar)9438": {
+          "t_contract(IBaseRegistrar)9455": {
             "label": "contract IBaseRegistrar",
             "numberOfBytes": "20"
           },
-          "t_contract(IDomainPriceOracle)8368": {
+          "t_contract(IDomainPriceOracle)8385": {
             "label": "contract IDomainPriceOracle",
             "numberOfBytes": "20"
           },
@@ -3531,7 +3531,7 @@
             "label": "contract IERC20Upgradeable",
             "numberOfBytes": "20"
           },
-          "t_contract(ITokenPriceOracle)8394": {
+          "t_contract(ITokenPriceOracle)8411": {
             "label": "contract ITokenPriceOracle",
             "numberOfBytes": "20"
           },
@@ -3621,7 +3621,7 @@
             "label": "_registry",
             "offset": 0,
             "slot": "151",
-            "type": "t_contract(IRegistry)12760",
+            "type": "t_contract(IRegistry)12777",
             "contract": "BaseResolver",
             "src": "contracts/resolver/BaseResolver.sol:13"
           },
@@ -3629,7 +3629,7 @@
             "label": "_synchronizer",
             "offset": 0,
             "slot": "152",
-            "type": "t_contract(IPublicResolverSynchronizer)13175",
+            "type": "t_contract(IPublicResolverSynchronizer)13192",
             "contract": "BaseResolver",
             "src": "contracts/resolver/BaseResolver.sol:15"
           },
@@ -3661,7 +3661,7 @@
             "label": "_nfts",
             "offset": 0,
             "slot": "156",
-            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14351_storage))",
+            "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14368_storage))",
             "contract": "NFTResolver",
             "src": "contracts/resolver/profile/NFTResolver.sol:8"
           },
@@ -3695,11 +3695,11 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(IPublicResolverSynchronizer)13175": {
+          "t_contract(IPublicResolverSynchronizer)13192": {
             "label": "contract IPublicResolverSynchronizer",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistry)12760": {
+          "t_contract(IRegistry)12777": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
@@ -3715,7 +3715,7 @@
             "label": "mapping(bytes32 => mapping(uint256 => bytes))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14351_storage))": {
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14368_storage))": {
             "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
             "numberOfBytes": "32"
           },
@@ -3727,7 +3727,7 @@
             "label": "mapping(uint256 => bytes)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(NFT)14351_storage)": {
+          "t_mapping(t_uint256,t_struct(NFT)14368_storage)": {
             "label": "mapping(uint256 => struct INFTResolver.NFT)",
             "numberOfBytes": "32"
           },
@@ -3735,7 +3735,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(NFT)14351_storage": {
+          "t_struct(NFT)14368_storage": {
             "label": "struct INFTResolver.NFT",
             "members": [
               {
