@@ -142,6 +142,10 @@ describe("Classical Test", function () {
         expect((await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,1)).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase())
     })
 
+    it("Transfer Domain",async ()=>{
+        //TODO
+    })
+
 
 
 
