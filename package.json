@@ -6,7 +6,8 @@
     "deploy:mainnet": "hardhat run scripts/deploy:mainnet.ts",
     "upgrade:testnet": "hardhat run scripts/upgrade:testnet.ts",
     "upgrade:mainnet": "hardhat run scripts/upgrade:mainnet.ts",
-    "verify": "hardhat run scripts/verify.ts"
+    "verify": "hardhat run scripts/verify.ts",
+    "prettier": "prettier --write contracts/**/*.sol scripts/**/*.ts test/**/*.ts"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.4.1",

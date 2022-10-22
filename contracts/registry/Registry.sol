@@ -148,8 +148,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
     bool isExists_ = isExists(keccak256(name), keccak256(tld));
 
-//    uint256 id = uint256(keccak256(_join(name, tld)));
-    uint256 id  = getTokenId(name,tld);
+    //    uint256 id = uint256(keccak256(_join(name, tld)));
+    uint256 id = getTokenId(name, tld);
     if (isExists_) {
       _burn(id);
     }
@@ -420,7 +420,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     //solhint-disable-next-line max-line-length
     require(_isApprovedOrOwner(_msgSender(), tokenId_), "ERC721: transfer caller is not owner nor approved");
     _transfer(from, to, tokenId_);
-
   }
 
   function approve(address to, uint256 tokenId_) public virtual override {

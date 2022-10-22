@@ -5,6 +5,7 @@ import "./interfaces/ILayerZeroEndpoint.sol";
 import "./interfaces/ILayerZeroApp.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "hardhat/console.sol";
+
 abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
   ILayerZeroEndpoint public lzEndpoint;
 
@@ -61,14 +62,14 @@ abstract contract LayerZeroApp is ILayerZeroApp, OwnableUpgradeable {
     address payable _refundAddress,
     address _zroPaymentAddress,
     bytes memory _adapterParams,
-    uint gasfee
+    uint256 gasfee
   ) internal virtual {
     bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
     require(trustedRemote.length != 0, "NOT_TRUST_REMOTE");
-    uint16 version =1;
+    uint16 version = 1;
     uint256 value = 400000;
     // console.logBytes(abi.encodePacked(version,value));
-    lzEndpoint.send{ value: gasfee }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, abi.encodePacked(version,value));
+    lzEndpoint.send{ value: gasfee }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, abi.encodePacked(version, value));
   }
 
   //---------------------------UserApplication config----------------------------------------

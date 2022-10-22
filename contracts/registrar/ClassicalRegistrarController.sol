@@ -93,8 +93,8 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, AccessCo
     // TODO: Set record in resolver
     // TODO: Set record in reverse resolver
     // _token.transferFrom(_msgSender(), address(this), _price);
-//    _registrar.register(name, tld, address(this), expires);
-//     _registrar.transferFrom(address(this), owner, _registrar.tokenId(name, tld));
+    //    _registrar.register(name, tld, address(this), expires);
+    //     _registrar.transferFrom(address(this), owner, _registrar.tokenId(name, tld));
     _registrar.register(name, tld, owner, expires);
   }
 

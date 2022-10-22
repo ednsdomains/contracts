@@ -8,7 +8,7 @@ interface ITextResolver {
     bytes memory host,
     bytes memory name,
     bytes memory tld,
-//    bytes32 type_,
+    //    bytes32 type_,
     string memory text
   ) external;
 
@@ -16,7 +16,7 @@ interface ITextResolver {
     bytes memory host,
     bytes memory name,
     bytes memory tld,
-//    bytes32 type_,
+    //    bytes32 type_,
     string memory text
   ) external;
 
@@ -24,6 +24,11 @@ interface ITextResolver {
     bytes memory host,
     bytes memory name,
     bytes memory tld
-//    bytes32 type_
-  ) external view returns (string memory);
+  )
+    external
+    view
+    returns (
+      //    bytes32 type_
+      string memory
+    );
 }
