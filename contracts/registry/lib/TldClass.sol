@@ -6,6 +6,7 @@ library TldClass {
   enum TldClass {
     CLASSICAL,
     SINGLETON,
-    OMNI
+    OMNI,
+    UNIVERSAL
   }
 }
