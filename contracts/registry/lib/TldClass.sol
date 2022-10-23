@@ -4,9 +4,9 @@ pragma solidity 0.8.9;
 
 library TldClass {
   enum TldClass {
-    CLASSICAL,
-    SINGLETON,
-    OMNI,
-    UNIVERSAL
+    CLASSICAL, // 0
+    SINGLETON, // 1
+    OMNI, // 2
+    UNIVERSAL // 3
   }
 }

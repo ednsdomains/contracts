@@ -129,6 +129,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
     _tokenRecord.class_ = RecordType.TLD;
     _tokenRecord.tld = keccak256(tld);
+
+    _mint(owner_, getTokenId(tld));
   }
 
   //Add name
