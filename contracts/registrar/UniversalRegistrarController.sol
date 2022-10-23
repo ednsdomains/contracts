@@ -7,9 +7,9 @@ import "../utils/LabelOperator.sol";
 import "../oracle/interfaces/ITokenPriceOracle.sol";
 import "../oracle/interfaces/IDomainPriceOracle.sol";
 import "./interfaces/IBaseRegistrar.sol";
-import "./interfaces/IClassicalRegistrarController.sol";
+import "./interfaces/IUniversalRegistrarController.sol";
 
-contract ClassicalRegistrarController is IClassicalRegistrarController, AccessControlUpgradeable, LabelOperator {
+contract UniversalRegistrarController is IUniversalRegistrarController, AccessControlUpgradeable, LabelOperator {
   IERC20Upgradeable private _token;
   IBaseRegistrar private _registrar;
   IDomainPriceOracle private _domainPrice;
@@ -36,21 +36,21 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, AccessCo
     IBaseRegistrar registrar_,
     uint256 coinId
   ) public initializer {
-    __ClassicalRegistrarController_init(token_, domainPrice_, tokenPrice_, registrar_, coinId);
+    __UniversalRegistrarController_init(token_, domainPrice_, tokenPrice_, registrar_, coinId);
   }
 
-  function __ClassicalRegistrarController_init(
+  function __UniversalRegistrarController_init(
     IERC20Upgradeable token_,
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
     IBaseRegistrar registrar_,
     uint256 coinId
   ) internal onlyInitializing {
-    __ClassicalRegistrarController_init_unchained(token_, domainPrice_, tokenPrice_, registrar_, coinId);
+    __UniversalRegistrarController_init_unchained(token_, domainPrice_, tokenPrice_, registrar_, coinId);
     __AccessControl_init();
   }
 
-  function __ClassicalRegistrarController_init_unchained(
+  function __UniversalRegistrarController_init_unchained(
     IERC20Upgradeable token_,
     IDomainPriceOracle domainPrice_,
     ITokenPriceOracle tokenPrice_,
