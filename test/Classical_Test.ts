@@ -1,14 +1,23 @@
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import { BaseRegistrar, ClassicalRegistrarController, PublicResolver, Registry, Token } from "../typechain";
+import {
+  BaseRegistrar,
+  ClassicalRegistrarController,
+  PublicResolver, PublicResolver__factory,
+  Registry,
+  Registry__factory,
+  Token
+} from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Classical Test", function () {
   let addr1: SignerWithAddress[];
   let fakeLzEndpointMock;
   let use_registry: Registry;
+  let use_registry_ac2: Registry;
   let use_token: Token;
   let use_publicResolver: PublicResolver;
+  let use_publicResolver_ac2: PublicResolver;
   let use_baseRegistrar: BaseRegistrar;
   let use_classicalRegistrarController: ClassicalRegistrarController;
   const hostNode = ethers.utils.toUtf8Bytes("@");
@@ -28,6 +37,7 @@ describe("Classical Test", function () {
     await _registry.deployed();
     use_registry = RegistryFactory.attach(_registry.address);
     expect(use_registry.address).not.equal(null);
+    use_registry_ac2 = await Registry__factory.connect(_registry.address,addr1[1])
 
     //Deploy Token
     const TokenFactory = await ethers.getContractFactory("Token");
@@ -62,6 +72,7 @@ describe("Classical Test", function () {
     ]);
     await _publicResolverSynchronizer.deployed();
     const publicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(_publicResolverSynchronizer.address);
+
     expect(publicResolverSynchronizer.address).not.equal(null);
 
     //Deploy PublicResolver
@@ -69,6 +80,7 @@ describe("Classical Test", function () {
     const _publicResolver = await upgrades.deployProxy(PublicResolver, [_registry.address, _publicResolverSynchronizer.address], { unsafeAllow: ["delegatecall"] });
     await _publicResolver.deployed();
     use_publicResolver = PublicResolver.attach(_publicResolver.address);
+    use_publicResolver_ac2 = PublicResolver__factory.connect(_publicResolver.address,addr1[1])
     expect(_publicResolver.address).not.equal(null);
 
     //Deploy BaseRegistrar
@@ -105,6 +117,17 @@ describe("Classical Test", function () {
     const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldByte));
     expect(owner).to.equal(true);
   });
+
+  it("Reg Same TLD",async ()=>{
+    let checking = false
+    try {
+      const tldByte = ethers.utils.toUtf8Bytes("classicalTLD");
+      await use_registry["setRecord(bytes,address,address,bool,uint8)"](tldByte, addr1[0].address, use_publicResolver.address, true, 0);
+    }catch (e){
+      checking = true
+    }
+    expect(checking).to.equal(true)
+  })
 
   it("Approval Controller", async () => {
     const tldByte = ethers.utils.toUtf8Bytes("classicalTLD");
@@ -171,14 +194,16 @@ describe("Classical Test", function () {
     await use_registry.transferFrom(addr1[0].address, addr1[1].address, tokenId);
     expect(await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode), ethers.utils.keccak256(tldNode))).to.equal(addr1[1].address);
   });
-
+``
+  it("Set Record with new Owner",async ()=>{
+    await use_publicResolver_ac2.setMultiText(hostNode, nameNode, tldNode, "github", "new Owner");
+    expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("new Owner".toLowerCase());
+  })
   it("Set Record with wrong owner", async () => {
     try {
-      await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "new Owner");
+      await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "old Owner");
     } catch (e) {
-      console.log("Error Log:");
-      console.log({ e });
-      expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
+      expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("new Owner".toLowerCase());
     }
   });
 
@@ -186,9 +211,13 @@ describe("Classical Test", function () {
     try {
       await use_publicResolver.setMultiText(subHostNode, nameNode, tldNode, "github", "new Owner");
     } catch (e) {
-      console.log("Error Log:");
-      console.log({ e });
       expect((await use_publicResolver.getMultiText(subHostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
     }
   });
+
+  it("set domain user ",async ()=>{
+    const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode, tldNode);
+    await use_registry_ac2.setUser(tokenId,addr1[0].address,999999999999999)
+    expect(await use_registry_ac2.userOf(tokenId) == addr1[0].address)
+  })
 });

@@ -464,6 +464,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     require(_checkOnERC721Received(from, to, tokenId_, _data), "ERC721: transfer to non ERC721Receiver implementer");
   }
 
+  //Update By Alex _exists -> true: Exists , False: Not Exists
   function _exists(uint256 tokenId_) internal view virtual returns (bool) {
     TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
     if (tRecord_.class_ == RecordType.TLD) {
@@ -472,6 +473,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
       return _records[tRecord_.tld].domains[tRecord_.domain].owner != address(0);
     } else if (tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].name.length > 0;
+    }else{
+      return false;
     }
   }
 
@@ -483,7 +486,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function _mint(address to, uint256 tokenId_) internal virtual {
     require(to != address(0), "ERC721: mint to the zero address");
-    require(!_exists(tokenId_), "ERC721: token already minted");
+//    require(!_exists(tokenId_), "ERC721: token already minted");
     _balances[to] += 1;
     emit Transfer(address(0), to, tokenId_);
   }
@@ -507,11 +510,15 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     if (tRecord_.class_ == RecordType.TLD) {
       _records[tRecord_.tld].owner = to;
     } else if (tRecord_.class_ == RecordType.DOMAIN) {
+      if(ownerOf(tokenId_) == from){
+        setUser(tokenId_,to,_records[tRecord_.tld].domains[tRecord_.domain].expires);
+      }
       _records[tRecord_.tld].domains[tRecord_.domain].owner = to;
     } else if (tRecord_.class_ == RecordType.HOST) {
       revert("ERC721: cannot transfer a host");
     }
     _approve(address(0), tokenId_);
+
     _balances[from] -= 1;
     _balances[to] += 1;
     emit Transfer(from, to, tokenId_);
