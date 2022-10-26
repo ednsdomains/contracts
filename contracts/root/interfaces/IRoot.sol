@@ -4,6 +4,8 @@ pragma solidity ^0.8.9;
 import "../../registry/lib/TldClass.sol";
 
 interface IRoot {
+  event NewAuthorizer(address address_);
+
   function register(
     bytes memory tld,
     address resolver,
@@ -26,4 +28,8 @@ interface IRoot {
   function isEnable(bytes memory tld) external view returns (bool);
 
   function getResolver(bytes memory tld) external view returns (address);
+
+  function getAuthorizer() external view returns (address);
+
+  function setAuthorizer(address address_) external;
 }

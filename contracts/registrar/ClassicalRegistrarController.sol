@@ -86,7 +86,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     uint256 price,
     bytes calldata signature
   ) public {
-    require(_verify(keccak256(abi.encodePacked(name, tld, expires, price)), signature, _msgSender()), "INVALID_SIGNATURE");
+    require(_verify(keccak256(abi.encodePacked(name, tld, expires, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
     _registrar.register(name, tld, owner, expires);
     _token.transferFrom(_msgSender(), address(_root), price);
@@ -107,7 +107,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     uint256 price,
     bytes calldata signature
   ) public {
-    require(_verify(keccak256(abi.encodePacked(name, tld, expires, price)), signature, _msgSender()), "INVALID_SIGNATURE");
+    require(_verify(keccak256(abi.encodePacked(name, tld, expires, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
     _registrar.renew(name, tld, expires);
     _token.transferFrom(_msgSender(), address(_root), price);

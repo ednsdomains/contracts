@@ -10,8 +10,8 @@ abstract contract BaseRegistrarController is IBaseRegistrarController {
   function _verify(
     bytes32 payload,
     bytes calldata signature,
-    address owner
+    address signer
   ) internal pure returns (bool) {
-    return payload.toEthSignedMessageHash().recover(signature) == owner;
+    return payload.toEthSignedMessageHash().recover(signature) == signer;
   }
 }

@@ -12,6 +12,8 @@ contract Root is IRoot, AccessControlUpgradeable {
   IRegistry private _registry;
   IBaseRegistrar private _baseRegistrar;
 
+  address internal _authorizer;
+
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
   function initialize(IRegistry registry_, IBaseRegistrar baseRegistrar_) public initializer {
@@ -78,6 +80,15 @@ contract Root is IRoot, AccessControlUpgradeable {
 
   function getResolver(bytes memory tld) public view returns (address) {
     return _registry.getResolver(keccak256(tld));
+  }
+
+  function getAuthorizer() public view returns (address) {
+    return _authorizer;
+  }
+
+  function setAuthorizer(address address_) public onlyAdmin {
+    _authorizer = address_;
+    emit NewAuthorizer(address_);
   }
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
