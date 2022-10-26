@@ -153,10 +153,10 @@ describe("Classical Test", function () {
     // const labelhash = ethers.utils.solidityKeccak256(['string', 'bytes32'], [name, basenode]);
     // const nodehash = ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [basenode, labelhash]);
   });
-  it("Set Multi Text", async () => {
-    await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "0x14A1A496fABc43bFAfC358005dE336a7B5222b20");
+  it("Set Multi Text (Domain & Sub Domain)", async () => {
+    // await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "0x14A1A496fABc43bFAfC358005dE336a7B5222b20");
     await use_publicResolver.setMultiText(subHostNode, nameNode, tldNode, "github", "0x14A1A496fABc43bFAfC358005dE336a7B5222b20");
-    expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
+    // expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
   });
 
   it("Set Coins Address Record", async () => {
@@ -185,7 +185,7 @@ describe("Classical Test", function () {
     expect(owner).to.equal(addr1[0].address);
   });
 
-  it("Transfer", async () => {
+  it("Transfer Domain", async () => {
     // await use_classicalRegistrarController.register((nameNode),tldNode,addr1[0].address,999999999999999)
     // console.log(await use_baseRegistrar["isExists(bytes,bytes)"](nameNode, tldNode));
     // console.log(await use_classicalRegistrarController["isAvailable(bytes,bytes)"](nameNode,tldNode));
@@ -194,7 +194,16 @@ describe("Classical Test", function () {
     await use_registry.transferFrom(addr1[0].address, addr1[1].address, tokenId);
     expect(await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode), ethers.utils.keccak256(tldNode))).to.equal(addr1[1].address);
   });
-``
+
+  // it("Transfer Domain (Sub Domain)", async () => {
+  //   // await use_classicalRegistrarController.register((nameNode),tldNode,addr1[0].address,999999999999999)
+  //   const tokenId = await use_registry["getTokenId(bytes,bytes,bytes)"](subHostNode,nameNode, tldNode);
+  //
+  //   await use_registry.transferFrom(addr1[0].address, addr1[1].address, tokenId);
+  //   expect(await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode), ethers.utils.keccak256(tldNode))).to.equal(addr1[1].address);
+  //   expect(await use_registry.ownerOf(tokenId)).equal(addr1[1].address)
+  // });
+
   it("Set Record with new Owner",async ()=>{
     await use_publicResolver_ac2.setMultiText(hostNode, nameNode, tldNode, "github", "new Owner");
     expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("new Owner".toLowerCase());
@@ -209,15 +218,48 @@ describe("Classical Test", function () {
 
   it("Set Record with wrong owner (sub domain)", async () => {
     try {
-      await use_publicResolver.setMultiText(subHostNode, nameNode, tldNode, "github", "new Owner");
+      await use_publicResolver.setMultiText(subHostNode, nameNode, tldNode, "github", "old Owner");
     } catch (e) {
       expect((await use_publicResolver.getMultiText(subHostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
     }
   });
 
-  it("set domain user ",async ()=>{
+  it("Set domain user ",async ()=>{
     const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode, tldNode);
     await use_registry_ac2.setUser(tokenId,addr1[0].address,999999999999999)
     expect(await use_registry_ac2.userOf(tokenId) == addr1[0].address)
   })
+
+  it("Only User can set Records",async ()=>{
+    let result = false
+    try {
+      await use_publicResolver_ac2.setMultiText(hostNode, nameNode, tldNode, "github", "old User");
+    }catch (e) {
+      result = true
+    }
+    expect(result).equal(true)
+  })
+
+  it("New User Set Record",async ()=>{
+    await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "new User");
+    const context = await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github");
+    expect(context).equal("new User")
+  })
+
+  it("Owner have not right to change user.",async ()=>{
+    const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode, tldNode);
+    let result = false
+    try {
+      await use_registry_ac2.setUser(tokenId,addr1[0].address,999999999999999)
+    }catch (e){
+      result=true
+    }
+    expect(result).equal(true)
+  })
+
+
+
+
+
+
 });

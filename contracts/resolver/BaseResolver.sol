@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeabl
 import "../utils/LabelOperator.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IPublicResolverSynchronizer.sol";
+import "hardhat/console.sol";
 
 abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgradeable {
   bytes32 internal constant AT = keccak256(bytes("@"));
@@ -46,7 +47,22 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
     bytes32 host_ = keccak256(host);
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    return _registry.getOwner(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
+
+    //Domain
+    if (host_ == AT) {
+//      console.log(_registry.userOf(uint256(keccak256(_join(name, tld)))));
+      return
+      //    _registry.getOwner(domain_, tld_) == _msgSender() ||
+      _registry.userOf(uint256(keccak256(_join(name, tld)))) == _msgSender()||
+      _registry.isOperator(domain_, tld_, _msgSender());
+    }else{
+      //Sub Domain
+
+      return
+      _registry.userOf(uint256(keccak256(_join(host, name, tld)))) == _msgSender()||
+      _registry.isOperator(host_, domain_, tld_, _msgSender());
+    }
+
   }
 
   function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
@@ -63,6 +79,7 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
     bytes32 host_ = keccak256(host);
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
+    console.log(string (host));
     if (!_registry.isExists(host_, domain_, tld_)) _registry.setRecord(host, name, tld);
   }
 }

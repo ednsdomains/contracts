@@ -188,22 +188,23 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
     HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)];
     _record.name = host;
-
+    uint256 id = uint256(keccak256(_join(host, name, tld)));
     if (!isExists_) {
       Rental storage _rental = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)].rental;
       _rental.user = getOwner(keccak256(name), keccak256(tld));
       _rental.expires = getExpires(keccak256(name), keccak256(tld));
-      uint256 id = uint256(keccak256(_join(host, name, tld)));
       emit UpdateUser(id, getOwner(keccak256(name), keccak256(tld)), getExpires(keccak256(name), keccak256(tld)));
     }
 
     emit NewHost(host, name, tld);
 
-    TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
+    TokenRecord storage _tokenRecord = _tokenRecords[id];
     _tokenRecord.class_ = RecordType.HOST;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
     _tokenRecord.host = keccak256(host);
+
+    console.log("Set SubDomain");
   }
 
   //set tld resolve

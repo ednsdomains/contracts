@@ -13,8 +13,8 @@ abstract contract MultiTextResolver is IMultiTextResolver, BaseResolver {
     bytes memory tld,
     string memory type_,
     string memory text
-  ) internal {
-    _setHostRecord(host, name, tld);
+  ) internal onlyAuthorised(host, name, tld) {
+
     bytes32 fqdn;
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(_join(name, tld));
@@ -32,7 +32,8 @@ abstract contract MultiTextResolver is IMultiTextResolver, BaseResolver {
     bytes memory tld,
     string memory type_,
     string memory text
-  ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  ) public onlyLive(name, tld)  {
+    _setHostRecord(host, name, tld);
     _setMultiText(host, name, tld, type_, text);
     // if (_registry.isOmni(keccak256(tld))) {
     //   uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
