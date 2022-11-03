@@ -19,22 +19,37 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface NameResolverInterface extends ethers.utils.Interface {
+interface ILegacyBaseRegistrarInterface extends ethers.utils.Interface {
   functions: {
-    "setName(bytes32,string)": FunctionFragment;
+    "deregister(uint256)": FunctionFragment;
+    "nameExpires(uint256)": FunctionFragment;
+    "ownerOf(uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "setName",
-    values: [BytesLike, string]
+    functionFragment: "deregister",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "nameExpires",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ownerOf",
+    values: [BigNumberish]
   ): string;
 
-  decodeFunctionResult(functionFragment: "setName", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "deregister", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "nameExpires",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
 
   events: {};
 }
 
-export class NameResolver extends BaseContract {
+export class ILegacyBaseRegistrar extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -75,45 +90,72 @@ export class NameResolver extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: NameResolverInterface;
+  interface: ILegacyBaseRegistrarInterface;
 
   functions: {
-    setName(
-      node: BytesLike,
-      name: string,
+    deregister(
+      id: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    nameExpires(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    ownerOf(id: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
   };
 
-  setName(
-    node: BytesLike,
-    name: string,
+  deregister(
+    id: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  nameExpires(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+  ownerOf(id: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
-    setName(
-      node: BytesLike,
-      name: string,
+    deregister(id: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    nameExpires(
+      id: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
+
+    ownerOf(id: BigNumberish, overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
 
   estimateGas: {
-    setName(
-      node: BytesLike,
-      name: string,
+    deregister(
+      id: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    nameExpires(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    ownerOf(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    setName(
-      node: BytesLike,
-      name: string,
+    deregister(
+      id: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    nameExpires(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    ownerOf(
+      id: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

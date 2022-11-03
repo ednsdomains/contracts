@@ -24,7 +24,17 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.10",
+  solidity: {compilers: [
+      {
+        version: "0.8.2",
+      },
+      {
+        version: "0.8.10",
+      },
+    ]},
+  etherscan: {
+    apiKey: "",
+  },
   networks: {
     matic: {
       url:
@@ -58,9 +68,9 @@ const config: HardhatUserConfig = {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-  },
+  // etherscan: {
+  //   apiKey: process.env.ETHERSCAN_API_KEY,
+  // },
 };
 
 export default config;
