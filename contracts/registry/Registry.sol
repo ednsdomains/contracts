@@ -10,10 +10,11 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "../utils/LabelOperator.sol";
 import "./interfaces/IRegistry.sol";
 import "./lib/TldClass.sol";
-import "hardhat/console.sol";
 
 contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   using AddressUpgradeable for address;
+
+  address private _owner;
 
   string private _name;
   string private _symbol;
@@ -203,8 +204,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
     _tokenRecord.host = keccak256(host);
-
-    console.log("Set SubDomain");
   }
 
   //set tld resolve
@@ -289,7 +288,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes32 tld
   ) external onlyRegistrar {
     delete _records[tld].domains[name].hosts[host];
-    _burn(getTokenId(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
+    // _burn(getTokenId(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
   }
 
   /* ========== Getter - General ==========*/
@@ -474,7 +473,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
       return _records[tRecord_.tld].domains[tRecord_.domain].owner != address(0);
     } else if (tRecord_.class_ == RecordType.HOST) {
       return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].name.length > 0;
-    }else{
+    } else {
       return false;
     }
   }
@@ -487,7 +486,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function _mint(address to, uint256 tokenId_) internal virtual {
     require(to != address(0), "ERC721: mint to the zero address");
-//    require(!_exists(tokenId_), "ERC721: token already minted");
+    //    require(!_exists(tokenId_), "ERC721: token already minted");
     _balances[to] += 1;
     emit Transfer(address(0), to, tokenId_);
   }
@@ -511,8 +510,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     if (tRecord_.class_ == RecordType.TLD) {
       _records[tRecord_.tld].owner = to;
     } else if (tRecord_.class_ == RecordType.DOMAIN) {
-      if(ownerOf(tokenId_) == from){
-        setUser(tokenId_,to,_records[tRecord_.tld].domains[tRecord_.domain].expires);
+      if (ownerOf(tokenId_) == from) {
+        setUser(tokenId_, to, _records[tRecord_.tld].domains[tRecord_.domain].expires);
       }
       _records[tRecord_.tld].domains[tRecord_.domain].owner = to;
     } else if (tRecord_.class_ == RecordType.HOST) {
@@ -645,6 +644,15 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     } else {
       revert("ERC4907: cannot get user expiures of TLD of host");
     }
+  }
+
+  /* ========== Ownable ==========*/
+  function owner() public view returns (address) {
+    return _owner;
+  }
+
+  function setOwner(address newOwner) public onlyAdmin {
+    _owner = newOwner;
   }
 
   /* ========== Utils ==========*/

@@ -3,8 +3,8 @@ pragma solidity ^0.8.9;
 import "hardhat/console.sol";
 
 abstract contract LabelOperator {
-  uint256 public constant MAX_LABEL_LENGTH = 65;
-  uint256 public constant MIN_LABEL_LENGTH = 4;
+  uint256 public constant MAX_LABEL_LENGTH = 128;
+  uint256 public constant MIN_LABEL_LENGTH = 1;
   bytes internal constant DOT = bytes(".");
 
   function valid(
@@ -86,16 +86,4 @@ abstract contract LabelOperator {
   function _join(bytes memory name, bytes memory tld) internal pure returns (bytes memory) {
     return abi.encodePacked(name, DOT, tld);
   }
-
-  // function _reorg(bytes memory fqdn)
-  //   internal
-  //   pure
-  //   returns (
-  //     bytes memory host,
-  //     bytes memory name,
-  //     bytes memory tld
-  //   )
-  // {
-  //   bytes[] memory labels = new bytes[];
-  // }
 }

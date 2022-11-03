@@ -1,13 +1,6 @@
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
-import {
-  BaseRegistrar,
-  ClassicalRegistrarController,
-  PublicResolver, PublicResolver__factory,
-  Registry,
-  Registry__factory,
-  Token
-} from "../typechain";
+import { BaseRegistrar, ClassicalRegistrarController, PublicResolver, PublicResolver__factory, Registry, Registry__factory, Token } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Classical Test", function () {
@@ -37,7 +30,7 @@ describe("Classical Test", function () {
     await _registry.deployed();
     use_registry = RegistryFactory.attach(_registry.address);
     expect(use_registry.address).not.equal(null);
-    use_registry_ac2 = await Registry__factory.connect(_registry.address,addr1[1])
+    use_registry_ac2 = await Registry__factory.connect(_registry.address, addr1[1]);
 
     //Deploy Token
     const TokenFactory = await ethers.getContractFactory("Token");
@@ -80,7 +73,7 @@ describe("Classical Test", function () {
     const _publicResolver = await upgrades.deployProxy(PublicResolver, [_registry.address, _publicResolverSynchronizer.address], { unsafeAllow: ["delegatecall"] });
     await _publicResolver.deployed();
     use_publicResolver = PublicResolver.attach(_publicResolver.address);
-    use_publicResolver_ac2 = PublicResolver__factory.connect(_publicResolver.address,addr1[1])
+    use_publicResolver_ac2 = PublicResolver__factory.connect(_publicResolver.address, addr1[1]);
     expect(_publicResolver.address).not.equal(null);
 
     //Deploy BaseRegistrar
@@ -118,16 +111,16 @@ describe("Classical Test", function () {
     expect(owner).to.equal(true);
   });
 
-  it("Reg Same TLD",async ()=>{
-    let checking = false
+  it("Reg Same TLD", async () => {
+    let checking = false;
     try {
       const tldByte = ethers.utils.toUtf8Bytes("classicalTLD");
       await use_registry["setRecord(bytes,address,address,bool,uint8)"](tldByte, addr1[0].address, use_publicResolver.address, true, 0);
-    }catch (e){
-      checking = true
+    } catch (e) {
+      checking = true;
     }
-    expect(checking).to.equal(true)
-  })
+    expect(checking).to.equal(true);
+  });
 
   it("Approval Controller", async () => {
     const tldByte = ethers.utils.toUtf8Bytes("classicalTLD");
@@ -204,10 +197,10 @@ describe("Classical Test", function () {
   //   expect(await use_registry.ownerOf(tokenId)).equal(addr1[1].address)
   // });
 
-  it("Set Record with new Owner",async ()=>{
+  it("Set Record with new Owner", async () => {
     await use_publicResolver_ac2.setMultiText(hostNode, nameNode, tldNode, "github", "new Owner");
     expect((await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github")).toLowerCase()).to.equal("new Owner".toLowerCase());
-  })
+  });
   it("Set Record with wrong owner", async () => {
     try {
       await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "old Owner");
@@ -224,42 +217,36 @@ describe("Classical Test", function () {
     }
   });
 
-  it("Set domain user ",async ()=>{
+  it("Set domain user ", async () => {
     const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode, tldNode);
-    await use_registry_ac2.setUser(tokenId,addr1[0].address,999999999999999)
-    expect(await use_registry_ac2.userOf(tokenId) == addr1[0].address)
-  })
+    await use_registry_ac2.setUser(tokenId, addr1[0].address, 999999999999999);
+    expect((await use_registry_ac2.userOf(tokenId)) == addr1[0].address);
+  });
 
-  it("Only User can set Records",async ()=>{
-    let result = false
+  it("Only User can set Records", async () => {
+    let result = false;
     try {
       await use_publicResolver_ac2.setMultiText(hostNode, nameNode, tldNode, "github", "old User");
-    }catch (e) {
-      result = true
+    } catch (e) {
+      result = true;
     }
-    expect(result).equal(true)
-  })
+    expect(result).equal(true);
+  });
 
-  it("New User Set Record",async ()=>{
+  it("New User Set Record", async () => {
     await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "new User");
-    const context = await use_publicResolver.getMultiText(hostNode,nameNode,tldNode,"github");
-    expect(context).equal("new User")
-  })
+    const context = await use_publicResolver.getMultiText(hostNode, nameNode, tldNode, "github");
+    expect(context).equal("new User");
+  });
 
-  it("Owner have not right to change user.",async ()=>{
+  it("Owner have not right to change user.", async () => {
     const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode, tldNode);
-    let result = false
+    let result = false;
     try {
-      await use_registry_ac2.setUser(tokenId,addr1[0].address,999999999999999)
-    }catch (e){
-      result=true
+      await use_registry_ac2.setUser(tokenId, addr1[0].address, 999999999999999);
+    } catch (e) {
+      result = true;
     }
-    expect(result).equal(true)
-  })
-
-
-
-
-
-
+    expect(result).equal(true);
+  });
 });

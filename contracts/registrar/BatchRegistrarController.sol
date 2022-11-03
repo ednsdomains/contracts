@@ -1,8 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
+
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "./interfaces/IBaseRegistrarController.sol";
 
-contract BatchRegistrar {
+contract BatchRegistrarController is ContextUpgradeable {
   function register(
     IBaseRegistrarController controller,
     bytes[] memory names,
@@ -10,6 +12,7 @@ contract BatchRegistrar {
     address owner,
     uint64[] memory expires
   ) public {
+    require(controller.hasRole(keccak256("OPERATOR_ROLE"), _msgSender()), "ONLY_OPERATOR");
     require(names.length == tlds.length && tlds.length == expires.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
       controller.register(names[i], tlds[i], owner, expires[i]);
@@ -20,14 +23,17 @@ contract BatchRegistrar {
     IBaseRegistrarController controller,
     bytes[] memory names,
     bytes[] memory tlds,
-    address owner,
+    address[] memory owners,
     uint64[] memory expires,
     uint256[] memory prices,
     bytes[] memory signatures
   ) public {
-    require(names.length == tlds.length && tlds.length == expires.length && expires.length == prices.length && prices.length == signatures.length, "INVALID_SIZE");
+    require(
+      names.length == tlds.length && tlds.length == owners.length && owners.length == expires.length && expires.length == prices.length && prices.length == signatures.length,
+      "INVALID_SIZE"
+    );
     for (uint256 i = 0; i < names.length; i++) {
-      controller.register(names[i], tlds[i], owner, expires[i], prices[i], signatures[i]);
+      controller.register(names[i], tlds[i], owners[i], expires[i], prices[i], signatures[i]);
     }
   }
 
@@ -37,6 +43,7 @@ contract BatchRegistrar {
     bytes[] memory tlds,
     uint64[] memory expires
   ) public {
+    require(controller.hasRole(keccak256("OPERATOR_ROLE"), _msgSender()), "ONLY_OPERATOR");
     require(names.length == tlds.length && tlds.length == expires.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
       controller.renew(names[i], tlds[i], expires[i]);

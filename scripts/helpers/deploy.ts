@@ -22,33 +22,6 @@ export interface IDeployInput {
   network: Network;
 }
 
-// Token Price Oracle
-// export async function deployTokenPriceOracle(input: IDeployInput): Promise<TokenPriceOracle> {
-//   const TokenPriceOracleFactory = await ethers.getContractFactory("TokenPriceOracle", input.signer);
-//   const tokenPriceOracle = await TokenPriceOracleFactory.deploy(
-//     NetworkConfig[input.network].chainlink.token.address,
-//     NetworkConfig[input.network].chainlink.token.address, // TODO: Chainlink Oracle Address
-//     ethers.utils.keccak256(ethers.utils.toUtf8Bytes("0")), // TODO: Chainlink Job ID
-//   );
-//   await tokenPriceOracle.deployed();
-//   console.log(`[[${NetworkConfig[input.network].name}]] TokenPriceOracle Deployed - ${tokenPriceOracle.address}`);
-//   return tokenPriceOracle;
-// }
-
-// export interface IDeployTokenPriceOracleInput extends IDeployInput {
-//   TokenPriceOracle: TokenPriceOracle;
-// }
-
-// // Domain Price Oracle
-// export async function deployDomainPriceOracle(input: IDeployTokenPriceOracleInput): Promise<DomainPriceOracle> {
-//   const DomainPriceOracleFactory = await ethers.getContractFactory("DomainPriceOracle", input.signer);
-//   const _domainPriceOracle = await upgrades.deployProxy(DomainPriceOracleFactory, [input.TokenPriceOracle.address]);
-//   await _domainPriceOracle.deployed();
-//   const domainPriceOracle = DomainPriceOracleFactory.attach(_domainPriceOracle.address);
-//   console.log(`[[${NetworkConfig[input.network].name}]] DomainPriceOracle Deployed - ${domainPriceOracle.address}`);
-//   return domainPriceOracle;
-// }
-
 // Registry
 export async function deployRegistry(input: IDeployInput): Promise<Registry> {
   const RegistryFactory = await ethers.getContractFactory("Registry", input.signer);

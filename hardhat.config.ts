@@ -107,17 +107,14 @@ const config: HardhatUserConfig = {
     only: [
       "Registry",
       "BaseRegistrar",
-      "SingletonRegistrar",
+      "ClassicalRegistrarController",
+      "UniversalRegistrarController",
       "SingletonRegistrarController",
-      "Token",
-      "DomainPriceOracle",
-      "TokenPriceOracle",
-      "PublicResolver",
-      "PublicResolverSynchronizer",
-      "Root",
-      "OmniRegistrar",
       "OmniRegistrarController",
       "OmniRegistrarSynchronizer",
+      "BatchRegistrarController",
+      "PublicResolver",
+      "Root"
     ],
   },
 };
