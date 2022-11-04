@@ -3,18 +3,13 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import NetworkConfig, { Network } from "../../network.config";
 import {
   PublicResolver,
-  PublicResolverSynchronizer,
   Registry,
   Root,
   ClassicalRegistrarController,
   BaseRegistrar,
-  Registry__factory,
-  PublicResolver__factory,
   Root__factory,
-  DomainPriceOracle,
-  Token,
-  TokenPriceOracle,
-  ClassicalRegistrarController__factory,
+  BatchRegistrarController,
+  UniversalRegistrarController,
 } from "../../typechain";
 
 export interface IDeployInput {
@@ -22,65 +17,110 @@ export interface IDeployInput {
   network: Network;
 }
 
-// Registry
-export async function deployRegistry(input: IDeployInput): Promise<Registry> {
-  const RegistryFactory = await ethers.getContractFactory("Registry", input.signer);
-  const _registry = await upgrades.deployProxy(RegistryFactory);
-  await _registry.deployed();
-  const registry = RegistryFactory.attach(_registry.address);
-  console.log(`[[${NetworkConfig[input.network].name}]] Registry Deployed - ${registry.address}`);
-  return Registry__factory.connect(registry.address, input.signer);
-}
-
-// Public Resolver Synchronizer
-// export async function deployPublicResolverSynchronizer(input: IDeployInput): Promise<PublicResolverSynchronizer> {
-//   const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer", input.signer);
-//   const _publicResolverSynchronizer = await upgrades.deployProxy(PublicResolverSynchronizerFactory, [
-//     NetworkConfig[input.network].layerzero.endpoint.address,
-//     NetworkConfig[input.network].layerzero.chainId,
-//     input.networks.map((network_) => NetworkConfig[network_].layerzero.chainId),
-//   ]);
-//   await _publicResolverSynchronizer.deployed();
-//   const publicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(_publicResolverSynchronizer.address);
-//   console.log(`[[${NetworkConfig[input.network].name}]] PublicResolverSynchronizer Deployed - ${publicResolverSynchronizer.address}`);
-//   return publicResolverSynchronizer;
-// }
+export interface IDeployRegistryInput extends IDeployInput {}
 
 export interface IDeployPublicResolverInput extends IDeployInput {
   Registry: Registry;
-  PublicResolverSynchronizer: PublicResolverSynchronizer;
 }
 
-// Public Resolver
-export async function deployPublicResolver(input: IDeployPublicResolverInput): Promise<PublicResolver> {
-  const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", input.signer);
-  // TODO:
-  const _publicResolver = await upgrades.deployProxy(PublicResolverFactory, [input.Registry.address, input.PublicResolverSynchronizer.address], { unsafeAllow: ["delegatecall"] });
-  await _publicResolver.deployed();
-  const publicResolver = PublicResolverFactory.attach(_publicResolver.address);
-  console.log(`[[${NetworkConfig[input.network].name}]] PublicResolver Deployed - ${publicResolver.address}`);
-  return PublicResolver__factory.connect(publicResolver.address, input.signer);
+export interface IDeployBaseRegistrar extends IDeployInput {
+  Registry: Registry;
 }
 
-export interface IDeployClassicalRegistrarControllerInput extends IDeployInput {
-  Token: Token;
-  DomainPriceOracle: DomainPriceOracle;
-  TokenPriceOracle: TokenPriceOracle;
+export interface IDeployRootInput extends IDeployInput {
+  Registry: Registry;
   BaseRegistrar: BaseRegistrar;
 }
 
-export async function deployClassicalRegistrarController(input: IDeployClassicalRegistrarControllerInput): Promise<ClassicalRegistrarController> {
-  const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
-  const _classicalRegistrarController = await upgrades.deployProxy(ClassicalRegistrarControllerFactory, [
-    input.Token.address,
-    input.DomainPriceOracle.address,
-    input.TokenPriceOracle.address,
-    input.BaseRegistrar.address,
-  ]);
-  await _classicalRegistrarController.deployed();
-  const classicalRegistrarController = ClassicalRegistrarController__factory.connect(_classicalRegistrarController.address, input.signer);
-  console.log(`[[${NetworkConfig[input.network].name}]] ClassicalRegistrarController Deployed - ${classicalRegistrarController.address}`);
-  return classicalRegistrarController;
+export interface IDeployClassicalRegistrarControllerInput extends IDeployInput {
+  TOKEN_ADDRESS: string;
+  BaseRegistrar: BaseRegistrar;
+  Root: Root;
+  COIN_ID: number;
+}
+
+export interface IDeployUniversalRegistrarControllerInput extends IDeployInput {
+  TOKEN_ADDRESS: string;
+  BaseRegistrar: BaseRegistrar;
+  Root: Root;
+  COIN_ID: number;
+}
+
+export interface IDeployBatchRegistrarControllerInput extends IDeployInput {}
+
+export default class Deployer {
+  public static async deployRegistry(input: IDeployInput): Promise<Registry> {
+    const RegistryFactory = await ethers.getContractFactory("Registry", input.signer);
+    const _registry = await upgrades.deployProxy(RegistryFactory);
+    await _registry.deployed();
+    const registry = RegistryFactory.attach(_registry.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] Registry Deployed - ${registry.address}`);
+    return registry;
+  }
+
+  public static async deployPublicResolver(input: IDeployPublicResolverInput): Promise<PublicResolver> {
+    const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", input.signer);
+    const _publicResolver = await upgrades.deployProxy(PublicResolverFactory, [input.Registry.address], { unsafeAllow: ["delegatecall"] });
+    await _publicResolver.deployed();
+    const publicResolver = PublicResolverFactory.attach(_publicResolver.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] PublicResolver Deployed - ${publicResolver.address}`);
+    return publicResolver;
+  }
+
+  public static async deployBaseRegistrar(input: IDeployBaseRegistrar): Promise<BaseRegistrar> {
+    const BaseRegistrarFactory = await ethers.getContractFactory("BaseRegistrar");
+    const _baseRegistrar = await upgrades.deployProxy(BaseRegistrarFactory, [input.Registry.address]);
+    await _baseRegistrar.deployed();
+    const baseRegistrar = BaseRegistrarFactory.attach(_baseRegistrar.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] BaseRegistrar Deployed - ${baseRegistrar.address}`);
+    return baseRegistrar;
+  }
+
+  public static async deployRoot(input: IDeployRootInput): Promise<Root> {
+    const RootFactory = await ethers.getContractFactory("Root", input.signer);
+    const _root = await upgrades.deployProxy(RootFactory, [input.Registry.address, input.BaseRegistrar.address]);
+    await _root.deployed();
+    const root = RootFactory.attach(_root.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] Root Deployed - ${root.address}`);
+    return Root__factory.connect(root.address, input.signer);
+  }
+
+  public static async deployClassicalRegistrarController(input: IDeployClassicalRegistrarControllerInput): Promise<ClassicalRegistrarController> {
+    const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
+    const _classicalRegistrarController = await upgrades.deployProxy(ClassicalRegistrarControllerFactory, [
+      input.TOKEN_ADDRESS,
+      input.BaseRegistrar.address,
+      input.Root.address,
+      input.COIN_ID,
+    ]);
+    await _classicalRegistrarController.deployed();
+    const classicalRegistrarController = ClassicalRegistrarControllerFactory.attach(_classicalRegistrarController.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] ClassicalRegistrarController Deployed - ${classicalRegistrarController.address}`);
+    return classicalRegistrarController;
+  }
+
+  public static async deployUniversalRegistrarController(input: IDeployUniversalRegistrarControllerInput): Promise<UniversalRegistrarController> {
+    const UniversalRegistrarControllerFactory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
+    const _universalRegistrarController = await upgrades.deployProxy(UniversalRegistrarControllerFactory, [
+      input.TOKEN_ADDRESS,
+      input.BaseRegistrar.address,
+      input.Root.address,
+      input.COIN_ID,
+    ]);
+    await _universalRegistrarController.deployed();
+    const universalRegistrarController = UniversalRegistrarControllerFactory.attach(_universalRegistrarController.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] UniversalRegistrarController Deployed - ${universalRegistrarController.address}`);
+    return universalRegistrarController;
+  }
+
+  public static async deployBatchRegistrarController(input: IDeployBatchRegistrarControllerInput): Promise<BatchRegistrarController> {
+    const BatchRegistrarControllerFactory = await ethers.getContractFactory("BatchRegistrarController");
+    const _batchRegistrarController = await upgrades.deployProxy(BatchRegistrarControllerFactory);
+    await _batchRegistrarController.deployed();
+    const batchRegistrarController = BatchRegistrarControllerFactory.attach(_batchRegistrarController.address);
+    console.log(`[[${NetworkConfig[input.network].name}]] BatchRegistrarController Deployed - ${batchRegistrarController.address}`);
+    return batchRegistrarController;
+  }
 }
 
 // export interface IDeploySingletonRegistrarInput extends IDeployInput {
@@ -171,20 +211,3 @@ export async function deployClassicalRegistrarController(input: IDeployClassical
 //   console.log(`[[${NetworkConfig[input.network].name}]] OmniRegistrarController Deployed - ${omniRegistrarController.address}`);
 //   return omniRegistrarController;
 // }
-
-export interface IDeployRootInput extends IDeployInput {
-  Registry: Registry;
-  BaseRegistrar: BaseRegistrar;
-}
-
-// Root
-export async function deployRoot(input: IDeployRootInput): Promise<Root> {
-  const RootFactory = await ethers.getContractFactory("Root", input.signer);
-  const _root = await upgrades.deployProxy(RootFactory, [input.Registry.address, input.BaseRegistrar.address]);
-  await _root.deployed();
-  const root = RootFactory.attach(_root.address);
-  console.log(`[[${NetworkConfig[input.network].name}]] Root Deployed - ${root.address}`);
-  return Root__factory.connect(root.address, input.signer);
-}
-
-export const deployedChain = [Network.GOERLI, Network.BNB_CHAIN_TESTNET];

@@ -33,20 +33,16 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setAddress(host, name, tld, address_);
-    // if (_registry.isOmni(keccak256(tld))) {
-    //   uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
-    //   _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setAddress_SYNC(bytes,bytes,bytes,address)", host, name, tld, address_));
-    // }
   }
 
-  function setAddress_SYNC(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) public onlySynchronizer {
-    _setAddress(host, name, tld, address_);
-  }
+  // function setAddress_SYNC(
+  //   bytes memory host,
+  //   bytes memory name,
+  //   bytes memory tld,
+  //   address address_
+  // ) public onlySynchronizer {
+  //   _setAddress(host, name, tld, address_);
+  // }
 
   function getAddress(
     bytes memory host,
@@ -92,14 +88,14 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     // }
   }
 
-  function setReverseAddress_SYNC(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) public onlySynchronizer {
-    _setReverseAddress(host, name, tld, address_);
-  }
+  // function setReverseAddress_SYNC(
+  //   bytes memory host,
+  //   bytes memory name,
+  //   bytes memory tld,
+  //   address address_
+  // ) public onlySynchronizer {
+  //   _setReverseAddress(host, name, tld, address_);
+  // }
 
   function getReverseAddress(address address_) public view returns (string memory) {
     return string(_reverseAddresses[address_]);

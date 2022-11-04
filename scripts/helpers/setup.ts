@@ -1,30 +1,12 @@
 import { ethers } from "hardhat";
-import NetworkConfig, { Mainnets, Network } from "../../network.config";
+import { Network } from "../../network.config";
 import Tlds from "../../static/tlds.json";
 import { IContracts } from "../interfaces/contracts";
 
 export interface ISetupInput {
   contracts: IContracts;
   network: Network;
-  networks: Network[];
 }
-
-// export const setupToken = async (input: ISetupInput) => {
-//   for (const network_ of input.networks) {
-//     if (network_ !== input.network) {
-//       const isTrustedRemote = await input.contracts[input.network].Token.isTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Token.address);
-//       if (isTrustedRemote) {
-//         await input.contracts[input.network].Token.setTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Token.address);
-//       }
-//     }
-//   }
-// };
-
-// TODO:
-export const setupDomainPriceOracle = async (input: ISetupInput) => {};
-
-// TODO:
-export const setupTokenPriceOracle = async (input: ISetupInput) => {};
 
 // export const setupPublicResolverSynchronizer = async (input: ISetupInput) => {
 //   // Set Trust Remote
@@ -47,9 +29,50 @@ export const setupTokenPriceOracle = async (input: ISetupInput) => {};
 // };
 
 export const setupRegistry = async (input: ISetupInput) => {
-  await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
-  await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
-  await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.BaseRegistrar.address);
+  const tx1 = await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
+  await tx1.wait();
+  const tx2 = await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
+  await tx2.wait();
+  const tx3 = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.BaseRegistrar.address);
+  await tx3.wait();
+};
+
+export const setupClassicalRegistrarController = async (input: ISetupInput) => {
+  const tx = await input.contracts.ClassicalRegistrarController.grantRole(
+    await input.contracts.ClassicalRegistrarController.OPERATOR_ROLE(),
+    input.contracts.BatchRegistrarController.address,
+  );
+  await tx.wait();
+
+  const tlds_ = Tlds.classical[input.network];
+  for (const tld_ of tlds_) {
+    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+
+    const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
+    await tx1.wait();
+
+    const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+    await tx2.wait();
+  }
+};
+
+export const setupUniversalRegistrarController = async (input: ISetupInput) => {
+  const tx = await input.contracts.UniversalRegistrarController.grantRole(
+    await input.contracts.UniversalRegistrarController.OPERATOR_ROLE(),
+    input.contracts.BatchRegistrarController.address,
+  );
+  await tx.wait();
+
+  const tlds_ = Tlds.classical[input.network];
+  for (const tld_ of tlds_) {
+    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+
+    const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
+    await tx1.wait();
+
+    const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+    await tx2.wait();
+  }
 };
 
 // export const setupClassicalRegistrarController = async (input: ISetupInput) => {};
@@ -119,19 +142,6 @@ export const setupRoot = async (input: ISetupInput) => {
   //     }
   //   }
   // }
-};
-
-export const setupClassicalRegistrarController = async (input: ISetupInput) => {
-  const tlds_ = Tlds.classical[input.network];
-  for (const tld_ of tlds_) {
-    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-
-    const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
-    await tx1.wait();
-
-    const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-    await tx2.wait();
-  }
 };
 
 // export const setupSingletonTlds = async (input: ISetupInput) => {

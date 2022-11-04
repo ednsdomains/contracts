@@ -12,13 +12,13 @@ interface IEncryptedPhoneNumberResolver {
     bytes memory signature
   ) external;
 
-  function setEncryptedPhoneNumber_SYNC(
-    string memory host,
-    string memory name,
-    string memory tld,
-    bytes memory payload,
-    bytes memory signature
-  ) external;
+  // function setEncryptedPhoneNumber_SYNC(
+  //   string memory host,
+  //   string memory name,
+  //   string memory tld,
+  //   bytes memory payload,
+  //   bytes memory signature
+  // ) external;
 
   function getEncryptedPhoneNumber(
     string memory host,

@@ -12,12 +12,12 @@ interface IAddressResolver {
     address address_
   ) external;
 
-  function setAddress_SYNC(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) external;
+  // function setAddress_SYNC(
+  //   bytes memory host,
+  //   bytes memory name,
+  //   bytes memory tld,
+  //   address address_
+  // ) external;
 
   function getAddress(
     bytes memory host,
@@ -32,12 +32,12 @@ interface IAddressResolver {
     address address_
   ) external;
 
-  function setReverseAddress_SYNC(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) external;
+  // function setReverseAddress_SYNC(
+  //   bytes memory host,
+  //   bytes memory name,
+  //   bytes memory tld,
+  //   address address_
+  // ) external;
 
   function getReverseAddress(address address_) external returns (string memory);
 }

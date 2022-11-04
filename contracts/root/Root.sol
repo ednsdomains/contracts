@@ -5,7 +5,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "./interfaces/IRoot.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "../registrar/interfaces/IBaseRegistrar.sol";
-import "../utils/Synchronizer.sol";
 import "../registry/lib/TldClass.sol";
 
 contract Root is IRoot, AccessControlUpgradeable {
@@ -36,10 +35,6 @@ contract Root is IRoot, AccessControlUpgradeable {
     require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
     _;
   }
-
-  // function _setPublicResolverAddress(address defaultResolver_) external onlyAdmin {
-  //   setPublicResolverAddress(defaultResolver_);
-  // }
 
   function register(
     bytes memory tld,

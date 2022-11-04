@@ -36,15 +36,15 @@ abstract contract TextResolver is ITextResolver, BaseResolver {
     _setText(host, name, tld, text);
   }
 
-  function setText_SYNC(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    //    bytes32 type_,
-    string memory text
-  ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
-    _setText(host, name, tld, text);
-  }
+  // function setText_SYNC(
+  //   bytes memory host,
+  //   bytes memory name,
+  //   bytes memory tld,
+  //   //    bytes32 type_,
+  //   string memory text
+  // ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  //   _setText(host, name, tld, text);
+  // }
 
   function getText(
     bytes memory host,

@@ -1,19 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-interface ITextResolver {
-  event SetText(bytes host, bytes name, bytes tld, string text);
+interface ITypedTextResolver {
+  event SetTypedText(bytes host, bytes name, bytes tld, bytes type_, string text);
 
-  function setText(
+  function setTypedText(
     bytes memory host,
     bytes memory name,
     bytes memory tld,
+    bytes memory type_,
     string memory text
   ) external;
 
-  function getText(
+  function getTypedText(
     bytes memory host,
     bytes memory name,
-    bytes memory tld
+    bytes memory tld,
+    bytes memory type_
   ) external view returns (string memory);
 }

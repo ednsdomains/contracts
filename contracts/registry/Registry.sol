@@ -101,8 +101,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     _setRoleAdmin(ROOT_ROLE, ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _setupRole(ADMIN_ROLE, _msgSender());
-    _name = "Omni Name Service";
-    _symbol = "OMNS";
+    _name = "Ether Domain Name Service";
+    _symbol = "EDNS";
   }
 
   /* ========== Mutative ==========*/
@@ -493,10 +493,15 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function _burn(uint256 tokenId_) internal virtual {
     address owner = ownerOf(tokenId_);
-    _approve(address(0), tokenId_);
-    _balances[owner] -= 1;
-    delete _tokenRecords[tokenId_];
-    emit Transfer(owner, address(0), tokenId_);
+    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
+    if (tRecord_.class_ == RecordType.DOMAIN) {
+      _balances[owner] -= 1;
+      delete _tokenRecords[tokenId_];
+      delete _records[tRecord_.tld].domains[tRecord_.domain];
+      emit Transfer(owner, address(0), tokenId_);
+    } else if (tRecord_.class_ == RecordType.TLD || tRecord_.class_ == RecordType.HOST) {
+      revert("ERC721: cannot burn a TLD or host");
+    }
   }
 
   function _transfer(
@@ -510,14 +515,13 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     if (tRecord_.class_ == RecordType.TLD) {
       _records[tRecord_.tld].owner = to;
     } else if (tRecord_.class_ == RecordType.DOMAIN) {
-      if (ownerOf(tokenId_) == from) {
+      if (userOf(tokenId_) == from) {
         setUser(tokenId_, to, _records[tRecord_.tld].domains[tRecord_.domain].expires);
       }
       _records[tRecord_.tld].domains[tRecord_.domain].owner = to;
     } else if (tRecord_.class_ == RecordType.HOST) {
       revert("ERC721: cannot transfer a host");
     }
-    _approve(address(0), tokenId_);
 
     _balances[from] -= 1;
     _balances[to] += 1;
@@ -582,20 +586,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   function tokenURI(uint256 tokenId_) public view returns (string memory) {
     require(_exists(tokenId_), "ERC721Metadata: URI query for nonexistent token");
     // `{_baseURI}/{chainId}/{contractAddress}/{tokenId}/metadata.json`
-    return
-      string(
-        abi.encodePacked(
-          __baseURI,
-          "/",
-          block.chainid,
-          "/",
-          StringsUpgradeable.toHexString(uint160(address(this)), 20),
-          "/",
-          StringsUpgradeable.toString(tokenId_),
-          "/",
-          "metadata.json"
-        )
-      );
+    return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId_), "/", "metadata.json"));
   }
 
   function setBaseURI(string memory baseURI_) public virtual onlyAdmin {

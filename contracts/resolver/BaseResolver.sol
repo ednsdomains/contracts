@@ -13,7 +13,7 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
 
   IRegistry internal _registry;
 
-  IPublicResolverSynchronizer internal _synchronizer;
+  // IPublicResolverSynchronizer internal _synchronizer;
 
   modifier onlyAuthorised(
     bytes memory host,
@@ -29,13 +29,13 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
     _;
   }
 
-  modifier onlySynchronizer() {
-    require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
-    _;
-  }
+  // modifier onlySynchronizer() {
+  //   require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
+  //   _;
+  // }
 
-  function __BaseResolver_init_unchained(IRegistry registry_, IPublicResolverSynchronizer synchronizer_) internal onlyInitializing {
-    _synchronizer = synchronizer_;
+  function __BaseResolver_init_unchained(IRegistry registry_) internal onlyInitializing {
+    // _synchronizer = synchronizer_;
     _registry = registry_;
   }
 
@@ -50,13 +50,8 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
 
     //Domain
     if (host_ == AT) {
-      //      console.log(_registry.userOf(uint256(keccak256(_join(name, tld)))));
-      return
-        //    _registry.getOwner(domain_, tld_) == _msgSender() ||
-        _registry.userOf(uint256(keccak256(_join(name, tld)))) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
+      return _registry.userOf(uint256(keccak256(_join(name, tld)))) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
     } else {
-      //Sub Domain
-
       return _registry.userOf(uint256(keccak256(_join(host, name, tld)))) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
     }
   }
