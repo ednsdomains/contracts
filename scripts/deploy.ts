@@ -128,12 +128,15 @@ function normalize(name: string) {
     : name;
 }
 
-// const tlds: string[] = [
-//   "404",
-//   "meta",
-//   "music",
-//   "ass",
-// ];
+const tlds: string[] = [
+  "404",
+  "meta",
+  "music",
+  "ass",
+  "sandbox",
+  "web3",
+  "gamefi",
+];
 // const tlds: string[] = [
 //   "test1",
 //   "test2",
@@ -264,10 +267,10 @@ async function main() {
   // console.log(`Reverse registrar deployed [${_reverseRegistrar.address}]`);
   // const reverseRegistrar = ReverseRegistrar.attach(_reverseRegistrar.address);
 
-  // await setupRegistrar(registrarController, registry, baseRegistrar);
-  // console.log("Finished setup registrar");
-  await setupResolver(registry, resolver);
-  console.log("Finish setup resolver");
+  await setupRegistrar(registrarController, registry, baseRegistrar);
+  console.log("Finished setup registrar");
+  // await setupResolver(registry, resolver);
+  // console.log("Finish setup resolver");
   // await setupReverseRegistrar(registry, reverseRegistrar);
   // console.log("Finished setup reverse registrar");
   // await baseRegistrar.setBaseURI("https://api.edns.domains/metadata");
@@ -298,20 +301,20 @@ async function main() {
 async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver) {
   const resolverNode = namehash("resolver");
   const resolverLabel = labelhash("resolver");
-  // const tx1 = await registry.setSubnodeOwner(
-  //   ZERO_HASH,
-  //   resolverLabel,
-  //   await signer.getAddress()
-  // );
-  // await tx1.wait();
-  // console.log("tx1 done");
-  // const tx2 = await registry.setResolver(resolverNode, resolver.address);
-  // await tx2.wait();
-  // console.log("tx2 done");
+  const tx1 = await registry.setSubnodeOwner(
+    ZERO_HASH,
+    resolverLabel,
+    await signer.getAddress()
+  );
+  await tx1.wait();
+  console.log("tx1 done");
+  const tx2 = await registry.setResolver(resolverNode, resolver.address);
+  await tx2.wait();
+  console.log("tx2 done");
   // const tx111 = await resolver.setEDNSRegistry(registry.address);
   // await tx111.wait();
-  // console.log("done");
-  // console.log(await resolver.isAuthorised(resolverNode));
+  console.log("done");
+  console.log(await resolver.isAuthorised(resolverNode));
   const tx3 = await resolver["setAddr(bytes32,uint256,bytes)"](
     resolverNode,
     137,
@@ -322,25 +325,39 @@ async function setupResolver(registry: EDNSRegistry, resolver: PublicResolver) {
 }
 
 async function setupRegistrar(
-  registrarController: ethers.Contract,
-  registry: ethers.Contract,
-  registrar: ethers.Contract
+  registrarController: EDNSRegistrarController,
+  registry: EDNSRegistry,
+  registrar: BaseRegistrarImplementation
 ) {
+  console.log(await registrar.owner());
   const tx1 = await registrar.addController(registrarController.address);
   await tx1.wait();
+  console.log("tx1");
   const tx2 = await registrarController.setNameLengthLimit(5, 128);
   await tx2.wait();
-  // for (let tld of tlds) {
-  //   // await registrarController.setTld(tld, namehash(tld), overrides);
-  //   // await registrar.setBaseNode(namehash(tld), true, overrides);
-  //   // await registry.setSubnodeOwner(ZERO_HASH, labelhash(tld), registrar.address, overrides);
-  //   // console.log(tld, " | ", await registrarController.callStatic.tldAvailable(tld))
-  //   console.log(
-  //     "whycant.".concat(tld),
-  //     " | ",
-  //     await registrarController.callStatic.available("whycant", tld)
-  //   );
-  // }
+  console.log("tx2");
+  for (let tld of tlds) {
+    const _tx1 = await registrarController.setTld(
+      tld,
+      namehash(tld),
+      overrides
+    );
+    await _tx1.wait();
+    const _tx2 = await registrar.setBaseNode(namehash(tld), true, overrides);
+    await _tx2.wait();
+    const _tx3 = await registry.setSubnodeOwner(
+      ZERO_HASH,
+      labelhash(tld),
+      registrar.address,
+      overrides
+    );
+    await _tx3.wait();
+    console.log(
+      tld,
+      " | ",
+      await registrarController.callStatic.tldAvailable(tld)
+    );
+  }
 }
 
 async function setupReverseRegistrar(
