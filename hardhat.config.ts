@@ -114,7 +114,8 @@ const config: HardhatUserConfig = {
       "OmniRegistrarSynchronizer",
       "BatchRegistrarController",
       "PublicResolver",
-      "Root"
+      "Root",
+      "ERC721Wrapper",
     ],
   },
 };

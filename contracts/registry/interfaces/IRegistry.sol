@@ -1,10 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "../lib/TldClass.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "./IERC4907.sol";
 
-interface IRegistry is IERC721Upgradeable, IERC4907 {
+interface IRegistry is IERC721Upgradeable, IERC721MetadataUpgradeable, IERC4907 {
   /* ========== Event ==========*/
   event NewTld(bytes tld, address owner);
   event NewDomain(bytes name, bytes tld, address owner);
@@ -15,7 +16,7 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
 
   event SetOperator(bytes fqdn, address operator, bool approved);
 
-  /* ========== ERC721 -Event ==========*/
+  /* ========== ERC721 - Event ==========*/
   // event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
   // event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
   // event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
@@ -30,20 +31,29 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
   }
 
   /* ========== Struct ==========*/
+
+  struct WrapperRecord {
+    bool enable;
+    address address_;
+  }
+
   struct TokenRecord {
     RecordType class_;
     bytes32 tld;
     bytes32 domain;
     bytes32 host;
   }
+
   struct TldRecord {
     bytes name; // The name of the TLD - '.meta' or '.ass'
     address owner; // The owner of thr TLD, it should always be the `Root` contract address
     address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
     bool enable; // Is this TLD enable to register new name
+    WrapperRecord wrapper;
     TldClass.TldClass class_;
     mapping(bytes32 => DomainRecord) domains;
   }
+
   struct DomainRecord {
     bytes name; // The name of the name name, if the FQDN is `edns.meta`, then this will be `bytes('edns')`
     address owner; // The owner of the name
@@ -96,13 +106,13 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
     address resolver
   ) external;
 
-  function setOwner(bytes32 tld, address owner) external;
+  // function setOwner(bytes32 tld, address owner) external;
 
-  function setOwner(
-    bytes32 name,
-    bytes32 tld,
-    address owner
-  ) external;
+  // function setOwner(
+  //   bytes32 name,
+  //   bytes32 tld,
+  //   address owner
+  // ) external;
 
   function setOperator(
     bytes32 name,
@@ -127,13 +137,21 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
 
   function setEnable(bytes32 tld, bool enable) external;
 
-  function remove(bytes32 name, bytes32 tld) external;
-
-  function remove(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
+  function setWrapper(
+    bytes32 tld,
+    bool enable_,
+    address wrapper_
   ) external;
+
+  // function remove(bytes32 name, bytes32 tld) external;
+
+  // function remove(
+  //   bytes32 host,
+  //   bytes32 name,
+  //   bytes32 tld
+  // ) external;
+
+  function prune(bytes32 name, bytes32 tld) external;
 
   /* ========== Query - Genereal ==========*/
 
@@ -149,9 +167,9 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
 
   function getGracePeriod() external view returns (uint256);
 
-  // function getLzChainIds(bytes32 tld) external view returns (uint16[] memory);
-
   function getTldClass(bytes32 tld) external view returns (TldClass.TldClass);
+
+  function getWrapper(bytes32 tld) external view returns (WrapperRecord memory);
 
   /* ========== Query - Boolean ==========*/
 
@@ -189,8 +207,6 @@ interface IRegistry is IERC721Upgradeable, IERC4907 {
   function isLive(bytes32 name, bytes32 tld) external view returns (bool);
 
   function isEnable(bytes32 tld) external view returns (bool);
-
-  // function isOmni(bytes32 tld) external view returns (bool);
 
   /* ========== Utils ==========*/
 
