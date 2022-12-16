@@ -32,8 +32,9 @@ abstract contract LabelOperator {
   }
 
   function _validHost(bytes memory label) internal pure virtual returns (bool) {
-    require(label.length >= MAX_LABEL_LENGTH || label.length <= MIN_LABEL_LENGTH, "INVALID_LENGTH");
+//    require(label.length <= MAX_LABEL_LENGTH && label.length >= MIN_LABEL_LENGTH, "INVALID_LENGTH");
     bytes1 _prev;
+    uint256 a = 0;
     for (uint256 i; i < label.length; i++) {
       // Only allow `a-z`, `0-9`, `-`, `_` and `.`
       require(
@@ -44,12 +45,16 @@ abstract contract LabelOperator {
           label[i] == bytes1("."),
         "INVALID_CHARACTER"
       );
+      if (label[i] != 0x00) {
+        a += 1;
+      }
       // Do not allow concurrent `.`
       if (_prev == bytes1(".") && _prev == label[i]) {
         revert("INVALID_CHARACTER");
       }
       _prev = label[i];
     }
+    require(a < MAX_LABEL_LENGTH && a > MIN_LABEL_LENGTH, "INVALUD_LENGTH");
     return true;
   }
 

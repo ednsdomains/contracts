@@ -8,7 +8,7 @@ import {
   ClassicalRegistrarController,
   BaseRegistrar,
   Root__factory,
-  BatchRegistrarController,
+
   UniversalRegistrarController,
 } from "../../typechain";
 
@@ -85,42 +85,42 @@ export default class Deployer {
     return Root__factory.connect(root.address, input.signer);
   }
 
-  public static async deployClassicalRegistrarController(input: IDeployClassicalRegistrarControllerInput): Promise<ClassicalRegistrarController> {
-    const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
-    const _classicalRegistrarController = await upgrades.deployProxy(ClassicalRegistrarControllerFactory, [
-      input.TOKEN_ADDRESS,
-      input.BaseRegistrar.address,
-      input.Root.address,
-      input.COIN_ID,
-    ]);
-    await _classicalRegistrarController.deployed();
-    const classicalRegistrarController = ClassicalRegistrarControllerFactory.attach(_classicalRegistrarController.address);
-    console.log(`[[${NetworkConfig[input.network].name}]] ClassicalRegistrarController Deployed - ${classicalRegistrarController.address}`);
-    return classicalRegistrarController;
-  }
+  // public static async deployClassicalRegistrarController(input: IDeployClassicalRegistrarControllerInput): Promise<ClassicalRegistrarController> {
+  //   const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
+  //   const _classicalRegistrarController = await upgrades.deployProxy(ClassicalRegistrarControllerFactory, [
+  //     input.TOKEN_ADDRESS,
+  //     input.BaseRegistrar.address,
+  //     input.Root.address,
+  //     input.COIN_ID,
+  //   ]);
+  //   await _classicalRegistrarController.deployed();
+  //   const classicalRegistrarController = ClassicalRegistrarControllerFactory.attach(_classicalRegistrarController.address);
+  //   console.log(`[[${NetworkConfig[input.network].name}]] ClassicalRegistrarController Deployed - ${classicalRegistrarController.address}`);
+  //   return classicalRegistrarController;
+  // }
+  //
+  // public static async deployUniversalRegistrarController(input: IDeployUniversalRegistrarControllerInput): Promise<UniversalRegistrarController> {
+  //   const UniversalRegistrarControllerFactory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
+  //   const _universalRegistrarController = await upgrades.deployProxy(UniversalRegistrarControllerFactory, [
+  //     input.TOKEN_ADDRESS,
+  //     input.BaseRegistrar.address,
+  //     input.Root.address,
+  //     input.COIN_ID,
+  //   ]);
+  //   await _universalRegistrarController.deployed();
+  //   const universalRegistrarController = UniversalRegistrarControllerFactory.attach(_universalRegistrarController.address);
+  //   console.log(`[[${NetworkConfig[input.network].name}]] UniversalRegistrarController Deployed - ${universalRegistrarController.address}`);
+  //   return universalRegistrarController;
+  // }
 
-  public static async deployUniversalRegistrarController(input: IDeployUniversalRegistrarControllerInput): Promise<UniversalRegistrarController> {
-    const UniversalRegistrarControllerFactory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
-    const _universalRegistrarController = await upgrades.deployProxy(UniversalRegistrarControllerFactory, [
-      input.TOKEN_ADDRESS,
-      input.BaseRegistrar.address,
-      input.Root.address,
-      input.COIN_ID,
-    ]);
-    await _universalRegistrarController.deployed();
-    const universalRegistrarController = UniversalRegistrarControllerFactory.attach(_universalRegistrarController.address);
-    console.log(`[[${NetworkConfig[input.network].name}]] UniversalRegistrarController Deployed - ${universalRegistrarController.address}`);
-    return universalRegistrarController;
-  }
-
-  public static async deployBatchRegistrarController(input: IDeployBatchRegistrarControllerInput): Promise<BatchRegistrarController> {
-    const BatchRegistrarControllerFactory = await ethers.getContractFactory("BatchRegistrarController");
-    const _batchRegistrarController = await upgrades.deployProxy(BatchRegistrarControllerFactory);
-    await _batchRegistrarController.deployed();
-    const batchRegistrarController = BatchRegistrarControllerFactory.attach(_batchRegistrarController.address);
-    console.log(`[[${NetworkConfig[input.network].name}]] BatchRegistrarController Deployed - ${batchRegistrarController.address}`);
-    return batchRegistrarController;
-  }
+  // public static async deployBatchRegistrarController(input: IDeployBatchRegistrarControllerInput): Promise<BatchRegistrarController> {
+  //   const BatchRegistrarControllerFactory = await ethers.getContractFactory("BatchRegistrarController");
+  //   const _batchRegistrarController = await upgrades.deployProxy(BatchRegistrarControllerFactory);
+  //   await _batchRegistrarController.deployed();
+  //   const batchRegistrarController = BatchRegistrarControllerFactory.attach(_batchRegistrarController.address);
+  //   console.log(`[[${NetworkConfig[input.network].name}]] BatchRegistrarController Deployed - ${batchRegistrarController.address}`);
+  //   return batchRegistrarController;
+  // }
 }
 
 // export interface IDeploySingletonRegistrarInput extends IDeployInput {
