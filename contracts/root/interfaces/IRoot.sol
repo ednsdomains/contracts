@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "../../registry/lib/TldClass.sol";
+import "../../lib/TldClass.sol";
 
 interface IRoot {
   event NewAuthorizer(address address_);

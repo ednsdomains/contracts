@@ -17,8 +17,6 @@ interface IBaseRegistrar {
 
   function isAvailable(bytes memory name, bytes memory tld) external view returns (bool);
 
-  function ownerOf(bytes memory name, bytes memory tld) external view returns (address);
-
   function isExists(bytes memory name, bytes memory tld) external view returns (bool);
 
   function isExists(bytes32 tld) external view returns (bool);

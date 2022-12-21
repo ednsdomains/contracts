@@ -1,11 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import "../lib/TldClass.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
-import "./IERC4907.sol";
+import "../../lib/TldClass.sol";
+import "../../lib/TokenRecord.sol";
+import "../../lib/TldRecord.sol";
+import "../../lib/DomainRecord.sol";
+import "../../lib/HostRecord.sol";
+import "../../lib/WrapperRecord.sol";
 
-interface IRegistry is IERC721Upgradeable, IERC721MetadataUpgradeable, IERC4907 {
+interface IRegistry {
   /* ========== Event ==========*/
   event NewTld(bytes tld, address owner);
   event NewDomain(bytes name, bytes tld, address owner);
@@ -15,65 +17,6 @@ interface IRegistry is IERC721Upgradeable, IERC721MetadataUpgradeable, IERC4907 
   event NewResolver(bytes fqdn, address newResolver);
 
   event SetOperator(bytes fqdn, address operator, bool approved);
-
-  /* ========== ERC721 - Event ==========*/
-  // event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-  // event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-  // event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
-  /* ========== ERC4907 -Event ==========*/
-  // event UpdateUser(uint256 indexed tokenId, address indexed user, uint64 expires);
-
-  enum RecordType {
-    TLD,
-    DOMAIN,
-    HOST
-  }
-
-  /* ========== Struct ==========*/
-
-  struct WrapperRecord {
-    bool enable;
-    address address_;
-  }
-
-  struct TokenRecord {
-    RecordType class_;
-    bytes32 tld;
-    bytes32 domain;
-    bytes32 host;
-  }
-
-  struct TldRecord {
-    bytes name; // The name of the TLD - '.meta' or '.ass'
-    address owner; // The owner of thr TLD, it should always be the `Root` contract address
-    address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
-    bool enable; // Is this TLD enable to register new name
-    WrapperRecord wrapper;
-    TldClass.TldClass class_;
-    mapping(bytes32 => DomainRecord) domains;
-  }
-
-  struct DomainRecord {
-    bytes name; // The name of the name name, if the FQDN is `edns.meta`, then this will be `bytes('edns')`
-    address owner; // The owner of the name
-    address resolver; //  The contract address of the resolver, it used the `PublicResolver` as default
-    uint64 expires; // The expiry unix timestamp of the name
-    Rental rental;
-    mapping(address => bool) operators;
-    mapping(bytes32 => HostRecord) hosts;
-  }
-
-  struct HostRecord {
-    bytes name;
-    Rental rental;
-    mapping(address => bool) operators;
-  }
-
-  struct Rental {
-    address user;
-    uint64 expires;
-  }
 
   /* ========== Mutative ==========*/
   function setRecord(
@@ -106,13 +49,13 @@ interface IRegistry is IERC721Upgradeable, IERC721MetadataUpgradeable, IERC4907 
     address resolver
   ) external;
 
-  // function setOwner(bytes32 tld, address owner) external;
+  function setOwner(bytes32 tld, address newOwner) external;
 
-  // function setOwner(
-  //   bytes32 name,
-  //   bytes32 tld,
-  //   address owner
-  // ) external;
+  function setOwner(
+    bytes32 name,
+    bytes32 tld,
+    address newOwner
+  ) external;
 
   function setOperator(
     bytes32 name,
@@ -143,6 +86,21 @@ interface IRegistry is IERC721Upgradeable, IERC721MetadataUpgradeable, IERC4907 
     address wrapper_
   ) external;
 
+  function setUser(
+    bytes32 name,
+    bytes32 tld,
+    address user,
+    uint64 expires
+  ) external;
+
+  function setUser(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld,
+    address user,
+    uint64 expires
+  ) external;
+
   // function remove(bytes32 name, bytes32 tld) external;
 
   // function remove(
@@ -169,7 +127,25 @@ interface IRegistry is IERC721Upgradeable, IERC721MetadataUpgradeable, IERC4907 
 
   function getTldClass(bytes32 tld) external view returns (TldClass.TldClass);
 
-  function getWrapper(bytes32 tld) external view returns (WrapperRecord memory);
+  function getWrapper(bytes32 tld) external view returns (WrapperRecord.WrapperRecord memory);
+
+  function getTokenRecord(uint256 tokenId) external view returns (TokenRecord.TokenRecord memory);
+
+  function getUser(bytes32 name, bytes32 tld) external view returns (address);
+
+  function getUser(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (address);
+
+  function getUserExpires(bytes32 name, bytes32 tld) external view returns (uint64);
+
+  function getUserExpires(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (uint64);
 
   /* ========== Query - Boolean ==========*/
 

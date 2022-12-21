@@ -5,7 +5,9 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "./interfaces/IRoot.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "../registrar/interfaces/IBaseRegistrar.sol";
-import "../registry/lib/TldClass.sol";
+import "../lib/TldClass.sol";
+import "../lib/WrapperRecord.sol";
+import "../wrapper/Wrapper.sol";
 
 contract Root is IRoot, AccessControlUpgradeable {
   IRegistry private _registry;
@@ -49,8 +51,8 @@ contract Root is IRoot, AccessControlUpgradeable {
   // TODO:
   function transfer(bytes memory tld, address newOwner) public onlyAdmin {
     uint256 tokenId = _registry.getTokenId(tld);
-    require(_registry.ownerOf(tokenId) == address(this), "ROOT_NOT_USER_OF_TLD");
-    _registry.transferFrom(address(this), newOwner, tokenId);
+    WrapperRecord.WrapperRecord memory _wrapper = _registry.getWrapper(keccak256(tld));
+    Wrapper(_wrapper.address_).transferFrom(address(this), newOwner, tokenId);
   }
 
   function setEnable(bytes memory tld, bool enable_) public payable onlyAdmin {

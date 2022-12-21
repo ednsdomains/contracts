@@ -4,13 +4,10 @@ pragma solidity ^0.8.9;
 // import "https://github.com/Arachnid/solidity-bytesutils/blob/master/bytess.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "../utils/LabelOperator.sol";
 import "./interfaces/IRegistry.sol";
-import "./lib/TldClass.sol";
+import "../lib/TldClass.sol";
 import "../wrapper/interfaces/IERC721Wrapper.sol";
 
 contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
@@ -20,10 +17,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   address private _owner;
 
-  string private _name;
-  string private _symbol;
-  mapping(address => uint256) private _balances;
-
   uint256 public constant GRACE_PERIOD = 30 days;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -32,10 +25,8 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
   bytes32 public constant ERC721_WRAPPER_ROLE = keccak256("ERC721_WRAPPER_ROLE");
 
-  bytes internal __baseURI;
-
-  mapping(bytes32 => TldRecord) internal _records;
-  mapping(uint256 => TokenRecord) internal _tokenRecords;
+  mapping(bytes32 => TldRecord.TldRecord) internal _records;
+  mapping(uint256 => TokenRecord.TokenRecord) internal _tokenRecords;
 
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
@@ -64,20 +55,17 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   }
 
   modifier onlyDomainOwner(bytes32 name, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[name].owner || isApprovedForAll(_records[tld].domains[name].owner, _msgSender()), "ONLY_OWNER");
+    require(_msgSender() == _records[tld].domains[name].owner, "ONLY_OWNER");
     _;
   }
 
   modifier onlyDomainUser(bytes32 name, bytes32 tld) {
-    require(_msgSender() == _records[tld].domains[name].rental.user || isApprovedForAll(_records[tld].domains[name].rental.user, _msgSender()), "ONLY_DOMAIN_USER");
+    require(_msgSender() == _records[tld].domains[name].user.user, "ONLY_DOMAIN_USER");
     _;
   }
 
   modifier onlyDomainOperator(bytes32 name, bytes32 tld) {
-    require(
-      _msgSender() == _records[tld].domains[name].rental.user || _operators[tld][name][AT][_msgSender()] || isApprovedForAll(_records[tld].domains[name].rental.user, _msgSender()),
-      "ONLY_DOMAIN_OPERATOR"
-    );
+    require(_msgSender() == _records[tld].domains[name].user.user || _operators[tld][name][AT][_msgSender()], "ONLY_DOMAIN_OPERATOR");
     _;
   }
 
@@ -87,10 +75,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes32 tld
   ) {
     require(
-      _msgSender() == _records[tld].domains[name].owner ||
-        _records[tld].domains[name].operators[_msgSender()] ||
-        _records[tld].domains[name].hosts[host].operators[_msgSender()] ||
-        isApprovedForAll(_records[tld].domains[name].hosts[host].rental.user, _msgSender()),
+      _msgSender() == _records[tld].domains[name].owner || _records[tld].domains[name].operators[_msgSender()] || _records[tld].domains[name].hosts[host].operators[_msgSender()],
       "ONLY_HOST_OPERATOR"
     );
     _;
@@ -98,6 +83,11 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   modifier onlyLiveDomain(bytes32 name, bytes32 tld) {
     require(isLive(name, tld), ""); // TODO:
+    _;
+  }
+
+  modifier onlyDomainOwnerOrWrapper(bytes32 name, bytes32 tld) {
+    require(_msgSender() == _records[tld].domains[name].owner || _msgSender() == _records[tld].wrapper.address_, "ONLY_OWNER_OR_WRAPPER");
     _;
   }
 
@@ -119,8 +109,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     _setRoleAdmin(ROOT_ROLE, ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _setupRole(ADMIN_ROLE, _msgSender());
-    _name = "Ether Domain Name Service";
-    _symbol = "EDNS";
   }
 
   /* ========== Mutative ==========*/
@@ -137,7 +125,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     require(owner_ != address(0x0), "UNDEFINED_OWNER");
     require(resolver_ != address(0x0), "UNDEFINED_RESOLVER");
 
-    TldRecord storage _record = _records[keccak256(tld)];
+    TldRecord.TldRecord storage _record = _records[keccak256(tld)];
     _record.name = tld;
     _record.owner = owner_;
     _record.resolver = resolver_;
@@ -147,15 +135,12 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
     uint256 id = getTokenId(tld);
 
-    TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.class_ = RecordType.TLD;
+    TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
+    _tokenRecord.type_ = RecordType.RecordType.TLD;
     _tokenRecord.tld = keccak256(tld);
 
-    // _mint(owner_, id);
     if (_records[keccak256(tld)].wrapper.enable) {
-      _records[keccak256(tld)].wrapper.address_.call(abi.encodeWithSignature("mint(address,uint256)", owner_, id));
-    } else {
-      _mint(owner_, id);
+      IERC721Wrapper(_records[keccak256(tld)].wrapper.address_).mint(owner_, id);
     }
   }
 
@@ -182,30 +167,26 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     if (_records[keccak256(tld)].wrapper.enable) {
       IERC721Wrapper(_records[keccak256(tld)].wrapper.address_).mint(owner_, id);
       if (isExists_) {
-        _records[keccak256(tld)].wrapper.address_.call(abi.encodeWithSignature("burn(uint256)", id));
+        IERC721Wrapper(_records[keccak256(tld)].wrapper.address_).burn(id);
       }
-    } else {
-      if (isExists_) {
-        _burn(id);
-      }
-      _mint(owner_, id);
     }
 
-    DomainRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)];
+    DomainRecord.DomainRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)];
     _record.name = name;
     _record.owner = owner_;
     _record.resolver = resolver_;
     _record.expires = expires_;
     if (!isExists_) {
-      Rental storage _rental = _records[keccak256(tld)].domains[keccak256(name)].rental;
-      _rental.user = owner_;
-      _rental.expires = expires_;
-      emit UpdateUser(id, owner_, expires_);
+      UserRecord.UserRecord storage _user = _records[keccak256(tld)].domains[keccak256(name)].user;
+      _user.user = owner_;
+      _user.expires = expires_;
+      // if (_records[keccak256(tld)].wrapper.enable) {}
+      // emit UpdateUser(id, owner_, expires_);
     }
     emit NewDomain(name, tld, owner_);
 
-    TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.class_ = RecordType.DOMAIN;
+    TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
+    _tokenRecord.type_ = RecordType.RecordType.DOMAIN;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
   }
@@ -220,20 +201,20 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
     bool isExists_ = isExists(keccak256(host), keccak256(name), keccak256(tld));
 
-    HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)];
+    HostRecord.HostRecord storage _record = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)];
     _record.name = host;
     uint256 id = uint256(keccak256(_join(host, name, tld)));
     if (!isExists_) {
-      Rental storage _rental = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)].rental;
-      _rental.user = getOwner(keccak256(name), keccak256(tld));
-      _rental.expires = getExpires(keccak256(name), keccak256(tld));
-      emit UpdateUser(id, getOwner(keccak256(name), keccak256(tld)), getExpires(keccak256(name), keccak256(tld)));
+      UserRecord.UserRecord storage _user = _records[keccak256(tld)].domains[keccak256(name)].hosts[keccak256(host)].user;
+      _user.user = getOwner(keccak256(name), keccak256(tld));
+      _user.expires = getExpires(keccak256(name), keccak256(tld));
+      // emit UpdateUser(id, getOwner(keccak256(name), keccak256(tld)), getExpires(keccak256(name), keccak256(tld)));
     }
 
     emit NewHost(host, name, tld);
 
-    TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.class_ = RecordType.HOST;
+    TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
+    _tokenRecord.type_ = RecordType.RecordType.HOST;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
     _tokenRecord.host = keccak256(host);
@@ -256,29 +237,28 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     emit NewResolver(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), resolver_);
   }
 
-  // function setOwner(bytes32 tld, address owner_) external onlyRoot {
-  //   require(isExists(tld), "TLD_NOT_EXIST");
-  //   _records[tld].owner = owner_;
-  //   emit NewOwner(abi.encodePacked(_records[tld].name), owner_);
-  // }
+  function setOwner(bytes32 tld, address owner_) external onlyRoot {
+    require(isExists(tld), "TLD_NOT_EXIST");
+    _records[tld].owner = owner_;
+    emit NewOwner(abi.encodePacked(_records[tld].name), owner_);
+  }
 
-  // function setOwner(
-  //   bytes32 name,
-  //   bytes32 tld,
-  //   address owner_
-  // ) external onlyDomainOwner(name, tld) {
-  //   require(isExists(name, tld), "DOMAIN_NOT_EXIST");
-  //   // _records[tld].domains[name].owner = owner_;
-  //   _transfer(_records[tld].domains[name].owner, owner_, getTokenId(name, tld));
-  //   emit NewOwner(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), owner_);
-  // }
+  function setOwner(
+    bytes32 name,
+    bytes32 tld,
+    address newOwner
+  ) external onlyDomainOwnerOrWrapper(name, tld) {
+    require(isExists(name, tld), "DOMAIN_NOT_EXIST");
+    _records[tld].domains[name].owner = newOwner;
+    emit NewOwner(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), newOwner);
+  }
 
   function setOperator(
     bytes32 name,
     bytes32 tld,
     address operator_,
     bool approved
-  ) public onlyDomainOwner(name, tld) {
+  ) public onlyLiveDomain(name, tld) onlyDomainOwner(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].operators[operator_] = approved;
     emit SetOperator(abi.encodePacked(_records[tld].domains[name].name, DOT, _records[tld].name), operator_, approved);
@@ -290,7 +270,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes32 tld,
     address operator_,
     bool approved
-  ) public onlyDomainOperator(name, tld) {
+  ) public onlyLiveDomain(name, tld) onlyDomainOperator(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXIST");
     _records[tld].domains[name].hosts[host].operators[operator_] = approved;
     emit SetOperator(abi.encodePacked(_records[tld].domains[name].hosts[host].name, DOT, _records[tld].domains[name].name, DOT, _records[tld].name), operator_, approved);
@@ -316,9 +296,40 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bool enable_,
     address wrapper_
   ) external onlyRoot {
-    WrapperRecord storage _wrapper = _records[tld].wrapper;
+    WrapperRecord.WrapperRecord storage _wrapper = _records[tld].wrapper;
     _wrapper.enable = enable_;
     _wrapper.address_ = wrapper_;
+  }
+
+  function setUser(
+    bytes32 name,
+    bytes32 tld,
+    address user,
+    uint64 expires
+  ) external onlyDomainOwnerOrWrapper(name, tld) onlyLiveDomain(name, tld) {
+    _records[tld].domains[name].user.user = user;
+    if (expires == 0) {
+      _records[tld].domains[name].user.expires = getExpires(name, tld);
+    } else {
+      require(expires <= getExpires(name, tld), ""); // TODO:
+      _records[tld].domains[name].user.expires = expires;
+    }
+  }
+
+  function setUser(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld,
+    address user,
+    uint64 expires
+  ) external onlyDomainOwnerOrWrapper(name, tld) onlyLiveDomain(name, tld) {
+    require(isExists(host, name, tld), "HOST_NOT_EXISTS");
+    if (expires == 0) {
+      _records[tld].domains[name].hosts[host].user.expires = getExpires(name, tld);
+    } else {
+      require(expires <= getExpires(name, tld), ""); // TODO:
+      _records[tld].domains[name].hosts[host].user.expires = expires;
+    }
   }
 
   // function remove(bytes32 name, bytes32 tld) external onlyRegistrar {
@@ -373,12 +384,36 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     return _records[tld].class_;
   }
 
-  function getWrapper(bytes32 tld) external view returns (WrapperRecord memory) {
+  function getWrapper(bytes32 tld) external view returns (WrapperRecord.WrapperRecord memory) {
     return _records[tld].wrapper;
   }
 
-  function _getTokenRecord(uint256 tokenId_) internal view returns (TokenRecord memory) {
+  function getTokenRecord(uint256 tokenId_) external view returns (TokenRecord.TokenRecord memory) {
     return _tokenRecords[tokenId_];
+  }
+
+  function getUser(bytes32 name, bytes32 tld) external view returns (address) {
+    return _records[tld].domains[name].user.user;
+  }
+
+  function getUser(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (address) {
+    return _records[tld].domains[name].hosts[host].user.user;
+  }
+
+  function getUserExpires(bytes32 name, bytes32 tld) external view returns (uint64) {
+    return _records[tld].domains[name].user.expires;
+  }
+
+  function getUserExpires(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (uint64) {
+    return _records[tld].domains[name].hosts[host].user.expires;
   }
 
   /* ========== Getter - Boolean ==========*/
@@ -438,259 +473,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     return _records[tld].enable;
   }
 
-  /* ========== ERC721 ==========*/
-
-  function balanceOf(address owner_) public view override returns (uint256) {
-    require(owner_ != address(0), "ERC721: balance query for the zero address");
-    return _balances[owner_];
-  }
-
-  function ownerOf(uint256 tokenId_) public view returns (address) {
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.TLD) {
-      return _records[tRecord_.tld].owner;
-    } else if (tRecord_.class_ == RecordType.DOMAIN || tRecord_.class_ == RecordType.HOST) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].owner;
-    } else {
-      revert("hhh"); // TODO:
-    }
-  }
-
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId_
-  ) public virtual override {
-    safeTransferFrom(from, to, tokenId_, "");
-  }
-
-  function transferFrom(
-    address from,
-    address to,
-    uint256 tokenId_
-  ) public virtual override {
-    //solhint-disable-next-line max-line-length
-    require(_isApprovedOrOwner(_msgSender(), tokenId_), "ERC721: transfer caller is not owner nor approved");
-    _transfer(from, to, tokenId_);
-  }
-
-  function approve(address to, uint256 tokenId_) public virtual override {
-    address owner = ownerOf(tokenId_);
-    require(to != owner, "ERC721: approval to current owner");
-    require(
-      _msgSender() == owner || isApprovedForAll(owner, _msgSender()) || hasRole(ERC721_WRAPPER_ROLE, _msgSender()),
-      "ERC721: approve caller is not owner nor approved for all"
-    );
-    _approve(to, tokenId_);
-  }
-
-  function getApproved(uint256 tokenId_) public view returns (address) {
-    return ownerOf(tokenId_);
-  }
-
-  function setApprovalForAll(address operator, bool approved) public {
-    _setApprovalForAll(_msgSender(), operator, approved);
-  }
-
-  function isApprovedForAll(address owner, address operator) public view returns (bool) {
-    return _operatorApprovals[owner][operator];
-  }
-
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId_,
-    bytes memory _data
-  ) public {
-    require(_isApprovedOrOwner(_msgSender(), tokenId_), "ERC721: transfer caller is not owner nor approved");
-    _safeTransfer(from, to, tokenId_, _data);
-  }
-
-  function _safeTransfer(
-    address from,
-    address to,
-    uint256 tokenId_,
-    bytes memory _data
-  ) internal virtual {
-    _transfer(from, to, tokenId_);
-    require(_checkOnERC721Received(from, to, tokenId_, _data), "ERC721: transfer to non ERC721Receiver implementer");
-  }
-
-  //Update By Alex _exists -> true: Exists , False: Not Exists
-  function _exists(uint256 tokenId_) internal view virtual returns (bool) {
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.TLD) {
-      return _records[tRecord_.tld].owner != address(0);
-    } else if (tRecord_.class_ == RecordType.DOMAIN) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].owner != address(0);
-    } else if (tRecord_.class_ == RecordType.HOST) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].name.length > 0;
-    } else {
-      return false;
-    }
-  }
-
-  function _isApprovedOrOwner(address spender, uint256 tokenId_) internal view virtual returns (bool) {
-    require(_exists(tokenId_), "ERC721: operator query for nonexistent token");
-    address owner = ownerOf(tokenId_);
-    return (spender == owner || getApproved(tokenId_) == spender || isApprovedForAll(owner, spender));
-  }
-
-  function _mint(address to, uint256 tokenId_) internal virtual {
-    require(to != address(0), "ERC721: mint to the zero address");
-    _balances[to] += 1;
-    emit Transfer(address(0), to, tokenId_);
-  }
-
-  function _burn(uint256 tokenId_) internal virtual {
-    address owner = ownerOf(tokenId_);
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.DOMAIN) {
-      _balances[owner] -= 1;
-      delete _tokenRecords[tokenId_];
-      delete _records[tRecord_.tld].domains[tRecord_.domain];
-      emit Transfer(owner, address(0), tokenId_);
-    } else if (tRecord_.class_ == RecordType.TLD || tRecord_.class_ == RecordType.HOST) {
-      revert("ERC721: cannot burn a TLD or host");
-    }
-  }
-
-  function _transfer(
-    address from,
-    address to,
-    uint256 tokenId_
-  ) internal virtual {
-    require(ownerOf(tokenId_) == from, "ERC721: transfer from incorrect owner");
-    require(to != address(0), "ERC721: transfer to the zero address");
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.TLD) {
-      _records[tRecord_.tld].owner = to;
-    } else if (tRecord_.class_ == RecordType.DOMAIN) {
-      if (userOf(tokenId_) == from) {
-        setUser(tokenId_, to, _records[tRecord_.tld].domains[tRecord_.domain].expires);
-      }
-      _records[tRecord_.tld].domains[tRecord_.domain].owner = to;
-    } else if (tRecord_.class_ == RecordType.HOST) {
-      revert("ERC721: cannot transfer a host");
-    }
-
-    _balances[from] -= 1;
-    _balances[to] += 1;
-    emit Transfer(from, to, tokenId_);
-  }
-
-  function _approve(address to, uint256 tokenId_) internal virtual {
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.DOMAIN) {
-      _records[tRecord_.tld].domains[tRecord_.domain].operators[to] = true;
-    } else if (tRecord_.class_ == RecordType.HOST) {
-      _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].operators[to] = true;
-    } else if (tRecord_.class_ == RecordType.TLD) {
-      revert("ERC721: cannot approve for TLD");
-    }
-    emit Approval(ownerOf(tokenId_), to, tokenId_);
-  }
-
-  function _setApprovalForAll(
-    address owner,
-    address operator,
-    bool approved
-  ) internal virtual {
-    require(owner != operator, "ERC721: approve to caller");
-    _operatorApprovals[owner][operator] = approved;
-    emit ApprovalForAll(owner, operator, approved);
-  }
-
-  function _checkOnERC721Received(
-    address from,
-    address to,
-    uint256 tokenId_,
-    bytes memory _data
-  ) private returns (bool) {
-    if (to.isContract()) {
-      try IERC721ReceiverUpgradeable(to).onERC721Received(_msgSender(), from, tokenId_, _data) returns (bytes4 retval) {
-        return retval == IERC721ReceiverUpgradeable.onERC721Received.selector;
-      } catch (bytes memory reason) {
-        if (reason.length == 0) {
-          revert("ERC721: transfer to non ERC721Receiver implementer");
-        } else {
-          assembly {
-            revert(add(32, reason), mload(reason))
-          }
-        }
-      }
-    } else {
-      return true;
-    }
-  }
-
-  /* ========== ERC721 Metadata ==========*/
-
-  function name() public view virtual returns (string memory) {
-    return _name;
-  }
-
-  function symbol() public view virtual returns (string memory) {
-    return _symbol;
-  }
-
-  function tokenURI(uint256 tokenId_) public view returns (string memory) {
-    require(_exists(tokenId_), "ERC721Metadata: URI query for nonexistent token");
-    // `{_baseURI}/{chainId}/{contractAddress}/{tokenId}/metadata.json`
-    // return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId_), "/", "metadata.json"));
-    // https://query.edns.domains/metadata/{TOKEN_ID}/body.json
-    // __baseURI === "https://query.edns.domains/metadata"
-    return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId_), "/", "body.json"));
-  }
-
-  function setBaseURI(string memory baseURI_) public virtual onlyAdmin {
-    __baseURI = bytes(baseURI_);
-  }
-
-  /* ========== ERC4907 ==========*/
-  function setUser(
-    uint256 tokenId_,
-    address user,
-    uint64 expires
-  ) public {
-    require(userOf(tokenId_) == _msgSender(), "ERC4907: incorrect owner");
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.DOMAIN) {
-      require(expires <= _records[tRecord_.tld].domains[tRecord_.domain].rental.expires, "ERC4907: exceed expires");
-      _records[tRecord_.tld].domains[tRecord_.domain].rental.user = user;
-      _records[tRecord_.tld].domains[tRecord_.domain].rental.expires = expires;
-      emit UpdateUser(tokenId_, user, expires);
-    } else if (tRecord_.class_ == RecordType.HOST) {
-      require(expires <= _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.expires, "ERC4907: exceed expires");
-      _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.user = user;
-      _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.expires = expires;
-    } else {
-      revert("ERC4907: cannot set user for TLD or host");
-    }
-  }
-
-  function userOf(uint256 tokenId_) public view returns (address) {
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.DOMAIN) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].rental.user;
-    } else if (tRecord_.class_ == RecordType.HOST) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.user;
-    } else {
-      revert("ERC4907: cannot get user of TLD of host");
-    }
-  }
-
-  function userExpires(uint256 tokenId_) public view returns (uint256) {
-    TokenRecord memory tRecord_ = _getTokenRecord(tokenId_);
-    if (tRecord_.class_ == RecordType.DOMAIN) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].rental.expires;
-    } else if (tRecord_.class_ == RecordType.HOST) {
-      return _records[tRecord_.tld].domains[tRecord_.domain].hosts[tRecord_.host].rental.expires;
-    } else {
-      revert("ERC4907: cannot get user expiures of TLD of host");
-    }
-  }
-
   /* ========== Ownable ==========*/
   function owner() public view returns (address) {
     return _owner;
@@ -721,12 +503,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     return uint256(keccak256(_join(host, name_, tld)));
   }
 
-  function supportsInterface(bytes4 interfaceID) public view override(IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
-    return
-      interfaceID == type(IERC4907).interfaceId ||
-      interfaceID == type(IERC721Upgradeable).interfaceId ||
-      interfaceID == type(IERC721MetadataUpgradeable).interfaceId ||
-      interfaceID == type(IRegistry).interfaceId ||
-      super.supportsInterface(interfaceID);
+  function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
+    return interfaceID == type(IRegistry).interfaceId || super.supportsInterface(interfaceID);
   }
 }

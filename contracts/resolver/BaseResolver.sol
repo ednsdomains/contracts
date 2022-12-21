@@ -50,9 +50,9 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
 
     //Domain
     if (host_ == AT) {
-      return _registry.userOf(uint256(keccak256(_join(name, tld)))) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
+      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
     } else {
-      return _registry.userOf(uint256(keccak256(_join(host, name, tld)))) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
+      return _registry.getUser(host_, domain_, tld_) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
     }
   }
 

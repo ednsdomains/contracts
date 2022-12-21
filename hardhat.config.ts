@@ -115,7 +115,7 @@ const config: HardhatUserConfig = {
       "BatchRegistrarController",
       "PublicResolver",
       "Root",
-      "ERC721Wrapper",
+      "Wrapper",
     ],
   },
 };

@@ -44,11 +44,6 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
     _;
   }
 
-  modifier onlyDomainOwner(uint256 id) {
-    require(_msgSender() == _registry.ownerOf(id), "ONLY_OWNER");
-    _;
-  }
-
   modifier onlyController(bytes32 tld) {
     require(controllers[_msgSender()][tld], "ONLY_CONTROLLER");
     _;
@@ -66,15 +61,8 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
     return getExpires(name, tld) + _registry.getGracePeriod() < block.timestamp;
   }
 
-  function ownerOf(bytes memory name, bytes memory tld) public view virtual returns (address) {
-    uint256 id = uint256(keccak256(_join(name, tld)));
-    return _registry.ownerOf(id);
-  }
-
   function isExists(bytes memory name, bytes memory tld) public view virtual returns (bool) {
-    uint256 id = uint256(keccak256(_join(name, tld)));
-    console.logAddress(_registry.ownerOf(id));
-    return _registry.ownerOf(id) != address(0);
+    return _registry.getOwner(keccak256(name), keccak256(tld)) != address(0);
   }
 
   function isExists(bytes32 tld) public view virtual returns (bool) {
