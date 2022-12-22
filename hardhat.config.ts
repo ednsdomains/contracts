@@ -116,6 +116,9 @@ const config: HardhatUserConfig = {
       "PublicResolver",
       "Root",
       "Wrapper",
+      "Bridge",
+      "Portal",
+      "LayerZeroProvider",
     ],
   },
 };
