@@ -12,14 +12,6 @@ interface IMultiCoinAddressResolver {
     bytes memory address_
   ) external;
 
-  // function setMultiCoinAddress_SYNC(
-  //   bytes memory host,
-  //   bytes memory name,
-  //   bytes memory tld,
-  //   uint256 coin,
-  //   bytes memory address_
-  // ) external;
-
   function getMultiCoinAddress(
     bytes memory host,
     bytes memory name,

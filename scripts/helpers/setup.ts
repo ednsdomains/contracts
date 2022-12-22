@@ -44,7 +44,7 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
   );
   await tx.wait();
 
-  const tlds_ = Tlds.classical[input.network];
+  const tlds_ = Tlds.class_ical[input.network];
   for (const tld_ of tlds_) {
     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
 
@@ -63,7 +63,7 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
   );
   await tx.wait();
 
-  const tlds_ = Tlds.classical[input.network];
+  const tlds_ = Tlds.class_ical[input.network];
   for (const tld_ of tlds_) {
     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
 

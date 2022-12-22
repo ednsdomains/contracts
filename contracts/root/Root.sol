@@ -40,12 +40,13 @@ contract Root is IRoot, AccessControlUpgradeable {
 
   function register(
     bytes memory tld,
-    address resolver_,
-    bool enable_,
+    address resolver,
+    uint64 expires,
+    bool enable,
     TldClass.TldClass class_
   ) public payable onlyAdmin {
     require(!_registry.isExists(keccak256(tld)), "TLD_EXISTS");
-    _registry.setRecord(tld, address(this), resolver_, enable_, class_);
+    _registry.setRecord(tld, address(this), resolver, expires, enable, class_);
   }
 
   // TODO:

@@ -2,8 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "../registry/interfaces/IRegistry.sol";
-import "./interfaces/IERC721Wrapper.sol";
-import "./interfaces/IERC4907.sol";
+import "./interfaces/IWrapper.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -11,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 
-contract Wrapper is IERC721Wrapper, IERC4907, AccessControlUpgradeable {
+contract Wrapper is IWrapper, AccessControlUpgradeable {
   IRegistry private _registry;
 
   using AddressUpgradeable for address;
@@ -255,7 +254,8 @@ contract Wrapper is IERC721Wrapper, IERC4907, AccessControlUpgradeable {
     address user,
     uint64 expires
   ) public {
-    require(_msgSender() == ownerOf(tokenId), "ERC4907: forbidden access");
+    require(_msgSender() == ownerOf(tokenId) || _msgSender() == address(_registry), "ERC4907: forbidden access");
+    require(_msgSender() == userOf(tokenId) || userExpires(tokenId) <= block.timestamp, "ERC4907: user unavailable");
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
       _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, user, expires);
@@ -264,6 +264,7 @@ contract Wrapper is IERC721Wrapper, IERC4907, AccessControlUpgradeable {
     } else {
       revert(""); // TODO:
     }
+    emit UpdateUser(tokenId, user, expires);
   }
 
   function userOf(uint256 tokenId) public view returns (address) {

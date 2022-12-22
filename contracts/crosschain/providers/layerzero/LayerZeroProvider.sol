@@ -47,18 +47,18 @@ contract LayerZeroProvider is NonblockingLayerZeroApp, AccessControlUpgradeable 
     bytes memory _srcAddress,
     uint64 _nonce,
     bytes memory _payload
-  ) internal override {}
+  ) internal override {} // TODO:
 
   function send(
     address _from,
     uint16 _dstChainId,
-    bytes memory payload,
+    bytes memory _payload,
     address payable _refundAddress,
     address _zroPaymentAddress,
     bytes memory _adapterParams
   ) external {
-    require(hasRole(_msgSender(), PORTAL_ROLE), "ONLY_PORTAL");
-    _send(_from, _dstChainId, _payload, _refundAddress, _zroPaymentAddress, payload, _zroPaymentAddress);
+    require(hasRole(PORTAL_ROLE, _msgSender()), "ONLY_PORTAL");
+    _send(_from, _dstChainId, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
   }
 
   function _send(

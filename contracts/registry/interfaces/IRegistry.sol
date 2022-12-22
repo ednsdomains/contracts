@@ -9,20 +9,26 @@ import "../../lib/WrapperRecord.sol";
 
 interface IRegistry {
   /* ========== Event ==========*/
-  event NewTld(bytes tld, address owner);
-  event NewDomain(bytes name, bytes tld, address owner);
+  event NewTld(TldClass.TldClass class, bytes tld, address owner);
+  event NewDomain(bytes name, bytes tld, address owner, uint64 expires);
   event NewHost(bytes host, bytes name, bytes tld);
 
-  event NewOwner(bytes fqdn, address newOwner);
-  event NewResolver(bytes fqdn, address newResolver);
-
+  event SetResolver(bytes fqdn, address newResolver);
   event SetOperator(bytes fqdn, address operator, bool approved);
+  event SetWrapper(bytes fqdn, address address_, bool enable);
+  event SetUser(bytes fqdn, address newUser, uint64 expires);
+  event SetOwner(bytes fqdn, address owner);
+  event SetEnable(bytes fqdn, bool enable);
+  event SetExpires(bytes fqdn, uint64 expires);
+
+  event RemoveHost(bytes fqdn);
 
   /* ========== Mutative ==========*/
   function setRecord(
     bytes memory tld,
     address owner,
     address resolver,
+    uint64 expires,
     bool enable,
     TldClass.TldClass class_
   ) external;
@@ -38,7 +44,8 @@ interface IRegistry {
   function setRecord(
     bytes memory host,
     bytes memory name,
-    bytes memory tld
+    bytes memory tld,
+    uint16 ttl
   ) external;
 
   function setResolver(bytes32 tld, address resolver) external;
@@ -72,12 +79,6 @@ interface IRegistry {
     bool approved
   ) external;
 
-  function setExpires(
-    bytes32 name,
-    bytes32 tld,
-    uint64 expires
-  ) external;
-
   function setEnable(bytes32 tld, bool enable) external;
 
   function setWrapper(
@@ -101,13 +102,13 @@ interface IRegistry {
     uint64 expires
   ) external;
 
-  // function remove(bytes32 name, bytes32 tld) external;
+  function setExpires(bytes32 tld, uint64 expires) external;
 
-  // function remove(
-  //   bytes32 host,
-  //   bytes32 name,
-  //   bytes32 tld
-  // ) external;
+  function setExpires(
+    bytes32 name,
+    bytes32 tld,
+    uint64 expires
+  ) external;
 
   function prune(bytes32 name, bytes32 tld) external;
 
@@ -120,6 +121,8 @@ interface IRegistry {
   function getResolver(bytes32 tld) external view returns (address);
 
   function getResolver(bytes32 name, bytes32 tld) external view returns (address);
+
+  function getExpires(bytes32 tld) external view returns (uint64);
 
   function getExpires(bytes32 name, bytes32 tld) external view returns (uint64);
 
@@ -146,6 +149,12 @@ interface IRegistry {
     bytes32 name,
     bytes32 tld
   ) external view returns (uint64);
+
+  function getTtl(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (uint16);
 
   /* ========== Query - Boolean ==========*/
 

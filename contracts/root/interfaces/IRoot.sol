@@ -9,7 +9,8 @@ interface IRoot {
   function register(
     bytes memory tld,
     address resolver,
-    bool enable_,
+    uint64 expires,
+    bool enable,
     TldClass.TldClass class_
   ) external payable;
 

@@ -12,6 +12,7 @@ library TldRecord {
     address owner; // The owner of thr TLD, it should always be the `Root` contract address
     address resolver; // The contract address of the resolver, it used the `PublicResolver` as default
     bool enable; // Is this TLD enable to register new name
+    uint64 expires;
     WrapperRecord.WrapperRecord wrapper;
     TldClass.TldClass class_;
     mapping(bytes32 => DomainRecord.DomainRecord) domains;
