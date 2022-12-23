@@ -1,9 +1,9 @@
-import { Registry, PublicResolver, BaseRegistrar, ClassicalRegistrarController, Root, UniversalRegistrarController, BatchRegistrarController } from "../../typechain";
+import { Registry, PublicResolver, Registrar, ClassicalRegistrarController, Root, UniversalRegistrarController, BatchRegistrarController } from "../../typechain";
 
 export interface IContracts {
   Registry: Registry;
   PublicResolver: PublicResolver;
-  BaseRegistrar: BaseRegistrar;
+  Registrar: Registrar;
   ClassicalRegistrarController: ClassicalRegistrarController;
   UniversalRegistrarController: UniversalRegistrarController;
   BatchRegistrarController: BatchRegistrarController;

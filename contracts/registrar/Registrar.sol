@@ -8,9 +8,9 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "../resolver/interfaces/IPublicResolver.sol";
-import "./interfaces/IBaseRegistrar.sol";
+import "./interfaces/IRegistrar.sol";
 
-contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Helper {
+contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Helper {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
 

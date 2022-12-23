@@ -34,7 +34,7 @@
     "80001": ["matic", "poly", "polygon"],
     "421611": ["arb", "arbitrum"]
   },
-  "singleton": {
+  "universal": {
     "mainnet": [
       {
         "name": "layer2",
@@ -42,6 +42,18 @@
       },
       {
         "name": "layerzero",
+        "chainIds": [1, 10, 56, 137, 250, 42161, 43114]
+      },
+      {
+        "name": "lz",
+        "chainIds": [1, 10, 56, 137, 250, 42161, 43114]
+      },
+      {
+        "name": "meta",
+        "chainIds": [1, 10, 56, 137, 250, 42161, 43114]
+      },
+      {
+        "name": "web3",
         "chainIds": [1, 10, 56, 137, 250, 42161, 43114]
       }
     ],

@@ -1,21 +1,21 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "../registrar/interfaces/IBaseRegistrar.sol";
+import "../registrar/interfaces/IRegistrar.sol";
 import "./interfaces/ILegacyBaseRegistrar.sol";
 
 contract MigrationController is ContextUpgradeable {
-  IBaseRegistrar _baseRegistrar;
+  IRegistrar _baseRegistrar;
 
-  function initialize(IBaseRegistrar registrar_) public initializer {
+  function initialize(IRegistrar registrar_) public initializer {
     __MigrationController_init(registrar_);
   }
 
-  function __MigrationController_init(IBaseRegistrar registrar_) internal onlyInitializing {
+  function __MigrationController_init(IRegistrar registrar_) internal onlyInitializing {
     __MigrationController_init_unchained(registrar_);
   }
 
-  function __MigrationController_init_unchained(IBaseRegistrar registrar_) internal onlyInitializing {
+  function __MigrationController_init_unchained(IRegistrar registrar_) internal onlyInitializing {
     _baseRegistrar = registrar_;
   }
 

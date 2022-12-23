@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "./IBaseRegistrar.sol";
+import "./IRegistrar.sol";
 
-interface IOmniRegistrar is IBaseRegistrar {}
+interface IOmniRegistrar is IRegistrar {}

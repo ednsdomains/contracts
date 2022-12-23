@@ -51,7 +51,6 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
 
-    //Domain
     if (host_ == AT) {
       return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender()) || _msgSender() == address(_registry);
     } else {

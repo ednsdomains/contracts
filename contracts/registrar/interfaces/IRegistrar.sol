@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-interface IBaseRegistrar {
+interface IRegistrar {
   // event ControllerAdded(address controller, bytes tld);
   // event ControllerRemoved(address controller, bytes tld);
 

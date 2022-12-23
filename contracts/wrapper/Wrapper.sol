@@ -7,18 +7,18 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 
-contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
+contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
 
   using AddressUpgradeable for address;
   using StringsUpgradeable for uint256;
 
-  bytes32 public constant REGISTRY_ROLE = keccak256("REGISTRY_ROLE");
-  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
   string private _name;
   string private _symbol;
@@ -29,7 +29,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
   modifier onlyRegistry() {
-    require(hasRole(REGISTRY_ROLE, _msgSender()), "ONLY_REGISTRY");
+    require(_msgSender() == address(_registry), "ONLY_REGISTRY");
     _;
   }
 
@@ -61,7 +61,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
   ) internal onlyInitializing {
     _registry = registry_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _grantRole(OPERATOR_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
     _name = name_;
     _symbol = symbol_;
   }
@@ -223,7 +223,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
     return _name;
   }
 
-  function setName(string memory name_) public onlyRole(OPERATOR_ROLE) {
+  function setName(string memory name_) public onlyRole(ADMIN_ROLE) {
     _name = name_;
   }
 
@@ -231,7 +231,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
     return _symbol;
   }
 
-  function setSymbol(string memory symbol_) public onlyRole(OPERATOR_ROLE) {
+  function setSymbol(string memory symbol_) public onlyRole(ADMIN_ROLE) {
     _symbol = symbol_;
   }
 
@@ -239,7 +239,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
     return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId_), "/", "body.json"));
   }
 
-  function setBaseURI(string memory baseURI_) public virtual onlyRole(OPERATOR_ROLE) {
+  function setBaseURI(string memory baseURI_) public virtual onlyRole(ADMIN_ROLE) {
     __baseURI = bytes(baseURI_);
   }
 
@@ -285,7 +285,8 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
     }
   }
 
-  /* ============= */
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
   function supportsInterface(bytes4 interfaceID) public view override(IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
     return
       interfaceID == type(IERC721Upgradeable).interfaceId ||

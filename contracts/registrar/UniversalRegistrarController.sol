@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./interfaces/IBaseRegistrar.sol";
+import "./interfaces/IRegistrar.sol";
 import "./interfaces/IUniversalRegistrarController.sol";
 import "./BaseRegistrarController.sol";
 import "../root/interfaces/IRoot.sol";
@@ -10,7 +10,7 @@ import "../root/interfaces/IRoot.sol";
 contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegistrarController {
   function initialize(
     IERC20 token_,
-    IBaseRegistrar registrar_,
+    IRegistrar registrar_,
     IRoot root_,
     uint256 coinId
   ) public initializer {

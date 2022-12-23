@@ -7,7 +7,7 @@ import "./BaseRegistrarController.sol";
 contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegistrarController {
   function initialize(
     IERC20 token_,
-    IBaseRegistrar registrar_,
+    IRegistrar registrar_,
     IRoot root_,
     uint256 coinId
   ) public initializer {

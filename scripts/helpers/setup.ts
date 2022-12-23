@@ -33,47 +33,96 @@ export const setupRegistry = async (input: ISetupInput) => {
   await tx1.wait();
   const tx2 = await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
   await tx2.wait();
-  const tx3 = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.BaseRegistrar.address);
+  const tx3 = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
   await tx3.wait();
 };
 
+export const setupDefaultWrapper = async (input: ISetupInput) => {
+  //=== NOTHING NEED TO SETUP IN WRAPPER CONTRACT ==//
+};
+
+export const setupRegistrar = async (input: ISetupInput) => {
+  const tx = await input.contracts.Registrar.grantRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address);
+  await tx.wait();
+};
+
+export const setupPublicResolver = async (input: ISetupInput) => {
+  //=== NOTHING NEED TO SETUP IN WRAPPER CONTRACT ==//
+};
+
+export const setupRoot = async (input: ISetupInput) => {
+  //====================//
+  //== Classical TLDs ==//
+  //====================//
+  for (const tld_ of Tlds.classical[input.network]) {
+    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+    const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+    await tx.wait();
+  }
+  //====================//
+  //== Universal TLDs ==//
+  //====================//
+  for (const tld_ of Tlds.universal.mainnet) {
+    if (tld_.chainIds.includes(input.network)) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_.name);
+      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
+      await tx.wait();
+    }
+  }
+  for (const tld_ of Tlds.universal.testnet) {
+    if (tld_.chainIds.includes(input.network)) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_.name);
+      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
+      await tx.wait();
+    }
+  }
+};
+
 export const setupClassicalRegistrarController = async (input: ISetupInput) => {
-  const tx = await input.contracts.ClassicalRegistrarController.grantRole(
-    await input.contracts.ClassicalRegistrarController.OPERATOR_ROLE(),
-    input.contracts.BatchRegistrarController.address,
-  );
-  await tx.wait();
-
-  const tlds_ = Tlds.class_ical[input.network];
-  for (const tld_ of tlds_) {
+  for (const tld_ of Tlds.classical[input.network]) {
     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-
-    const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
-    await tx1.wait();
-
-    const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-    await tx2.wait();
+    const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+    await tx.wait();
   }
 };
 
-export const setupUniversalRegistrarController = async (input: ISetupInput) => {
-  const tx = await input.contracts.UniversalRegistrarController.grantRole(
-    await input.contracts.UniversalRegistrarController.OPERATOR_ROLE(),
-    input.contracts.BatchRegistrarController.address,
-  );
-  await tx.wait();
+// export const setupClassicalRegistrarController = async (input: ISetupInput) => {
+//   const tx = await input.contracts.ClassicalRegistrarController.grantRole(
+//     await input.contracts.ClassicalRegistrarController.OPERATOR_ROLE(),
+//     input.contracts.BatchRegistrarController.address,
+//   );
+//   await tx.wait();
 
-  const tlds_ = Tlds.class_ical[input.network];
-  for (const tld_ of tlds_) {
-    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+//   const tlds_ = Tlds.class_ical[input.network];
+//   for (const tld_ of tlds_) {
+//     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
 
-    const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
-    await tx1.wait();
+//     const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
+//     await tx1.wait();
 
-    const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-    await tx2.wait();
-  }
-};
+//     const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+//     await tx2.wait();
+//   }
+// };
+
+// export const setupUniversalRegistrarController = async (input: ISetupInput) => {
+//   const tx = await input.contracts.UniversalRegistrarController.grantRole(
+//     await input.contracts.UniversalRegistrarController.OPERATOR_ROLE(),
+//     input.contracts.BatchRegistrarController.address,
+//   );
+//   await tx.wait();
+
+//   const tlds_ = Tlds.class_ical[input.network];
+//   for (const tld_ of tlds_) {
+//     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+
+//     const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
+//     await tx1.wait();
+
+//     const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+//     await tx2.wait();
+//   }
+// };
 
 // export const setupClassicalRegistrarController = async (input: ISetupInput) => {};
 
@@ -129,20 +178,20 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
 //   }
 // };
 
-export const setupRoot = async (input: ISetupInput) => {
-  // Set Trust Remote
-  // for (const network_ of input.networks) {
-  //   if (network_ !== input.network) {
-  //     const isTrustedRemote = await input.contracts[input.network].OmniRegistrarSynchronizer.isTrustedRemote(
-  //       NetworkConfig[network_].layerzero.chainId,
-  //       input.contracts[network_].Token.address,
-  //     );
-  //     if (!isTrustedRemote) {
-  //       await input.contracts[input.network].Root.setTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Root.address);
-  //     }
-  //   }
-  // }
-};
+// export const setupRoot = async (input: ISetupInput) => {
+// Set Trust Remote
+// for (const network_ of input.networks) {
+//   if (network_ !== input.network) {
+//     const isTrustedRemote = await input.contracts[input.network].OmniRegistrarSynchronizer.isTrustedRemote(
+//       NetworkConfig[network_].layerzero.chainId,
+//       input.contracts[network_].Token.address,
+//     );
+//     if (!isTrustedRemote) {
+//       await input.contracts[input.network].Root.setTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Root.address);
+//     }
+//   }
+// }
+// };
 
 // export const setupSingletonTlds = async (input: ISetupInput) => {
 //   const tlds_ = SingletonTlds[`${input.network}`];

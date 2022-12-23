@@ -6,28 +6,28 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IRoot.sol";
 import "../registry/interfaces/IRegistry.sol";
-import "../registrar/interfaces/IBaseRegistrar.sol";
+import "../registrar/interfaces/IRegistrar.sol";
 import "../lib/TldClass.sol";
 import "../lib/WrapperRecord.sol";
 import "../wrapper/Wrapper.sol";
 
 contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
-  IBaseRegistrar private _baseRegistrar;
+  IRegistrar private _baseRegistrar;
 
   address internal _authorizer;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-  function initialize(IRegistry registry_, IBaseRegistrar baseRegistrar_) public initializer {
+  function initialize(IRegistry registry_, IRegistrar baseRegistrar_) public initializer {
     __Root_init(registry_, baseRegistrar_);
   }
 
-  function __Root_init(IRegistry registry_, IBaseRegistrar baseRegistrar_) internal onlyInitializing {
+  function __Root_init(IRegistry registry_, IRegistrar baseRegistrar_) internal onlyInitializing {
     __Root_init_unchained(registry_, baseRegistrar_);
   }
 
-  function __Root_init_unchained(IRegistry registry_, IBaseRegistrar baseRegistrar_) internal onlyInitializing {
+  function __Root_init_unchained(IRegistry registry_, IRegistrar baseRegistrar_) internal onlyInitializing {
     _registry = registry_;
     _baseRegistrar = baseRegistrar_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());

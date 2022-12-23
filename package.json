@@ -1,12 +1,8 @@
 {
   "name": "edns-contracts",
   "scripts": {
-    "compile": "hardhat compile",
-    "deploy:testnet": "hardhat run scripts/deploy:testnet.ts",
-    "deploy:mainnet": "hardhat run scripts/deploy:mainnet.ts",
-    "upgrade:testnet": "hardhat run scripts/upgrade:testnet.ts",
-    "upgrade:mainnet": "hardhat run scripts/upgrade:mainnet.ts",
-    "verify": "hardhat run scripts/verify.ts",
+    "evm:compile": "hardhat compile",
+    "tron:compile": "tronbox compile",
     "prettier": "prettier --write contracts/**/*.sol scripts/**/*.ts test/**/*.ts"
   },
   "devDependencies": {

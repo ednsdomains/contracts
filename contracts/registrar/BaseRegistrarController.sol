@@ -8,14 +8,14 @@ import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../utils/Helper.sol";
 import "./interfaces/IBaseRegistrarController.sol";
-import "./interfaces/IBaseRegistrar.sol";
+import "./interfaces/IRegistrar.sol";
 import "../root/interfaces/IRoot.sol";
 
 abstract contract BaseRegistrarController is IBaseRegistrarController, AccessControlUpgradeable, UUPSUpgradeable, PausableUpgradeable, Helper {
   using ECDSAUpgradeable for bytes32;
 
   IERC20 internal _token;
-  IBaseRegistrar internal _registrar;
+  IRegistrar internal _registrar;
   IRoot internal _root;
   uint256 internal COIN_ID;
 
@@ -24,7 +24,7 @@ abstract contract BaseRegistrarController is IBaseRegistrarController, AccessCon
 
   function __BaseRegistrarController_init(
     IERC20 token_,
-    IBaseRegistrar registrar_,
+    IRegistrar registrar_,
     IRoot root_,
     uint256 coinId
   ) internal onlyInitializing {
@@ -34,7 +34,7 @@ abstract contract BaseRegistrarController is IBaseRegistrarController, AccessCon
 
   function __BaseRegistrarController_init_unchained(
     IERC20 token_,
-    IBaseRegistrar registrar_,
+    IRegistrar registrar_,
     IRoot root_,
     uint256 coinId
   ) internal onlyInitializing {
