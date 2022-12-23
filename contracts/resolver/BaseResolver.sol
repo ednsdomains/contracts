@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import "../utils/LabelOperator.sol";
+import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IPublicResolverSynchronizer.sol";
 
-abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgradeable {
+abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   IRegistry internal _registry;
@@ -26,8 +29,17 @@ abstract contract BaseResolver is ERC165Upgradeable, LabelOperator, ContextUpgra
     _;
   }
 
+  function __BaseResolver_init(IRegistry registry_) internal onlyInitializing {
+    __AccessControl_init();
+    __UUPSUpgradeable_init();
+    __BaseResolver_init_unchained(registry_);
+  }
+
   function __BaseResolver_init_unchained(IRegistry registry_) internal onlyInitializing {
     _registry = registry_;
+    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
   }
 
   function _isAuthorised(

@@ -19,7 +19,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(_join(name, tld));
     } else {
-      require(_validHost(bytes(host)), "INVALID_HOST");
+      require(valid(bytes(host)), "INVALID_HOST");
       fqdn = keccak256(_join(host, name, tld));
     }
     _addresses[fqdn] = address_;
@@ -52,7 +52,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     if (keccak256(bytes(host)) == AT) {
       return _addresses[keccak256(_join(name, tld))];
     } else {
-      require(_validHost(bytes(host)), "INVALID_HOST");
+      require(valid(bytes(host)), "INVALID_HOST");
       return _addresses[keccak256(_join(host, name, tld))];
     }
   }
@@ -68,7 +68,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     if (keccak256(bytes(host)) == AT) {
       fqdn = _join(name, tld);
     } else {
-      require(_validHost(bytes(host)), "INVALID_HOST");
+      require(valid(bytes(host)), "INVALID_HOST");
       fqdn = _join(host, name, tld);
     }
     _reverseAddresses[address_] = fqdn;

@@ -4,8 +4,7 @@
 // import "./interfaces/ISynchronizer.sol";
 // import "../layerzero/LayerZeroApp.sol";
 // import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-// import "hardhat/console.sol";
-
+// 
 // contract Synchronizer is ISynchronizer, LayerZeroApp, AccessControlUpgradeable {
 //   event TransactionIn(uint16 srcChainId, address srcAddress, uint64 nonce);
 //   event Fulfilled(bytes32 reqId);
@@ -28,7 +27,7 @@
 //     _;
 //   }
 
-//   modifier onlyAdmin() {
+//   modifier onlyRole(ADMIN_ROLE)() {
 //     require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
 //     _;
 //   }
@@ -52,8 +51,8 @@
 //   function __Synchronizer_init_unchained(uint16 lzChainId_) internal onlyInitializing {
 //     lzChainId = lzChainId_;
 //     _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-//     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-//     _setupRole(ADMIN_ROLE, _msgSender());
+//     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+//     _grantRole(ADMIN_ROLE, _msgSender());
 //   }
 
 //   function _setTarget(address target_) internal {

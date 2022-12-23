@@ -1,16 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// import "https://github.com/Arachnid/solidity-bytesutils/blob/master/bytess.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "../utils/LabelOperator.sol";
+import "../utils/Helper.sol";
 import "./interfaces/IRegistry.sol";
 import "../lib/TldClass.sol";
 import "../wrapper/interfaces/IWrapper.sol";
 
-contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
+contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
   using AddressUpgradeable for address;
 
   bytes32 internal constant AT = keccak256(bytes("@"));
@@ -32,27 +31,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   mapping(bytes32 => mapping(bytes32 => mapping(bytes32 => mapping(address => bool)))) private _operators; // TLD => Domain => Host
 
-  /* ========== Validator ==========*/
-
-  modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
-    _;
-  }
-
-  modifier onlyRoot() {
-    require(hasRole(ROOT_ROLE, _msgSender()), "ONLY_ROOT");
-    _;
-  }
-
-  modifier onlyRegistrar() {
-    require(hasRole(REGISTRAR_ROLE, _msgSender()), "ONLY_REGISTRAR");
-    _;
-  }
-
-  modifier onlyResolver() {
-    require(hasRole(PUBLIC_RESOLVER_ROLE, _msgSender()), "ONLY_RESOLVER");
-    _;
-  }
+  /* ========== Helper ==========*/
 
   modifier onlyDomainOwner(bytes32 name, bytes32 tld) {
     require(_msgSender() == _records[tld].domains[name].owner, "ONLY_OWNER");
@@ -109,16 +88,14 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
 
   function __Registry_init() internal onlyInitializing {
     __Registry_init_unchained();
+    __UUPSUpgradeable_init();
     __AccessControl_init();
     __ERC165_init();
   }
 
   function __Registry_init_unchained() internal onlyInitializing {
-    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setRoleAdmin(REGISTRAR_ROLE, ADMIN_ROLE);
-    _setRoleAdmin(ROOT_ROLE, ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _setupRole(ADMIN_ROLE, _msgSender());
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
   }
 
   /* ========== Mutative ==========*/
@@ -131,7 +108,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     uint64 expires,
     bool enable,
     TldClass.TldClass class_
-  ) public onlyRoot {
+  ) public onlyRole(ROOT_ROLE) {
     require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
@@ -164,7 +141,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     address owner,
     address resolver,
     uint64 expires
-  ) public onlyRegistrar {
+  ) public onlyRole(REGISTRAR_ROLE) {
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
 
@@ -208,7 +185,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes memory name,
     bytes memory tld,
     uint16 ttl
-  ) public onlyResolver {
+  ) public onlyRole(PUBLIC_RESOLVER_ROLE) {
     require(isExists(keccak256(name), keccak256(tld)), "DOMAIN_NOT_EXIST");
 
     bool isExists_ = isExists(keccak256(host), keccak256(name), keccak256(tld));
@@ -235,7 +212,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   }
 
   //set tld resolve
-  function setResolver(bytes32 tld, address resolver_) public onlyRoot {
+  function setResolver(bytes32 tld, address resolver_) public onlyRole(ROOT_ROLE) {
     require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].resolver = resolver_;
     emit SetResolver(_records[tld].name, resolver_);
@@ -290,7 +267,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     emit SetOperator(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name), operator_, approved);
   }
 
-  function setEnable(bytes32 tld, bool enable) public onlyRoot {
+  function setEnable(bytes32 tld, bool enable) public onlyRole(ROOT_ROLE) {
     require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].enable = enable;
     emit SetEnable(_records[tld].name, enable);
@@ -300,7 +277,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes32 tld,
     bool enable,
     address address_
-  ) public onlyRoot {
+  ) public onlyRole(ROOT_ROLE) {
     WrapperRecord.WrapperRecord storage _wrapper = _records[tld].wrapper;
     _wrapper.enable = enable;
     _wrapper.address_ = address_;
@@ -340,7 +317,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     _records[tld].domains[name].hosts[host].user.user = user;
   }
 
-  function setExpires(bytes32 tld, uint64 expires) public onlyRoot {
+  function setExpires(bytes32 tld, uint64 expires) public onlyRole(ROOT_ROLE) {
     require(expires > _records[tld].expires && expires > block.timestamp, ""); // TODO:
     _records[tld].expires = expires;
     emit SetExpires(_records[tld].name, expires);
@@ -350,7 +327,7 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes32 name,
     bytes32 tld,
     uint64 expires
-  ) public onlyRegistrar onlyLiveDomain(name, tld) {
+  ) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
     require(expires > _records[tld].domains[name].expires && expires > block.timestamp, ""); // TODO:
     _records[tld].domains[name].expires = expires;
     emit SetExpires(_join(_records[tld].domains[name].name, _records[tld].name), expires);
@@ -529,15 +506,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     return _records[tld].enable;
   }
 
-  /* ========== Ownable ==========*/
-  function owner() public view returns (address) {
-    return _owner;
-  }
-
-  function setOwner(address newOwner) public onlyAdmin {
-    _owner = newOwner;
-  }
-
   /* ========== Utils ==========*/
 
   function getTokenId(bytes memory tld) public pure virtual returns (uint256) {
@@ -545,7 +513,6 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
   }
 
   function getTokenId(bytes memory name_, bytes memory tld) public pure virtual returns (uint256) {
-    require(_validDomain(name_), "INVALID_DOMAIN_NAME");
     return uint256(keccak256(_join(name_, tld)));
   }
 
@@ -554,11 +521,13 @@ contract Registry is IRegistry, LabelOperator, AccessControlUpgradeable {
     bytes memory name_,
     bytes memory tld
   ) public pure virtual returns (uint256) {
-    require(_validDomain(name_), "INVALID_DOMAIN_NAME");
-    require(_validHost(host), "INVALID_DOMAIN_NAME");
     return uint256(keccak256(_join(host, name_, tld)));
   }
 
+  /* ========== UUPS ==========*/
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
+  /* ========== ERC-165 ==========*/
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return interfaceID == type(IRegistry).interfaceId || super.supportsInterface(interfaceID);
   }

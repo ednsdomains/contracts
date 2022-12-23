@@ -6,11 +6,11 @@
 // import "./interfaces/IOmniRegistrarController.sol";
 // import "../registrar/interfaces/IOmniRegistrar.sol";
 // import "../utils/Synchronizer.sol";
-// import "../utils/LabelOperator.sol";
+// import "../utils/Helper.sol";
 // import "../oracle/interfaces/ITokenPriceOracle.sol";
 // import "../oracle/interfaces/IDomainPriceOracle.sol";
 
-// contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgradeable, LabelOperator {
+// contract OmniRegistrarController is IOmniRegistrarController, AccessControlUpgradeable, Helper {
 //   IERC20Upgradeable private _token;
 //   IOmniRegistrar private _registrar;
 //   IDomainPriceOracle private _domainPrice;
@@ -61,8 +61,8 @@
 //     _registrar = registrar_;
 //     COIN_IDS = coinIds;
 //     _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-//     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-//     _setupRole(ADMIN_ROLE, _msgSender());
+//     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+//     _grantRole(ADMIN_ROLE, _msgSender());
 //   }
 
 //   function isAvailable(bytes memory tld) public view returns (bool) {

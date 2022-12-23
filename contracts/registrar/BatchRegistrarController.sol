@@ -12,7 +12,6 @@ contract BatchRegistrarController is ContextUpgradeable {
     address owner,
     uint64[] memory expires
   ) public {
-    require(controller.hasRole(keccak256("OPERATOR_ROLE"), _msgSender()), "ONLY_OPERATOR");
     require(names.length == tlds.length && tlds.length == expires.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
       controller.register(names[i], tlds[i], owner, expires[i]);
@@ -43,7 +42,6 @@ contract BatchRegistrarController is ContextUpgradeable {
     bytes[] memory tlds,
     uint64[] memory expires
   ) public {
-    require(controller.hasRole(keccak256("OPERATOR_ROLE"), _msgSender()), "ONLY_OPERATOR");
     require(names.length == tlds.length && tlds.length == expires.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
       controller.renew(names[i], tlds[i], expires[i]);

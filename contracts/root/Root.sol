@@ -2,6 +2,8 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
 import "./interfaces/IRoot.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "../registrar/interfaces/IBaseRegistrar.sol";
@@ -9,7 +11,7 @@ import "../lib/TldClass.sol";
 import "../lib/WrapperRecord.sol";
 import "../wrapper/Wrapper.sol";
 
-contract Root is IRoot, AccessControlUpgradeable {
+contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
   IBaseRegistrar private _baseRegistrar;
 
@@ -28,14 +30,8 @@ contract Root is IRoot, AccessControlUpgradeable {
   function __Root_init_unchained(IRegistry registry_, IBaseRegistrar baseRegistrar_) internal onlyInitializing {
     _registry = registry_;
     _baseRegistrar = baseRegistrar_;
-    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _setupRole(ADMIN_ROLE, _msgSender());
-  }
-
-  modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
-    _;
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
   }
 
   function register(
@@ -44,23 +40,23 @@ contract Root is IRoot, AccessControlUpgradeable {
     uint64 expires,
     bool enable,
     TldClass.TldClass class_
-  ) public payable onlyAdmin {
+  ) public payable onlyRole(ADMIN_ROLE) {
     require(!_registry.isExists(keccak256(tld)), "TLD_EXISTS");
     _registry.setRecord(tld, address(this), resolver, expires, enable, class_);
   }
 
   // TODO:
-  function transfer(bytes memory tld, address newOwner) public onlyAdmin {
+  function transfer(bytes memory tld, address newOwner) public onlyRole(ADMIN_ROLE) {
     uint256 tokenId = _registry.getTokenId(tld);
     WrapperRecord.WrapperRecord memory _wrapper = _registry.getWrapper(keccak256(tld));
     Wrapper(_wrapper.address_).transferFrom(address(this), newOwner, tokenId);
   }
 
-  function setEnable(bytes memory tld, bool enable_) public payable onlyAdmin {
+  function setEnable(bytes memory tld, bool enable_) public payable onlyRole(ADMIN_ROLE) {
     _registry.setEnable(keccak256(tld), enable_);
   }
 
-  function setResolver(bytes memory tld, address resolver_) public payable onlyAdmin {
+  function setResolver(bytes memory tld, address resolver_) public payable onlyRole(ADMIN_ROLE) {
     _registry.setResolver(keccak256(tld), resolver_);
   }
 
@@ -68,7 +64,7 @@ contract Root is IRoot, AccessControlUpgradeable {
     bytes memory tld,
     address controller,
     bool approved
-  ) public onlyAdmin {
+  ) public onlyRole(ADMIN_ROLE) {
     _baseRegistrar.setControllerApproval(tld, controller, approved);
   }
 
@@ -84,10 +80,12 @@ contract Root is IRoot, AccessControlUpgradeable {
     return _authorizer;
   }
 
-  function setAuthorizer(address address_) public onlyAdmin {
+  function setAuthorizer(address address_) public onlyRole(ADMIN_ROLE) {
     _authorizer = address_;
     emit NewAuthorizer(address_);
   }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return interfaceID == type(IRoot).interfaceId || super.supportsInterface(interfaceID);

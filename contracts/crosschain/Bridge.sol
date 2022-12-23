@@ -20,18 +20,15 @@ contract Bridge is IBridge, PausableUpgradeable, AccessControlUpgradeable {
 
   function __Bridge_init_unchained(IRegistry registry_) internal onlyInitializing {
     _registry = registry_;
-    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _setupRole(ADMIN_ROLE, _msgSender());
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  function pause() public {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
+  function pause() public onlyRole(ADMIN_ROLE) {
     _pause();
   }
 
-  function unpause() public {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
+  function unpause() public onlyRole(ADMIN_ROLE){
     _unpause();
   }
 

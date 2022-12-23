@@ -1,47 +1,40 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "../utils/LabelOperator.sol";
+import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
+import "../resolver/interfaces/IPublicResolver.sol";
 import "./interfaces/IBaseRegistrar.sol";
-import "hardhat/console.sol";
 
-contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperator {
+contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Helper {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
 
   mapping(address => mapping(bytes32 => bool)) public controllers;
 
   IRegistry private _registry;
+  IPublicResolver private _resolver;
 
-  function initialize(IRegistry registry_) public initializer {
-    __BaseRegistrar_init(registry_);
+  function initialize(IRegistry registry_, IPublicResolver resolver_) public initializer {
+    __BaseRegistrar_init(registry_, resolver_);
   }
 
-  function __BaseRegistrar_init(IRegistry registry_) internal onlyInitializing {
-    __BaseRegistrar_init_unchained(registry_);
+  function __BaseRegistrar_init(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
+    __BaseRegistrar_init_unchained(registry_, resolver_);
     __AccessControl_init();
   }
 
-  function __BaseRegistrar_init_unchained(IRegistry registry_) internal onlyInitializing {
+  function __BaseRegistrar_init_unchained(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
     _registry = registry_;
+    _resolver = resolver_;
     _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(ROOT_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _setupRole(ADMIN_ROLE, _msgSender());
-  }
-
-  modifier onlyRoot() {
-    require(hasRole(ROOT_ROLE, _msgSender()), "ONLY_ROOT");
-    _;
-  }
-
-  modifier onlyAdmin() {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
-    _;
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
   }
 
   modifier onlyController(bytes32 tld) {
@@ -77,7 +70,7 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
     bytes memory tld,
     address controller,
     bool approved
-  ) external onlyRoot {
+  ) external onlyRole(ROOT_ROLE) {
     controllers[controller][keccak256(tld)] = approved;
     emit SetController(tld, controller, approved);
   }
@@ -88,7 +81,7 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
     address owner,
     uint64 expires
   ) external onlyController((keccak256(tld))) {
-    require(_validDomain(name), "INVALID_DOMAIN_NAME");
+    require(valid(name), "INVALID_DOMAIN_NAME");
     require(isAvailable(name, tld), "DOMAIN_NOT_AVAILABLE");
     require(expires + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
     _registry.setRecord(name, tld, owner, address(0), expires);
@@ -122,6 +115,8 @@ contract BaseRegistrar is IBaseRegistrar, AccessControlUpgradeable, LabelOperato
   //   _registry.setOwner(keccak256(name), keccak256(tld), owner);
   //   emit DomainReclaimed(name, tld, owner);
   // }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return super.supportsInterface(interfaceID);

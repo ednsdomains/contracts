@@ -9,7 +9,7 @@
 //     __Synchronizer_init(_lzChainId, _lzEndpoint);
 //   }
 
-//   function setRegistrar(IOmniRegistrar registrar_) public onlyAdmin {
+//   function setRegistrar(IOmniRegistrar registrar_) public onlyRole(ADMIN_ROLE) {
 //     _setTarget(address(registrar_));
 //   }
 // }

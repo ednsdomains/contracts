@@ -5,11 +5,11 @@
 // import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 // import "./interfaces/ISingletonRegistrar.sol";
 // import "./interfaces/ISingletonRegistrarController.sol";
-// import "../utils/LabelOperator.sol";
+// import "../utils/Helper.sol";
 // import "../oracle/interfaces/ITokenPriceOracle.sol";
 // import "../oracle/interfaces/IDomainPriceOracle.sol";
 
-// contract SingletonRegistrarController is ISingletonRegistrarController, AccessControlUpgradeable, LabelOperator {
+// contract SingletonRegistrarController is ISingletonRegistrarController, AccessControlUpgradeable, Helper {
 //   IERC20Upgradeable private _token;
 //   ISingletonRegistrar private _registrar;
 //   IDomainPriceOracle private _domainPrice;
@@ -60,8 +60,8 @@
 //     _registrar = registrar_;
 //     COIN_ID = coinId;
 //     _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-//     _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-//     _setupRole(ADMIN_ROLE, _msgSender());
+//     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+//     _grantRole(ADMIN_ROLE, _msgSender());
 //   }
 
 //   function isAvailable(bytes memory tld) public view returns (bool) {

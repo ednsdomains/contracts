@@ -8,43 +8,21 @@ import "./BaseRegistrarController.sol";
 import "../root/interfaces/IRoot.sol";
 
 contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegistrarController {
-  IERC20 private _token;
-  IBaseRegistrar private _registrar;
-  IRoot private _root;
-
-  uint256 private COIN_ID;
-
   function initialize(
     IERC20 token_,
     IBaseRegistrar registrar_,
     IRoot root_,
     uint256 coinId
   ) public initializer {
-    __UniversalRegistrarController_init(token_, registrar_, root_, coinId);
+    __BaseRegistrarController_init(token_, registrar_, root_, coinId);
+    __UniversalRegistrarController_init();
   }
 
-  function __UniversalRegistrarController_init(
-    IERC20 token_,
-    IBaseRegistrar registrar_,
-    IRoot root_,
-    uint256 coinId
-  ) internal onlyInitializing {
-    __BaseRegistrarController_init_unchained();
-    __UniversalRegistrarController_init_unchained(token_, registrar_, root_, coinId);
-    __AccessControl_init();
+  function __UniversalRegistrarController_init() internal onlyInitializing {
+    __UniversalRegistrarController_init_unchained();
   }
 
-  function __UniversalRegistrarController_init_unchained(
-    IERC20 token_,
-    IBaseRegistrar registrar_,
-    IRoot root_,
-    uint256 coinId
-  ) internal onlyInitializing {
-    _token = token_;
-    _registrar = registrar_;
-    _root = root_;
-    COIN_ID = coinId;
-  }
+  function __UniversalRegistrarController_init_unchained() internal onlyInitializing {}
 
   function isAvailable(bytes memory tld) public view returns (bool) {
     return _registrar.isAvailable(tld) && _registrar.isControllerApproved(keccak256(tld), address(this));
@@ -60,7 +38,7 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     bytes memory tld,
     address owner,
     uint64 expires
-  ) public onlyOperator {
+  ) public onlyRole(OPERATOR_ROLE) {
     _registrar.register(name, tld, owner, expires);
   }
 
@@ -79,7 +57,7 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     bytes memory name,
     bytes memory tld,
     uint64 expires
-  ) public onlyOperator {
+  ) public onlyRole(OPERATOR_ROLE) {
     _registrar.renew(name, tld, expires);
   }
 

@@ -1,16 +1,7 @@
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import NetworkConfig, { Network } from "../../network.config";
-import {
-  PublicResolver,
-  Registry,
-  Root,
-  ClassicalRegistrarController,
-  BaseRegistrar,
-  Root__factory,
-
-  UniversalRegistrarController,
-} from "../../typechain";
+import { PublicResolver, Registry, Root, ClassicalRegistrarController, BaseRegistrar, Root__factory, UniversalRegistrarController } from "../../typechain";
 
 export interface IDeployInput {
   signer: SignerWithAddress;

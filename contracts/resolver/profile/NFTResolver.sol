@@ -42,7 +42,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(_join(name, tld));
     } else {
-      require(_validHost(bytes(host)), "INVALID_HOST");
+      require(valid(bytes(host)), "INVALID_HOST");
       fqdn = keccak256(_join(host, name, tld));
     }
     _nfts[fqdn][chainId] = NFT({ contract_: contract_, tokenId: tokenId });

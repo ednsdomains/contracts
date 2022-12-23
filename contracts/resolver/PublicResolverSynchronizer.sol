@@ -15,7 +15,7 @@
 //     __Synchronizer_init(_lzChainId, _lzEndpoint);
 //   }
 
-//   function setResolver(IPublicResolver resolver_) public onlyAdmin {
+//   function setResolver(IPublicResolver resolver_) public onlyRole(ADMIN_ROLE) {
 //     _setTarget(address(resolver_));
 //   }
 

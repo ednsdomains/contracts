@@ -6,11 +6,12 @@ import "./interfaces/IWrapper.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 
-contract Wrapper is IWrapper, AccessControlUpgradeable {
+contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable {
   IRegistry private _registry;
 
   using AddressUpgradeable for address;
@@ -32,11 +33,6 @@ contract Wrapper is IWrapper, AccessControlUpgradeable {
     _;
   }
 
-  modifier onlyOperator() {
-    require(hasRole(OPERATOR_ROLE, _msgSender()), "ONLY_REGISTRY");
-    _;
-  }
-
   /* ========== Initializer ==========*/
 
   function initialize(
@@ -53,6 +49,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable {
     string memory symbol_
   ) internal onlyInitializing {
     __Wrapper_init_unchained(registry_, name_, symbol_);
+    __Ownable_init();
     __AccessControl_init();
     __ERC165_init();
   }
@@ -63,9 +60,8 @@ contract Wrapper is IWrapper, AccessControlUpgradeable {
     string memory symbol_
   ) internal onlyInitializing {
     _registry = registry_;
-    _setRoleAdmin(REGISTRY_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _setupRole(OPERATOR_ROLE, _msgSender());
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
     _name = name_;
     _symbol = symbol_;
   }
@@ -227,7 +223,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable {
     return _name;
   }
 
-  function setName(string memory name_) public onlyOperator {
+  function setName(string memory name_) public onlyRole(OPERATOR_ROLE) {
     _name = name_;
   }
 
@@ -235,7 +231,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable {
     return _symbol;
   }
 
-  function setSymbol(string memory symbol_) public onlyOperator {
+  function setSymbol(string memory symbol_) public onlyRole(OPERATOR_ROLE) {
     _symbol = symbol_;
   }
 
@@ -243,7 +239,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable {
     return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId_), "/", "body.json"));
   }
 
-  function setBaseURI(string memory baseURI_) public virtual onlyOperator {
+  function setBaseURI(string memory baseURI_) public virtual onlyRole(OPERATOR_ROLE) {
     __baseURI = bytes(baseURI_);
   }
 

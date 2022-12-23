@@ -19,7 +19,7 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(abi.encodePacked(_join(name, tld)));
     } else {
-      require(_validHost(bytes(host)), "INVALID_HOST");
+      require(valid(bytes(host)), "INVALID_HOST");
       fqdn = keccak256(abi.encodePacked(_join(host, name, tld)));
     }
     _multiCoinAddresses[fqdn][coin] = address_;
@@ -55,7 +55,7 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     if (keccak256(bytes(host)) == AT) {
       return _multiCoinAddresses[keccak256(_join(name, tld))][coin];
     } else {
-      require(_validHost(bytes(host)), "INVALID_HOST");
+      require(valid(bytes(host)), "INVALID_HOST");
       return _multiCoinAddresses[keccak256(_join(host, name, tld))][coin];
     }
   }
