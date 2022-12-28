@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "../BaseResolver.sol";
 import "./interfaces/ITypedTextResolver.sol";
@@ -32,7 +32,6 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
     bytes memory type_,
     string memory text
   ) public onlyLive(name, tld) {
-    _setHostRecord(host, name, tld);
     _setTypedText(host, name, tld, type_, text);
   }
 

@@ -15,7 +15,7 @@ dotenv.config();
 // https://hardhat.org/guides/compile-contracts/
 const config: HardhatUserConfig = {
   solidity: {
-    version: process.env.SOLIDITY_VERSION || "0.8.9",
+    version: process.env.SOLIDITY_VERSION || "0.8.17",
     settings: {
       optimizer: {
         enabled: true,
@@ -109,9 +109,6 @@ const config: HardhatUserConfig = {
       "BaseRegistrar",
       "ClassicalRegistrarController",
       "UniversalRegistrarController",
-      "SingletonRegistrarController",
-      "OmniRegistrarController",
-      "OmniRegistrarSynchronizer",
       "BatchRegistrarController",
       "PublicResolver",
       "Root",

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "../BaseResolver.sol";
 import "./interfaces/ITextResolver.sol";
@@ -14,7 +14,6 @@ abstract contract TextResolver is ITextResolver, BaseResolver {
     bytes memory tld,
     string memory text
   ) internal {
-    _setHostRecord(host, name, tld);
     bytes32 fqdn;
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(_join(name, tld));

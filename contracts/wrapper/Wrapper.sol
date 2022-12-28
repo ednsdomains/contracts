@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IWrapper.sol";
@@ -19,6 +19,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
   using StringsUpgradeable for uint256;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant RENTAL_ROLE = keccak256("RENTAL_ROLE");
 
   string private _name;
   string private _symbol;
@@ -73,8 +74,8 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     return _balances[owner_];
   }
 
-  function ownerOf(uint256 tokenId_) public view returns (address) {
-    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId_);
+  function ownerOf(uint256 tokenId) public view returns (address) {
+    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     if (_tokenRecord.type_ == RecordType.RecordType.TLD) {
       return _registry.getOwner(_tokenRecord.tld);
     } else if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN || _tokenRecord.type_ == RecordType.RecordType.HOST) {
@@ -120,18 +121,18 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
   function safeTransferFrom(
     address from,
     address to,
-    uint256 tokenId_,
+    uint256 tokenId,
     bytes memory _data
   ) public {
-    _safeTransfer(from, to, tokenId_, _data);
+    _safeTransfer(from, to, tokenId, _data);
   }
 
   function safeTransferFrom(
     address from,
     address to,
-    uint256 tokenId_
+    uint256 tokenId
   ) public {
-    safeTransferFrom(from, to, tokenId_, "");
+    safeTransferFrom(from, to, tokenId, "");
   }
 
   function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
@@ -154,15 +155,15 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     emit Approval(ownerOf(tokenId), to, tokenId);
   }
 
-  function approve(address to, uint256 tokenId_) public {
-    address owner = ownerOf(tokenId_);
+  function approve(address to, uint256 tokenId) public {
+    address owner = ownerOf(tokenId);
     require(to != owner, "ERC721: approval to current owner");
     require(_msgSender() == owner || isApprovedForAll(owner, _msgSender()), "ERC721: approve caller is not token owner or approved for all");
-    _approve(to, tokenId_);
+    _approve(to, tokenId);
   }
 
-  function getApproved(uint256 tokenId_) public view returns (address) {
-    return ownerOf(tokenId_);
+  function getApproved(uint256 tokenId) public view returns (address) {
+    return ownerOf(tokenId);
   }
 
   function _setApprovalForAll(
@@ -183,14 +184,15 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     return _operatorApprovals[owner][operator];
   }
 
-  function mint(address to, uint256 tokenId_) external onlyRegistry {
+  function mint(address to, uint256 tokenId) external onlyRegistry {
     _balances[to] += 1;
-    emit Transfer(address(0), to, tokenId_);
+    emit Transfer(address(0), to, tokenId);
   }
 
-  function burn(uint256 tokenId_) external onlyRegistry {
-    address owner = ownerOf(tokenId_);
-    emit Transfer(owner, address(0), tokenId_);
+  function burn(uint256 tokenId) external onlyRegistry {
+    address owner = ownerOf(tokenId);
+    delete _tokenApprovals[tokenId];
+    emit Transfer(owner, address(0), tokenId);
   }
 
   function _checkOnERC721Received(
@@ -235,8 +237,8 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     _symbol = symbol_;
   }
 
-  function tokenURI(uint256 tokenId_) public view returns (string memory) {
-    return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId_), "/", "body.json"));
+  function tokenURI(uint256 tokenId) public view returns (string memory) {
+    return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId), "/", "payload.json"));
   }
 
   function setBaseURI(string memory baseURI_) public virtual onlyRole(ADMIN_ROLE) {
@@ -250,8 +252,9 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     address user,
     uint64 expires
   ) public {
-    require(_msgSender() == ownerOf(tokenId) || _msgSender() == address(_registry), "ERC4907: forbidden access");
-    require(_msgSender() == userOf(tokenId) || userExpires(tokenId) <= block.timestamp, "ERC4907: user unavailable");
+    address owner = ownerOf(tokenId);
+    require(hasRole(RENTAL_ROLE, _msgSender()) || _msgSender() == owner, "ERC4907: forbidden access");
+    require(userExpires(tokenId) <= block.timestamp, "ERC4907: not expired");
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
       _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, user, expires);
@@ -289,6 +292,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
 
   function supportsInterface(bytes4 interfaceID) public view override(IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
     return
+      interfaceID == type(IWrapper).interfaceId ||
       interfaceID == type(IERC721Upgradeable).interfaceId ||
       interfaceID == type(IERC721MetadataUpgradeable).interfaceId ||
       interfaceID == type(IERC4907).interfaceId ||

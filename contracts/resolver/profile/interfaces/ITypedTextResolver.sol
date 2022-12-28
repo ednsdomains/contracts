@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 interface ITypedTextResolver {
   event SetTypedText(bytes host, bytes name, bytes tld, bytes type_, string text);

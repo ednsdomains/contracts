@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 interface IAddressResolver {
   event SetAddress(bytes host, bytes name, bytes tld, address address_);

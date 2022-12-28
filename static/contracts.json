@@ -2,7 +2,7 @@
   "1": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -13,7 +13,7 @@
   "5": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -24,7 +24,7 @@
   "10": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -35,7 +35,7 @@
   "56": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -46,7 +46,7 @@
   "65": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -57,7 +57,7 @@
   "66": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -68,7 +68,7 @@
   "69": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -79,7 +79,7 @@
   "97": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -90,7 +90,7 @@
   "100": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -101,7 +101,7 @@
   "106": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -112,7 +112,7 @@
   "111": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -123,7 +123,7 @@
   "128": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -134,7 +134,7 @@
   "137": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -145,7 +145,7 @@
   "250": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -156,7 +156,7 @@
   "256": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -167,7 +167,7 @@
   "321": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -178,7 +178,7 @@
   "322": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -189,7 +189,7 @@
   "1284": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -200,7 +200,7 @@
   "1285": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -211,7 +211,7 @@
   "4689": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -222,7 +222,7 @@
   "4690": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -233,7 +233,7 @@
   "80001": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -244,7 +244,7 @@
   "43114": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -255,7 +255,7 @@
   "43113": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -267,7 +267,7 @@
   "4002": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -278,7 +278,7 @@
   "42161": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",
@@ -289,7 +289,7 @@
   "421611": {
     "Registry": "",
     "PublicResolver": "",
-    "BaseRegistrar": "",
+    "Registrar": "",
     "ClassicalRegistrarController": "",
     "SingletonRegistrarController": "",
     "Root": "",

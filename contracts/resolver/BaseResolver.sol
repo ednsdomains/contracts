@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -51,10 +51,21 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
 
-    if (host_ == AT) {
-      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender()) || _msgSender() == address(_registry);
+    if (_registry.getUser(host_, domain_, tld_) == _registry.getOwner(domain_, tld_)) {
+      return
+        _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
     } else {
-      return _registry.getUser(host_, domain_, tld_) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender()) || _msgSender() == address(_registry);
+      return _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(host_, domain_, tld_, _msgSender());
+    }
+
+    if (host_ == AT) {
+      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
+    } else {
+      if (!_registry.isExists(host_, domain_, tld_)) {
+        return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
+      } else {
+        return _registry.getUser(host_, domain_, tld_) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
+      }
     }
   }
 
@@ -62,18 +73,5 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
     return _registry.isLive(domain_, tld_);
-  }
-
-  function _setHostRecord(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) internal {
-    bytes32 host_ = keccak256(host);
-    bytes32 domain_ = keccak256(name);
-    bytes32 tld_ = keccak256(tld);
-    if (!_registry.isExists(host_, domain_, tld_)) {
-      _registry.setRecord(host, name, tld, 3600); // Default 1 hour
-    }
   }
 }

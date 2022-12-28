@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 interface INFTResolver {
   event SetNFT(bytes host, bytes name, bytes tld, uint256 chainId, address contractAddress, uint256 tokenId);

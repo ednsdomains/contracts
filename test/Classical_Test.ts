@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 import { BaseRegistrar, ClassicalRegistrarController, PublicResolver, PublicResolver__factory, Registry, Registry__factory } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import {address} from "hardhat/internal/core/config/config-validation";
+import { address } from "hardhat/internal/core/config/config-validation";
 
 describe("Classical Test", function () {
   let addr1: SignerWithAddress[];
@@ -31,7 +31,7 @@ describe("Classical Test", function () {
     use_registry = RegistryFactory.attach(_registry.address);
     expect(use_registry.address).not.equal(null);
     use_registry_ac2 = await Registry__factory.connect(_registry.address, addr1[1]);
-    console.log("Deployed Registry")
+    console.log("Deployed Registry");
     // //Deploy Token
     // const TokenFactory = await ethers.getContractFactory("Token");
     // const _token = await upgrades.deployProxy(TokenFactory, [await fakeLzEndpointMock.callStatic.getChainId(), fakeLzEndpointMock.address]);
@@ -67,7 +67,7 @@ describe("Classical Test", function () {
     const publicResolverSynchronizer = PublicResolverSynchronizerFactory.attach(_publicResolverSynchronizer.address);
 
     expect(publicResolverSynchronizer.address).not.equal(null);
-    console.log("Deployed PublicResolverSynchronizer")
+    console.log("Deployed PublicResolverSynchronizer");
 
     //Deploy PublicResolver
     const PublicResolver = await ethers.getContractFactory("PublicResolver");
@@ -77,8 +77,7 @@ describe("Classical Test", function () {
     use_publicResolver_ac2 = PublicResolver__factory.connect(_publicResolver.address, addr1[1]);
     expect(_publicResolver.address).not.equal(null);
 
-
-    console.log("Deployed PublicResolver")
+    console.log("Deployed PublicResolver");
     //Deploy BaseRegistrar
     const BaseRegistrar = await ethers.getContractFactory("BaseRegistrar");
     const _baseRegistrar = await upgrades.deployProxy(BaseRegistrar, [_registry.address]);
@@ -86,7 +85,7 @@ describe("Classical Test", function () {
     use_baseRegistrar = BaseRegistrar.attach(_baseRegistrar.address);
     expect(_baseRegistrar.address).not.equal(null);
 
-    console.log("Deployed BaseRegistrar")
+    console.log("Deployed BaseRegistrar");
     //Deploy ClassicalRegistrarController
     const ClassicalRegistrarController = await ethers.getContractFactory("ClassicalRegistrarController");
     const _classicalRegistrarController = await upgrades.deployProxy(ClassicalRegistrarController, [
@@ -98,7 +97,7 @@ describe("Classical Test", function () {
     await _classicalRegistrarController.deployed();
     use_classicalRegistrarController = ClassicalRegistrarController.attach(_classicalRegistrarController.address);
     expect(use_classicalRegistrarController.address).not.equal(null);
-    console.log("Deployed ClassicalRegistrarController")
+    console.log("Deployed ClassicalRegistrarController");
 
     await publicResolverSynchronizer.setResolver(use_publicResolver.address);
     await use_registry.grantRole(await use_registry.PUBLIC_RESOLVER_ROLE(), use_publicResolver.address);
@@ -153,7 +152,9 @@ describe("Classical Test", function () {
   it("Set Multi Text (Domain & Sub Domain)", async () => {
     // await use_publicResolver.setMultiText(hostNode, nameNode, tldNode, "github", "0x14A1A496fABc43bFAfC358005dE336a7B5222b20");
     await use_publicResolver.setTypedText(subHostNode, nameNode, tldNode, ethers.utils.toUtf8Bytes("github"), "0x14A1A496fABc43bFAfC358005dE336a7B5222b20");
-    expect((await use_publicResolver.getTypedText(subHostNode, nameNode, tldNode, ethers.utils.toUtf8Bytes("github"))).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
+    expect((await use_publicResolver.getTypedText(subHostNode, nameNode, tldNode, ethers.utils.toUtf8Bytes("github"))).toLowerCase()).to.equal(
+      "0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase(),
+    );
   });
 
   it("Set Coins Address Record", async () => {
@@ -217,7 +218,9 @@ describe("Classical Test", function () {
     try {
       await use_publicResolver.setTypedText(subHostNode, nameNode, tldNode, ethers.utils.toUtf8Bytes("github"), "old Owner");
     } catch (e) {
-      expect((await use_publicResolver.getTypedText(subHostNode, nameNode, tldNode, ethers.utils.toUtf8Bytes("github"))).toLowerCase()).to.equal("0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase());
+      expect((await use_publicResolver.getTypedText(subHostNode, nameNode, tldNode, ethers.utils.toUtf8Bytes("github"))).toLowerCase()).to.equal(
+        "0x14A1A496fABc43bFAfC358005dE336a7B5222b20".toLowerCase(),
+      );
     }
   });
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 interface IMultiCoinAddressResolver {
   event SetMultiCoinAddress(bytes host, bytes name, bytes tld, uint256 coin, bytes address_);

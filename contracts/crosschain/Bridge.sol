@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IBridge.sol";
@@ -28,7 +28,7 @@ contract Bridge is IBridge, PausableUpgradeable, AccessControlUpgradeable {
     _pause();
   }
 
-  function unpause() public onlyRole(ADMIN_ROLE){
+  function unpause() public onlyRole(ADMIN_ROLE) {
     _unpause();
   }
 

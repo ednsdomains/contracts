@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "../BaseResolver.sol";
 import "./interfaces/IMultiCoinAddressResolver.sol";
@@ -14,7 +14,6 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     uint256 coin,
     bytes memory address_
   ) internal {
-    _setHostRecord(host, name, tld);
     bytes32 fqdn;
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(abi.encodePacked(_join(name, tld)));

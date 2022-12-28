@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 
 import "../BaseResolver.sol";
 import "./interfaces/INFTResolver.sol";
@@ -37,7 +37,6 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     address contract_,
     uint256 tokenId
   ) internal {
-    _setHostRecord(host, name, tld);
     bytes32 fqdn;
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(_join(name, tld));

@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.13;
 import "../../lib/TldClass.sol";
 import "../../lib/TokenRecord.sol";
 import "../../lib/TldRecord.sol";
@@ -179,14 +179,6 @@ interface IRegistry {
     bytes32 name,
     bytes32 tld,
     address _operator
-  ) external view returns (bool);
-
-  function isOperator(bytes32 name, bytes32 tld) external view returns (bool);
-
-  function isOperator(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
   ) external view returns (bool);
 
   function isLive(bytes32 name, bytes32 tld) external view returns (bool);
