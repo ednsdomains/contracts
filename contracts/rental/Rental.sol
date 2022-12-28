@@ -41,8 +41,8 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
     require(block.timestamp + MINIMUM_RENTAL_PERIOD >= IWrapper(wrapper).userExpires(tokenId), ""); // TODO
     require(amount > 0, ""); // TODO:
     require(IWrapper(wrapper).userOf(tokenId) == _msgSender(), ""); // TODO:
-    require(IWrapper(wrapper).isApprovedForAll(_msgSender(), address(this)), "");
 
+    if (_orders[tokenId].creator != address(0)) delete _orders[tokenId];
     _orders[tokenId] = Order({ creator: _msgSender(), expires: expires, amount: amount });
 
     emit Listed(tokenId, expires, amount);
@@ -60,8 +60,8 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
     address newUser
   ) public whenNotPaused {
     require(IWrapper(wrapper).supportsInterface(type(IWrapper).interfaceId), ""); // TODO:
-    require(IWrapper(wrapper).userOf(tokenId) == _orders[tokenId].creator && IWrapper(wrapper).userExpires(tokenId) > block.timestamp, ""); // TODO:
-    require(_token.balanceOf(_msgSender()) >= _orders[tokenId].amount && _token.allowance(_msgSender(), address(this)) >= _orders[tokenId].amount, "INSUFFICIENT_FUND"); // TODO:
+    require(IWrapper(wrapper).userOf(tokenId) == _orders[tokenId].creator && IWrapper(wrapper).userExpires(tokenId) > block.timestamp + MINIMUM_RENTAL_PERIOD, ""); // TODO:
+    require(_token.balanceOf(_msgSender()) >= _orders[tokenId].amount && _token.allowance(_msgSender(), address(this)) >= _orders[tokenId].amount, "INSUFFICIENT_FUND");
 
     _token.transferFrom(_msgSender(), _orders[tokenId].creator, _orders[tokenId].amount);
 

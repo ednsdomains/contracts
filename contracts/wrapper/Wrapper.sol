@@ -124,6 +124,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     uint256 tokenId,
     bytes memory _data
   ) public {
+    require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
     _safeTransfer(from, to, tokenId, _data);
   }
 
@@ -252,10 +253,14 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     address user,
     uint64 expires
   ) public {
-    address owner = ownerOf(tokenId);
-    require(hasRole(RENTAL_ROLE, _msgSender()) || _msgSender() == owner, "ERC4907: forbidden access");
-    require(userExpires(tokenId) <= block.timestamp, "ERC4907: not expired");
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    require(
+      hasRole(RENTAL_ROLE, _msgSender()) ||
+        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) == _msgSender() && expires <= _registry.getExpires(_tokenRecord.domain, _tokenRecord.tld)) || // User is Owner
+        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) != _msgSender() && userExpires(tokenId) <= block.timestamp) || // User is NOT Owner, but user expires
+        (userOf(tokenId) == _msgSender() && userExpires(tokenId) > block.timestamp && userExpires(tokenId) >= expires),
+      "ERC4907: forbidden access"
+    );
     if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
       _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, user, expires);
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {

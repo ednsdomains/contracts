@@ -200,7 +200,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
 
-    require(isExists(name_, tld_), "DOMAIN_NOT_EXIST");
     require(!isExists(host_, name_, tld_), "HOST_ALREADY_EXIST");
 
     HostRecord.HostRecord storage _record = _records[tld_].domains[name_].hosts[host_];
@@ -225,7 +224,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes memory name,
     bytes memory tld,
     uint16 ttl
-  ) public onlyDomainUserOrOperator(keccak256(name), keccak256(tld)) {
+  ) public onlyDomainUserOrOperator(keccak256(name), keccak256(tld)) onlyLiveDomain(keccak256(name), keccak256(tld)) {
     _setRecord(host, name, tld, ttl);
   }
 
@@ -240,7 +239,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 name,
     bytes32 tld,
     address resolver_
-  ) public onlyLiveDomain(name, tld) onlyDomainUserOrOperator(name, tld) {
+  ) public onlyDomainUserOrOperator(name, tld) onlyLiveDomain(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].resolver = resolver_;
     emit SetResolver(_join(_records[tld].domains[name].name, _records[tld].name), resolver_);
@@ -267,7 +266,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 tld,
     address operator_,
     bool approved
-  ) public onlyLiveDomain(name, tld) onlyDomainOwner(name, tld) {
+  ) public onlyDomainUser(name, tld) onlyLiveDomain(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].operators[operator_] = approved;
     // _domainOperators[tld][name][operator_] = approved;
@@ -280,7 +279,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 tld,
     address operator_,
     bool approved
-  ) public onlyLiveDomain(name, tld) onlyHostUser(host, name, tld) {
+  ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXIST");
     _records[tld].domains[name].hosts[host].operators[operator_] = approved;
     // _hostOperators[tld][name][host][operator_] = approved;
