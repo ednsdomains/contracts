@@ -1,7 +1,7 @@
 {
   "name": "edns-contracts",
   "scripts": {
-    "evm:compile": "hardhat compile",
+    "eth:compile": "hardhat compile",
     "tron:compile": "tronbox compile",
     "prettier": "prettier --write contracts/**/*.sol scripts/**/*.ts test/**/*.ts"
   },
@@ -18,8 +18,9 @@
     "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^2.3.1",
     "@types/chai": "^4.3.0",
+    "@types/lodash": "^4.14.191",
     "@types/mocha": "^9.1.0",
-    "@types/node": "^12.20.46",
+    "@types/node": "^12.20.55",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.6",
@@ -40,10 +41,16 @@
     "lodash": "^4.17.21",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "reflect-metadata": "^0.1.13",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.19",
+    "sqlite3": "^5.1.4",
     "ts-node": "^10.5.0",
     "typechain": "^5.2.0",
+    "typeorm": "^0.3.11",
     "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@metamask/slip44": "^2.1.0"
   }
 }

@@ -1,34 +1,20 @@
 import { ethers } from "hardhat";
-import { Network } from "../../network.config";
-import Tlds from "../../static/tlds.json";
-import { IContracts } from "../interfaces/contracts";
+import { getClassicalTlds, getUniversalTlds } from "./get-tlds";
+import { IContracts } from "./interfaces/contracts";
 
 export interface ISetupInput {
+  chainId: number;
   contracts: IContracts;
-  network: Network;
 }
 
-// export const setupPublicResolverSynchronizer = async (input: ISetupInput) => {
-//   // Set Trust Remote
-//   for (const network_ of input.networks) {
-//     if (network_ !== input.network) {
-//       const isTrustedRemote = await input.contracts[input.network].PublicResolverSynchronizer.isTrustedRemote(
-//         NetworkConfig[network_].layerzero.chainId,
-//         input.contracts[network_].Token.address,
-//       );
-//       if (!isTrustedRemote) {
-//         await input.contracts[input.network].PublicResolverSynchronizer.setTrustedRemote(
-//           NetworkConfig[network_].layerzero.chainId,
-//           input.contracts[network_].PublicResolverSynchronizer.address,
-//         );
-//       }
-//     }
-//   }
-//   // Set the `PublicResolver` address for the `Synchronizer`
-//   await input.contracts[input.network].PublicResolverSynchronizer.setResolver(input.contracts[input.network].PublicResolver.address);
-// };
-
 export const setupRegistry = async (input: ISetupInput) => {
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
+
+  //=== Grant different Roles to different deployed contracts ==//
   const tx1 = await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
   await tx1.wait();
   const tx2 = await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
@@ -44,6 +30,9 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
 };
 
 export const setupRegistrar = async (input: ISetupInput) => {
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+
   const tx = await input.contracts.Registrar.grantRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address);
   await tx.wait();
 };
@@ -53,38 +42,45 @@ export const setupPublicResolver = async (input: ISetupInput) => {
 };
 
 export const setupRoot = async (input: ISetupInput) => {
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
+
   //====================//
   //== Classical TLDs ==//
   //====================//
-  for (const tld_ of Tlds.classical[input.network]) {
-    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-    const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
-    await tx.wait();
-  }
-  //====================//
-  //== Universal TLDs ==//
-  //====================//
-  for (const tld_ of Tlds.universal.mainnet) {
-    if (tld_.chainIds.includes(input.network)) {
-      const _tld_ = ethers.utils.toUtf8Bytes(tld_.name);
-      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
+  const classical = await getClassicalTlds(input.chainId);
+  if (classical) {
+    for (const tld_ of classical) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
       await tx.wait();
     }
   }
-  for (const tld_ of Tlds.universal.testnet) {
-    if (tld_.chainIds.includes(input.network)) {
-      const _tld_ = ethers.utils.toUtf8Bytes(tld_.name);
-      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
+
+  //====================//
+  //== Universal TLDs ==//
+  //====================//
+  const universal = await getUniversalTlds(input.chainId);
+  if (universal) {
+    for (const tld_ of universal) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
       await tx.wait();
     }
   }
 };
 
 export const setupClassicalRegistrarController = async (input: ISetupInput) => {
-  for (const tld_ of Tlds.classical[input.network]) {
-    const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-    const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-    await tx.wait();
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
+
+  const classical = await getClassicalTlds(input.chainId);
+  if (classical) {
+    for (const tld_ of classical) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+      const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+      await tx.wait();
+    }
   }
 };
 

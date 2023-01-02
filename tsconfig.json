@@ -6,7 +6,10 @@
     "esModuleInterop": true,
     "outDir": "dist",
     "declaration": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["./scripts", "./test", "./typechain", "playground.ts"],
   "files": ["./hardhat.config.ts"]

@@ -2,14 +2,19 @@ import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import NetworkConfig from "../../network.config";
 import { PublicResolver, Registry, Root, ClassicalRegistrarController, Registrar, Wrapper, TokenMock } from "../../typechain";
+import { ContractName } from "./constants/contract-name";
+import { Contract, Transaction } from "ethers";
+import { getAllContractsData, getContractAddress, isContractDeployed } from "./get-contracts";
+import { getBalance } from "./get-balance";
+import _ from "lodash";
 
 export interface IDeployArgs {
-  deployer?: SignerWithAddress;
+  deployer: SignerWithAddress;
 }
 
 export interface IDeployRegistryInput {}
 
-export interface IDeployDefaultWrapperInput {
+export interface IDeployWrapperInput {
   Registry: Registry;
   NFT_NAME: string;
   NFT_SYMBOL: string;
@@ -55,59 +60,67 @@ export interface IDeployBridgeInput {}
 
 export interface IDeploySynchronizerInput {}
 
-export const deployRegistry = async (args?: IDeployArgs): Promise<Registry> => {
+export const deployRegistry = async (args: IDeployArgs): Promise<Registry> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "Registry");
   const RegistryFactory = await ethers.getContractFactory("Registry", args?.deployer);
   const _registry = await upgrades.deployProxy(RegistryFactory, { kind: "uups" });
   await _registry.deployed();
+  await _afterDeploy(await args.deployer.getChainId(), "Registry", _registry, _registry.deployTransaction);
   const registry = RegistryFactory.attach(_registry.address);
-  console.log(`Registry Deployed - ${registry.address}`);
   return registry;
 };
 
-export const deployDefaultWrapper = async (input: IDeployDefaultWrapperInput, args?: IDeployArgs): Promise<Wrapper> => {
+export const deployWrapper = async (input: IDeployWrapperInput, args: IDeployArgs): Promise<Wrapper> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "DefaultWrapper");
   const WrapperFactory = await ethers.getContractFactory("Wrapper", args?.deployer);
   const _wrapper = await upgrades.deployProxy(WrapperFactory, [input.Registry.address, input.NFT_NAME, input.NFT_SYMBOL], { kind: "uups" });
   await _wrapper.deployed();
+  await _afterDeploy(await args.deployer.getChainId(), "DefaultWrapper", _wrapper, _wrapper.deployTransaction);
+
   const wrapper = WrapperFactory.attach(_wrapper.address);
-  console.log(`Default Wrapper Deployed - ${wrapper.address}`);
   return wrapper;
 };
 
-export const deployPublicResolver = async (input: IDeployPublicResolverInput, args?: IDeployArgs): Promise<PublicResolver> => {
+export const deployPublicResolver = async (input: IDeployPublicResolverInput, args: IDeployArgs): Promise<PublicResolver> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "PublicResolver");
   const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", args?.deployer);
   const _publicResolver = await upgrades.deployProxy(PublicResolverFactory, [input.Registry.address], { kind: "uups", unsafeAllow: ["delegatecall"] });
   await _publicResolver.deployed();
+  await _afterDeploy(await args.deployer.getChainId(), "PublicResolver", _publicResolver, _publicResolver.deployTransaction);
   const publicResolver = PublicResolverFactory.attach(_publicResolver.address);
-  console.log(`PublicResolver Deployed - ${publicResolver.address}`);
   return publicResolver;
 };
 
-export const deployRegistrar = async (input: IDeployRegistrarInput, args?: IDeployArgs): Promise<Registrar> => {
+export const deployRegistrar = async (input: IDeployRegistrarInput, args: IDeployArgs): Promise<Registrar> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "Registrar");
   const RegistrarFactory = await ethers.getContractFactory("Registrar", args?.deployer);
-  const _baseRegistrar = await upgrades.deployProxy(RegistrarFactory, [input.Registry.address, input.PublicResolver.address], { kind: "uups" });
-  await _baseRegistrar.deployed();
-  const registrar = RegistrarFactory.attach(_baseRegistrar.address);
-  console.log(`Registrar Deployed - ${registrar.address}`);
+  const _registrar = await upgrades.deployProxy(RegistrarFactory, [input.Registry.address, input.PublicResolver.address], { kind: "uups" });
+  await _registrar.deployed();
+  await _afterDeploy(await args.deployer.getChainId(), "Registrar", _registrar, _registrar.deployTransaction);
+  const registrar = RegistrarFactory.attach(_registrar.address);
   return registrar;
 };
 
-export const deployRoot = async (input: IDeployRootInput, args?: IDeployArgs): Promise<Root> => {
+export const deployRoot = async (input: IDeployRootInput, args: IDeployArgs): Promise<Root> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "Root");
   const RootFactory = await ethers.getContractFactory("Root", args?.deployer);
   const _root = await upgrades.deployProxy(RootFactory, [input.Registry.address, input.Registrar.address], { kind: "uups" });
+  _root.deployTransaction;
   await _root.deployed();
+  await _afterDeploy(await args.deployer.getChainId(), "Root", _root, _root.deployTransaction);
   const root = RootFactory.attach(_root.address);
-  console.log(`Root Deployed - ${root.address}`);
   return root;
 };
 
-export const deployTokenMock = async (args?: IDeployArgs): Promise<TokenMock> => {
+export const deployTokenMock = async (args: IDeployArgs): Promise<TokenMock> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "Token");
   const TokenMockFactory = await ethers.getContractFactory("TokenMock", args?.deployer);
   const tokenMock = await TokenMockFactory.deploy();
-  console.log(`TokenMock Deployed - ${tokenMock.address}`);
   return tokenMock;
 };
 
-export const deployClassicalRegistrarController = async (input: IDeployClassicalRegistrarControllerInput, args?: IDeployArgs): Promise<ClassicalRegistrarController> => {
+export const deployClassicalRegistrarController = async (input: IDeployClassicalRegistrarControllerInput, args: IDeployArgs): Promise<ClassicalRegistrarController> => {
+  await _beforeDeploy(args.deployer, await args.deployer.getChainId(), "ClassicalRegistrarController");
   const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", args?.deployer);
   const _classicalRegistrarController = await upgrades.deployProxy(ClassicalRegistrarControllerFactory, [
     input.TOKEN_ADDRESS,
@@ -116,9 +129,32 @@ export const deployClassicalRegistrarController = async (input: IDeployClassical
     input.COIN_ID,
   ]);
   await _classicalRegistrarController.deployed();
+  await _afterDeploy(await args.deployer.getChainId(), "ClassicalRegistrarController", _classicalRegistrarController, _classicalRegistrarController.deployTransaction);
   const classicalRegistrarController = ClassicalRegistrarControllerFactory.attach(_classicalRegistrarController.address);
-  console.log(`ClassicalRegistrarController Deployed - ${classicalRegistrarController.address}`);
   return classicalRegistrarController;
+};
+
+const _beforeDeploy = async (deployer: SignerWithAddress, chainId: number, name: ContractName) => {
+  // Check is the contract already deployed on to the chain
+  const isDeployed = await isContractDeployed(chainId, name);
+  if (isDeployed) throw new Error(`${name} is already deployed - [${await getContractAddress(chainId, name)})}]`);
+
+  // Check is the deployer account has enough balance
+  const balance = await getBalance(deployer);
+  if (balance.eq(0)) throw new Error(`Deployer account ${deployer.address} has [0] balance`);
+};
+
+const _afterDeploy = async (chainId: number, name: ContractName, contract: Contract, tx: Transaction) => {
+  console.log(`Contract [${name}] has been deployed on [${NetworkConfig[chainId].name}] - Address: [${contract.address}] || Tx: [${tx.hash || "N/A"}]`);
+  const ALL_CONTRACTS_DATA = await getAllContractsData();
+  const index = ALL_CONTRACTS_DATA.findIndex((c) => c.chainId === chainId);
+  if (index) {
+    ALL_CONTRACTS_DATA[index].addresses[name] = contract.address;
+  } else {
+    const _contract = _.clone(ALL_CONTRACTS_DATA.find((c) => c.chainId === 0));
+    if (!_contract) throw new Error("");
+    _contract.addresses[name] = contract.address;
+  }
 };
 
 //

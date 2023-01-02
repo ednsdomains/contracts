@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers, upgrades } from "hardhat";
-import { IContracts } from "../interfaces/contracts";
+import { IContracts } from "./interfaces/contracts";
 
 export interface IUpgradeInput {
   contracts: IContracts;

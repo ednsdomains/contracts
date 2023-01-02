@@ -1,5 +1,5 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { IContracts } from "../../scripts/interfaces/contracts";
+import { IContracts } from "../../scripts/src/interfaces/contracts";
 import { deployDefaultWrapper, deployPublicResolver, deployRegistrar, deployRegistry, deployRoot } from "../../scripts/src/deploy";
 
 export interface IDeployContractsInput {
