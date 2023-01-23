@@ -251,24 +251,24 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
   function setUser(
     uint256 tokenId,
     address user,
-    uint64 expires
+    uint64 expiry
   ) public {
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     require(
       hasRole(RENTAL_ROLE, _msgSender()) ||
-        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) == _msgSender() && expires <= _registry.getExpires(_tokenRecord.domain, _tokenRecord.tld)) || // User is Owner
-        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) != _msgSender() && userExpires(tokenId) <= block.timestamp) || // User is NOT Owner, but user expires
-        (userOf(tokenId) == _msgSender() && userExpires(tokenId) > block.timestamp && userExpires(tokenId) >= expires),
+        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) == _msgSender() && expiry <= _registry.getExpiry(_tokenRecord.domain, _tokenRecord.tld)) || // User is Owner
+        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) != _msgSender() && userExpiry(tokenId) <= block.timestamp) || // User is NOT Owner, but user expiry
+        (userOf(tokenId) == _msgSender() && userExpiry(tokenId) > block.timestamp && userExpiry(tokenId) >= expiry),
       "ERC4907: forbidden access"
     );
     if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
-      _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, user, expires);
+      _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, user, expiry);
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
-      _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, user, expires);
+      _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, user, expiry);
     } else {
       revert(""); // TODO:
     }
-    emit UpdateUser(tokenId, user, expires);
+    emit UpdateUser(tokenId, user, expiry);
   }
 
   function userOf(uint256 tokenId) public view returns (address) {
@@ -282,12 +282,12 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     }
   }
 
-  function userExpires(uint256 tokenId) public view returns (uint256) {
+  function userExpiry(uint256 tokenId) public view returns (uint256) {
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
-      return _registry.getUserExpires(_tokenRecord.domain, _tokenRecord.tld);
+      return _registry.getUserExpiry(_tokenRecord.domain, _tokenRecord.tld);
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
-      return _registry.getUserExpires(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
+      return _registry.getUserExpiry(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert(""); // TODO:
     }

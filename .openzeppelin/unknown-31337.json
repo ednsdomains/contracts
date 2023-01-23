@@ -3179,21 +3179,12 @@
           },
           "t_enum(RecordType)8070": {
             "label": "enum IRegistry.RecordType",
-            "members": [
-              "TLD",
-              "DOMAIN",
-              "HOST"
-            ],
+            "members": ["TLD", "DOMAIN", "HOST"],
             "numberOfBytes": "1"
           },
           "t_enum(TldClass)8433": {
             "label": "enum TldClass.TldClass",
-            "members": [
-              "CLASSICAL",
-              "SINGLETON",
-              "OMNI",
-              "UNIVERSAL"
-            ],
+            "members": ["CLASSICAL", "SINGLETON", "OMNI", "UNIVERSAL"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -3254,7 +3245,7 @@
                 "slot": "2"
               },
               {
-                "label": "expires",
+                "label": "expiry",
                 "type": "t_uint64",
                 "offset": 20,
                 "slot": "2"
@@ -3314,7 +3305,7 @@
                 "slot": "0"
               },
               {
-                "label": "expires",
+                "label": "expiry",
                 "type": "t_uint64",
                 "offset": 20,
                 "slot": "0"

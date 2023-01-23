@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 interface ILegacyBaseRegistrar {
-  function nameExpires(uint256 id) external view returns (uint256);
+  function nameExpiry(uint256 id) external view returns (uint256);
 
   function deregister(uint256 id) external;
 

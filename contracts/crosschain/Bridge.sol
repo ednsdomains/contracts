@@ -38,6 +38,6 @@ contract Bridge is IBridge, PausableUpgradeable, AccessControlUpgradeable {
     bytes32 name,
     bytes32 tld,
     address owner,
-    uint256 expires
+    uint256 expiry
   ) public whenNotPaused {}
 }

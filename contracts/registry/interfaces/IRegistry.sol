@@ -10,16 +10,16 @@ import "../../lib/WrapperRecord.sol";
 interface IRegistry {
   /* ========== Event ==========*/
   event NewTld(TldClass.TldClass class, bytes tld, address owner);
-  event NewDomain(bytes name, bytes tld, address owner, uint64 expires);
+  event NewDomain(bytes name, bytes tld, address owner, uint64 expiry);
   event NewHost(bytes host, bytes name, bytes tld);
 
   event SetResolver(bytes fqdn, address newResolver);
   event SetOperator(bytes fqdn, address operator, bool approved);
   event SetWrapper(bytes fqdn, address address_, bool enable);
-  event SetUser(bytes fqdn, address newUser, uint64 expires);
+  event SetUser(bytes fqdn, address newUser, uint64 expiry);
   event SetOwner(bytes fqdn, address owner);
   event SetEnable(bytes fqdn, bool enable);
-  event SetExpires(bytes fqdn, uint64 expires);
+  event SetExpiry(bytes fqdn, uint64 expiry);
 
   event RemoveHost(bytes fqdn);
 
@@ -28,7 +28,7 @@ interface IRegistry {
     bytes memory tld,
     address owner,
     address resolver,
-    uint64 expires,
+    uint64 expiry,
     bool enable,
     TldClass.TldClass class_
   ) external;
@@ -38,7 +38,7 @@ interface IRegistry {
     bytes memory tld,
     address owner,
     address resolver,
-    uint64 expires
+    uint64 expiry
   ) external;
 
   function setRecord(
@@ -91,7 +91,7 @@ interface IRegistry {
     bytes32 name,
     bytes32 tld,
     address user,
-    uint64 expires
+    uint64 expiry
   ) external;
 
   function setUser(
@@ -99,15 +99,15 @@ interface IRegistry {
     bytes32 name,
     bytes32 tld,
     address user,
-    uint64 expires
+    uint64 expiry
   ) external;
 
-  function setExpires(bytes32 tld, uint64 expires) external;
+  function setExpiry(bytes32 tld, uint64 expiry) external;
 
-  function setExpires(
+  function setExpiry(
     bytes32 name,
     bytes32 tld,
-    uint64 expires
+    uint64 expiry
   ) external;
 
   function prune(bytes32 name, bytes32 tld) external;
@@ -122,9 +122,9 @@ interface IRegistry {
 
   function getResolver(bytes32 name, bytes32 tld) external view returns (address);
 
-  function getExpires(bytes32 tld) external view returns (uint64);
+  function getExpiry(bytes32 tld) external view returns (uint64);
 
-  function getExpires(bytes32 name, bytes32 tld) external view returns (uint64);
+  function getExpiry(bytes32 name, bytes32 tld) external view returns (uint64);
 
   function getGracePeriod() external view returns (uint256);
 
@@ -142,9 +142,9 @@ interface IRegistry {
     bytes32 tld
   ) external view returns (address);
 
-  function getUserExpires(bytes32 name, bytes32 tld) external view returns (uint64);
+  function getUserExpiry(bytes32 name, bytes32 tld) external view returns (uint64);
 
-  function getUserExpires(
+  function getUserExpiry(
     bytes32 host,
     bytes32 name,
     bytes32 tld

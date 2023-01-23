@@ -37,9 +37,9 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     bytes memory name,
     bytes memory tld,
     address owner,
-    uint64 expires
+    uint64 expiry
   ) public onlyRole(OPERATOR_ROLE) {
-    _registrar.register(name, tld, owner, expires);
+    _registrar.register(name, tld, owner, expiry);
   }
 
   function register(
@@ -56,9 +56,9 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
   function renew(
     bytes memory name,
     bytes memory tld,
-    uint64 expires
+    uint64 expiry
   ) public onlyRole(OPERATOR_ROLE) {
-    _registrar.renew(name, tld, expires);
+    _registrar.renew(name, tld, expiry);
   }
 
   function renew(

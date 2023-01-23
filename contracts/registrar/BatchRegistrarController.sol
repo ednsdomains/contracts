@@ -10,11 +10,11 @@ contract BatchRegistrarController is ContextUpgradeable {
     bytes[] memory names,
     bytes[] memory tlds,
     address owner,
-    uint64[] memory expires
+    uint64[] memory expiry
   ) public {
-    require(names.length == tlds.length && tlds.length == expires.length, "INVALID_SIZE");
+    require(names.length == tlds.length && tlds.length == expiry.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
-      controller.register(names[i], tlds[i], owner, expires[i]);
+      controller.register(names[i], tlds[i], owner, expiry[i]);
     }
   }
 
@@ -23,16 +23,16 @@ contract BatchRegistrarController is ContextUpgradeable {
     bytes[] memory names,
     bytes[] memory tlds,
     address[] memory owners,
-    uint64[] memory expires,
+    uint64[] memory expiry,
     uint256[] memory prices,
     bytes[] memory signatures
   ) public {
     require(
-      names.length == tlds.length && tlds.length == owners.length && owners.length == expires.length && expires.length == prices.length && prices.length == signatures.length,
+      names.length == tlds.length && tlds.length == owners.length && owners.length == expiry.length && expiry.length == prices.length && prices.length == signatures.length,
       "INVALID_SIZE"
     );
     for (uint256 i = 0; i < names.length; i++) {
-      controller.register(names[i], tlds[i], owners[i], expires[i], prices[i], signatures[i]);
+      controller.register(names[i], tlds[i], owners[i], expiry[i], prices[i], signatures[i]);
     }
   }
 
@@ -40,11 +40,11 @@ contract BatchRegistrarController is ContextUpgradeable {
     IBaseRegistrarController controller,
     bytes[] memory names,
     bytes[] memory tlds,
-    uint64[] memory expires
+    uint64[] memory expiry
   ) public {
-    require(names.length == tlds.length && tlds.length == expires.length, "INVALID_SIZE");
+    require(names.length == tlds.length && tlds.length == expiry.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
-      controller.renew(names[i], tlds[i], expires[i]);
+      controller.renew(names[i], tlds[i], expiry[i]);
     }
   }
 
@@ -52,13 +52,13 @@ contract BatchRegistrarController is ContextUpgradeable {
     IBaseRegistrarController controller,
     bytes[] memory names,
     bytes[] memory tlds,
-    uint64[] memory expires,
+    uint64[] memory expiry,
     uint256[] memory prices,
     bytes[] memory signatures
   ) public {
-    require(names.length == tlds.length && tlds.length == expires.length && expires.length == prices.length && prices.length == signatures.length, "INVALID_SIZE");
+    require(names.length == tlds.length && tlds.length == expiry.length && expiry.length == prices.length && prices.length == signatures.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
-      controller.renew(names[i], tlds[i], expires[i], prices[i], signatures[i]);
+      controller.renew(names[i], tlds[i], expiry[i], prices[i], signatures[i]);
     }
   }
 }

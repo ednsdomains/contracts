@@ -5,13 +5,13 @@ interface IRegistrar {
   // event ControllerAdded(address controller, bytes tld);
   // event ControllerRemoved(address controller, bytes tld);
 
-  event DomainRegistered(bytes name, bytes tld, address owner, uint256 expires);
-  event DomainRenewed(bytes name, bytes tld, uint256 expires);
+  event DomainRegistered(bytes name, bytes tld, address owner, uint256 expiry);
+  event DomainRenewed(bytes name, bytes tld, uint256 expiry);
   event DomainReclaimed(bytes name, bytes tld, address owner);
 
   event SetController(bytes tld, address controller, bool approved);
 
-  function getExpires(bytes memory name, bytes memory tld) external view returns (uint256);
+  function getExpiry(bytes memory name, bytes memory tld) external view returns (uint256);
 
   function isAvailable(bytes memory tld) external view returns (bool);
 
@@ -33,13 +33,13 @@ interface IRegistrar {
     bytes memory name,
     bytes memory tld,
     address owner,
-    uint64 expires
+    uint64 expiry
   ) external;
 
   function renew(
     bytes memory name,
     bytes memory tld,
-    uint64 expires
+    uint64 expiry
   ) external;
 
   // function reclaim(

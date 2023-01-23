@@ -11,6 +11,6 @@ interface IBridge {
     bytes32 name,
     bytes32 tld,
     address owner,
-    uint256 expires
+    uint256 expiry
   ) external;
 }

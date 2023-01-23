@@ -114,7 +114,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes memory tld,
     address owner,
     address resolver,
-    uint64 expires,
+    uint64 expiry,
     bool enable,
     TldClass.TldClass class_
   ) public onlyRole(ROOT_ROLE) {
@@ -126,7 +126,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     _record.name = tld;
     _record.owner = owner;
     _record.resolver = resolver;
-    _record.expires = expires;
+    _record.expiry = expiry;
     _record.enable = enable;
     _record.class_ = class_;
 
@@ -148,7 +148,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes memory tld,
     address owner,
     address resolver,
-    uint64 expires
+    uint64 expiry
   ) public onlyRole(REGISTRAR_ROLE) {
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
@@ -178,9 +178,9 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     _record.name = name;
     _record.owner = owner;
     _record.resolver = resolver;
-    _record.expires = expires;
-    _record.user = UserRecord.UserRecord({ user: owner, expires: expires });
-    emit NewDomain(name, tld, owner, expires);
+    _record.expiry = expiry;
+    _record.user = UserRecord.UserRecord({ user: owner, expiry: expiry });
+    emit NewDomain(name, tld, owner, expiry);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
     _tokenRecord.type_ = RecordType.RecordType.DOMAIN;
@@ -208,7 +208,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
     UserRecord.UserRecord storage _user = _records[tld_].domains[name_].hosts[host_].user;
     _user.user = getOwner(name_, tld_);
-    _user.expires = getExpires(name_, tld_);
+    _user.expiry = getExpiry(name_, tld_);
 
     emit NewHost(host, name, tld);
 
@@ -307,16 +307,16 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 name,
     bytes32 tld,
     address user,
-    uint64 expires
+    uint64 expiry
   ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     _records[tld].domains[name].user.user = user;
-    if (expires == 0) {
-      _records[tld].domains[name].user.expires = getExpires(name, tld);
+    if (expiry == 0) {
+      _records[tld].domains[name].user.expiry = getExpiry(name, tld);
     } else {
-      require(expires <= getExpires(name, tld), ""); // TODO:
-      _records[tld].domains[name].user.expires = expires;
+      require(expiry <= getExpiry(name, tld), ""); // TODO:
+      _records[tld].domains[name].user.expiry = expiry;
     }
-    emit SetUser(_join(_records[tld].domains[name].name, _records[tld].name), user, expires);
+    emit SetUser(_join(_records[tld].domains[name].name, _records[tld].name), user, expiry);
   }
 
   function setUser(
@@ -324,33 +324,33 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 name,
     bytes32 tld,
     address user,
-    uint64 expires
+    uint64 expiry
   ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXISTS");
-    if (expires == 0) {
-      _records[tld].domains[name].hosts[host].user.expires = getExpires(name, tld);
+    if (expiry == 0) {
+      _records[tld].domains[name].hosts[host].user.expiry = getExpiry(name, tld);
     } else {
-      require(expires <= getExpires(name, tld), ""); // TODO:
-      _records[tld].domains[name].hosts[host].user.expires = expires;
+      require(expiry <= getExpiry(name, tld), ""); // TODO:
+      _records[tld].domains[name].hosts[host].user.expiry = expiry;
     }
     _records[tld].domains[name].hosts[host].user.user = user;
-    emit SetUser(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name), user, expires);
+    emit SetUser(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name), user, expiry);
   }
 
-  function setExpires(bytes32 tld, uint64 expires) public onlyRole(ROOT_ROLE) {
-    require(expires > _records[tld].expires && expires > block.timestamp, ""); // TODO:
-    _records[tld].expires = expires;
-    emit SetExpires(_records[tld].name, expires);
+  function setExpiry(bytes32 tld, uint64 expiry) public onlyRole(ROOT_ROLE) {
+    require(expiry > _records[tld].expiry && expiry > block.timestamp, ""); // TODO:
+    _records[tld].expiry = expiry;
+    emit SetExpiry(_records[tld].name, expiry);
   }
 
-  function setExpires(
+  function setExpiry(
     bytes32 name,
     bytes32 tld,
-    uint64 expires
+    uint64 expiry
   ) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
-    require(expires > _records[tld].domains[name].expires && expires > block.timestamp, ""); // TODO:
-    _records[tld].domains[name].expires = expires;
-    emit SetExpires(_join(_records[tld].domains[name].name, _records[tld].name), expires);
+    require(expiry > _records[tld].domains[name].expiry && expiry > block.timestamp, ""); // TODO:
+    _records[tld].domains[name].expiry = expiry;
+    emit SetExpiry(_join(_records[tld].domains[name].name, _records[tld].name), expiry);
   }
 
   function _delete(bytes32 tld) internal {
@@ -362,7 +362,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function _delete(bytes32 name, bytes32 tld) internal {
-    require(getExpires(name, tld) < block.timestamp, "DOMAIN_STILL_ALIVE");
+    require(getExpiry(name, tld) < block.timestamp, "DOMAIN_STILL_ALIVE");
     delete _records[tld].domains[name];
     delete _tokenRecords[getTokenId(_records[tld].domains[name].name, _records[tld].name)];
     if (_records[tld].wrapper.enable) {
@@ -407,13 +407,13 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     return _records[tld].domains[name].resolver;
   }
 
-  function getExpires(bytes32 tld) public view returns (uint64) {
-    return _records[tld].expires;
+  function getExpiry(bytes32 tld) public view returns (uint64) {
+    return _records[tld].expiry;
   }
 
-  // Get the expires date of the name in unix timestamp
-  function getExpires(bytes32 name, bytes32 tld) public view returns (uint64) {
-    return _records[tld].domains[name].expires;
+  // Get the expiry date of the name in unix timestamp
+  function getExpiry(bytes32 name, bytes32 tld) public view returns (uint64) {
+    return _records[tld].domains[name].expiry;
   }
 
   // Get the grace period
@@ -445,16 +445,16 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     return _records[tld].domains[name].hosts[host].user.user;
   }
 
-  function getUserExpires(bytes32 name, bytes32 tld) public view returns (uint64) {
-    return _records[tld].domains[name].user.expires;
+  function getUserExpiry(bytes32 name, bytes32 tld) public view returns (uint64) {
+    return _records[tld].domains[name].user.expiry;
   }
 
-  function getUserExpires(
+  function getUserExpiry(
     bytes32 host,
     bytes32 name,
     bytes32 tld
   ) public view returns (uint64) {
-    return _records[tld].domains[name].hosts[host].user.expires;
+    return _records[tld].domains[name].hosts[host].user.expiry;
   }
 
   function getTtl(
@@ -508,7 +508,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
   // Is the name still alive (not yet expired)
   function isLive(bytes32 name, bytes32 tld) public view returns (bool) {
-    return _records[tld].domains[name].expires > block.timestamp;
+    return _records[tld].domains[name].expiry > block.timestamp;
   }
 
   // Is the TLD enable and allow to register

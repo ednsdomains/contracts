@@ -30,7 +30,7 @@ contract MigrationController is ContextUpgradeable {
     uint256 tokenId = uint256(keccak256(abi.encodePacked(name, keccak256(abi.encodePacked(ZERO, keccak256(bytes(tld)))))));
     require(tokenId == genesisTokenId, "TOKEN_ID_MISMATCH");
     require(_legacy.ownerOf(genesisTokenId) == _msgSender(), "REQUIRE_OWNER_OF_DOMAIN");
-    _baseRegistrar.register(bytes(name), bytes(tld), _msgSender(), uint64(_legacy.nameExpires(tokenId)));
+    _baseRegistrar.register(bytes(name), bytes(tld), _msgSender(), uint64(_legacy.nameExpiry(tokenId)));
     _legacy.deregister(tokenId);
   }
 }

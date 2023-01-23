@@ -37,12 +37,20 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   function register(
     bytes memory tld,
     address resolver,
-    uint64 expires,
+    uint64 expiry,
+    address owner,
     bool enable,
     TldClass.TldClass class_
-  ) public payable onlyRole(ADMIN_ROLE) {
-    require(!_registry.isExists(keccak256(tld)), "TLD_EXISTS");
-    _registry.setRecord(tld, address(this), resolver, expires, enable, class_);
+  ) public onlyRole(ADMIN_ROLE) {
+    require(!_registry.isExists(keccak256(tld)) || _registry.getExpiry(keccak256(tld)) < block.timestamp, "TLD_EXISTS");
+    _registry.setRecord(tld, owner, resolver, expiry, enable, class_);
+    emit TldRegistered(tld, owner, expiry);
+  }
+
+  function renew(bytes memory tld, uint64 expiry) public onlyRole(ADMIN_ROLE) {
+    require(_registry.isExists(keccak256(tld)) && _registry.getExpiry(keccak256(tld)) > block.timestamp, "TLD_NOT_EXISTS");
+    _registry.setExpiry(keccak256(tld), expiry);
+    emit TldRenewed(tld, expiry);
   }
 
   // TODO:

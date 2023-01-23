@@ -33,19 +33,19 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
   function list(
     address wrapper,
     uint256 tokenId,
-    uint64 expires,
+    uint64 expiry,
     uint256 amount
   ) public whenNotPaused {
     require(IWrapper(wrapper).supportsInterface(type(IWrapper).interfaceId), ""); // TODO:
-    require(expires + MINIMUM_RENTAL_PERIOD >= block.timestamp, ""); // TODO:
-    require(block.timestamp + MINIMUM_RENTAL_PERIOD >= IWrapper(wrapper).userExpires(tokenId), ""); // TODO
+    require(expiry + MINIMUM_RENTAL_PERIOD >= block.timestamp, ""); // TODO:
+    require(block.timestamp + MINIMUM_RENTAL_PERIOD >= IWrapper(wrapper).userExpiry(tokenId), ""); // TODO
     require(amount > 0, ""); // TODO:
     require(IWrapper(wrapper).userOf(tokenId) == _msgSender(), ""); // TODO:
 
     if (_orders[tokenId].creator != address(0)) delete _orders[tokenId];
-    _orders[tokenId] = Order({ creator: _msgSender(), expires: expires, amount: amount });
+    _orders[tokenId] = Order({ creator: _msgSender(), expiry: expiry, amount: amount });
 
-    emit Listed(tokenId, expires, amount);
+    emit Listed(tokenId, expiry, amount);
   }
 
   function unlist(address wrapper, uint256 tokenId) public whenNotPaused {
@@ -60,12 +60,12 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
     address newUser
   ) public whenNotPaused {
     require(IWrapper(wrapper).supportsInterface(type(IWrapper).interfaceId), ""); // TODO:
-    require(IWrapper(wrapper).userOf(tokenId) == _orders[tokenId].creator && IWrapper(wrapper).userExpires(tokenId) > block.timestamp + MINIMUM_RENTAL_PERIOD, ""); // TODO:
+    require(IWrapper(wrapper).userOf(tokenId) == _orders[tokenId].creator && IWrapper(wrapper).userExpiry(tokenId) > block.timestamp + MINIMUM_RENTAL_PERIOD, ""); // TODO:
     require(_token.balanceOf(_msgSender()) >= _orders[tokenId].amount && _token.allowance(_msgSender(), address(this)) >= _orders[tokenId].amount, "INSUFFICIENT_FUND");
 
     _token.transferFrom(_msgSender(), _orders[tokenId].creator, _orders[tokenId].amount);
 
-    IWrapper(wrapper).setUser(tokenId, newUser, _orders[tokenId].expires);
+    IWrapper(wrapper).setUser(tokenId, newUser, _orders[tokenId].expiry);
 
     emit Rented(tokenId, newUser);
 

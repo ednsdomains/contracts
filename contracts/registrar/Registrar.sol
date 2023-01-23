@@ -42,8 +42,8 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     _;
   }
 
-  function getExpires(bytes memory name, bytes memory tld) public view virtual returns (uint256) {
-    return _registry.getExpires(keccak256(name), keccak256(tld));
+  function getExpiry(bytes memory name, bytes memory tld) public view virtual returns (uint256) {
+    return _registry.getExpiry(keccak256(name), keccak256(tld));
   }
 
   function isAvailable(bytes memory tld) public view virtual returns (bool) {
@@ -51,7 +51,7 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
   }
 
   function isAvailable(bytes memory name, bytes memory tld) public view virtual returns (bool) {
-    return getExpires(name, tld) + _registry.getGracePeriod() < block.timestamp;
+    return getExpiry(name, tld) + _registry.getGracePeriod() < block.timestamp;
   }
 
   function isExists(bytes memory name, bytes memory tld) public view virtual returns (bool) {
@@ -79,27 +79,27 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     bytes memory name,
     bytes memory tld,
     address owner,
-    uint64 expires
+    uint64 expiry
   ) external onlyController((keccak256(tld))) {
     require(valid(name), "INVALID_DOMAIN_NAME");
     require(isAvailable(name, tld), "DOMAIN_NOT_AVAILABLE");
-    require(expires + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
-    _registry.setRecord(name, tld, owner, address(0), expires);
-    emit DomainRegistered(name, tld, owner, expires);
+    require(expiry + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
+    _registry.setRecord(name, tld, owner, address(0), expiry);
+    emit DomainRegistered(name, tld, owner, expiry);
   }
 
   function renew(
     bytes memory name,
     bytes memory tld,
-    uint64 expires
+    uint64 expiry
   ) external onlyController(keccak256(tld)) {
     bytes32 _domain = keccak256(name);
     bytes32 _tld = keccak256(tld);
-    uint64 expires_ = _registry.getExpires(_domain, _tld);
-    require(expires_ + _registry.getGracePeriod() >= block.timestamp, "DOMAIN_EXPIRED");
-    require(expires_ + expires + _registry.getGracePeriod() >= expires + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
-    _registry.setExpires(_domain, _tld, expires_ + expires);
-    emit DomainRenewed(name, tld, expires_ + expires);
+    uint64 expiry_ = _registry.getExpiry(_domain, _tld);
+    require(expiry_ + _registry.getGracePeriod() >= block.timestamp, "DOMAIN_EXPIRED");
+    require(expiry_ + expiry + _registry.getGracePeriod() >= expiry + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
+    _registry.setExpiry(_domain, _tld, expiry_ + expiry);
+    emit DomainRenewed(name, tld, expiry_ + expiry);
   }
 
   // function _reclaim(

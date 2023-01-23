@@ -6,13 +6,19 @@ import "../../lib/TldClass.sol";
 interface IRoot {
   event NewAuthorizer(address address_);
 
+  event TldRegistered(bytes tld, address owner, uint256 expiry);
+  event TldRenewed(bytes tld, uint256 expiry);
+
   function register(
     bytes memory tld,
     address resolver,
-    uint64 expires,
+    uint64 expiry,
+    address owner,
     bool enable,
     TldClass.TldClass class_
-  ) external payable;
+  ) external;
+
+  function renew(bytes memory tld, uint64 expiry) external;
 
   function transfer(bytes memory tld, address newOwner) external;
 
