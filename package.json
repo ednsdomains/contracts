@@ -3,7 +3,8 @@
   "scripts": {
     "eth:compile": "hardhat compile",
     "tron:compile": "tronbox compile",
-    "prettier": "prettier --write contracts/**/*.sol scripts/**/*.ts test/**/*.ts"
+    "prettier": "prettier --write contracts/**/*.sol scripts/**/*.ts test/**/*.ts",
+    "test": "npx hardhat test ./test/fullTest.ts"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.4.1",

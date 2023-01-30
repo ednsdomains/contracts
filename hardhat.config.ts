@@ -97,9 +97,9 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
-  mocha: {
-    parallel: true,
-  },
+  // mocha: {
+  //   parallel: true,
+  // },
   contractSizer: {
     alphaSort: false,
     runOnCompile: true,

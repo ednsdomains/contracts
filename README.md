@@ -27,3 +27,8 @@
 ```bash
 npx hardhat test
 ```
+
+## Compile
+```bash
+npx hardhat compile
+```

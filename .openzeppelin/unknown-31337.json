@@ -401,11 +401,6 @@
       "kind": "transparent"
     },
     {
-      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0x1c4e203e6990dc0cf6c36db8560fdc0ac87f5ff5abb7a886cd0dca5a895da6f4",
-      "kind": "transparent"
-    },
-    {
       "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       "txHash": "0xb730849611463bbcd98bd18b12a5b467f39135536772dce7b409488ae73d4057",
       "kind": "transparent"
@@ -464,6 +459,11 @@
       "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       "txHash": "0x38582dd3143365e080fbc395332def30862f797345376b899ff1d7988284148c",
       "kind": "transparent"
+    },
+    {
+      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "txHash": "0x3efe686c9a196aca05c0d41adb70eee90d480afffe0fe356fea6440ee9e17973",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -3034,386 +3034,6 @@
         }
       }
     },
-    "96ce153ba2df305dbb7951b2a0ddb04133f990a2658cd75122e5fb14e0b9efcb": {
-      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      "txHash": "0x7170f1c6a949694395e0cc37ee099633dca8c58abab8203c8a360c3042b7b0e3",
-      "layout": {
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
-          },
-          {
-            "label": "_roles",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
-            "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "102",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:235"
-          },
-          {
-            "label": "_owner",
-            "offset": 0,
-            "slot": "151",
-            "type": "t_address",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:17"
-          },
-          {
-            "label": "_name",
-            "offset": 0,
-            "slot": "152",
-            "type": "t_string_storage",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:19"
-          },
-          {
-            "label": "_symbol",
-            "offset": 0,
-            "slot": "153",
-            "type": "t_string_storage",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:20"
-          },
-          {
-            "label": "_balances",
-            "offset": 0,
-            "slot": "154",
-            "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:21"
-          },
-          {
-            "label": "__baseURI",
-            "offset": 0,
-            "slot": "155",
-            "type": "t_bytes_storage",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:30"
-          },
-          {
-            "label": "_records",
-            "offset": 0,
-            "slot": "156",
-            "type": "t_mapping(t_bytes32,t_struct(TldRecord)8097_storage)",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:32"
-          },
-          {
-            "label": "_tokenRecords",
-            "offset": 0,
-            "slot": "157",
-            "type": "t_mapping(t_uint256,t_struct(TokenRecord)8080_storage)",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:33"
-          },
-          {
-            "label": "_operatorApprovals",
-            "offset": 0,
-            "slot": "158",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
-            "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:35"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_bytes_storage": {
-            "label": "bytes",
-            "numberOfBytes": "32"
-          },
-          "t_enum(RecordType)8070": {
-            "label": "enum IRegistry.RecordType",
-            "members": ["TLD", "DOMAIN", "HOST"],
-            "numberOfBytes": "1"
-          },
-          "t_enum(TldClass)8433": {
-            "label": "enum TldClass.TldClass",
-            "members": ["CLASSICAL", "SINGLETON", "OMNI", "UNIVERSAL"],
-            "numberOfBytes": "1"
-          },
-          "t_mapping(t_address,t_bool)": {
-            "label": "mapping(address => bool)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
-            "label": "mapping(address => mapping(address => bool))",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(DomainRecord)8118_storage)": {
-            "label": "mapping(bytes32 => struct IRegistry.DomainRecord)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(HostRecord)8128_storage)": {
-            "label": "mapping(bytes32 => struct IRegistry.HostRecord)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
-            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(TldRecord)8097_storage)": {
-            "label": "mapping(bytes32 => struct IRegistry.TldRecord)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_struct(TokenRecord)8080_storage)": {
-            "label": "mapping(uint256 => struct IRegistry.TokenRecord)",
-            "numberOfBytes": "32"
-          },
-          "t_string_storage": {
-            "label": "string",
-            "numberOfBytes": "32"
-          },
-          "t_struct(DomainRecord)8118_storage": {
-            "label": "struct IRegistry.DomainRecord",
-            "members": [
-              {
-                "label": "name",
-                "type": "t_bytes_storage",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "owner",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "1"
-              },
-              {
-                "label": "resolver",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "2"
-              },
-              {
-                "label": "expiry",
-                "type": "t_uint64",
-                "offset": 20,
-                "slot": "2"
-              },
-              {
-                "label": "rental",
-                "type": "t_struct(Rental)8133_storage",
-                "offset": 0,
-                "slot": "3"
-              },
-              {
-                "label": "operators",
-                "type": "t_mapping(t_address,t_bool)",
-                "offset": 0,
-                "slot": "4"
-              },
-              {
-                "label": "hosts",
-                "type": "t_mapping(t_bytes32,t_struct(HostRecord)8128_storage)",
-                "offset": 0,
-                "slot": "5"
-              }
-            ],
-            "numberOfBytes": "192"
-          },
-          "t_struct(HostRecord)8128_storage": {
-            "label": "struct IRegistry.HostRecord",
-            "members": [
-              {
-                "label": "name",
-                "type": "t_bytes_storage",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "rental",
-                "type": "t_struct(Rental)8133_storage",
-                "offset": 0,
-                "slot": "1"
-              },
-              {
-                "label": "operators",
-                "type": "t_mapping(t_address,t_bool)",
-                "offset": 0,
-                "slot": "2"
-              }
-            ],
-            "numberOfBytes": "96"
-          },
-          "t_struct(Rental)8133_storage": {
-            "label": "struct IRegistry.Rental",
-            "members": [
-              {
-                "label": "user",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "expiry",
-                "type": "t_uint64",
-                "offset": 20,
-                "slot": "0"
-              }
-            ],
-            "numberOfBytes": "32"
-          },
-          "t_struct(RoleData)34_storage": {
-            "label": "struct AccessControlUpgradeable.RoleData",
-            "members": [
-              {
-                "label": "members",
-                "type": "t_mapping(t_address,t_bool)",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "adminRole",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "1"
-              }
-            ],
-            "numberOfBytes": "64"
-          },
-          "t_struct(TldRecord)8097_storage": {
-            "label": "struct IRegistry.TldRecord",
-            "members": [
-              {
-                "label": "name",
-                "type": "t_bytes_storage",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "owner",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "1"
-              },
-              {
-                "label": "resolver",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "2"
-              },
-              {
-                "label": "enable",
-                "type": "t_bool",
-                "offset": 20,
-                "slot": "2"
-              },
-              {
-                "label": "class_",
-                "type": "t_enum(TldClass)8433",
-                "offset": 21,
-                "slot": "2"
-              },
-              {
-                "label": "domains",
-                "type": "t_mapping(t_bytes32,t_struct(DomainRecord)8118_storage)",
-                "offset": 0,
-                "slot": "3"
-              }
-            ],
-            "numberOfBytes": "128"
-          },
-          "t_struct(TokenRecord)8080_storage": {
-            "label": "struct IRegistry.TokenRecord",
-            "members": [
-              {
-                "label": "class_",
-                "type": "t_enum(RecordType)8070",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "tld",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "1"
-              },
-              {
-                "label": "domain",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "2"
-              },
-              {
-                "label": "host",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "3"
-              }
-            ],
-            "numberOfBytes": "128"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint64": {
-            "label": "uint64",
-            "numberOfBytes": "8"
-          }
-        }
-      }
-    },
     "f9767983210076c371f9512b0402df2a51006abeb78674e985a6d496df42bb07": {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       "txHash": "0xf7a12453c2def175a02db5bd4c2bcc2b14d7cd9b6cdca8324ffa00f745010a53",
@@ -3886,6 +3506,404 @@
           "t_uint256": {
             "label": "uint256",
             "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "ee2bf649d93f733416f3f7430711bcdb1df7acb07b418a547173f4797332e527": {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "txHash": "0xa483a305115285005bae0b5a6dd43caaf2ac047ededd50f6719cb16258c736a1",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_address",
+            "contract": "Registry",
+            "src": "contracts/registry/Registry.sol:18"
+          },
+          {
+            "label": "_records",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_mapping(t_bytes32,t_struct(TldRecord)7055_storage)",
+            "contract": "Registry",
+            "src": "contracts/registry/Registry.sol:28"
+          },
+          {
+            "label": "_tokenRecords",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_mapping(t_uint256,t_struct(TokenRecord)7069_storage)",
+            "contract": "Registry",
+            "src": "contracts/registry/Registry.sol:29"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_enum(RecordType)7020": {
+            "label": "enum RecordType.RecordType",
+            "members": [
+              "TLD",
+              "DOMAIN",
+              "HOST"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(TldClass)7027": {
+            "label": "enum TldClass.TldClass",
+            "members": [
+              "CLASSICAL",
+              "UNIVERSAL",
+              "OMNI"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(DomainRecord)6997_storage)": {
+            "label": "mapping(bytes32 => struct DomainRecord.DomainRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(HostRecord)7013_storage)": {
+            "label": "mapping(bytes32 => struct HostRecord.HostRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(TldRecord)7055_storage)": {
+            "label": "mapping(bytes32 => struct TldRecord.TldRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(TokenRecord)7069_storage)": {
+            "label": "mapping(uint256 => struct TokenRecord.TokenRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DomainRecord)6997_storage": {
+            "label": "struct DomainRecord.DomainRecord",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "resolver",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "expiry",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "2"
+              },
+              {
+                "label": "user",
+                "type": "t_struct(UserRecord)7077_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "operators",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "hosts",
+                "type": "t_mapping(t_bytes32,t_struct(HostRecord)7013_storage)",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(HostRecord)7013_storage": {
+            "label": "struct HostRecord.HostRecord",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "ttl",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "user",
+                "type": "t_struct(UserRecord)7077_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "operators",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(RoleData)34_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(TldRecord)7055_storage": {
+            "label": "struct TldRecord.TldRecord",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "resolver",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "enable",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "2"
+              },
+              {
+                "label": "expiry",
+                "type": "t_uint64",
+                "offset": 21,
+                "slot": "2"
+              },
+              {
+                "label": "wrapper",
+                "type": "t_struct(WrapperRecord)7085_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "class_",
+                "type": "t_enum(TldClass)7027",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "domains",
+                "type": "t_mapping(t_bytes32,t_struct(DomainRecord)6997_storage)",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(TokenRecord)7069_storage": {
+            "label": "struct TokenRecord.TokenRecord",
+            "members": [
+              {
+                "label": "type_",
+                "type": "t_enum(RecordType)7020",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "tld",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "domain",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "host",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(UserRecord)7077_storage": {
+            "label": "struct UserRecord.UserRecord",
+            "members": [
+              {
+                "label": "user",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "expiry",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(WrapperRecord)7085_storage": {
+            "label": "struct WrapperRecord.WrapperRecord",
+            "members": [
+              {
+                "label": "enable",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "address_",
+                "type": "t_address",
+                "offset": 1,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
           }
         }
       }
