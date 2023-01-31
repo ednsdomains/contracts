@@ -9,6 +9,7 @@ import "./interfaces/IRegistry.sol";
 import "../lib/TldClass.sol";
 import "../wrapper/interfaces/IWrapper.sol";
 import "../lib/UserRecord.sol";
+import "hardhat/console.sol";
 
 contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
   using AddressUpgradeable for address;
@@ -119,7 +120,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     TldClass.TldClass class_
   ) public onlyRole(ROOT_ROLE) {
 //    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST"); -> !isExists(getTokenId(tld)) always return true
-    require(!isExists(keccak256(tld)), "TLD_EXIST");
+    require((!isExists(keccak256(tld))) && (!isExists(getTokenId(tld))), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
 
@@ -485,8 +486,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function isExists(uint256 tokenId) public view returns (bool) {
-    //TODO Logic Error
-    return _tokenRecords[tokenId].tld.length > 0;
+//    console.log(string(abi.encodePacked(_tokenRecords[tokenId].tld))==" ");
+    return _tokenRecords[tokenId].tld != bytes32(0);
   }
 
   function isOperator(
