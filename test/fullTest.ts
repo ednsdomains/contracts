@@ -1,21 +1,17 @@
-import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-import {
-    ClassicalRegistrarController,
-    LayerZeroEndpointMock,
-    PublicResolver, Registrar,
-    Registry, Root, TokenMock, Wrapper
-} from "../typechain";
-import {ethers} from "hardhat";
-import {deployLayerZero} from "./lastest/deploy/layerZeroEndPointMock";
-import {deployRegistry} from "./lastest/deploy/01_registry";
-import {expect} from "chai";
-import {deployWrapper} from "../scripts/src/deploy";
-import {deployDefaultWrapper} from "./lastest/deploy/02_deploy_DefaultWrapper";
-import {deployPublicResolver} from "./lastest/deploy/03_publicResolver";
-import {deployRegistrar} from "./lastest/deploy/04_registrar";
-import {deployRoot} from "./lastest/deploy/05_root";
-import {deployTokenMock} from "./lastest/deploy/06_tokenMock";
-import {deployClassicalRegistrarController} from "./lastest/deploy/07_classicalRegistrarController";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { ClassicalRegistrarController, LayerZeroEndpointMock, PublicResolver, Registrar, Registry, Root, TokenMock, Wrapper } from "../typechain";
+import { ethers } from "hardhat";
+import { deployLayerZero } from "./lastest/deploy/layerZeroEndPointMock";
+import { deployRegistry } from "./lastest/deploy/01_registry";
+import { expect } from "chai";
+import { deployWrapper } from "../scripts/src/deploy";
+import { deployDefaultWrapper } from "./lastest/deploy/02_deploy_DefaultWrapper";
+import { deployPublicResolver } from "./lastest/deploy/03_publicResolver";
+import { deployRegistrar } from "./lastest/deploy/04_registrar";
+import { deployRoot } from "./lastest/deploy/05_root";
+import { deployTokenMock } from "./lastest/deploy/06_tokenMock";
+import { deployClassicalRegistrarController } from "./lastest/deploy/07_classicalRegistrarController";
+import * as luxon from "luxon";
 
 describe("Classical Test",    function () {
     let signerList: SignerWithAddress[];
@@ -36,49 +32,49 @@ describe("Classical Test",    function () {
     const nameNode = ethers.utils.toUtf8Bytes("domain");
     const srcChainID = 1;
 
-    it("get Signer", async () => {
-        signerList = await ethers.getSigners()
-    })
-    describe("Deploy Contract",    function () {
-        it("Registry", async () => {
-            [use_registry, use_registry_ac2] = await deployRegistry(signerList[1])
-            expect(use_registry.address).not.equals(null)
-            expect(await use_registry.signer.getAddress()).not.equals(await use_registry_ac2.signer.getAddress())
-        })
-        it("DefaultWrapper", async () => {
-            use_defaultWrapper = await deployDefaultWrapper({
-                registryAddress: use_registry.address,
-                nftName: "Test Name Service",
-                nftSymbol: "TNS"
-            })
-            expect(use_defaultWrapper.address).not.equals(null)
-        })
-        it("PublicResolver", async () => {
-            [use_publicResolver, use_publicResolver_ac2] = await deployPublicResolver(signerList[1], {registryAddress: use_registry.address})
-            expect(use_publicResolver.address).not.equals(null)
-            expect(await use_publicResolver.signer.getAddress()).not.equals(await use_publicResolver_ac2.signer.getAddress())
-        })
+  it("get Signer", async () => {
+    signerList = await ethers.getSigners();
+  });
+  describe("Deploy Contract", function () {
+    it("Registry", async () => {
+      [use_registry, use_registry_ac2] = await deployRegistry(signerList[1]);
+      expect(use_registry.address).not.equals(null);
+      expect(await use_registry.signer.getAddress()).not.equals(await use_registry_ac2.signer.getAddress());
+    });
+    it("DefaultWrapper", async () => {
+      use_defaultWrapper = await deployDefaultWrapper({
+        registryAddress: use_registry.address,
+        nftName: "Test Name Service",
+        nftSymbol: "TNS",
+      });
+      expect(use_defaultWrapper.address).not.equals(null);
+    });
+    it("PublicResolver", async () => {
+      [use_publicResolver, use_publicResolver_ac2] = await deployPublicResolver(signerList[1], { registryAddress: use_registry.address });
+      expect(use_publicResolver.address).not.equals(null);
+      expect(await use_publicResolver.signer.getAddress()).not.equals(await use_publicResolver_ac2.signer.getAddress());
+    });
 
-        it("Registrar", async () => {
-            use_registrar = await deployRegistrar({
-                registryAddress: use_registry.address,
-                resolverAddress: use_publicResolver.address
-            })
-            expect(use_registrar.address).not.equals(null)
-        })
+    it("Registrar", async () => {
+      use_registrar = await deployRegistrar({
+        registryAddress: use_registry.address,
+        resolverAddress: use_publicResolver.address,
+      });
+      expect(use_registrar.address).not.equals(null);
+    });
 
-        it("Root", async () => {
-            use_root = await deployRoot({
-                registryAddress: use_registry.address,
-                registrarAddress: use_registrar.address
-            })
-            expect(use_root.address).not.equals(null)
-        })
+    it("Root", async () => {
+      use_root = await deployRoot({
+        registryAddress: use_registry.address,
+        registrarAddress: use_registrar.address,
+      });
+      expect(use_root.address).not.equals(null);
+    });
 
-        it("TokenMock", async () => {
-            use_token = await deployTokenMock()
-            expect(use_token.address).not.equals(null)
-        })
+    it("TokenMock", async () => {
+      use_token = await deployTokenMock();
+      expect(use_token.address).not.equals(null);
+    });
 
         it("Classical Registrar Controller", async () => {
             use_classicalRegistrarController = await deployClassicalRegistrarController({
@@ -135,3 +131,10 @@ describe("Classical Test",    function () {
         });
     })
 })
+
+      await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode, signerList[0].address, use_publicResolver.address, expiry, true, 0);
+      const owner = await use_registry.callStatic["isExists(bytes32)"](tldNode);
+      expect(owner).to.equal(true);
+    });
+  });
+});
