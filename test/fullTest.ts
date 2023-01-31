@@ -31,7 +31,8 @@ describe("Classical Test",    function () {
     let use_classicalRegistrarController: ClassicalRegistrarController;
     const hostNode = ethers.utils.toUtf8Bytes("@");
     const subHostNode = ethers.utils.toUtf8Bytes("sub");
-    const tldNode = ethers.utils.toUtf8Bytes("ablcll");
+    const tldNode = ethers.utils.toUtf8Bytes("tld");
+    const disableTldNode = ethers.utils.toUtf8Bytes("disableTld");
     const nameNode = ethers.utils.toUtf8Bytes("domain");
     const srcChainID = 1;
 
@@ -91,6 +92,7 @@ describe("Classical Test",    function () {
     describe("Setup Contract",    function () {
         it("grant Role", async ()=>{
             await use_registry.grantRole(await use_registry.ROOT_ROLE(), signerList[0].address);
+            await use_registry.grantRole(await use_registry.REGISTRAR_ROLE(), signerList[0].address);
         })
     })
     describe("TLD  Test", function (){
@@ -98,6 +100,13 @@ describe("Classical Test",    function () {
             let today = new Date()
             const exipryDate = today.setFullYear(today.getFullYear()+1)
             await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode,signerList[0].address,use_publicResolver.address,exipryDate,true,0);
+            const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
+            expect(owner).to.equal(true);
+        });
+        it("Set disable tld record", async () => {
+            let today = new Date()
+            const exipryDate = today.setFullYear(today.getFullYear()+1)
+            await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](disableTldNode,signerList[0].address,use_publicResolver.address,exipryDate,false,0);
             const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
             expect(owner).to.equal(true);
         });
@@ -113,6 +122,16 @@ describe("Classical Test",    function () {
                 throwError = true
             }
            expect(throwError).to.equal(true)
+        });
+    })
+
+    describe("Domain Test", function (){
+        it("Set Domain record", async () => {
+            let today = new Date()
+            const exipryDate = today.setFullYear(today.getFullYear()+1)
+            await use_registry["setRecord(bytes,bytes,address,address,uint64)"](nameNode,tldNode,signerList[0].address,use_publicResolver.address,exipryDate);
+            const owner = await use_registry["isExists(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode));
+            expect(owner).to.equal(true);
         });
     })
 })

@@ -88,7 +88,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   modifier onlyLiveDomain(bytes32 name, bytes32 tld) {
-    require(isLive(name, tld), ""); // TODO:
+    require(isLive(name, tld), "is Live"); // TODO:
     _;
   }
 
@@ -155,10 +155,10 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
 
-    TokenRecord.TokenRecord memory _token = _tokenRecords[getTokenId(name, tld)];
-    if (_token.type_ != RecordType.RecordType.DOMAIN) {
-      revert(""); //TODO:
-    }
+//    TokenRecord.TokenRecord memory _token = _tokenRecords[getTokenId(name, tld)];
+//    if (_token.type_ != RecordType.RecordType.DOMAIN) {
+//      revert(""); //TODO:
+//    }
 
     if (resolver == address(0x0)) {
       resolver = _records[keccak256(tld)].resolver;
