@@ -4,7 +4,7 @@ import {Registry, Registry__factory} from "../../../typechain";
 
 export const deployRegistry = async (signer2:SignerWithAddress):Promise<any> => {
     const RegistryFactory = await ethers.getContractFactory("Registry");
-    const _registry = await upgrades.deployProxy(RegistryFactory);
+    const _registry = await upgrades.deployProxy(RegistryFactory,{ kind: "uups" });
     await _registry.deployed();
     const use_registry = RegistryFactory.attach(_registry.address);
     const use_registry_ac2 = await Registry__factory.connect(_registry.address, signer2);

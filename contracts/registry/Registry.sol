@@ -118,7 +118,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bool enable,
     TldClass.TldClass class_
   ) public onlyRole(ROOT_ROLE) {
-    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST");
+//    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST"); -> !isExists(getTokenId(tld)) always return true
+    require(!isExists(keccak256(tld)), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
 
@@ -484,6 +485,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function isExists(uint256 tokenId) public view returns (bool) {
+    //TODO Logic Error
     return _tokenRecords[tokenId].tld.length > 0;
   }
 
