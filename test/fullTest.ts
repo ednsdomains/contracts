@@ -93,11 +93,11 @@ describe("Classical Test",    function () {
             await use_registry.grantRole(await use_registry.ROOT_ROLE(), signerList[0].address);
         })
         it("Regisiter TLD", async () => {
-        let today = new Date()
-        const exipryDate = today.setFullYear(today.getFullYear()+1)
-        await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode,signerList[0].address,use_publicResolver.address,exipryDate,true,0);
-        const owner = await use_registry.callStatic["isExists(bytes32)"](tldNode);
-        expect(owner).to.equal(true);
+            let today = new Date()
+            const exipryDate = today.setFullYear(today.getFullYear()+1)
+            await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode,signerList[0].address,use_publicResolver.address,exipryDate,true,0);
+            const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
+            expect(owner).to.equal(true);
         });
     })
 })
