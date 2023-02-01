@@ -5,7 +5,7 @@ import "../BaseResolver.sol";
 import "./interfaces/IMultiCoinAddressResolver.sol";
 
 abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseResolver {
-  mapping(bytes32 => mapping(uint256 => bytes)) internal _multiCoinAddresses;
+  mapping(address => mapping(bytes32 => mapping(uint256 => bytes))) internal _multiCoinAddresses;
 
   function _setMultiCoinAddress(
     bytes memory host,
@@ -14,14 +14,8 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     uint256 coin,
     bytes memory address_
   ) internal {
-    bytes32 fqdn;
-    if (keccak256(bytes(host)) == AT) {
-      fqdn = keccak256(abi.encodePacked(_join(name, tld)));
-    } else {
-      require(valid(bytes(host)), "INVALID_HOST");
-      fqdn = keccak256(abi.encodePacked(_join(host, name, tld)));
-    }
-    _multiCoinAddresses[fqdn][coin] = address_;
+    bytes32 fqdn = _getFqdn(host, name, tld);
+    _multiCoinAddresses[_getUser(host, name, tld)][fqdn][coin] = address_;
     emit SetMultiCoinAddress(host, name, tld, coin, bytes(address_));
   }
 
@@ -35,16 +29,6 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     _setMultiCoinAddress(host, name, tld, coin, address_);
   }
 
-  // function setMultiCoinAddress_SYNC(
-  //   bytes memory host,
-  //   bytes memory name,
-  //   bytes memory tld,
-  //   uint256 coin,
-  //   bytes memory address_
-  // ) public onlySynchronizer {
-  //   _setMultiCoinAddress(host, name, tld, coin, address_);
-  // }
-
   function getMultiCoinAddress(
     bytes memory host,
     bytes memory name,
@@ -52,10 +36,10 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     uint256 coin
   ) public view onlyLive(name, tld) returns (bytes memory) {
     if (keccak256(bytes(host)) == AT) {
-      return _multiCoinAddresses[keccak256(_join(name, tld))][coin];
+      return _multiCoinAddresses[_getUser(host, name, tld)][keccak256(_join(name, tld))][coin];
     } else {
       require(valid(bytes(host)), "INVALID_HOST");
-      return _multiCoinAddresses[keccak256(_join(host, name, tld))][coin];
+      return _multiCoinAddresses[_getUser(host, name, tld)][keccak256(_join(host, name, tld))][coin];
     }
   }
 

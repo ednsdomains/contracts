@@ -52,7 +52,7 @@ export const setupRoot = async (input: ISetupInput) => {
   if (classical) {
     for (const tld_ of classical) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
       await tx.wait();
     }
   }
@@ -64,7 +64,7 @@ export const setupRoot = async (input: ISetupInput) => {
   if (universal) {
     for (const tld_ of universal) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
       await tx.wait();
     }
   }
@@ -83,6 +83,10 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
     }
   }
 };
+
+const _beforeSetup = async (input: ISetupInput) => {};
+
+const _afterSetup = async (input: ISetupInput) => {};
 
 // export const setupClassicalRegistrarController = async (input: ISetupInput) => {
 //   const tx = await input.contracts.ClassicalRegistrarController.grantRole(

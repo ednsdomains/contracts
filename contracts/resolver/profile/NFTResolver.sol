@@ -5,7 +5,7 @@ import "../BaseResolver.sol";
 import "./interfaces/INFTResolver.sol";
 
 abstract contract NFTResolver is INFTResolver, BaseResolver {
-  mapping(bytes32 => mapping(uint256 => NFT)) private _nfts;
+  mapping(address => mapping(bytes32 => mapping(uint256 => NFT))) private _nfts;
 
   function setNFT(
     bytes memory host,
@@ -18,17 +18,6 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     _setNFT(host, name, tld, chainId, contract_, tokenId);
   }
 
-  // function setNFT_SYNC(
-  //   bytes memory host,
-  //   bytes memory name,
-  //   bytes memory tld,
-  //   uint256 chainId,
-  //   address contract_,
-  //   uint256 tokenId
-  // ) public onlySynchronizer {
-  //   _setNFT(host, name, tld, chainId, contract_, tokenId);
-  // }
-
   function _setNFT(
     bytes memory host,
     bytes memory name,
@@ -37,19 +26,19 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     address contract_,
     uint256 tokenId
   ) internal {
-    bytes32 fqdn;
-    if (keccak256(bytes(host)) == AT) {
-      fqdn = keccak256(_join(name, tld));
-    } else {
-      require(valid(bytes(host)), "INVALID_HOST");
-      fqdn = keccak256(_join(host, name, tld));
-    }
-    _nfts[fqdn][chainId] = NFT({ contract_: contract_, tokenId: tokenId });
+    bytes32 fqdn = _getFqdn(host, name, tld);
+    _nfts[_getUser(host, name, tld)][fqdn][chainId] = NFT({ contract_: contract_, tokenId: tokenId });
     emit SetNFT(host, name, tld, chainId, contract_, tokenId);
   }
 
-  function getNFT(bytes32 fqdn, uint256 chainId) public view returns (NFT memory) {
-    return _nfts[fqdn][chainId];
+  function getNFT(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld,
+    uint256 chainId
+  ) public view returns (NFT memory) {
+    bytes32 fqdn = _getFqdn(host, name, tld);
+    return _nfts[_getUser(host, name, tld)][fqdn][chainId];
   }
 
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {

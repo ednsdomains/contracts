@@ -74,4 +74,27 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes32 tld_ = keccak256(tld);
     return _registry.isLive(domain_, tld_);
   }
+
+  function _getUser(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld
+  ) internal view returns (address) {
+    return _registry.getUser(keccak256(host), keccak256(name), keccak256(tld));
+  }
+
+  function _getFqdn(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld
+  ) internal pure returns (bytes32) {
+    bytes32 fqdn;
+    if (keccak256(bytes(host)) == AT) {
+      fqdn = keccak256(_join(name, tld));
+    } else {
+      require(valid(bytes(host)), "INVALID_HOST");
+      fqdn = keccak256(_join(host, name, tld));
+    }
+    return fqdn;
+  }
 }
