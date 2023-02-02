@@ -81,11 +81,11 @@ const config: HardhatUserConfig = {
     // Avalanche
     avalanche: {
       chainId: 43114,
-      url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://avalanche-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     avalancheFuji: {
       chainId: 43113,
-      url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://avalanche-fuji.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
   },
   gasReporter: {

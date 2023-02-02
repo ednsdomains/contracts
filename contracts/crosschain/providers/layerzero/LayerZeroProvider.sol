@@ -2,14 +2,19 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./NonblockingLayerZeroApp.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract LayerZeroProvider is NonblockingLayerZeroApp, AccessControlUpgradeable {
+import "./NonblockingLayerZeroApp.sol";
+import "../../interfaces/IPortal.sol";
+
+contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessControlUpgradeable {
   uint256 public constant NO_EXTRA_GAS = 0;
   uint256 public constant FUNCTION_TYPE_SEND = 1;
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
   bool public useCustomAdapterParams;
 
-  bytes32 public constant PORTAL_ROLE = keccak256("PORTAL_ROLE");
+  IPortal private _portal;
 
   event SetUseCustomAdapterParams(bool _useCustomAdapterParams);
 
@@ -17,17 +22,20 @@ contract LayerZeroProvider is NonblockingLayerZeroApp, AccessControlUpgradeable 
 
   event ReceiveFromChain(uint16 indexed _srcChainId, bytes indexed _srcAddress, bytes indexed payload, uint64 _nonce);
 
-  function initialize(address _lzEndpoint) public initializer {
-    __LayerZeroProvider_init(_lzEndpoint);
+  function initialize(address _lzEndpoint, IPortal portal) public initializer {
+    __LayerZeroProvider_init(_lzEndpoint, portal);
   }
 
-  function __LayerZeroProvider_init(address _lzEndpoint) internal onlyInitializing {
+  function __LayerZeroProvider_init(address _lzEndpoint, IPortal portal) internal onlyInitializing {
     __Ownable_init();
-    __LayerZeroProvider_init_unchained(_lzEndpoint);
+    __LayerZeroProvider_init_unchained(_lzEndpoint, portal);
   }
 
-  function __LayerZeroProvider_init_unchained(address _lzEndpoint) internal onlyInitializing {
+  function __LayerZeroProvider_init_unchained(address _lzEndpoint, IPortal portal) internal onlyInitializing {
     __NonblockingLayerZeroApp_init_unchained(_lzEndpoint);
+    _portal = portal;
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
   }
 
   function estimateSendFee(
@@ -47,7 +55,9 @@ contract LayerZeroProvider is NonblockingLayerZeroApp, AccessControlUpgradeable 
     bytes memory _srcAddress,
     uint64 _nonce,
     bytes memory _payload
-  ) internal override {} // TODO:
+  ) internal override {
+    _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
+  } // TODO:
 
   function send(
     address _from,
@@ -57,7 +67,7 @@ contract LayerZeroProvider is NonblockingLayerZeroApp, AccessControlUpgradeable 
     address _zroPaymentAddress,
     bytes memory _adapterParams
   ) external {
-    require(hasRole(PORTAL_ROLE, _msgSender()), "ONLY_PORTAL");
+    require(_msgSender() == address(_portal), "ONLY_PORTAL");
     _send(_from, _dstChainId, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
   }
 
@@ -78,4 +88,7 @@ contract LayerZeroProvider is NonblockingLayerZeroApp, AccessControlUpgradeable 
     uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
     emit SendToChain(_from, _dstChainId, payload, nonce);
   }
+
+  /* ========== UUPS ==========*/
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 }
