@@ -12,9 +12,6 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   bytes32 public constant SENDER_ROLE = keccak256("SENDER_ROLE");
   bytes32 public constant PROVIDER_ROLE = keccak256("PROVIDER_ROLE");
 
-  mapping(bytes32 => bytes) private _sends;
-  mapping(bytes32 => bytes) private _receives;
-
   mapping(CrossChainProvider.CrossChainProvider => address) private _providers;
 
   function initialize() public initializer {
@@ -35,29 +32,21 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
 
   function send(
     CrossChainProvider.CrossChainProvider provider,
-    uint16 chainId,
-    address target,
-    bytes calldata ews // abi.encodeWithSignature();
-  ) public payable {
-    require(hasRole(SENDER_ROLE, _msgSender()), "ONLY_SENDER");
-    bytes memory payload = abi.encode(target, ews);
-
-    bytes32 ref = keccak256(payload);
-    _sends[ref] = payload;
-    emit Sent(provider, ref);
+    address payable sender,
+    uint16 dstChainId,
+    bytes calldata payload // abi.encode(target_contract_address, abi.encodeWithSignature())
+  ) public payable onlyRole(SENDER_ROLE) {
+    emit Sent(provider, sender, dstChainId, payload);
 
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
-      LayerZeroProvider(_providers[provider]).send{ value: msg.value }(address(this), chainId, payload, payable(_msgSender()), address(this), new bytes(0));
+      LayerZeroProvider(_providers[provider]).send{ value: msg.value }(sender, dstChainId, payload, new bytes(0));
     } else {
       revert("Empty provider");
     }
   }
 
-  function receive_(CrossChainProvider.CrossChainProvider provider, bytes calldata payload) public {
-    require(hasRole(PROVIDER_ROLE, _msgSender()), "ONLY_PROVIDER");
-    bytes32 ref = keccak256(payload);
-    _receives[ref] = payload;
-    emit Received(provider, ref);
+  function receive_(CrossChainProvider.CrossChainProvider provider, bytes calldata payload) public onlyRole(PROVIDER_ROLE) {
+    emit Received(provider, payload);
 
     // (bytes memory targetAddressBytes, bytes memory ews) = abi.decode(payload, (bytes, bytes));
     // address target;
@@ -71,17 +60,8 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     return _providers[provider];
   }
 
-  function setProvider(CrossChainProvider.CrossChainProvider provider, address address_) public {
-    require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
+  function setProvider(CrossChainProvider.CrossChainProvider provider, address address_) public onlyRole(ADMIN_ROLE) {
     _providers[provider] = address_;
-  }
-
-  function getReceived(bytes32 ref) public view returns (bytes memory) {
-    return _receives[ref];
-  }
-
-  function getSends(bytes32 ref) public view returns (bytes memory) {
-    return _sends[ref];
   }
 
   /* ========== UUPS ==========*/

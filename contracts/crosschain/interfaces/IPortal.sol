@@ -4,15 +4,15 @@ pragma solidity ^0.8.13;
 import "../../lib/CrossChainProvider.sol";
 
 interface IPortal {
-  event Sent(CrossChainProvider.CrossChainProvider to, bytes32 ref);
-  event Received(CrossChainProvider.CrossChainProvider from, bytes32 ref);
+  event Sent(CrossChainProvider.CrossChainProvider provider, address indexed sender, uint16 dstChainId, bytes payload);
+  event Received(CrossChainProvider.CrossChainProvider provider, bytes payload);
 
   // EVM compatible send
   function send(
     CrossChainProvider.CrossChainProvider provider,
-    uint16 chainId,
-    address target,
-    bytes calldata payload
+    address payable sender,
+    uint16 dstChainId,
+    bytes memory payload
   ) external payable;
 
   function receive_(CrossChainProvider.CrossChainProvider provider, bytes memory payload) external;

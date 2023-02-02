@@ -126,7 +126,7 @@ async function main() {
   console.log(`Tx: ${tx1.hash}`);
   await tx1.wait();
   console.log(`Avalanche sent to Polygon through LayerZero.`);
-  console.log({ payload: await AvalanchePortal.getReceived(ethers.utils.parseBytes32String(ref)) });
+  console.log({ payload: await AvalanchePortal.getReceived(ref) });
 
   // Polygon
   console.log("Start Polygon to Avalanche");

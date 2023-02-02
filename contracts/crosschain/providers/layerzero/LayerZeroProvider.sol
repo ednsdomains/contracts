@@ -3,11 +3,11 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-
+import "./interfaces/ILayerZeroProvider.sol";
 import "./NonblockingLayerZeroApp.sol";
 import "../../interfaces/IPortal.sol";
 
-contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessControlUpgradeable {
+contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLayerZeroApp, AccessControlUpgradeable {
   uint256 public constant NO_EXTRA_GAS = 0;
   uint256 public constant FUNCTION_TYPE_SEND = 1;
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -15,12 +15,6 @@ contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessCo
   bool public useCustomAdapterParams;
 
   IPortal private _portal;
-
-  event SetUseCustomAdapterParams(bool _useCustomAdapterParams);
-
-  event SendToChain(address indexed _sender, uint16 indexed _dstChainId, bytes indexed payload, uint64 _nonce);
-
-  event ReceiveFromChain(uint16 indexed _srcChainId, bytes indexed _srcAddress, bytes indexed payload, uint64 _nonce);
 
   function initialize(address _lzEndpoint, IPortal portal) public initializer {
     __LayerZeroProvider_init(_lzEndpoint, portal);
@@ -38,14 +32,13 @@ contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessCo
     _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  function estimateSendFee(
+  function estimateFees(
     uint16 _dstChainId,
     bytes memory payload,
-    bool _useZro,
     bytes memory _adapterParams
-  ) public view returns (uint256 nativeFee, uint256 zroFee) {
-    // mock the payload for send()
-    return lzEndpoint.estimateFees(_dstChainId, address(this), payload, _useZro, _adapterParams);
+  ) public view returns (uint256) {
+    (uint256 nativeFee, uint256 zroFee) = lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, _adapterParams);
+    return nativeFee;
   }
 
   function _nonblockingLzReceive(
@@ -54,27 +47,24 @@ contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessCo
     uint64 _nonce,
     bytes memory _payload
   ) internal override {
+    emit Received(_srcChainId, _srcAddress, _payload, _nonce);
     _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
-  } // TODO:
+  }
 
   function send(
-    address _from,
+    address payable _from,
     uint16 _dstChainId,
     bytes memory _payload,
-    address payable _refundAddress,
-    address _zroPaymentAddress,
     bytes memory _adapterParams
   ) external payable {
     require(_msgSender() == address(_portal), "ONLY_PORTAL");
-    _send(_from, _dstChainId, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
+    _send(_from, _dstChainId, _payload, _adapterParams);
   }
 
   function _send(
-    address _from,
+    address payable _from,
     uint16 _dstChainId,
     bytes memory payload,
-    address payable _refundAddress,
-    address _zroPaymentAddress,
     bytes memory _adapterParams
   ) internal {
     if (useCustomAdapterParams) {
@@ -82,9 +72,9 @@ contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessCo
     } else {
       require(_adapterParams.length == 0, "LzApp: _adapterParams must be empty.");
     }
-    _lzSend(_dstChainId, payload, _refundAddress, _zroPaymentAddress, _adapterParams);
+    _lzSend(_dstChainId, payload, _from, _from, _adapterParams);
     uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
-    emit SendToChain(_from, _dstChainId, payload, nonce);
+    emit Sent(_from, _dstChainId, payload, nonce);
   }
 
   /* ========== UUPS ==========*/
