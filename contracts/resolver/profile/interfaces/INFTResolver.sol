@@ -18,19 +18,10 @@ interface INFTResolver {
     uint256 tokenId
   ) external;
 
-  // function setNFT_SYNC(
-  //   bytes memory host,
-  //   bytes memory name,
-  //   bytes memory tld,
-  //   uint256 chainId,
-  //   address contract_,
-  //   uint256 tokenId
-  // ) external;
-
   function getNFT(
-    bytes32 fqdn,
-    //    bytes memory name,
-    //    bytes memory tld,
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld,
     uint256 chainId
   ) external view returns (NFT memory);
 }

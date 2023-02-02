@@ -7,6 +7,8 @@ import { Contract, Transaction } from "ethers";
 import { getAllContractsData, getContractAddress, isContractDeployed } from "./get-contracts";
 import { getBalance } from "./get-balance";
 import _ from "lodash";
+import { setAllContractsData } from "./set-contracts";
+import delay from "delay";
 
 export interface IDeployArgs {
   deployer: SignerWithAddress;
@@ -142,6 +144,10 @@ const _beforeDeploy = async (deployer: SignerWithAddress, chainId: number, name:
   // Check is the deployer account has enough balance
   const balance = await getBalance(deployer);
   if (balance.eq(0)) throw new Error(`Deployer account ${deployer.address} has [0] balance`);
+
+  // Announce ready for the deployment
+  console.log(`Deployment initiated, contract [${name}] will be deploy on [[${NetworkConfig[chainId].name}]] in 5 seconds...`);
+  await delay(5000);
 };
 
 const _afterDeploy = async (chainId: number, name: ContractName, contract: Contract, tx: Transaction) => {
@@ -153,8 +159,11 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
   } else {
     const _contract = _.clone(ALL_CONTRACTS_DATA.find((c) => c.chainId === 0));
     if (!_contract) throw new Error("");
+    _contract.chainId = chainId;
     _contract.addresses[name] = contract.address;
+    ALL_CONTRACTS_DATA.push(_contract);
   }
+  await setAllContractsData(ALL_CONTRACTS_DATA);
 };
 
 //

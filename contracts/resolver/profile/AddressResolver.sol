@@ -5,7 +5,7 @@ import "../BaseResolver.sol";
 import "./interfaces/IAddressResolver.sol";
 
 abstract contract AddressResolver is IAddressResolver, BaseResolver {
-  mapping(bytes32 => address) internal _addresses;
+  mapping(address => mapping(bytes32 => address)) internal _addresses;
   mapping(address => bytes) internal _reverseAddresses;
 
   function _setAddress(
@@ -14,14 +14,8 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     bytes memory tld,
     address address_
   ) internal {
-    bytes32 fqdn;
-    if (keccak256(bytes(host)) == AT) {
-      fqdn = keccak256(_join(name, tld));
-    } else {
-      require(valid(bytes(host)), "INVALID_HOST");
-      fqdn = keccak256(_join(host, name, tld));
-    }
-    _addresses[fqdn] = address_;
+    bytes32 fqdn = _getFqdn(host, name, tld);
+    _addresses[_getUser(host, name, tld)][fqdn] = address_;
     emit SetAddress(host, name, tld, address_);
   }
 
@@ -34,25 +28,16 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     _setAddress(host, name, tld, address_);
   }
 
-  // function setAddress_SYNC(
-  //   bytes memory host,
-  //   bytes memory name,
-  //   bytes memory tld,
-  //   address address_
-  // ) public onlySynchronizer {
-  //   _setAddress(host, name, tld, address_);
-  // }
-
   function getAddress(
     bytes memory host,
     bytes memory name,
     bytes memory tld
   ) public view onlyLive(name, tld) returns (address) {
     if (keccak256(bytes(host)) == AT) {
-      return _addresses[keccak256(_join(name, tld))];
+      return _addresses[_getUser(host, name, tld)][keccak256(_join(name, tld))];
     } else {
       require(valid(bytes(host)), "INVALID_HOST");
-      return _addresses[keccak256(_join(host, name, tld))];
+      return _addresses[_getUser(host, name, tld)][keccak256(_join(host, name, tld))];
     }
   }
 
@@ -80,20 +65,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setReverseAddress(host, name, tld, address_);
-    // if (_registry.isOmni(keccak256(tld))) {
-    //   uint16[] memory lzChainIds = _registry.getLzChainIds(keccak256(tld));
-    //   _synchronizer.sync(lzChainIds, abi.encodeWithSignature("setAddress_SYNC(bytes,bytes,bytes,address)", host, name, tld, address_));
-    // }
   }
-
-  // function setReverseAddress_SYNC(
-  //   bytes memory host,
-  //   bytes memory name,
-  //   bytes memory tld,
-  //   address address_
-  // ) public onlySynchronizer {
-  //   _setReverseAddress(host, name, tld, address_);
-  // }
 
   function getReverseAddress(address address_) public view returns (string memory) {
     return string(_reverseAddresses[address_]);

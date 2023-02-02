@@ -119,7 +119,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bool enable,
     TldClass.TldClass class_
   ) public onlyRole(ROOT_ROLE) {
-//    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST"); -> !isExists(getTokenId(tld)) always return true
+    //    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST"); -> !isExists(getTokenId(tld)) always return true
     require((!isExists(keccak256(tld))) && (!isExists(getTokenId(tld))), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
@@ -154,11 +154,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyRole(REGISTRAR_ROLE) {
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
-
-//    TokenRecord.TokenRecord memory _token = _tokenRecords[getTokenId(name, tld)];
-//    if (_token.type_ != RecordType.RecordType.DOMAIN) {
-//      revert(""); //TODO:
-//    }
 
     if (resolver == address(0x0)) {
       resolver = _records[keccak256(tld)].resolver;
@@ -486,7 +481,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function isExists(uint256 tokenId) public view returns (bool) {
-//    console.log(string(abi.encodePacked(_tokenRecords[tokenId].tld))==" ");
+    //    console.log(string(abi.encodePacked(_tokenRecords[tokenId].tld))==" ");
     return _tokenRecords[tokenId].tld != bytes32(0);
   }
 

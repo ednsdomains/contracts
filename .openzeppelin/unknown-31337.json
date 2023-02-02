@@ -2361,7 +2361,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
             "retypedFrom": "bool"
           },
           {
@@ -2370,7 +2370,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
           },
           {
             "label": "__gap",
@@ -2378,7 +2378,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "__gap",
@@ -2386,7 +2386,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -2394,7 +2394,7 @@
             "slot": "101",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
           },
           {
             "label": "__gap",
@@ -2402,7 +2402,7 @@
             "slot": "102",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
           },
           {
             "label": "_owner",
@@ -2410,7 +2410,7 @@
             "slot": "151",
             "type": "t_address",
             "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
           },
           {
             "label": "__gap",
@@ -2418,7 +2418,7 @@
             "slot": "152",
             "type": "t_array(t_uint256)49_storage",
             "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:94"
           },
           {
             "label": "__gap",
@@ -2426,7 +2426,7 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -2434,15 +2434,15 @@
             "slot": "251",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
           },
           {
             "label": "_registry",
             "offset": 0,
             "slot": "301",
-            "type": "t_contract(IRegistry)11841",
+            "type": "t_contract(IRegistry)3994",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:16"
+            "src": "contracts\\wrapper\\Wrapper.sol:16"
           },
           {
             "label": "_name",
@@ -2450,7 +2450,7 @@
             "slot": "302",
             "type": "t_string_storage",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:24"
+            "src": "contracts\\wrapper\\Wrapper.sol:24"
           },
           {
             "label": "_symbol",
@@ -2458,7 +2458,7 @@
             "slot": "303",
             "type": "t_string_storage",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:25"
+            "src": "contracts\\wrapper\\Wrapper.sol:25"
           },
           {
             "label": "__baseURI",
@@ -2466,7 +2466,7 @@
             "slot": "304",
             "type": "t_bytes_storage",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:26"
+            "src": "contracts\\wrapper\\Wrapper.sol:26"
           },
           {
             "label": "_balances",
@@ -2474,7 +2474,7 @@
             "slot": "305",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:28"
+            "src": "contracts\\wrapper\\Wrapper.sol:28"
           },
           {
             "label": "_tokenApprovals",
@@ -2482,7 +2482,7 @@
             "slot": "306",
             "type": "t_mapping(t_uint256,t_address)",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:29"
+            "src": "contracts\\wrapper\\Wrapper.sol:29"
           },
           {
             "label": "_operatorApprovals",
@@ -2490,7 +2490,7 @@
             "slot": "307",
             "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
             "contract": "Wrapper",
-            "src": "contracts/wrapper/Wrapper.sol:30"
+            "src": "contracts\\wrapper\\Wrapper.sol:30"
           }
         ],
         "types": {
@@ -2518,7 +2518,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(IRegistry)11841": {
+          "t_contract(IRegistry)3994": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
@@ -2587,7 +2587,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
             "retypedFrom": "bool"
           },
           {
@@ -2596,7 +2596,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
           },
           {
             "label": "__gap",
@@ -2604,7 +2604,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "__gap",
@@ -2612,7 +2612,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -2620,7 +2620,7 @@
             "slot": "101",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
           },
           {
             "label": "__gap",
@@ -2628,7 +2628,7 @@
             "slot": "102",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
           },
           {
             "label": "__gap",
@@ -2636,7 +2636,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -2644,7 +2644,7 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
           },
           {
             "label": "_registry",
@@ -2652,7 +2652,7 @@
             "slot": "251",
             "type": "t_contract(IRegistry)11841",
             "contract": "BaseResolver",
-            "src": "contracts/resolver/BaseResolver.sol:16"
+            "src": "contracts\\resolver\\BaseResolver.sol:16"
           },
           {
             "label": "_addresses",
@@ -2660,7 +2660,7 @@
             "slot": "252",
             "type": "t_mapping(t_bytes32,t_address)",
             "contract": "AddressResolver",
-            "src": "contracts/resolver/profile/AddressResolver.sol:8"
+            "src": "contracts\\resolver\\profile\\AddressResolver.sol:8"
           },
           {
             "label": "_reverseAddresses",
@@ -2668,7 +2668,7 @@
             "slot": "253",
             "type": "t_mapping(t_address,t_bytes_storage)",
             "contract": "AddressResolver",
-            "src": "contracts/resolver/profile/AddressResolver.sol:9"
+            "src": "contracts\\resolver\\profile\\AddressResolver.sol:9"
           },
           {
             "label": "_multiCoinAddresses",
@@ -2676,7 +2676,7 @@
             "slot": "254",
             "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))",
             "contract": "MultiCoinAddressResolver",
-            "src": "contracts/resolver/profile/MultiCoinAddressResolver.sol:8"
+            "src": "contracts\\resolver\\profile\\MultiCoinAddressResolver.sol:8"
           },
           {
             "label": "_nfts",
@@ -2684,7 +2684,7 @@
             "slot": "255",
             "type": "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)13955_storage))",
             "contract": "NFTResolver",
-            "src": "contracts/resolver/profile/NFTResolver.sol:8"
+            "src": "contracts\\resolver\\profile\\NFTResolver.sol:8"
           },
           {
             "label": "_texts",
@@ -2692,7 +2692,7 @@
             "slot": "256",
             "type": "t_mapping(t_bytes32,t_string_storage)",
             "contract": "TextResolver",
-            "src": "contracts/resolver/profile/TextResolver.sol:9"
+            "src": "contracts\\resolver\\profile\\TextResolver.sol:9"
           },
           {
             "label": "_typedTexts",
@@ -2700,7 +2700,7 @@
             "slot": "257",
             "type": "t_mapping(t_bytes32,t_mapping(t_bytes32,t_string_storage))",
             "contract": "TypedTextResolver",
-            "src": "contracts/resolver/profile/TypedTextResolver.sol:8"
+            "src": "contracts\\resolver\\profile\\TypedTextResolver.sol:8"
           }
         ],
         "types": {
@@ -2835,7 +2835,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
             "retypedFrom": "bool"
           },
           {
@@ -2844,7 +2844,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
           },
           {
             "label": "__gap",
@@ -2852,7 +2852,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "__gap",
@@ -2860,7 +2860,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -2868,7 +2868,7 @@
             "slot": "101",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
           },
           {
             "label": "__gap",
@@ -2876,7 +2876,7 @@
             "slot": "102",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
           },
           {
             "label": "__gap",
@@ -2884,7 +2884,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -2892,7 +2892,7 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
           },
           {
             "label": "controllers",
@@ -2900,7 +2900,7 @@
             "slot": "251",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_bool))",
             "contract": "Registrar",
-            "src": "contracts/registrar/Registrar.sol:17"
+            "src": "contracts\\registrar\\Registrar.sol:17"
           },
           {
             "label": "_registry",
@@ -2908,7 +2908,7 @@
             "slot": "252",
             "type": "t_contract(IRegistry)11841",
             "contract": "Registrar",
-            "src": "contracts/registrar/Registrar.sol:19"
+            "src": "contracts\\registrar\\Registrar.sol:19"
           },
           {
             "label": "_resolver",
@@ -2916,7 +2916,7 @@
             "slot": "253",
             "type": "t_contract(IPublicResolver)12680",
             "contract": "Registrar",
-            "src": "contracts/registrar/Registrar.sol:20"
+            "src": "contracts\\registrar\\Registrar.sol:20"
           }
         ],
         "types": {
@@ -3005,7 +3005,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
             "retypedFrom": "bool"
           },
           {
@@ -3014,7 +3014,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
           },
           {
             "label": "__gap",
@@ -3022,7 +3022,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "__gap",
@@ -3030,7 +3030,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -3038,7 +3038,7 @@
             "slot": "101",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
           },
           {
             "label": "__gap",
@@ -3046,7 +3046,7 @@
             "slot": "102",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
           },
           {
             "label": "__gap",
@@ -3054,7 +3054,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -3062,23 +3062,23 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
           },
           {
             "label": "_registry",
             "offset": 0,
             "slot": "251",
-            "type": "t_contract(IRegistry)11841",
+            "type": "t_contract(IRegistry)3994",
             "contract": "Root",
-            "src": "contracts/root/Root.sol:15"
+            "src": "contracts\\root\\Root.sol:15"
           },
           {
             "label": "_baseRegistrar",
             "offset": 0,
             "slot": "252",
-            "type": "t_contract(IRegistrar)8943",
+            "type": "t_contract(IRegistrar)3519",
             "contract": "Root",
-            "src": "contracts/root/Root.sol:16"
+            "src": "contracts\\root\\Root.sol:16"
           },
           {
             "label": "_authorizer",
@@ -3086,7 +3086,7 @@
             "slot": "253",
             "type": "t_address",
             "contract": "Root",
-            "src": "contracts/root/Root.sol:18"
+            "src": "contracts\\root\\Root.sol:18"
           }
         ],
         "types": {
@@ -3110,11 +3110,11 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IRegistrar)8943": {
+          "t_contract(IRegistrar)3519": {
             "label": "contract IRegistrar",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistry)11841": {
+          "t_contract(IRegistry)3994": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
@@ -3167,7 +3167,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
             "retypedFrom": "bool"
           },
           {
@@ -3176,7 +3176,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
           },
           {
             "label": "__gap",
@@ -3184,7 +3184,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "__gap",
@@ -3192,7 +3192,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -3200,7 +3200,7 @@
             "slot": "101",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
           },
           {
             "label": "__gap",
@@ -3208,7 +3208,7 @@
             "slot": "102",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
           },
           {
             "label": "__gap",
@@ -3216,7 +3216,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -3224,7 +3224,7 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
           },
           {
             "label": "_paused",
@@ -3232,7 +3232,7 @@
             "slot": "251",
             "type": "t_bool",
             "contract": "PausableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:29"
           },
           {
             "label": "__gap",
@@ -3240,31 +3240,31 @@
             "slot": "252",
             "type": "t_array(t_uint256)49_storage",
             "contract": "PausableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:116"
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:116"
           },
           {
             "label": "_token",
             "offset": 0,
             "slot": "301",
-            "type": "t_contract(IERC20)3794",
+            "type": "t_contract(IERC20)2601",
             "contract": "BaseRegistrarController",
-            "src": "contracts/registrar/BaseRegistrarController.sol:17"
+            "src": "contracts\\registrar\\BaseRegistrarController.sol:17"
           },
           {
             "label": "_registrar",
             "offset": 0,
             "slot": "302",
-            "type": "t_contract(IRegistrar)8943",
+            "type": "t_contract(IRegistrar)3519",
             "contract": "BaseRegistrarController",
-            "src": "contracts/registrar/BaseRegistrarController.sol:18"
+            "src": "contracts\\registrar\\BaseRegistrarController.sol:18"
           },
           {
             "label": "_root",
             "offset": 0,
             "slot": "303",
-            "type": "t_contract(IRoot)14546",
+            "type": "t_contract(IRoot)4483",
             "contract": "BaseRegistrarController",
-            "src": "contracts/registrar/BaseRegistrarController.sol:19"
+            "src": "contracts\\registrar\\BaseRegistrarController.sol:19"
           },
           {
             "label": "COIN_ID",
@@ -3272,7 +3272,7 @@
             "slot": "304",
             "type": "t_uint256",
             "contract": "BaseRegistrarController",
-            "src": "contracts/registrar/BaseRegistrarController.sol:20"
+            "src": "contracts\\registrar\\BaseRegistrarController.sol:20"
           }
         ],
         "types": {
@@ -3296,15 +3296,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IERC20)3794": {
+          "t_contract(IERC20)2601": {
             "label": "contract IERC20",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistrar)8943": {
+          "t_contract(IRegistrar)3519": {
             "label": "contract IRegistrar",
             "numberOfBytes": "20"
           },
-          "t_contract(IRoot)14546": {
+          "t_contract(IRoot)4483": {
             "label": "contract IRoot",
             "numberOfBytes": "20"
           },
@@ -3347,7 +3347,7 @@
     },
     "0ef6b69ccaed11cc72893b8a0afa9ea1dd806d2e38c908003fce2204f2382fd2": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0xb36aa2cadb574a10e1ff7169aed126169f2f9537bdb8a9097ed9e1de7b1206ca",
+      "txHash": "0x515fe6da9886fcbbe32b133c632c72fd7626c6721bcda65c7263089aa0f04c51",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -3357,7 +3357,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
             "retypedFrom": "bool"
           },
           {
@@ -3366,7 +3366,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
           },
           {
             "label": "__gap",
@@ -3374,7 +3374,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "__gap",
@@ -3382,7 +3382,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -3390,7 +3390,7 @@
             "slot": "101",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
           },
           {
             "label": "__gap",
@@ -3398,7 +3398,7 @@
             "slot": "102",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:259"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
           },
           {
             "label": "__gap",
@@ -3406,7 +3406,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
           },
           {
             "label": "__gap",
@@ -3414,7 +3414,7 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
           },
           {
             "label": "_owner",
@@ -3422,7 +3422,7 @@
             "slot": "251",
             "type": "t_address",
             "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:19"
+            "src": "contracts\\registry\\Registry.sol:19"
           },
           {
             "label": "_records",
@@ -3430,7 +3430,7 @@
             "slot": "252",
             "type": "t_mapping(t_bytes32,t_struct(TldRecord)1941_storage)",
             "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:29"
+            "src": "contracts\\registry\\Registry.sol:29"
           },
           {
             "label": "_tokenRecords",
@@ -3438,7 +3438,7 @@
             "slot": "253",
             "type": "t_mapping(t_uint256,t_struct(TokenRecord)1955_storage)",
             "contract": "Registry",
-            "src": "contracts/registry/Registry.sol:30"
+            "src": "contracts\\registry\\Registry.sol:30"
           }
         ],
         "types": {
