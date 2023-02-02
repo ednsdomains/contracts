@@ -20,6 +20,7 @@ import {deployClassicalRegistrarController} from "./lastest/deploy/07_classicalR
 describe("Classical Test",    function () {
     let signerList: SignerWithAddress[];
     // let fakeLzEndpointMock:LayerZeroEndpointMock;
+    const today = new Date()
     let use_registry: Registry;
     let use_registry_ac2: Registry;
     let use_defaultWrapper: Wrapper;
@@ -97,14 +98,12 @@ describe("Classical Test",    function () {
     })
     describe("TLD  Test", function (){
         it("Set tld record", async () => {
-            let today = new Date()
             const exipryDate = today.setFullYear(today.getFullYear()+1)
             await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode,signerList[0].address,use_publicResolver.address,exipryDate,true,0);
             const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
             expect(owner).to.equal(true);
         });
         it("Set disable tld record", async () => {
-            let today = new Date()
             const exipryDate = today.setFullYear(today.getFullYear()+1)
             await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](disableTldNode,signerList[0].address,use_publicResolver.address,exipryDate,false,0);
             const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
@@ -113,7 +112,6 @@ describe("Classical Test",    function () {
         it("Set tld existed record", async () => {
             let throwError = false
             try {
-                let today = new Date()
                 const exipryDate = today.setFullYear(today.getFullYear()+1)
                 await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode,signerList[0].address,use_publicResolver.address,exipryDate,true,0);
                 const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
@@ -127,11 +125,81 @@ describe("Classical Test",    function () {
 
     describe("Domain Test", function (){
         it("Set Domain record", async () => {
-            let today = new Date()
             const exipryDate = today.setFullYear(today.getFullYear()+1)
             await use_registry["setRecord(bytes,bytes,address,address,uint64)"](nameNode,tldNode,signerList[0].address,use_publicResolver.address,exipryDate);
             const owner = await use_registry["isExists(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode));
             expect(owner).to.equal(true);
         });
+        it("Set Domain record - Exists Domain", async () => {
+            let throwError = false
+            try {
+                const exipryDate = today.setFullYear(today.getFullYear()+1)
+                await use_registry["setRecord(bytes,bytes,address,address,uint64)"](nameNode,tldNode,signerList[0].address,use_publicResolver.address,exipryDate);
+                const owner = await use_registry["isExists(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode));
+            }catch (e) {
+                throwError = true
+            }
+            expect(throwError).to.equal(true);
+        });
     })
+
+    describe("Set Text Record", function (){
+        it("Text Record", async ()=>{
+            const dummyText = "Test Set Text Record"
+            await use_publicResolver.setText(hostNode,nameNode,tldNode,dummyText)
+            const getText = await use_publicResolver.getText(hostNode,nameNode,tldNode)
+            expect(getText).to.equal(dummyText)
+        })
+        it("Text Record - OverWrite", async ()=>{
+            const dummyText = "Test Set Text Record OverWrite"
+            await use_publicResolver.setText(hostNode,nameNode,tldNode,dummyText)
+            const getText = await use_publicResolver.getText(hostNode,nameNode,tldNode)
+            expect(getText).to.equal(dummyText)
+        })
+    })
+    describe("Set Text Record - Error", function (){
+        it("Set Record with signer is not owner", async ()=>{
+            const originalValue = "Test Set Text Record OverWrite"
+            const newText = "Test Set Text Record"
+            try {
+                await use_publicResolver_ac2.setText(hostNode,nameNode,tldNode,newText)
+            }catch (e) {
+                console.log((e as Error).message)
+            }
+            const getText = await use_publicResolver_ac2.getText(hostNode,nameNode,tldNode)
+            expect(getText).to.equal(originalValue)
+        })
+    })
+    describe("Set Typed Text Record", function () {
+        it("Set Text Typed Record", async ()=>{
+            const type = ethers.utils.toUtf8Bytes("email")
+            const typedText = "alexwg"
+            await use_publicResolver.setTypedText(hostNode,nameNode,tldNode,type,typedText)
+            const getText = await use_publicResolver.getTypedText(hostNode,nameNode,tldNode,type)
+            expect(getText).to.equal(typedText)
+        })
+        it("Set Text Typed Record - OverWrite", async ()=>{
+            const type = ethers.utils.toUtf8Bytes("email")
+            const typedText = "new Typed Record"
+            await use_publicResolver.setTypedText(hostNode,nameNode,tldNode,type,typedText)
+            const getText = await use_publicResolver.getTypedText(hostNode,nameNode,tldNode,type)
+            expect(getText).to.equal(typedText)
+        })
+    })
+    describe("Set Typed Text Record - Error", function (){
+        it("Set Record with signer is not owner", async ()=>{
+            const originaltypedText = "new Typed Record"
+            const type = ethers.utils.toUtf8Bytes("email")
+            const newTypedText = "Test Set Text Record"
+            try {
+                await use_publicResolver_ac2.setTypedText(hostNode,nameNode,tldNode,type,newTypedText)
+            }catch (e) {
+                console.log((e as Error).message)
+            }
+            const getText = await use_publicResolver_ac2.getTypedText(hostNode,nameNode,tldNode,type)
+            expect(getText).to.equal(originaltypedText)
+        })
+    })
+
+
 })
