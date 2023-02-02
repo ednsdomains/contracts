@@ -38,7 +38,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     uint16 chainId,
     address target,
     bytes calldata ews // abi.encodeWithSignature();
-  ) public {
+  ) public payable {
     require(hasRole(SENDER_ROLE, _msgSender()), "ONLY_SENDER");
     bytes memory payload = abi.encode(target, ews);
 
@@ -46,9 +46,11 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     _sends[ref] = payload;
     emit Sent(provider, ref);
 
-    // if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
-    LayerZeroProvider(_providers[provider]).send(address(this), chainId, payload, payable(address(this)), address(this), new bytes(0));
-    // }
+    if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
+      LayerZeroProvider(_providers[provider]).send{ value: msg.value }(address(this), chainId, payload, payable(_msgSender()), address(this), new bytes(0));
+    } else {
+      revert("Empty provider");
+    }
   }
 
   function receive_(CrossChainProvider.CrossChainProvider provider, bytes calldata payload) public {
@@ -72,6 +74,14 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   function setProvider(CrossChainProvider.CrossChainProvider provider, address address_) public {
     require(hasRole(ADMIN_ROLE, _msgSender()), "ONLY_ADMIN");
     _providers[provider] = address_;
+  }
+
+  function getReceived(bytes32 ref) public view returns (bytes memory) {
+    return _receives[ref];
+  }
+
+  function getSends(bytes32 ref) public view returns (bytes memory) {
+    return _sends[ref];
   }
 
   /* ========== UUPS ==========*/

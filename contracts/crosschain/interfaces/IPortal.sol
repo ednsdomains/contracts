@@ -13,7 +13,7 @@ interface IPortal {
     uint16 chainId,
     address target,
     bytes calldata payload
-  ) external;
+  ) external payable;
 
   function receive_(CrossChainProvider.CrossChainProvider provider, bytes memory payload) external;
 

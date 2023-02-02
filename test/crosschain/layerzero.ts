@@ -1,9 +1,10 @@
 import { ethers, upgrades } from "hardhat";
-// import { getContractFactory } from "@nomiclabs/hardhat-ethers/types";
 import { LayerZeroProvider__factory } from "../../typechain";
 import { Portal__factory } from "../../typechain/factories/Portal__factory";
 import * as dotenv from "dotenv";
 dotenv.config();
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const POLYGON_LAYERZERO_PROVIDER_ADDRESS = process.env.POLYGON_LAYERZERO_PROVIDER_ADDRESS || "0x8461A1Dc89fdb33951F40E55E1BE6EFe88b53417";
 const POLYGON_PORTAL_ADDRESS = process.env.POLYGON_PORTAL_ADDRESS || "0x5d5bBf33660dA4251EaB1B31Bb3666A966eAAc80";
@@ -12,8 +13,6 @@ const AVALANCHE_LAYERZERO_PROVIDER_ADDRESS = process.env.AVALANCHE_LAYERZERO_PRO
 const AVALANCHE_PORTAL_ADDRESS = process.env.AVALANCHE_PORTAL_ADDRESS || "0x814357bD7C7167119Bb5cdF84470004351084589";
 
 async function main() {
-  // const [_signer] = await ethers.getSigners();
-  // console.log("PK+", process.env.PRIVATE_KEY);
   const _signer = new ethers.Wallet(process.env.PRIVATE_KEY!);
 
   // ===== Polygon ===== //
@@ -24,10 +23,6 @@ async function main() {
   const PolygonPortal = Portal__factory.connect(POLYGON_PORTAL_ADDRESS || (await upgrades.deployProxy(PolygonPortalFactory, { kind: "uups" })).address, PolygonSigner);
   console.log(`Polygon 'Portal' address - ${PolygonPortal.address}`);
 
-  ///// START UPGRADE /////
-  // await upgrades.upgradeProxy(PolygonPortal.address, PolygonPortalFactory, { kind: "uups" });
-  ///// END UPGRADE /////
-
   const PolygonLayerZeroProviderFactory = await ethers.getContractFactory("LayerZeroProvider", PolygonSigner);
   const PolygonLayerZeroProvider = LayerZeroProvider__factory.connect(
     POLYGON_LAYERZERO_PROVIDER_ADDRESS ||
@@ -36,6 +31,12 @@ async function main() {
   );
   console.log(`Polygon 'LayerZeroProvider' address - ${PolygonLayerZeroProvider.address}`);
 
+  ///// START UPGRADE /////
+  // console.log("Polygon Portal Upgrade");
+  // await upgrades.upgradeProxy(PolygonPortal.address, PolygonPortalFactory, { kind: "uups" });
+  // await upgrades.upgradeProxy(PolygonLayerZeroProvider.address, PolygonLayerZeroProviderFactory, { kind: "uups" });
+  ///// END UPGRADE /////
+
   if (!(await PolygonPortal.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PROVIDER_ROLE")), PolygonLayerZeroProvider.address))) {
     const tx = await PolygonPortal.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PROVIDER_ROLE")), PolygonLayerZeroProvider.address);
     await tx.wait();
@@ -43,6 +44,9 @@ async function main() {
   if (!(await PolygonPortal.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SENDER_ROLE")), PolygonSigner.address))) {
     const tx = await PolygonPortal.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SENDER_ROLE")), PolygonSigner.address);
     await tx.wait();
+  }
+  if ((await PolygonPortal.getProvider(0)) === ZERO_ADDRESS) {
+    await PolygonPortal.setProvider(0, PolygonLayerZeroProvider.address);
   }
 
   // ===== Avalanche ===== //
@@ -53,10 +57,6 @@ async function main() {
   const AvalanchePortal = Portal__factory.connect(AVALANCHE_PORTAL_ADDRESS || (await upgrades.deployProxy(AvalanchePortalFactory, { kind: "uups" })).address, AvalancheSigner);
   console.log(`Avalanche 'Portal' address - ${AvalanchePortal.address}`);
 
-  ///// START UPGRADE /////
-  // await upgrades.upgradeProxy(AvalanchePortal.address, AvalanchePortalFactory, { kind: "uups" });
-  ///// END UPGRADE /////
-
   const AvalancheLayerZeroProviderFactory = await ethers.getContractFactory("LayerZeroProvider", AvalancheSigner);
   const AvalancheLayerZeroProvider = LayerZeroProvider__factory.connect(
     AVALANCHE_LAYERZERO_PROVIDER_ADDRESS ||
@@ -64,6 +64,12 @@ async function main() {
     AvalancheSigner,
   );
   console.log(`Avalanche 'LayerZeroProvider' address - ${AvalancheLayerZeroProvider.address}`);
+
+  ///// START UPGRADE /////
+  // console.log("Avalanche Portal Upgrade");
+  // await upgrades.upgradeProxy(AvalanchePortal.address, AvalanchePortalFactory, { kind: "uups" });
+  // await upgrades.upgradeProxy(AvalancheLayerZeroProvider.address, AvalancheLayerZeroProviderFactory, { kind: "uups" });
+  ///// END UPGRADE /////
 
   if (!(await AvalanchePortal.hasRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PROVIDER_ROLE")), AvalancheLayerZeroProvider.address))) {
     const tx = await AvalanchePortal.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PROVIDER_ROLE")), AvalancheLayerZeroProvider.address);
@@ -73,24 +79,66 @@ async function main() {
     const tx = await AvalanchePortal.grantRole(ethers.utils.keccak256(ethers.utils.toUtf8Bytes("SENDER_ROLE")), AvalancheSigner.address);
     await tx.wait();
   }
+  if ((await AvalanchePortal.getProvider(0)) === ZERO_ADDRESS) {
+    await AvalanchePortal.setProvider(0, AvalancheLayerZeroProvider.address);
+  }
 
   // ===== LayerZero ===== //
   console.log(`Setting LayerZero trust remote...`);
-  if (!(await PolygonLayerZeroProvider.isTrustedRemote(10106, AvalancheLayerZeroProvider.address))) {
-    const tx = await PolygonLayerZeroProvider.setTrustedRemote(10106, AvalancheLayerZeroProvider.address);
+  if (
+    !(await PolygonLayerZeroProvider.isTrustedRemote(
+      10106,
+      ethers.utils.solidityPack(["address", "address"], [AvalancheLayerZeroProvider.address, PolygonLayerZeroProvider.address]),
+    ))
+  ) {
+    const tx = await PolygonLayerZeroProvider.setTrustedRemote(
+      10106,
+      ethers.utils.solidityPack(["address", "address"], [AvalancheLayerZeroProvider.address, PolygonLayerZeroProvider.address]),
+    );
     await tx.wait();
   }
-  if (!(await AvalancheLayerZeroProvider.isTrustedRemote(10106, PolygonLayerZeroProvider.address))) {
-    const tx = await AvalancheLayerZeroProvider.setTrustedRemote(10109, PolygonLayerZeroProvider.address);
+  if (
+    !(await AvalancheLayerZeroProvider.isTrustedRemote(
+      10109,
+      ethers.utils.solidityPack(["address", "address"], [PolygonLayerZeroProvider.address, AvalancheLayerZeroProvider.address]),
+    ))
+  ) {
+    const tx = await AvalancheLayerZeroProvider.setTrustedRemote(
+      10109,
+      ethers.utils.solidityPack(["address", "address"], [PolygonLayerZeroProvider.address, AvalancheLayerZeroProvider.address]),
+    );
     await tx.wait();
   }
 
   // ===== Start ===== //
-  console.log("Start");
-  const tx1 = await PolygonPortal.send(0, 10106, "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad", ethers.utils.toUtf8Bytes("Hello World!"));
+  const words = "Hello World!!!!";
+  const payload = ethers.utils.defaultAbiCoder.encode(["address", "bytes"], ["0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad", ethers.utils.toUtf8Bytes(words)]);
+  const ref = ethers.utils.keccak256(payload);
+  console.log({ payload, ref });
+
+  // Avalanche
+  console.log("Start Avalanche to Polygon");
+  const AvalancheFee = await AvalancheLayerZeroProvider.callStatic.estimateSendFee(10109, payload, false, ethers.utils.toUtf8Bytes(""));
+  console.log("Avalanche Fee + ", ethers.utils.formatEther(AvalancheFee.nativeFee));
+  const tx1 = await AvalanchePortal.send(0, 10109, "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad", ethers.utils.toUtf8Bytes(words), {
+    value: AvalancheFee.nativeFee,
+  });
   console.log(`Tx: ${tx1.hash}`);
   await tx1.wait();
+  console.log(`Avalanche sent to Polygon through LayerZero.`);
+  console.log({ payload: await AvalanchePortal.getReceived(ethers.utils.parseBytes32String(ref)) });
+
+  // Polygon
+  console.log("Start Polygon to Avalanche");
+  const PolygonFee = await PolygonLayerZeroProvider.callStatic.estimateSendFee(10106, payload, false, ethers.utils.toUtf8Bytes(""));
+  console.log("Polygon Fee + ", ethers.utils.formatEther(PolygonFee.nativeFee));
+  const tx2 = await PolygonPortal.send(0, 10106, "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad", ethers.utils.toUtf8Bytes(words), {
+    value: PolygonFee.nativeFee,
+  });
+  console.log(`Tx: ${tx2.hash}`);
+  await tx2.wait();
   console.log(`Polygon sent to Avalanche through LayerZero.`);
+  console.log({ payload: await AvalanchePortal.getReceived(ref) });
 }
 
 main();

@@ -40,13 +40,11 @@ contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessCo
 
   function estimateSendFee(
     uint16 _dstChainId,
-    bytes memory _toAddress,
-    uint256 _tokenId,
+    bytes memory payload,
     bool _useZro,
     bytes memory _adapterParams
   ) public view returns (uint256 nativeFee, uint256 zroFee) {
     // mock the payload for send()
-    bytes memory payload = abi.encode(_toAddress, _tokenId);
     return lzEndpoint.estimateFees(_dstChainId, address(this), payload, _useZro, _adapterParams);
   }
 
@@ -66,7 +64,7 @@ contract LayerZeroProvider is UUPSUpgradeable, NonblockingLayerZeroApp, AccessCo
     address payable _refundAddress,
     address _zroPaymentAddress,
     bytes memory _adapterParams
-  ) external {
+  ) external payable {
     require(_msgSender() == address(_portal), "ONLY_PORTAL");
     _send(_from, _dstChainId, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
   }
