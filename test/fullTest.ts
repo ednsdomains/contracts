@@ -156,6 +156,15 @@ describe("Classical Test",    function () {
             const getText = await use_publicResolver.getText(hostNode,nameNode,tldNode)
             expect(getText).to.equal(dummyText)
         })
+        it("Text Record - subDomain", async ()=>{
+            const subDomain = ethers.utils.toUtf8Bytes("sub")
+            const dummyText = "subText"
+            await use_publicResolver.setText(subDomain,nameNode,tldNode,dummyText)
+            const getText = await use_publicResolver.getText(subDomain,nameNode,tldNode)
+            const getHostText = await use_publicResolver.getText(hostNode,nameNode,tldNode)
+            expect(getText).to.equal(dummyText)
+            expect(getHostText).to.equal(dummyText)
+        })
     })
     describe("Set Text Record - Error", function (){
         it("Set Record with signer is not owner", async ()=>{
@@ -172,11 +181,18 @@ describe("Classical Test",    function () {
     })
     describe("Set Typed Text Record", function () {
         it("Set Text Typed Record", async ()=>{
-            const type = ethers.utils.toUtf8Bytes("email")
-            const typedText = "alexwg"
-            await use_publicResolver.setTypedText(hostNode,nameNode,tldNode,type,typedText)
-            const getText = await use_publicResolver.getTypedText(hostNode,nameNode,tldNode,type)
-            expect(getText).to.equal(typedText)
+            const typeEmail = ethers.utils.toUtf8Bytes("email")
+            const typedEmailText = "alexwg2018@gmail.com"
+            const typeName = ethers.utils.toUtf8Bytes("name")
+            const typedNameText = "alexwg"
+
+            await use_publicResolver.setTypedText(hostNode,nameNode,tldNode,typeEmail,typedEmailText)
+            await use_publicResolver.setTypedText(hostNode,nameNode,tldNode,typeName,typedNameText)
+
+            const getEmail = await use_publicResolver.getTypedText(hostNode,nameNode,tldNode,typeEmail)
+            const getName = await use_publicResolver.getTypedText(hostNode,nameNode,tldNode,typeName)
+            expect(getEmail).to.equal(typedEmailText)
+            expect(getName).to.equal(typedNameText)
         })
         it("Set Text Typed Record - OverWrite", async ()=>{
             const type = ethers.utils.toUtf8Bytes("email")
@@ -198,6 +214,58 @@ describe("Classical Test",    function () {
             }
             const getText = await use_publicResolver_ac2.getTypedText(hostNode,nameNode,tldNode,type)
             expect(getText).to.equal(originaltypedText)
+        })
+    })
+
+    describe("Set Address Record", function (){
+        it("Set Address Record", async ()=>{
+            await use_publicResolver.setAddress(hostNode,nameNode,tldNode,signerList[0].address)
+            const getAddress = await use_publicResolver.getAddress(hostNode,nameNode,tldNode)
+            expect(getAddress.toLowerCase()).to.equal(signerList[0].address.toLowerCase())
+        })
+        it("Set Address Record - Overwrite", async ()=>{
+            await use_publicResolver.setAddress(hostNode,nameNode,tldNode,signerList[1].address)
+            const getAddress = await use_publicResolver.getAddress(hostNode,nameNode,tldNode)
+            expect(getAddress.toLowerCase()).to.equal(signerList[1].address.toLowerCase())
+        })
+    })
+    describe("Set Address Record - Error", function (){
+        it("Set Address Record - signer is not owner", async ()=>{
+            try {
+                await use_publicResolver_ac2.setAddress(hostNode,nameNode,tldNode,signerList[2].address)
+            }catch (e) {
+                console.log((e as Error).message)
+            }
+            const getAddress = await use_publicResolver_ac2.getAddress(hostNode,nameNode,tldNode)
+            expect(getAddress).to.equal(signerList[1].address)
+        })
+    })
+
+    describe("Set MultiCoinAddress Record", function (){
+        it("Set MultiAddress Record", async ()=>{
+            await use_publicResolver.setMultiCoinAddress(hostNode,nameNode,tldNode,0,signerList[0].address)
+            await use_publicResolver.setMultiCoinAddress(hostNode,nameNode,tldNode,1,signerList[1].address)
+            const getAddress0 = await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,0)
+            const getAddress1 = await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,1)
+            expect(getAddress0.toLowerCase().toLowerCase()).to.equal(signerList[0].address.toLowerCase())
+            expect(getAddress1.toLowerCase().toLowerCase()).to.equal(signerList[1].address.toLowerCase())
+        })
+        it("Set MultiCoinAddress Record - Overwrite", async ()=>{
+            await use_publicResolver.setMultiCoinAddress(hostNode,nameNode,tldNode,0,signerList[1].address)
+            const getAddress = await use_publicResolver.getMultiCoinAddress(hostNode,nameNode,tldNode,0)
+            expect(getAddress.toLowerCase()).to.equal(signerList[1].address.toLowerCase())
+        })
+    })
+
+    describe("Set MultiCoinAddress Record - Error", function (){
+        it("Set MultiAddress Record - Signer not owner", async ()=>{
+            try {
+                await use_publicResolver_ac2.setMultiCoinAddress(hostNode,nameNode,tldNode,0,signerList[0].address)
+            }catch (e) {
+                console.log((e as Error).message)
+            }
+            const getAddress = await use_publicResolver_ac2.getMultiCoinAddress(hostNode,nameNode,tldNode,0)
+            expect(getAddress.toLowerCase().toLowerCase()).to.equal(signerList[1].address.toLowerCase())
         })
     })
 
