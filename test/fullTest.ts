@@ -163,7 +163,7 @@ describe("Classical Test",    function () {
             const getText = await use_publicResolver.getText(subDomain,nameNode,tldNode)
             const getHostText = await use_publicResolver.getText(hostNode,nameNode,tldNode)
             expect(getText).to.equal(dummyText)
-            expect(getHostText).to.equal(dummyText)
+            expect(getHostText).to.equal("Test Set Text Record OverWrite")
         })
     })
     describe("Set Text Record - Error", function (){

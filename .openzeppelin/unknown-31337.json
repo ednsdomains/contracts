@@ -448,22 +448,22 @@
     },
     {
       "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-      "txHash": "0x73f1746cb048368e8024e4aa4aa1f310b31e5749be8c63a95ee1c39f4864fe5a",
+      "txHash": "0x1685680278ffe59d5d33721c094fa566fbaa85aecc1656cecd3fceb3829967c6",
       "kind": "uups"
     },
     {
       "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
-      "txHash": "0x0222349b212877fbec3b041ef6c59243065dc495b62609ed98e54424dfa5bb5a",
+      "txHash": "0xd94f9eb185d6c4e9c408c523907288355881b116c23521735bb7d2030a4579ee",
       "kind": "uups"
     },
     {
       "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
-      "txHash": "0x10b4d83f044fa85e57e9f2880fdc572c276a4582120e9c49755d74af153ec755",
+      "txHash": "0xbab193d6c87ecade85361d317c4033b077f2754e34a507ff9a21a42344e24bf6",
       "kind": "uups"
     },
     {
       "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
-      "txHash": "0x04c6413af8bff97d7eb7831b09fe83adc9379d0633741066132e69d29b3cea17",
+      "txHash": "0x8ae2ad0f8c5cc5ebcd8879467b6e84bc16f79e1de6f3e9348d835a91549c2efa",
       "kind": "uups"
     }
   ],
@@ -2577,7 +2577,7 @@
     },
     "06061b643980843d65af35f7fffff5a0098023e15697d9d58c5c74a6c4415832": {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
-      "txHash": "0xc257c8908ab02a8fb83abbed61f5f70047761cc3e61c833fd791cddecc00252d",
+      "txHash": "0x647f60ddd2e3c51b53150350fcb68a732c206e12578d6d55ec34f19240eaa8b9",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -2747,7 +2747,7 @@
     },
     "8c41a8e980fac7a1e966106ab5b7109d6457f3450a3cda02a31fd35c3c7a2403": {
       "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
-      "txHash": "0xeb8e453ee0823c4b26aee4c3922c4ab1be0be7ebcb6722d9feec2fd734514663",
+      "txHash": "0x2124a603416e8ca729c8630b316345dd7015bec95e3da041c988ce52e63c7dce",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -2909,7 +2909,7 @@
     },
     "7366a9b594e6ffe91bb19c45508f96f4ab0e96bf656be9ab693ddf22fe22defd": {
       "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-      "txHash": "0xefbe0857823cb608c681033c1ff716250123ca5961dfd0164ffd0495283cf17c",
+      "txHash": "0xfe8d1af82fe0bc545bcf5a77e20b92839d28426783797dd505aefba16caba6b4",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -3495,9 +3495,9 @@
         }
       }
     },
-    "f2e3ed9c53412a7afe296d42e13a71fb5f3178a6f2ce4264fe67352173a6f5ae": {
+    "a5c4fb23c62a5264ead0487498842f1f4e24e70db211bcf876ca3227d31ee00e": {
       "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-      "txHash": "0x8a266fb6e4b2b71cdc18edce0e85a24e021549a5ca60f8e67c1e3acbe8789344",
+      "txHash": "0xec8f79bd2646e21292bc57e7c2f79714ae33f2cffeec91ddbccd7b1ad68b54f6",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -3570,9 +3570,9 @@
             "label": "_registry",
             "offset": 0,
             "slot": "251",
-            "type": "t_contract(IRegistry)5516",
+            "type": "t_contract(IRegistry)2407",
             "contract": "BaseResolver",
-            "src": "contracts/resolver/BaseResolver.sol:16"
+            "src": "contracts/resolver/BaseResolver.sol:17"
           },
           {
             "label": "_addresses",
@@ -3602,7 +3602,7 @@
             "label": "_nfts",
             "offset": 0,
             "slot": "255",
-            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)7069_storage)))",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)3917_storage)))",
             "contract": "NFTResolver",
             "src": "contracts/resolver/profile/NFTResolver.sol:8"
           },
@@ -3648,7 +3648,7 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(IRegistry)5516": {
+          "t_contract(IRegistry)2407": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
@@ -3672,7 +3672,7 @@
             "label": "mapping(address => mapping(bytes32 => mapping(uint256 => bytes)))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)7069_storage)))": {
+          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)3917_storage)))": {
             "label": "mapping(address => mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT)))",
             "numberOfBytes": "32"
           },
@@ -3692,7 +3692,7 @@
             "label": "mapping(bytes32 => mapping(uint256 => bytes))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)7069_storage))": {
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)3917_storage))": {
             "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
             "numberOfBytes": "32"
           },
@@ -3708,7 +3708,7 @@
             "label": "mapping(uint256 => bytes)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(NFT)7069_storage)": {
+          "t_mapping(t_uint256,t_struct(NFT)3917_storage)": {
             "label": "mapping(uint256 => struct INFTResolver.NFT)",
             "numberOfBytes": "32"
           },
@@ -3716,7 +3716,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(NFT)7069_storage": {
+          "t_struct(NFT)3917_storage": {
             "label": "struct INFTResolver.NFT",
             "members": [
               {
