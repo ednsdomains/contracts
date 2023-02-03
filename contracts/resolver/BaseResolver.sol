@@ -58,25 +58,24 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     } else {
       //If SubDomain haven't user, owner able to setRecord
       //TODO-SubDomain-Only-User-Or-Operator
-      if(_registry.getUser(host_, domain_, tld_) == address(0) && _registry.getOwner(domain_, tld_) == _msgSender() ){
+      if (_registry.getUser(host_, domain_, tld_) == address(0) && _registry.getOwner(domain_, tld_) == _msgSender()) {
         return true;
-      }else{
+      } else {
         return _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(host_, domain_, tld_, _msgSender());
       }
-
     }
 
-//    if (host_ == AT) {
-//      console.log("HOST IS AT");
-//      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
-//    } else {
-//      console.log(_registry.isExists(host_, domain_, tld_));
-//      if (!_registry.isExists(host_, domain_, tld_)) {
-//        return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
-//      } else {
-//        return _registry.getUser(host_, domain_, tld_) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
-//      }
-//    }
+    //    if (host_ == AT) {
+    //      console.log("HOST IS AT");
+    //      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
+    //    } else {
+    //      console.log(_registry.isExists(host_, domain_, tld_));
+    //      if (!_registry.isExists(host_, domain_, tld_)) {
+    //        return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
+    //      } else {
+    //        return _registry.getUser(host_, domain_, tld_) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
+    //      }
+    //    }
   }
 
   function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
