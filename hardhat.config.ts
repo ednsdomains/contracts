@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-web3";
+import "@nomiclabs/hardhat-solhint";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-waffle";
@@ -172,6 +173,12 @@ const config: HardhatUserConfig = {
     ],
   },
 };
+
+if (config.networks) {
+  for (const net of Object.keys(config.networks)) {
+    config.networks[net]!.accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined;
+  }
+}
 
 // const task_init = async (taskArgs: any, hre_: HardhatRuntimeEnvironment): Promise<{ signer: SignerWithAddress; network: Network; networks: Network[] }> => {
 //   const networks = !!taskArgs["mainnet"] ? Mainnets : Testnets;

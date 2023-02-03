@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import NetworkConfig from "../../network.config";
+import NetworkConfig from "../../../network.config";
 
 export function getProvider(chainId: number) {
   const provider = new ethers.providers.JsonRpcProvider(NetworkConfig[chainId].url, {

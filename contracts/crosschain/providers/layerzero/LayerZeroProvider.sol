@@ -34,8 +34,8 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   function estimateFees(
     uint16 _dstChainId,
-    bytes memory payload,
-    bytes memory _adapterParams
+    bytes calldata payload,
+    bytes calldata _adapterParams
   ) public view returns (uint256) {
     (uint256 nativeFee, uint256 zroFee) = lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, _adapterParams);
     return nativeFee;
@@ -43,9 +43,9 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   function _nonblockingLzReceive(
     uint16 _srcChainId,
-    bytes memory _srcAddress,
+    bytes calldata _srcAddress,
     uint64 _nonce,
-    bytes memory _payload
+    bytes calldata _payload
   ) internal override {
     emit Received(_srcChainId, _srcAddress, _payload, _nonce);
     _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
@@ -54,8 +54,8 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
   function send(
     address payable _from,
     uint16 _dstChainId,
-    bytes memory _payload,
-    bytes memory _adapterParams
+    bytes calldata _payload,
+    bytes calldata _adapterParams
   ) external payable {
     require(_msgSender() == address(_portal), "ONLY_PORTAL");
     _send(_from, _dstChainId, _payload, _adapterParams);
@@ -64,8 +64,8 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
   function _send(
     address payable _from,
     uint16 _dstChainId,
-    bytes memory payload,
-    bytes memory _adapterParams
+    bytes calldata payload,
+    bytes calldata _adapterParams
   ) internal {
     if (useCustomAdapterParams) {
       _checkGasLimit(_dstChainId, FUNCTION_TYPE_SEND, _adapterParams, NO_EXTRA_GAS);

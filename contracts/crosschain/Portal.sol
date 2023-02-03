@@ -15,17 +15,17 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   mapping(CrossChainProvider.CrossChainProvider => address) private _providers;
 
   function initialize() public initializer {
-    __Registry_init();
+    __Portal_init();
   }
 
-  function __Registry_init() internal onlyInitializing {
-    __Registry_init_unchained();
+  function __Portal_init() internal onlyInitializing {
+    __Portal_init_unchained();
     __UUPSUpgradeable_init();
     __AccessControl_init();
     __ERC165_init();
   }
 
-  function __Registry_init_unchained() internal onlyInitializing {
+  function __Portal_init_unchained() internal onlyInitializing {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
   }
@@ -36,13 +36,13 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     uint16 dstChainId,
     bytes calldata payload // abi.encode(target_contract_address, abi.encodeWithSignature())
   ) public payable onlyRole(SENDER_ROLE) {
-    emit Sent(provider, sender, dstChainId, payload);
-
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       LayerZeroProvider(_providers[provider]).send{ value: msg.value }(sender, dstChainId, payload, new bytes(0));
     } else {
       revert("Empty provider");
     }
+
+    emit Sent(provider, sender, dstChainId, payload);
   }
 
   function receive_(CrossChainProvider.CrossChainProvider provider, bytes calldata payload) public onlyRole(PROVIDER_ROLE) {

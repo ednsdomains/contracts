@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
-import { ClassicalRegistrarController, ERC20, PublicResolver, Registrar, Registry, Root, Wrapper } from "../../typechain";
-import { ContractName } from "./constants/contract-name";
+import { ClassicalRegistrarController, ERC20, PublicResolver, Registrar, Registry, Root, Wrapper } from "../../../typechain";
+import { ContractName } from "../constants/contract-name";
 
 export interface IGetContractsData {
   chainId: number;
@@ -36,7 +36,7 @@ export const getContractsData = async (chainId: number): Promise<IGetContractsDa
 };
 
 export const getAllContractsData = async (): Promise<IGetContractsData[]> => {
-  return JSON.parse(fs.readFileSync(path.join(process.cwd(), "../../static/contracts.json"), { encoding: "utf8" }));
+  return JSON.parse(fs.readFileSync(path.join(process.cwd(), "static/contracts.json"), { encoding: "utf8" }));
 };
 
 export async function getRegistry(signer: Signer): Promise<Registry | undefined> {

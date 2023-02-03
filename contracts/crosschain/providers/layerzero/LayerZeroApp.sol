@@ -28,9 +28,9 @@ abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroR
 
   function lzReceive(
     uint16 _srcChainId,
-    bytes memory _srcAddress,
+    bytes calldata _srcAddress,
     uint64 _nonce,
-    bytes memory _payload
+    bytes calldata _payload
   ) public virtual override {
     // lzReceive must be called by the endpoint for security
     require(_msgSender() == address(lzEndpoint), "LzApp: invalid endpoint caller");
@@ -45,17 +45,17 @@ abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroR
   // abstract function - the default behaviour of LayerZero is blocking. See: NonblockingLzApp if you dont need to enforce ordered messaging
   function _blockingLzReceive(
     uint16 _srcChainId,
-    bytes memory _srcAddress,
+    bytes calldata _srcAddress,
     uint64 _nonce,
-    bytes memory _payload
+    bytes calldata _payload
   ) internal virtual;
 
   function _lzSend(
     uint16 _dstChainId,
-    bytes memory _payload,
+    bytes calldata _payload,
     address payable _refundAddress,
     address _zroPaymentAddress,
-    bytes memory _adapterParams
+    bytes calldata _adapterParams
   ) internal virtual {
     bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
     require(trustedRemote.length != 0, "LzApp: destination chain is not a trusted source");
@@ -65,7 +65,7 @@ abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroR
   function _checkGasLimit(
     uint16 _dstChainId,
     uint256 _type,
-    bytes memory _adapterParams,
+    bytes calldata _adapterParams,
     uint256 _extraGas
   ) internal view {
     uint256 providedGasLimit = getGasLimit(_adapterParams);

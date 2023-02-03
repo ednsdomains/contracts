@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 import { deployRegistrar } from "./src/deploy";
-import { getPublicResolver, getRegistry } from "./src/get-contracts";
+import { getPublicResolver, getRegistry } from "./src/lib/get-contracts";
 
 async function main() {
   const [deployer] = await ethers.getSigners();

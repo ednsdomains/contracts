@@ -122,20 +122,20 @@ const config: INetworkConfig = {
     slip44: {
       coinId: 60,
     },
-    // layerzero: {
-    //   chainId: 10001,
-    //   endpoint: {
-    //     address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
-    //   },
-    // },
-    // chainlink: {
-    //   token: {
-    //     name: "ChainLink Token",
-    //     symbol: "LINK",
-    //     decimals: 18,
-    //     address: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709",
-    //   },
-    // },
+    layerzero: {
+      chainId: 10001,
+      endpoint: {
+        address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
+      },
+    },
+    chainlink: {
+      token: {
+        name: "ChainLink Token",
+        symbol: "LINK",
+        decimals: 18,
+        address: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709",
+      },
+    },
   },
   [Network.BNB_CHAIN]: {
     chainId: Network.BNB_CHAIN,

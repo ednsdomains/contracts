@@ -1,4 +1,4 @@
-import TLDs from "../../static/tlds.json";
+import TLDs from "../../../static/tlds.json";
 
 export const getClassicalTlds = async (chainId: number): Promise<string[] | undefined> => {
   return TLDs.classical.find((i) => i.chainId === chainId)?.names;

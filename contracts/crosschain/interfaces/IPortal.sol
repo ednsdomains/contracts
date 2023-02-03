@@ -12,10 +12,10 @@ interface IPortal {
     CrossChainProvider.CrossChainProvider provider,
     address payable sender,
     uint16 dstChainId,
-    bytes memory payload
+    bytes calldata payload
   ) external payable;
 
-  function receive_(CrossChainProvider.CrossChainProvider provider, bytes memory payload) external;
+  function receive_(CrossChainProvider.CrossChainProvider provider, bytes calldata payload) external;
 
   function getProvider(CrossChainProvider.CrossChainProvider provider) external view returns (address);
 

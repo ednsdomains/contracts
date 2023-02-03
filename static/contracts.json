@@ -10,5 +10,17 @@
       "DefaultWrapper": null,
       "Token": null
     }
+  },
+  {
+    "chainId": 80001,
+    "addresses": {
+      "Registry": "0xEbe4D853c4e7e9F24Fe713B64eaB1F97bE393838",
+      "PublicResolver": "0x8aebF06f0397Da6A9a27F66c51912de6e22A1e53",
+      "Registrar": "0x91Ab53032cFd154eC75B897C6D0E89E3912fEabB",
+      "ClassicalRegistrarController": "0x9f3800fbbb4c8f59f90ee7E8D9d0EaB1b409e42E",
+      "Root": "0xB3E9c1b982D2431d8F83C65754b7f7c68f2F6D01",
+      "DefaultWrapper": "0x989C858E072e4B1a0EdB392B6a5379Aa95C47E5a",
+      "Token": "0x3b9D50C9CA771AF0e16Da478f446d7EAc5Ff73A5"
+    }
   }
 ]

@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { getDefaultWrapper, getPublicResolver, getRegistrar, getRegistry, getRoot } from "./src/get-contracts";
+import { getDefaultWrapper, getPublicResolver, getRegistrar, getRegistry, getRoot } from "./src/lib/get-contracts";
 import { setupRegistrar } from "./src/setup";
 
 async function main() {
