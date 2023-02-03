@@ -29,25 +29,25 @@ const config: HardhatUserConfig = {
       chainId: 1,
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    rinkeby: {
+    goerli: {
       chainId: 4,
-      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // BNB Chain
     bnb: {
       chainId: 56,
-      url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     },
-    bnbTestnet: {
+    bnb_testnet: {
       chainId: 97,
-      url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/testnet/`,
     },
     // Fantom
     fantom: {
       chainId: 250,
-      url: `https://ftm.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://ftm.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     },
-    fantomTestnet: {
+    fantom_testnet: {
       chainId: 4002,
       url: `https://rpc.testnet.fantom.network/`,
     },
@@ -56,7 +56,7 @@ const config: HardhatUserConfig = {
       chainId: 10,
       url: `https://optimism-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    optimisimKovan: {
+    optimisim_kovan: {
       chainId: 69,
       url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
       chainId: 137,
       url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    polygonMumbai: {
+    polygon_mumbai: {
       chainId: 80001,
       url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
@@ -74,18 +74,74 @@ const config: HardhatUserConfig = {
       chainId: 42161,
       url: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    arbitrumRinkeby: {
+    arbitrum_rinkeby: {
       chainId: 421611,
       url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Avalanche
     avalanche: {
       chainId: 43114,
-      url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://avalanche-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    avalancheFuji: {
+    avalanche_fuji: {
       chainId: 43113,
-      url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+      url: `https://avalanche-fuji.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    },
+    gnosis: {
+      chainId: 100,
+      url: `https://solitary-dimensional-frost.xdai.quiknode.pro/${process.env.QUICKNODE_API_KEY}/`,
+    },
+    iotex: {
+      chainId: 4689,
+      url: `https://rpc.ankr.com/iotex`,
+    },
+    iotex_testnet: {
+      chainId: 4690,
+      url: `https://babel-api.testnet.iotex.io`,
+    },
+    okc: {
+      chainId: 66,
+      url: `https://exchainrpc.okex.org`,
+    },
+    okc_testnet: {
+      chainId: 65,
+      url: `https://exchaintestrpc.okex.org`,
+    },
+    kcc: {
+      chainId: 321,
+      url: `https://kcc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    },
+    kcc_testnet: {
+      chainId: 322,
+      url: `https://rpc-testnet.kcc.network`,
+    },
+    mixin: {
+      chainId: 73927,
+      url: `https://geth.mvm.dev`,
+    },
+    cronos: {
+      chainId: 25,
+      url: `https://cro.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    },
+    cronos_testnet: {
+      chainId: 338,
+      url: `https://evm-t3.cronos.org`,
+    },
+    celo: {
+      chainId: 42220,
+      url: `https://celo-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    },
+    celo_alfajores: {
+      chainId: 44787,
+      url: `https://celo-alfajores.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    },
+    evmos: {
+      chainId: 9001,
+      url: `https://eth.bd.evmos.org:8545`,
+    },
+    evmos_testmet: {
+      chainId: 9000,
+      url: `https://eth.bd.evmos.dev:8545`,
     },
   },
   gasReporter: {
@@ -97,9 +153,6 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
-  // mocha: {
-  //   parallel: true,
-  // },
   contractSizer: {
     alphaSort: false,
     runOnCompile: true,
