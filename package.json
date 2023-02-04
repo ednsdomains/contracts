@@ -50,7 +50,6 @@
     "reflect-metadata": "^0.1.13",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.19",
-    "sqlite3": "^5.1.4",
     "ts-node": "^10.5.0",
     "typechain": "^5.2.0",
     "typeorm": "^0.3.11",

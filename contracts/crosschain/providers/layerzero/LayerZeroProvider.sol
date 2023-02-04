@@ -32,7 +32,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
     _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  function estimateFees(
+  function estimateFee(
     uint16 _dstChainId,
     bytes calldata payload,
     bytes calldata _adapterParams

@@ -1,62 +1,111 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import delay from "delay";
 import { ethers, upgrades } from "hardhat";
+import { ContractName } from "./constants/contract-name";
 import { IContracts } from "./interfaces/contracts";
+import { getBalance } from "./lib/get-balance";
+import NetworkConfig from "../../network.config";
 
 export interface IUpgradeInput {
-  contracts: IContracts;
+  chainId: number;
   signer: SignerWithAddress;
-}
-
-export async function upgradeToken(input: IUpgradeInput): Promise<void> {
-  const TokenFactory = await ethers.getContractFactory("Token", input.signer);
-  await upgrades.upgradeProxy(input.contracts.Token, TokenFactory);
-}
-
-export async function upgradeDomainPriceOracle(input: IUpgradeInput): Promise<void> {
-  const DomainPriceOracleFactory = await ethers.getContractFactory("DomainPriceOracle", input.signer);
-  await upgrades.upgradeProxy(input.contracts.DomainPriceOracle, DomainPriceOracleFactory);
+  contracts: IContracts;
 }
 
 export async function upgradeRegistry(input: IUpgradeInput): Promise<void> {
-  const RegistryFactory = await ethers.getContractFactory("Registry", input.signer);
-  await upgrades.upgradeProxy(input.contracts.Registry, RegistryFactory);
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  const factory = await ethers.getContractFactory("Registry", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Registry");
+  await upgrades.upgradeProxy(input.contracts.Registry, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Registry");
 }
 
-// export async function upgradePublicResolverSynchronizer(input: IUpgradeInput): Promise<void> {
-//   const PublicResolverSynchronizerFactory = await ethers.getContractFactory("PublicResolverSynchronizer", input.signer);
-//   await upgrades.upgradeProxy(input.contracts.PublicResolverSynchronizer, PublicResolverSynchronizerFactory);
-// }
+export async function upgradeWrapper(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
+  const factory = await ethers.getContractFactory("Wrapper", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "DefaultWrapper");
+  await upgrades.upgradeProxy(input.contracts.DefaultWrapper, factory);
+  await _afterUpgrade(input.signer, input.chainId, "DefaultWrapper");
+}
 
 export async function upgradePublicResolver(input: IUpgradeInput): Promise<void> {
-  const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", input.signer);
-  await upgrades.upgradeProxy(input.contracts.PublicResolver, PublicResolverFactory);
+  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
+  const factory = await ethers.getContractFactory("PublicResolver", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "PublicResolver");
+  await upgrades.upgradeProxy(input.contracts.PublicResolver, factory);
+  await _afterUpgrade(input.signer, input.chainId, "PublicResolver");
 }
 
-// export async function upgradeSingletonRegistrar(input: IUpgradeInput): Promise<void> {
-//   const SingletonRegistrarFactory = await ethers.getContractFactory("SingletonRegistrar", input.signer);
-//   await upgrades.upgradeProxy(input.contracts.SingletonRegistrar, SingletonRegistrarFactory);
-// }
-
-// export async function upgradeSingletonRegistrarController(input: IUpgradeInput): Promise<void> {
-//   const SingletonRegistrarControllerFactory = await ethers.getContractFactory("SingletonRegistrarController", input.signer);
-//   await upgrades.upgradeProxy(input.contracts.SingletonRegistrarController, SingletonRegistrarControllerFactory);
-// }
-
-// export async function upgradeOmniRegistrarSynchronizer(input: IUpgradeInput): Promise<void> {
-//   const OmniRegistrarSynchronizerFactory = await ethers.getContractFactory("OmniRegistrarSynchronizer", input.signer);
-//   await upgrades.upgradeProxy(input.contracts.OmniRegistrarSynchronizer, OmniRegistrarSynchronizerFactory);
-// }
-
-// export async function upgradeOmniRegistrar(input: IUpgradeInput): Promise<void> {
-//   const OmniRegistrarFactory = await ethers.getContractFactory("OmniRegistrar", input.signer);
-//   await upgrades.upgradeProxy(input.contracts.OmniRegistrar, OmniRegistrarFactory);
-// }
-// export async function upgradeOmniRegistrarController(input: IUpgradeInput): Promise<void> {
-//   const OmniRegistrarControllerFactory = await ethers.getContractFactory("OmniRegistrarController", input.signer);
-//   await upgrades.upgradeProxy(input.contracts.OmniRegistrarController, OmniRegistrarControllerFactory);
-// }
+export async function upgradeRegistrar(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+  const factory = await ethers.getContractFactory("Registrar", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Registrar");
+  await upgrades.upgradeProxy(input.contracts.Registrar, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Registrar");
+}
 
 export async function upgradeRoot(input: IUpgradeInput): Promise<void> {
-  const RootFactory = await ethers.getContractFactory("Root", input.signer);
-  await upgrades.upgradeProxy(input.contracts.Root, RootFactory);
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  const factory = await ethers.getContractFactory("Root", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Root");
+  await upgrades.upgradeProxy(input.contracts.Root, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Root");
 }
+
+export async function upgradeClassicalRegistrarController(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
+  const factory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "ClassicalRegistrarController");
+  await upgrades.upgradeProxy(input.contracts.ClassicalRegistrarController, factory);
+  await _afterUpgrade(input.signer, input.chainId, "ClassicalRegistrarController");
+}
+
+export async function upgradeUniversalRegistrarController(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.UniversalRegistrarController) throw new Error("`UniversalRegistrarController` is not available");
+  const factory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "UniversalRegistrarController");
+  await upgrades.upgradeProxy(input.contracts.UniversalRegistrarController, factory);
+  await _afterUpgrade(input.signer, input.chainId, "UniversalRegistrarController");
+}
+
+export async function upgradeBridge(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
+  const factory = await ethers.getContractFactory("Bridge", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Bridge");
+  await upgrades.upgradeProxy(input.contracts.Bridge, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Bridge");
+}
+
+export async function upgradePortal(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.Portal) throw new Error("`Portal` is not available");
+  const factory = await ethers.getContractFactory("Portal", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Portal");
+  await upgrades.upgradeProxy(input.contracts.Portal, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Portal");
+}
+
+export async function upgradeLayerZeroProvider(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.LayerZeroProvider) throw new Error("`LayerZeroProvider` is not available");
+  const factory = await ethers.getContractFactory("LayerZeroProvider", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "LayerZeroProvider");
+  await upgrades.upgradeProxy(input.contracts.LayerZeroProvider, factory);
+  await _afterUpgrade(input.signer, input.chainId, "LayerZeroProvider");
+}
+
+const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+  const balance = await getBalance(signer);
+  console.log(`Signer account has [${ethers.utils.formatEther(balance)}]`);
+  if (balance.eq(0)) {
+    throw new Error(`Signer account ${signer.address} has [0] balance`);
+  } else {
+    console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+  }
+  console.log(`Upgrade procedure initiated, contract [${name}] will be upgrade on [${NetworkConfig[chainId].name}] in 10 seconds...`);
+  await delay(10000);
+};
+
+const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+  console.log(`Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
+  const balance = await getBalance(signer);
+  console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+};

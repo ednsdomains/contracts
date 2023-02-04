@@ -118,27 +118,21 @@ async function main() {
 
   // Avalanche
   console.log("Start Avalanche to Polygon");
-  const AvalancheFee = await AvalancheLayerZeroProvider.callStatic.estimateSendFee(10109, payload, false, ethers.utils.toUtf8Bytes(""));
-  console.log("Avalanche Fee + ", ethers.utils.formatEther(AvalancheFee.nativeFee));
-  const tx1 = await AvalanchePortal.send(0, 10109, "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad", ethers.utils.toUtf8Bytes(words), {
-    value: AvalancheFee.nativeFee,
-  });
+  const AvalancheFee = await AvalancheLayerZeroProvider.callStatic.estimateFees(10109, payload, ethers.utils.toUtf8Bytes(""));
+  console.log("Avalanche Fee + ", ethers.utils.formatEther(AvalancheFee));
+  const tx1 = await AvalanchePortal.send(0, _signer.address, 10109, payload, { value: AvalancheFee });
   console.log(`Tx: ${tx1.hash}`);
   await tx1.wait();
   console.log(`Avalanche sent to Polygon through LayerZero.`);
-  console.log({ payload: await AvalanchePortal.getReceived(ref) });
 
   // Polygon
   console.log("Start Polygon to Avalanche");
-  const PolygonFee = await PolygonLayerZeroProvider.callStatic.estimateSendFee(10106, payload, false, ethers.utils.toUtf8Bytes(""));
-  console.log("Polygon Fee + ", ethers.utils.formatEther(PolygonFee.nativeFee));
-  const tx2 = await PolygonPortal.send(0, 10106, "0x5D6FdbffD6dc6E8a0b69A52dbF010EfD905fB7Ad", ethers.utils.toUtf8Bytes(words), {
-    value: PolygonFee.nativeFee,
-  });
+  const PolygonFee = await PolygonLayerZeroProvider.callStatic.estimateFees(10106, payload, ethers.utils.toUtf8Bytes(""));
+  console.log("Polygon Fee + ", ethers.utils.formatEther(PolygonFee));
+  const tx2 = await PolygonPortal.send(0, _signer.address, 10106, payload, { value: PolygonFee });
   console.log(`Tx: ${tx2.hash}`);
   await tx2.wait();
   console.log(`Polygon sent to Avalanche through LayerZero.`);
-  console.log({ payload: await AvalanchePortal.getReceived(ref) });
 }
 
 main();

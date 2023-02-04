@@ -110,7 +110,21 @@ interface IRegistry {
     uint64 expiry
   ) external;
 
+  function unsetRecord(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external;
+
   function prune(bytes32 name, bytes32 tld) external;
+
+  function prune(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) external;
+
+  function bridged(bytes32 name, bytes32 tld) external;
 
   /* ========== Query - Genereal ==========*/
 

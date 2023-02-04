@@ -9,6 +9,6 @@ library HostRecord {
     bytes name;
     uint16 ttl;
     UserRecord.UserRecord user;
-    mapping(address => bool) operators;
+    mapping(address => mapping(address => bool)) operators;
   }
 }

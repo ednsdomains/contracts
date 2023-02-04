@@ -1,28 +1,52 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { getClassicalTlds, getUniversalTlds } from "./get-tlds";
 import { IContracts } from "./interfaces/contracts";
+import { getClassicalTlds, getUniversalTlds } from "./lib/get-tlds";
+import { ContractName } from "./constants/contract-name";
+import { getBalance } from "./lib/get-balance";
+import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
+import delay from "delay";
+import { Transaction } from "ethers";
+import { CrossChainProvider } from "./constants/cross-chain-provider";
+import { getAllContractsData, getContractsData } from "./lib/get-contracts";
+import { ZERO_ADDRESS } from "../../network.config";
 
 export interface ISetupInput {
   chainId: number;
+  signer: SignerWithAddress;
   contracts: IContracts;
 }
 
 export const setupRegistry = async (input: ISetupInput) => {
   if (!input.contracts.Registry) throw new Error("`Registry` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
-  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
+  // if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
+  if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
+
+  await _beforeSetup(input.signer, input.chainId, "Registry");
+
+  const txs: Transaction[] = [];
 
   //=== Grant different Roles to different deployed contracts ==//
   const tx1 = await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
   await tx1.wait();
-  const tx2 = await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
-  await tx2.wait();
+  txs.push(tx1);
+  // const tx2 = await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
+  // await tx2.wait();
+  // txs.push(tx2);
   const tx3 = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
   await tx3.wait();
+  txs.push(tx3);
   const tx4 = await input.contracts.Registry.grantRole(await input.contracts.Registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
   await tx4.wait();
+  txs.push(tx4);
+  const tx5 = await input.contracts.Registry.grantRole(await input.contracts.Registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
+  await tx5.wait();
+  txs.push(tx5);
+
+  await _afterSetup(input.signer, input.chainId, "Registry", [...txs]);
 };
 
 export const setupDefaultWrapper = async (input: ISetupInput) => {
@@ -33,8 +57,12 @@ export const setupRegistrar = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
 
+  await _beforeSetup(input.signer, input.chainId, "Registrar");
+
   const tx = await input.contracts.Registrar.grantRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address);
   await tx.wait();
+
+  await _afterSetup(input.signer, input.chainId, "Registrar", [tx]);
 };
 
 export const setupPublicResolver = async (input: ISetupInput) => {
@@ -44,7 +72,9 @@ export const setupPublicResolver = async (input: ISetupInput) => {
 export const setupRoot = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
-
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  await _beforeSetup(input.signer, input.chainId, "Root");
+  const txs: Transaction[] = [];
   //====================//
   //== Classical TLDs ==//
   //====================//
@@ -52,8 +82,12 @@ export const setupRoot = async (input: ISetupInput) => {
   if (classical) {
     for (const tld_ of classical) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
-      await tx.wait();
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
+      if (!isExists) {
+        const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+        await tx.wait();
+        txs.push(tx);
+      }
     }
   }
 
@@ -64,148 +98,132 @@ export const setupRoot = async (input: ISetupInput) => {
   if (universal) {
     for (const tld_ of universal) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
-      await tx.wait();
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
+      if (!isExists) {
+        const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+        await tx.wait();
+        txs.push(tx);
+      }
     }
   }
+
+  await _afterSetup(input.signer, input.chainId, "Root", [...txs]);
 };
 
 export const setupClassicalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
-
-  const classical = await getClassicalTlds(input.chainId);
-  if (classical) {
-    for (const tld_ of classical) {
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  await _beforeSetup(input.signer, input.chainId, "ClassicalRegistrarController");
+  const txs: Transaction[] = [];
+  const tlds = await getClassicalTlds(input.chainId);
+  if (tlds && tlds.length) {
+    for (const tld_ of tlds) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-      await tx.wait();
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
+      if (!isExists) {
+        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+        await tx.wait();
+        txs.push(tx);
+      }
     }
   }
+  await _afterSetup(input.signer, input.chainId, "ClassicalRegistrarController", [...txs]);
 };
 
-const _beforeSetup = async (input: ISetupInput) => {};
+export const setupUniversalRegistrarController = async (input: ISetupInput) => {
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.UniversalRegistrarController) throw new Error("`UniversalRegistrarController` is not available");
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  await _beforeSetup(input.signer, input.chainId, "UniversalRegistrarController");
+  const txs: Transaction[] = [];
+  const tlds = await getUniversalTlds(input.chainId);
+  if (tlds && tlds.length) {
+    for (const tld_ of tlds) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
+      if (!isExists) {
+        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.UniversalRegistrarController.address, true);
+        await tx.wait();
+        txs.push(tx);
+      }
+    }
+  }
+  await _afterSetup(input.signer, input.chainId, "UniversalRegistrarController", [...txs]);
+};
 
-const _afterSetup = async (input: ISetupInput) => {};
+export const setupPortal = async (input: ISetupInput) => {
+  if (!input.contracts.Portal) throw new Error("`Portal` is not available");
+  if (!input.contracts.LayerZeroProvider) throw new Error("`LayerZeroProvider` is not available");
 
-// export const setupClassicalRegistrarController = async (input: ISetupInput) => {
-//   const tx = await input.contracts.ClassicalRegistrarController.grantRole(
-//     await input.contracts.ClassicalRegistrarController.OPERATOR_ROLE(),
-//     input.contracts.BatchRegistrarController.address,
-//   );
-//   await tx.wait();
+  await _beforeSetup(input.signer, input.chainId, "Portal");
 
-//   const tlds_ = Tlds.class_ical[input.network];
-//   for (const tld_ of tlds_) {
-//     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+  const txs: Transaction[] = [];
 
-//     const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
-//     await tx1.wait();
+  if ((await input.contracts.Portal.getProvider(CrossChainProvider.LAYERZERO)) === ZERO_ADDRESS) {
+    const tx = await input.contracts.Portal.setProvider(CrossChainProvider.LAYERZERO, input.contracts.LayerZeroProvider.address);
+    await tx.wait();
+    txs.push(tx);
+  }
 
-//     const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-//     await tx2.wait();
-//   }
-// };
+  await _afterSetup(input.signer, input.chainId, "Portal", [...txs]);
+};
 
-// export const setupUniversalRegistrarController = async (input: ISetupInput) => {
-//   const tx = await input.contracts.UniversalRegistrarController.grantRole(
-//     await input.contracts.UniversalRegistrarController.OPERATOR_ROLE(),
-//     input.contracts.BatchRegistrarController.address,
-//   );
-//   await tx.wait();
+export const setupBridge = async (input: ISetupInput) => {
+  if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
+  const isCurrMainnet = !!Mainnets.find((i) => i === input.chainId);
+  const isCurrTestnet = !!Testnets.find((i) => i === input.chainId);
+  await _beforeSetup(input.signer, input.chainId, "Bridge");
+  const txs: Transaction[] = [];
 
-//   const tlds_ = Tlds.class_ical[input.network];
-//   for (const tld_ of tlds_) {
-//     const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+  for (const network in NetworkConfig) {
+    const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
+    const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
 
-//     const tx1 = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, true, 0);
-//     await tx1.wait();
+    // ===== LayerZero ===== //
+    if (NetworkConfig[network].chain && NetworkConfig[network].layerzero) {
+      if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
+        // Set LZ Chain ID
+        const _chainId_ = await input.contracts.Bridge.getChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO);
+        if (!_chainId_) {
+          const tx = await input.contracts.Bridge.setChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO, NetworkConfig[network].layerzero!.chainId);
+          await tx.wait();
+          txs.push(tx);
+        }
+        // Set Trust Remote
+        const data = await getContractsData(NetworkConfig[network].chainId);
+        if (data && data.addresses.Bridge) {
+          const _address_ = await input.contracts.Bridge.getRemoteBridge(NetworkConfig[network].chain!);
+          if (_address_ === ZERO_ADDRESS) {
+            const tx = await input.contracts.Bridge.setRemoteBridge(NetworkConfig[network].chain!, data.addresses.Bridge);
+            await tx.wait();
+            txs.push(tx);
+          }
+        }
+      }
+    }
+  }
+  await _afterSetup(input.signer, input.chainId, "Bridge", [...txs]);
+};
 
-//     const tx2 = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-//     await tx2.wait();
-//   }
-// };
+const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+  const balance = await getBalance(signer);
+  console.log(`Signer account has [${ethers.utils.formatEther(balance)}]`);
+  if (balance.eq(0)) {
+    throw new Error(`Signer account ${signer.address} has [0] balance`);
+  } else {
+    console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+  }
+  console.log(`Setup procedure initiated, contract [${name}] will be setup on [${NetworkConfig[chainId].name}] in 5 seconds...`);
+  await delay(5000);
+};
 
-// export const setupClassicalRegistrarController = async (input: ISetupInput) => {};
-
-// export const setupSingletonRegistrar = async (input: ISetupInput) => {
-//   // Grant `ROOT_ROLE` to `Root` contract
-//   await input.contracts[input.network].SingletonRegistrar.grantRole(
-//     await input.contracts[input.network].SingletonRegistrar.ROOT_ROLE(),
-//     input.contracts[input.network].Root.address,
-//   );
-//   // Set the `baseUrl` for metadata
-//   await input.contracts[input.network].SingletonRegistrar.setBaseURI("https://md.edns.domains"); // No `/` at the end
-// };
-
-// export const setupSingletonRegistrarController = async (input: ISetupInput) => {
-//   for (const tld_ of SingletonTlds[`${input.network}`]) {
-//     const tld = ethers.utils.toUtf8Bytes(tld_);
-//     // Allow the `SingletonRegistrarController` to register to the `SingletonRegistrar`
-//     await input.contracts[input.network].Root.setControllerApproval(tld, input.contracts[input.network].SingletonRegistrarController.address, true);
-//   }
-// };
-
-// export const setupOmniRegistrarSynchronizer = async (input: ISetupInput) => {
-//   // Set Trust Remote
-//   for (const network_ of input.networks) {
-//     if (network_ !== input.network) {
-//       const isTrustedRemote = await input.contracts[input.network].OmniRegistrarSynchronizer.isTrustedRemote(
-//         NetworkConfig[network_].layerzero.chainId,
-//         input.contracts[network_].Token.address,
-//       );
-//       if (!isTrustedRemote) {
-//         await input.contracts[input.network].OmniRegistrarSynchronizer.setTrustedRemote(
-//           NetworkConfig[network_].layerzero.chainId,
-//           input.contracts[network_].OmniRegistrarSynchronizer.address,
-//         );
-//       }
-//     }
-//   }
-//   // Set the `OmniRegistrar` address for the `Synchronizer`
-//   await input.contracts[input.network].OmniRegistrarSynchronizer.setRegistrar(input.contracts[input.network].OmniRegistrar.address);
-// };
-
-// export const setupOmniRegistrar = async (input: ISetupInput) => {
-//   await input.contracts[input.network].OmniRegistrar.grantRole(await input.contracts[input.network].OmniRegistrar.ROOT_ROLE(), input.contracts[input.network].Root.address);
-//   // Set the `baseUrl` for metadata
-//   await input.contracts[input.network].OmniRegistrar.setBaseURI("https://md.edns.domains"); // No `/` at the end
-// };
-
-// export const setupOmniRegistrarController = async (input: ISetupInput) => {
-//   for (const tld_ of OmniTlds) {
-//     const tld = ethers.utils.toUtf8Bytes(tld_);
-//     // Allow the `OmniRegistrarController` to register to the `OmniRegistrar`
-//     await input.contracts[input.network].Root.setControllerApproval(tld, input.contracts[input.network].OmniRegistrarController.address, true);
-//   }
-// };
-
-// export const setupRoot = async (input: ISetupInput) => {
-// Set Trust Remote
-// for (const network_ of input.networks) {
-//   if (network_ !== input.network) {
-//     const isTrustedRemote = await input.contracts[input.network].OmniRegistrarSynchronizer.isTrustedRemote(
-//       NetworkConfig[network_].layerzero.chainId,
-//       input.contracts[network_].Token.address,
-//     );
-//     if (!isTrustedRemote) {
-//       await input.contracts[input.network].Root.setTrustedRemote(NetworkConfig[network_].layerzero.chainId, input.contracts[network_].Root.address);
-//     }
-//   }
-// }
-// };
-
-// export const setupSingletonTlds = async (input: ISetupInput) => {
-//   const tlds_ = SingletonTlds[`${input.network}`];
-//   for (const tld_ of tlds_) {
-//     const tld = ethers.utils.toUtf8Bytes(tld_);
-//     await input.contracts[input.network].Root.register(tld, input.contracts[input.network].PublicResolver.address, true, false);
-//   }
-// };
-
-// export const setupOmniTlds = async (input: ISetupInput) => {
-//   for (const tld_ of OmniTlds) {
-//     const tld = ethers.utils.toUtf8Bytes(tld_);
-//     await input.contracts[input.networks[0]].Root.register(tld, input.contracts[input.networks[0]].PublicResolver.address, true, true);
-//   }
-// };
+const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName, txs: Transaction[]) => {
+  console.log(`Contract [${name}] has been setup on [${NetworkConfig[chainId].name}]`);
+  console.log(`With the following transaction hash(s): `);
+  for (const tx of txs) {
+    console.log(`- ${tx.hash}`);
+  }
+  const balance = await getBalance(signer);
+  console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+};

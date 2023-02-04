@@ -1,1 +1,12 @@
-export type ContractName = "Registry" | "PublicResolver" | "DefaultWrapper" | "Registrar" | "ClassicalRegistrarController" | "Root" | "Token" | string;
+export type ContractName =
+  | "Registry"
+  | "PublicResolver"
+  | "DefaultWrapper"
+  | "Registrar"
+  | "ClassicalRegistrarController"
+  | "UniversalRegistrarController"
+  | "Root"
+  | "Token"
+  | "Portal"
+  | "Bridge"
+  | "LayerZeroProvider";

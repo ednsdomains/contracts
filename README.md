@@ -46,4 +46,5 @@ npx hardhat run ./scripts/A05_Deploy_Root.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A06_Deploy_TokenMock.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A07_Deploy_ClassicalRegistrarController.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A08_Deploy_Portal.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A09_Deploy_Bridge.ts --network $NETWORK_NAME
 ```

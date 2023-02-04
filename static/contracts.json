@@ -20,7 +20,9 @@
       "ClassicalRegistrarController": "0x9f3800fbbb4c8f59f90ee7E8D9d0EaB1b409e42E",
       "Root": "0xB3E9c1b982D2431d8F83C65754b7f7c68f2F6D01",
       "DefaultWrapper": "0x989C858E072e4B1a0EdB392B6a5379Aa95C47E5a",
-      "Token": "0x3b9D50C9CA771AF0e16Da478f446d7EAc5Ff73A5"
+      "Token": "0x3b9D50C9CA771AF0e16Da478f446d7EAc5Ff73A5",
+      "Portal": "0x69Ed92f5F74636C18B51b7d36560B6E7b65c87D4",
+      "UniversalRegistrarController": "0xEd93d2Fa2B3c5086681a16196cbf99660bA16751"
     }
   }
 ]

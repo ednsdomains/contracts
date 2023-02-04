@@ -1,13 +1,13 @@
 import { ethers } from "hardhat";
 
-import { deployPublicResolver } from "./src/deploy";
-import { getContracts, getRegistry } from "./src/lib/get-contracts";
+import { deployPortal } from "./src/deploy";
+import { getContracts } from "./src/lib/get-contracts";
 
 async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   const contracts = await getContracts(signer);
-  await deployPublicResolver({ chainId, signer, contracts });
+  await deployPortal({ chainId, signer, contracts });
 }
 
 main().catch((error) => {

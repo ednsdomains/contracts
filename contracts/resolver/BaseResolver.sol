@@ -49,22 +49,25 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes memory tld
   ) internal view returns (bool) {
     bytes32 host_ = keccak256(host);
-    bytes32 domain_ = keccak256(name);
+    bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
 
-    if (_registry.getUser(host_, domain_, tld_) == _registry.getOwner(domain_, tld_)) {
-      return
-        _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
-    } else {
-      //If SubDomain haven't user, owner able to setRecord
-      //TODO-SubDomain-Only-User-Or-Operator
-      if (_registry.getUser(host_, domain_, tld_) == address(0) && _registry.getOwner(domain_, tld_) == _msgSender()) {
-        return true;
-      } else {
-        return _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(host_, domain_, tld_, _msgSender());
-      }
-    }
+    return
+      (_registry.getUser(host_, name_, tld_) == _msgSender() || _registry.isOperator(host_, name_, tld_, _msgSender())) &&
+      _registry.getUserExpiry(host_, name_, tld_) >= block.timestamp;
 
+    // if (_registry.getUser(host_, domain_, tld_) == _registry.getOwner(domain_, tld_)) {
+    //   return
+    //     _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
+    // } else {
+    //   //If SubDomain haven't user, owner able to setRecord
+    //   //TODO-SubDomain-Only-User-Or-Operator
+    //   if (_registry.getUser(host_, domain_, tld_) == address(0) && _registry.getOwner(domain_, tld_) == _msgSender()) {
+    //     return true;
+    //   } else {
+    //     return _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(host_, domain_, tld_, _msgSender());
+    //   }
+    // }
     //    if (host_ == AT) {
     //      console.log("HOST IS AT");
     //      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());

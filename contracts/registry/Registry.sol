@@ -22,15 +22,14 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
-  bytes32 public constant PUBLIC_RESOLVER_ROLE = keccak256("PUBLIC_RESOLVER_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
   bytes32 public constant WRAPPER_ROLE = keccak256("WRAPPER_ROLE");
+  bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
+
+  mapping(bytes32 => mapping(bytes32 => uint256)) private _unsyncHostUser;
 
   mapping(bytes32 => TldRecord.TldRecord) internal _records;
   mapping(uint256 => TokenRecord.TokenRecord) internal _tokenRecords;
-
-  // mapping(bytes32 => mapping(bytes32 => address[]) internal _domainOperators;
-  // mapping(bytes32 => mapping(bytes32 => mapping(bytes32 => address[]))) internal _hostOperators;
 
   /* ========== Helper ==========*/
 
@@ -151,7 +150,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     address owner,
     address resolver,
     uint64 expiry
-  ) public onlyRole(REGISTRAR_ROLE) {
+  ) public {
+    require(hasRole(REGISTRAR_ROLE, _msgSender()) || hasRole(BRIDGE_ROLE, _msgSender()), "ONLY_AUTHORIZED");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(isExists(keccak256(tld)), "TLD_NOT_EXIST");
 
@@ -166,7 +166,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     if (_records[keccak256(tld)].wrapper.enable) {
       IWrapper(_records[keccak256(tld)].wrapper.address_).mint(owner, id);
       if (isExists_) {
-        _delete(keccak256(name), keccak256(tld));
+        _remove(keccak256(name), keccak256(tld));
         IWrapper(_records[keccak256(tld)].wrapper.address_).burn(id);
       }
     }
@@ -229,6 +229,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   function setResolver(bytes32 tld, address resolver_) public onlyTldOwner(tld) {
     require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].resolver = resolver_;
+
     emit SetResolver(_records[tld].name, resolver_);
   }
 
@@ -239,12 +240,14 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyDomainUserOrOperator(name, tld) onlyLiveDomain(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].resolver = resolver_;
+
     emit SetResolver(_join(_records[tld].domains[name].name, _records[tld].name), resolver_);
   }
 
   function setOwner(bytes32 tld, address owner_) public onlyTldOwnerOrWrapper(tld) {
     require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].owner = owner_;
+
     emit SetOwner(_records[tld].name, owner_);
   }
 
@@ -255,6 +258,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyDomainOwnerOrWrapper(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].owner = newOwner;
+
     emit SetOwner(_join(_records[tld].domains[name].name, _records[tld].name), newOwner);
   }
 
@@ -265,8 +269,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bool approved
   ) public onlyDomainUser(name, tld) onlyLiveDomain(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
-    _records[tld].domains[name].operators[operator_] = approved;
-    // _domainOperators[tld][name][operator_] = approved;
+    _records[tld].domains[name].operators[getOwner(name, tld)][operator_] = approved;
+
     emit SetOperator(_join(_records[tld].domains[name].name, _records[tld].name), operator_, approved);
   }
 
@@ -278,14 +282,15 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bool approved
   ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXIST");
-    _records[tld].domains[name].hosts[host].operators[operator_] = approved;
-    // _hostOperators[tld][name][host][operator_] = approved;
+    _records[tld].domains[name].hosts[host].operators[getUser(host, name, tld)][operator_] = approved;
+
     emit SetOperator(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name), operator_, approved);
   }
 
   function setEnable(bytes32 tld, bool enable) public onlyTldOwner(tld) {
     require(isExists(tld), "TLD_NOT_EXIST");
     _records[tld].enable = enable;
+
     emit SetEnable(_records[tld].name, enable);
   }
 
@@ -320,7 +325,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 host,
     bytes32 name,
     bytes32 tld,
-    address user,
+    address newUser,
     uint64 expiry
   ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXISTS");
@@ -330,8 +335,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
       require(expiry <= getExpiry(name, tld), ""); // TODO:
       _records[tld].domains[name].hosts[host].user.expiry = expiry;
     }
-    _records[tld].domains[name].hosts[host].user.user = user;
-    emit SetUser(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name), user, expiry);
+    _records[tld].domains[name].hosts[host].user.user = newUser;
+    emit SetUser(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name), newUser, expiry);
   }
 
   function setExpiry(bytes32 tld, uint64 expiry) public onlyRole(ROOT_ROLE) {
@@ -350,7 +355,25 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     emit SetExpiry(_join(_records[tld].domains[name].name, _records[tld].name), expiry);
   }
 
-  function _delete(bytes32 tld) internal {
+  /* ⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️ */
+  /* ⚠️⚠️⚠️⚠️⚠️❗❗❗❗❗🔞🔞🔞 START OF DESCTRUCTIVE 🔞🔞🔞❗❗❗❗❗⚠️⚠️⚠️⚠️⚠️ */
+
+  function unsetRecord(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) public onlyLiveDomain(name, tld) {
+    require(
+      _msgSender() == getUser(name, tld) &&
+        _msgSender() == getUser(host, name, tld) &&
+        getUserExpiry(name, tld) > block.timestamp &&
+        getUserExpiry(host, name, tld) > block.timestamp,
+      "ONLY_USERS"
+    );
+    _remove(host, name, tld);
+  }
+
+  function _remove(bytes32 tld) internal {
     delete _records[tld];
     delete _tokenRecords[getTokenId(_records[tld].name)];
     if (_records[tld].wrapper.enable) {
@@ -358,8 +381,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     }
   }
 
-  function _delete(bytes32 name, bytes32 tld) internal {
-    require(getExpiry(name, tld) < block.timestamp, "DOMAIN_STILL_ALIVE");
+  function _remove(bytes32 name, bytes32 tld) internal {
+    // require(getExpiry(name, tld) < block.timestamp, "DOMAIN_STILL_ALIVE");
     delete _records[tld].domains[name];
     delete _tokenRecords[getTokenId(_records[tld].domains[name].name, _records[tld].name)];
     if (_records[tld].wrapper.enable) {
@@ -367,20 +390,34 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     }
   }
 
-  function _delete(
+  function _remove(
     bytes32 host,
     bytes32 name,
     bytes32 tld
   ) internal {
-    require(isExists(host, name, tld) && getUser(host, name, tld) == getOwner(name, tld), "HOST_USER_NOT_OWNER"); // TODO:
+    // require(isExists(host, name, tld) && getUser(host, name, tld) == getOwner(name, tld), "HOST_USER_NOT_OWNER"); // TODO:
     delete _records[tld].domains[name].hosts[host];
     delete _tokenRecords[getTokenId(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name)];
     if (_records[tld].wrapper.enable) {
       IWrapper(_records[tld].wrapper.address_).burn(getTokenId(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
     }
+    emit RemoveHost(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
   }
 
   function prune(bytes32 name, bytes32 tld) public onlyDomainOwner(name, tld) onlyLiveDomain(name, tld) {}
+
+  function prune(
+    bytes32 host,
+    bytes32 name,
+    bytes32 tld
+  ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {}
+
+  function bridged(bytes32 name, bytes32 tld) public onlyRole(BRIDGE_ROLE) {
+    _remove(name, tld);
+  }
+
+  /* ⚠️⚠️⚠️⚠️⚠️❗❗❗❗❗🔞🔞🔞 END OF DESCTRUCTIVE 🔞🔞🔞❗❗❗❗❗⚠️⚠️⚠️⚠️⚠️*/
+  /* ⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️ */
 
   /* ========== Getter - General ==========*/
 
@@ -481,7 +518,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function isExists(uint256 tokenId) public view returns (bool) {
-    //    console.log(string(abi.encodePacked(_tokenRecords[tokenId].tld))==" ");
     return _tokenRecords[tokenId].tld != bytes32(0);
   }
 
@@ -490,8 +526,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 tld,
     address _operator
   ) public view returns (bool) {
-    // return _domainOperators[tld][name][_operator];
-    return _records[tld].domains[name].operators[_operator];
+    return _records[tld].domains[name].operators[getOwner(name, tld)][_operator];
   }
 
   function isOperator(
@@ -500,8 +535,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 tld,
     address _operator
   ) public view returns (bool) {
-    // return _hostOperators[tld][name][host][_operator];
-    return _records[tld].domains[name].hosts[host].operators[_operator];
+    return _records[tld].domains[name].hosts[host].operators[getUser(host, name, tld)][_operator];
   }
 
   // Is the name still alive (not yet expired)

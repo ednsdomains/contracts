@@ -250,21 +250,25 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
 
   function setUser(
     uint256 tokenId,
-    address user,
+    address newUser,
     uint64 expiry
   ) public {
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    address owner = ownerOf(tokenId);
+    address user = userOf(tokenId);
+    uint256 uExpiry = userExpiry(tokenId);
+
     require(
       hasRole(RENTAL_ROLE, _msgSender()) ||
-        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) == _msgSender() && expiry <= _registry.getExpiry(_tokenRecord.domain, _tokenRecord.tld)) || // User is Owner
-        (ownerOf(tokenId) == _msgSender() && userOf(tokenId) != _msgSender() && userExpiry(tokenId) <= block.timestamp) || // User is NOT Owner, but user expiry
-        (userOf(tokenId) == _msgSender() && userExpiry(tokenId) > block.timestamp && userExpiry(tokenId) >= expiry),
+        (owner == _msgSender() && user == _msgSender() && expiry <= _registry.getExpiry(_tokenRecord.domain, _tokenRecord.tld)) || // User is Owner
+        (owner == _msgSender() && user != _msgSender() && userExpiry(tokenId) <= block.timestamp) || // User is NOT Owner, but user expiry
+        (user == _msgSender() && uExpiry > block.timestamp && uExpiry >= expiry), // Current user transfering the usership to a new user
       "ERC4907: forbidden access"
     );
     if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
-      _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, user, expiry);
+      _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
-      _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, user, expiry);
+      _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
     } else {
       revert(""); // TODO:
     }

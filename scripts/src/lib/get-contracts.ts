@@ -2,8 +2,10 @@ import fs from "fs";
 import path from "path";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
-import { ClassicalRegistrarController, ERC20, PublicResolver, Registrar, Registry, Root, Wrapper } from "../../../typechain";
+import { Bridge, ClassicalRegistrarController, ERC20, LayerZeroProvider, Portal, PublicResolver, Registrar, Registry, Root, Wrapper } from "../../../typechain";
 import { ContractName } from "../constants/contract-name";
+import { IContracts } from "../interfaces/contracts";
+import { UniversalRegistrarController } from "../../../typechain/UniversalRegistrarController";
 
 export interface IGetContractsData {
   chainId: number;
@@ -13,9 +15,13 @@ export interface IGetContractsData {
     PublicResolver: string | null;
     Registrar: string | null;
     ClassicalRegistrarController: string | null;
+    UniversalRegistrarController: string | null;
     Root: string | null;
     DefaultWrapper: string | null;
     Token: string | null;
+    Bridge: string | null;
+    Portal: string | null;
+    LayerZeroProvider: string | null;
     [key: string]: string | null;
   };
 }
@@ -38,6 +44,22 @@ export const getContractsData = async (chainId: number): Promise<IGetContractsDa
 export const getAllContractsData = async (): Promise<IGetContractsData[]> => {
   return JSON.parse(fs.readFileSync(path.join(process.cwd(), "static/contracts.json"), { encoding: "utf8" }));
 };
+
+export async function getContracts(signer: Signer): Promise<IContracts> {
+  return {
+    Registry: await getRegistry(signer),
+    DefaultWrapper: await getDefaultWrapper(signer),
+    PublicResolver: await getPublicResolver(signer),
+    Registrar: await getRegistrar(signer),
+    Root: await getRoot(signer),
+    Token: await getToken(signer),
+    ClassicalRegistrarController: await getClassicalRegistrarController(signer),
+    UniversalRegistrarController: await getUniversalRegistrarController(signer),
+    Bridge: await getBridge(signer),
+    Portal: await getPortal(signer),
+    LayerZeroProvider: await getLayerZeroProvider(signer),
+  };
+}
 
 export async function getRegistry(signer: Signer): Promise<Registry | undefined> {
   const chainId = await signer.getChainId();
@@ -89,12 +111,22 @@ export async function getClassicalRegistrarController(signer: Signer): Promise<C
   return undefined;
 }
 
+export async function getUniversalRegistrarController(signer: Signer): Promise<UniversalRegistrarController | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.UniversalRegistrarController) {
+    const factory = await ethers.getContractFactory("UniversalRegistrarController");
+    return factory.attach(data.addresses.UniversalRegistrarController);
+  }
+  return undefined;
+}
+
 export async function getRoot(signer: Signer): Promise<Root | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Root) {
     const RootFactory = await ethers.getContractFactory("Root");
-    return RootFactory.attach(data?.addresses.Root);
+    return RootFactory.attach(data.addresses.Root);
   }
   return undefined;
 }
@@ -104,7 +136,37 @@ export async function getToken(signer: Signer): Promise<ERC20 | undefined> {
   const data = await getContractsData(chainId);
   if (data?.addresses.Token) {
     const TokenFactory = await ethers.getContractFactory("ERC20");
-    return TokenFactory.attach(data?.addresses.Token);
+    return TokenFactory.attach(data.addresses.Token);
+  }
+  return undefined;
+}
+
+export async function getPortal(signer: Signer): Promise<Portal | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.Portal) {
+    const PortalFactory = await ethers.getContractFactory("Portal");
+    return PortalFactory.attach(data.addresses.Portal);
+  }
+  return undefined;
+}
+
+export async function getBridge(signer: Signer): Promise<Bridge | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.Bridge) {
+    const factory = await ethers.getContractFactory("Bridge");
+    return factory.attach(data.addresses.Bridge);
+  }
+  return undefined;
+}
+
+export async function getLayerZeroProvider(signer: Signer): Promise<LayerZeroProvider | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.LayerZeroProvider) {
+    const factory = await ethers.getContractFactory("LayerZeroProvider");
+    return factory.attach(data.addresses.LayerZeroProvider);
   }
   return undefined;
 }

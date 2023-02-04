@@ -12,7 +12,7 @@ library DomainRecord {
     address resolver; //  The contract address of the resolver, it used the `PublicResolver` as default
     uint64 expiry; // The expiry unix timestamp of the name
     UserRecord.UserRecord user;
-    mapping(address => bool) operators;
+    mapping(address => mapping(address => bool)) operators;
     mapping(bytes32 => HostRecord.HostRecord) hosts;
   }
 }

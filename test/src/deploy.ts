@@ -3,11 +3,11 @@
 // import { deployDefaultWrapper, deployPublicResolver, deployRegistrar, deployRegistry, deployRoot } from "../../scripts/src/deploy";
 //
 // export interface IDeployContractsInput {
-//   deployer?: SignerWithAddress;
+//   signer?: SignerWithAddress;
 // }
 //
 // export const deployContracts = async (input?: IDeployContractsInput): Promise<IContracts> => {
-//   const _args = { deployer: input?.deployer };
+//   const _args = { signer: input?.signer };
 //   const Registry = await deployRegistry({ ..._args });
 //   const DefaultWrapper = await deployDefaultWrapper({ Registry, NFT_NAME: "Test Ether Domain Name Service", NFT_SYMBOL: "tEDNS" }, { ..._args });
 //   const PublicResolver = await deployPublicResolver({ Registry }, { ..._args });

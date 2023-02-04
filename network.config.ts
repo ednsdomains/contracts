@@ -1,3 +1,7 @@
+import { InContractChain } from "./scripts/src/constants/chain";
+
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
 export enum Network {
   ETHEREUM = 1,
   GOERLI = 5,
@@ -42,7 +46,7 @@ export enum Network {
   // TELOS_EVM_TESTNET = 41
 }
 
-export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM];
+export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM, Network.GNOSIS_CHAIN];
 
 export const Testnets = [
   Network.GOERLI,
@@ -56,6 +60,7 @@ export const Testnets = [
 
 export interface INetworkConfig {
   [chainId: number]: {
+    chain?: InContractChain;
     chainId: number;
     name: string;
     symbol: string;
@@ -92,7 +97,8 @@ export interface IConfig {
 
 const config: INetworkConfig = {
   [Network.ETHEREUM]: {
-    chainId: 1,
+    chainId: Network.ETHEREUM,
+    chain: InContractChain.ETHEREUM,
     name: "Ethereum",
     symbol: "ETH",
     url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -115,7 +121,8 @@ const config: INetworkConfig = {
     },
   },
   [Network.GOERLI]: {
-    chainId: 5,
+    chainId: Network.GOERLI,
+    chain: InContractChain.ETHEREUM,
     name: "Ethereum Goerli",
     symbol: "gETH",
     url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -139,6 +146,7 @@ const config: INetworkConfig = {
   },
   [Network.BNB_CHAIN]: {
     chainId: Network.BNB_CHAIN,
+    chain: InContractChain.BNB,
     name: "BNB Chain",
     symbol: "BNB",
     url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -162,6 +170,7 @@ const config: INetworkConfig = {
   },
   [Network.BNB_CHAIN_TESTNET]: {
     chainId: Network.BNB_CHAIN_TESTNET,
+    chain: InContractChain.BNB,
     name: "BNB Chain Testnet",
     symbol: "tBNB",
     url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -185,6 +194,7 @@ const config: INetworkConfig = {
   },
   [Network.AVALANCHE]: {
     chainId: Network.AVALANCHE,
+    chain: InContractChain.AVALANCHE,
     name: "Avalanche C-Chain",
     symbol: "AVAX",
     url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -208,6 +218,7 @@ const config: INetworkConfig = {
   },
   [Network.AVALANCHE_FUJI]: {
     chainId: Network.AVALANCHE_FUJI,
+    chain: InContractChain.AVALANCHE,
     name: "Avalanche Fuji",
     symbol: "AVAX",
     url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -231,6 +242,7 @@ const config: INetworkConfig = {
   },
   [Network.POLYGON]: {
     chainId: Network.POLYGON,
+    chain: InContractChain.POLYGON,
     name: "Polygon",
     symbol: "MATIC",
     url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -254,6 +266,7 @@ const config: INetworkConfig = {
   },
   [Network.POLYGON_MUMBAI]: {
     chainId: Network.POLYGON_MUMBAI,
+    chain: InContractChain.POLYGON,
     name: "Polygon Mumbai",
     symbol: "MATIC",
     url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -277,6 +290,7 @@ const config: INetworkConfig = {
   },
   [Network.ARBITRUM]: {
     chainId: Network.ARBITRUM,
+    chain: InContractChain.ARBITRUM,
     name: "Arbitrum",
     symbol: "ETH",
     url: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -300,6 +314,7 @@ const config: INetworkConfig = {
   },
   [Network.ARBITRUM_RINKEBY]: {
     chainId: Network.ARBITRUM_RINKEBY,
+    chain: InContractChain.ARBITRUM,
     name: "Arbitrum Rinkeby",
     symbol: "ETH",
     url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -323,6 +338,7 @@ const config: INetworkConfig = {
   },
   [Network.OPTIMISM]: {
     chainId: Network.OPTIMISM,
+    chain: InContractChain.OPTIMISM,
     name: "Optimism",
     symbol: "ETH",
     url: `https://optimism-arbitrum.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -346,6 +362,7 @@ const config: INetworkConfig = {
   },
   [Network.OPTIMISM_KOVAN]: {
     chainId: Network.OPTIMISM_KOVAN,
+    chain: InContractChain.OPTIMISM,
     name: "Optimism Kovan",
     symbol: "ETH",
     url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -369,6 +386,7 @@ const config: INetworkConfig = {
   },
   [Network.FANTOM]: {
     chainId: Network.FANTOM,
+    chain: InContractChain.FANTOM,
     name: "Fantom",
     symbol: "FTM",
     url: `https://ftm.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
@@ -392,6 +410,7 @@ const config: INetworkConfig = {
   },
   [Network.FANTOM_TESTNET]: {
     chainId: Network.FANTOM_TESTNET,
+    chain: InContractChain.FANTOM,
     name: "Fantom testnet",
     symbol: "FTM",
     url: `https://rpc.testnet.fantom.network/`,
@@ -416,6 +435,7 @@ const config: INetworkConfig = {
   },
   [Network.IOTEX_TESTNET]: {
     chainId: Network.IOTEX_TESTNET,
+    chain: InContractChain.IOTEX,
     name: "IoTeX Testnet",
     symbol: "IOTX-T",
     url: `https://babel-api.testnet.iotex.io`,
@@ -425,6 +445,7 @@ const config: INetworkConfig = {
   },
   [Network.IOTEX]: {
     chainId: Network.IOTEX,
+    chain: InContractChain.IOTEX,
     name: "IoTeX Mainnet",
     symbol: "IOTX",
     url: `https://babel-api.mainnet.iotex.io`,
