@@ -34,7 +34,7 @@
     },
     {
       "chainId": 97,
-      "names": ["bnb", "bsc"]
+      "names": ["_bnb"]
     },
     {
       "chainId": 100,
@@ -114,7 +114,7 @@
     },
     {
       "chainId": 43113,
-      "names": ["avax", "avalanche"]
+      "names": ["_avax"]
     },
     {
       "chainId": 43114,
@@ -126,7 +126,7 @@
     },
     {
       "chainId": 80001,
-      "names": ["matic", "poly", "polygon"]
+      "names": ["_matic"]
     },
     {
       "chainId": 421611,
@@ -134,6 +134,10 @@
     }
   ],
   "universal": [
+    {
+      "chainIds": [5, 97, 80001, 43113],
+      "names": ["_universal"]
+    },
     {
       "chainIds": [10, 137, 42161],
       "names": ["layer2"]
@@ -145,14 +149,6 @@
     {
       "chainIds": [1, 10, 56, 137, 250, 42161, 43114],
       "names": ["meta", "web3"]
-    },
-    {
-      "chainIds": [69, 80001, 421611],
-      "names": ["layer2"]
-    },
-    {
-      "chainIds": [5, 69, 97, 4002, 43113, 80001, 421611],
-      "names": ["layerzero", "lz"]
     }
   ]
 }

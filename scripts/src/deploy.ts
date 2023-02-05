@@ -104,10 +104,13 @@ export const deployClassicalRegistrarController = async (input: IDeployInput): P
 export const deployUniversalRegistrarController = async (input: IDeployInput): Promise<UniversalRegistrarController> => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.Token) throw new Error("`Token` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "UniversalRegistrarController");
   const factory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
   const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], { kind: "uups" });
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token.address, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
+    kind: "uups",
+  });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "UniversalRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -124,9 +127,10 @@ export const deployPortal = async (input: IDeployInput): Promise<Portal> => {
   return contract;
 };
 
-export const deployBridge = async (chain: InContractChain, input: IDeployInput): Promise<Bridge> => {
+export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
   if (!input.contracts.Registry) throw new Error("`Registry` is not available");
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
+  const chain = NetworkConfig[input.chainId].chain;
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Bridge");
   const factory = await ethers.getContractFactory("Bridge", input.signer);
   const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.address, input.contracts.Portal.address], { kind: "uups" });
@@ -142,7 +146,8 @@ export const deployLayerZeroProvider = async (input: IDeployInput): Promise<Laye
   const factory = await ethers.getContractFactory("LayerZeroProvider", input.signer);
   const lzEndpoint = NetworkConfig[await input.signer.getChainId()].layerzero?.endpoint;
   if (!lzEndpoint) throw new Error("LayerZero endpoint is missing");
-  const _contract = await upgrades.deployProxy(factory, [lzEndpoint, input.contracts.Portal.address], { kind: "uups" });
+  if (!ethers.utils.isAddress(lzEndpoint.address)) throw new Error("LayerZero endpoint is invalid");
+  const _contract = await upgrades.deployProxy(factory, [lzEndpoint.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "LayerZeroProvider", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -178,7 +183,7 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     _contract.addresses[name] = contract.address;
     ALL_CONTRACTS_DATA.push(_contract);
   }
-  await setAllContractsData(ALL_CONTRACTS_DATA);
+  if (ALL_CONTRACTS_DATA[index].chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
 };
 
 //

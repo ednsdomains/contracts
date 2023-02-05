@@ -7,8 +7,9 @@ import "./interfaces/IBridge.sol";
 import "./interfaces/IPortal.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract Bridge is IBridge, PausableUpgradeable, AccessControlUpgradeable {
+contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant TERMINATOR_ROLE = keccak256("TERMINATOR_ROLE");
 
@@ -173,4 +174,7 @@ contract Bridge is IBridge, PausableUpgradeable, AccessControlUpgradeable {
   function getCount() public view returns (uint256) {
     return _counts[_msgSender()];
   }
+
+  /* ========== UUPS ==========*/
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 }
