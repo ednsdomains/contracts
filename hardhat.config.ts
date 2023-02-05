@@ -31,7 +31,7 @@ const config: HardhatUserConfig = {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     goerli: {
-      chainId: 4,
+      chainId: 5,
       url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // BNB Chain
@@ -50,7 +50,7 @@ const config: HardhatUserConfig = {
     },
     fantom_testnet: {
       chainId: 4002,
-      url: `https://rpc.testnet.fantom.network/`,
+      url: `https://rpc.ankr.com/fantom_testnet`,
     },
     // Optimism
     optimisim: {

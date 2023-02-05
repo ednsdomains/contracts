@@ -56,5 +56,37 @@
       "Bridge": "0x762775c1f0D1C0e07C32B30C256963d0691A2Bd6",
       "LayerZeroProvider": "0x36E31296801fCA074284a21D34E80C4765f38Fe1"
     }
+  },
+  {
+    "chainId": 5,
+    "addresses": {
+      "Registry": "0xf34599E103f26E1B9AB11e90F5A0aD8CCC1C80D7",
+      "PublicResolver": "0xfdAbf2a8DE737ef2850A0109Bb148dfAe347Ed0C",
+      "Registrar": "0x3DACf00164CC23199b8eb4A3fEfB35FD6F009DF5",
+      "ClassicalRegistrarController": "0xf8f896a4FA72C609245D25a6d7dc92608C0c6C1D",
+      "Root": "0x4D9177A2A789f7E133c2cFBF3AF2347894F371B3",
+      "DefaultWrapper": "0x3CD270B48102e5113214C8b6C9818081cDEe6CC1",
+      "Token": "0x8782d09D6966c0e6c42c4e2575d710d870f180E5",
+      "UniversalRegistrarController": "0x6eD53843bE355390f178aE62368920D105a3954e",
+      "Portal": "0xeD5a900f6FC898044E137a48CE61590D5207bC72",
+      "Bridge": "0x2d9D2b3339786208760e0BdADAc828582a47659E",
+      "LayerZeroProvider": "0x930CD55faDFc2735C54f014A3A329EfC50930004"
+    }
+  },
+  {
+    "chainId": 4002,
+    "addresses": {
+      "Registry": "0xbe4Dab3F3363E8BE8E112BCbcfD1397514Ca024F",
+      "PublicResolver": "0x26a3D0C0Fa574678D3be9d763eEd680c006D344B",
+      "Registrar": "0xc53D2f384deE2AA1305d57bE0C90D3200113722C",
+      "ClassicalRegistrarController": "0xb31Cc2B2cBb7893d5B41bADDF85a838a2AC62610",
+      "Root": "0x97491B3D5f81D124785176475A74849de1A2F9AD",
+      "DefaultWrapper": "0xB9bf7f07e52D32137AdAF0e78779076Fb8B8928A",
+      "Token": "0x6F51caD65befd1216b178cC15fc7658B9c873D42",
+      "UniversalRegistrarController": "0x5b9E2bE3b05573e042D27DA27Ef11aA07A8977C6",
+      "Portal": "0x145844cFAF219215C54611878C937Bb8C165c726",
+      "Bridge": "0xB3c3A11a7481FC4425cb86baaE01170CD9D15617",
+      "LayerZeroProvider": "0x216C487d5623Db1e1b653dad6513E8c6B91f3087"
+    }
   }
 ]

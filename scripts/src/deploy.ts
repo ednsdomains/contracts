@@ -183,7 +183,7 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     _contract.addresses[name] = contract.address;
     ALL_CONTRACTS_DATA.push(_contract);
   }
-  if (ALL_CONTRACTS_DATA[index].chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
+  if (chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
 };
 
 //
