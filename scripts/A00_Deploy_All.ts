@@ -19,27 +19,27 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   let contracts = await getContracts(signer);
-  await deployRegistry({ chainId, signer, contracts });
+  await deployRegistry({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployWrapper("EDNS Domains", "EDNS", { chainId, signer, contracts });
+  await deployWrapper("EDNS Domains", "EDNS", { signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployPublicResolver({ chainId, signer, contracts });
+  await deployPublicResolver({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployRegistrar({ chainId, signer, contracts });
+  await deployRegistrar({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployRoot({ chainId, signer, contracts });
+  await deployRoot({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployTokenMock({ chainId, signer, contracts });
+  await deployTokenMock({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployClassicalRegistrarController({ chainId, signer, contracts });
+  await deployClassicalRegistrarController({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployUniversalRegistrarController({ chainId, signer, contracts });
+  await deployUniversalRegistrarController({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployPortal({ chainId, signer, contracts });
+  await deployPortal({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployBridge({ chainId, signer, contracts });
+  await deployBridge({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployLayerZeroProvider({ chainId, signer, contracts });
+  await deployLayerZeroProvider({ signer, chainId, contracts });
   contracts = await getContracts(signer);
 }
 

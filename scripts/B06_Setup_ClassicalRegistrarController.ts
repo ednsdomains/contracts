@@ -6,7 +6,7 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   const contracts = await getContracts(signer);
-  await setupClassicalRegistrarController({ chainId, signer, contracts });
+  await setupClassicalRegistrarController({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

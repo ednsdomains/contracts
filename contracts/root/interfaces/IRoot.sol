@@ -27,9 +27,15 @@ interface IRoot {
   function setResolver(bytes memory tld, address resolver) external payable;
 
   function setControllerApproval(
-    bytes memory tld,
+    bytes32 tld,
     address controller,
     bool approved
+  ) external;
+
+  function setWrapper(
+    bytes32 tld,
+    bool enable,
+    address address_
   ) external;
 
   function isEnable(bytes memory tld) external view returns (bool);

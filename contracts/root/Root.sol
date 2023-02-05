@@ -13,23 +13,23 @@ import "../wrapper/Wrapper.sol";
 
 contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
-  IRegistrar private _baseRegistrar;
+  IRegistrar private _registrar;
 
   address internal _authorizer;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-  function initialize(IRegistry registry_, IRegistrar baseRegistrar_) public initializer {
-    __Root_init(registry_, baseRegistrar_);
+  function initialize(IRegistry registry_, IRegistrar registrar) public initializer {
+    __Root_init(registry_, registrar);
   }
 
-  function __Root_init(IRegistry registry_, IRegistrar baseRegistrar_) internal onlyInitializing {
-    __Root_init_unchained(registry_, baseRegistrar_);
+  function __Root_init(IRegistry registry_, IRegistrar registrar) internal onlyInitializing {
+    __Root_init_unchained(registry_, registrar);
   }
 
-  function __Root_init_unchained(IRegistry registry_, IRegistrar baseRegistrar_) internal onlyInitializing {
+  function __Root_init_unchained(IRegistry registry_, IRegistrar registrar) internal onlyInitializing {
     _registry = registry_;
-    _baseRegistrar = baseRegistrar_;
+    _registrar = registrar;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
   }
@@ -53,7 +53,6 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
     emit TldRenewed(tld, expiry);
   }
 
-  // TODO:
   function transfer(bytes memory tld, address newOwner) public onlyRole(ADMIN_ROLE) {
     uint256 tokenId = _registry.getTokenId(tld);
     WrapperRecord.WrapperRecord memory _wrapper = _registry.getWrapper(keccak256(tld));
@@ -69,11 +68,19 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   }
 
   function setControllerApproval(
-    bytes memory tld,
+    bytes32 tld,
     address controller,
     bool approved
   ) public onlyRole(ADMIN_ROLE) {
-    _baseRegistrar.setControllerApproval(tld, controller, approved);
+    _registrar.setControllerApproval(tld, controller, approved);
+  }
+
+  function setWrapper(
+    bytes32 tld,
+    bool enable,
+    address address_
+  ) public onlyRole(ADMIN_ROLE) {
+    _registry.setWrapper(tld, enable, address_);
   }
 
   function isEnable(bytes memory tld) public view returns (bool) {

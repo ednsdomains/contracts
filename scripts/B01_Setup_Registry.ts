@@ -6,7 +6,7 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   const contracts = await getContracts(signer);
-  await setupRegistry({ chainId, signer, contracts });
+  await setupRegistry({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

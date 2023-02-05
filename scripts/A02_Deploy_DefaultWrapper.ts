@@ -6,7 +6,7 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   const contracts = await getContracts(signer);
-  await deployWrapper("EDNS Domains", "EDNS", { chainId, signer, contracts });
+  await deployWrapper("EDNS Domains", "EDNS", { signer, chainId, contracts });
 }
 
 main().catch((error) => {

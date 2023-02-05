@@ -2,14 +2,11 @@
 pragma solidity ^0.8.13;
 
 interface IRegistrar {
-  // event ControllerAdded(address controller, bytes tld);
-  // event ControllerRemoved(address controller, bytes tld);
-
   event DomainRegistered(bytes name, bytes tld, address owner, uint256 expiry);
   event DomainRenewed(bytes name, bytes tld, uint256 expiry);
   event DomainReclaimed(bytes name, bytes tld, address owner);
 
-  event SetController(bytes tld, address controller, bool approved);
+  event SetController(bytes32 tld, address controller, bool approved);
 
   function getExpiry(bytes memory name, bytes memory tld) external view returns (uint256);
 
@@ -24,7 +21,7 @@ interface IRegistrar {
   function isControllerApproved(bytes32 tld, address controller) external view returns (bool);
 
   function setControllerApproval(
-    bytes memory tld,
+    bytes32 tld,
     address controller,
     bool approved
   ) external;

@@ -152,7 +152,23 @@ const config: HardhatUserConfig = {
     showTimeSpent: true,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    // https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan#adding-support-for-other-networks
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY || "",
+      goerli: process.env.ETHERSCAN_API_KEY || "",
+      polygon: process.env.POLYGONSCAN_API_KEY || "",
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
+      bsc: process.env.BSCSCAN_API_KEY || "",
+      bscTestnet: process.env.BSCSCAN_API_KEY || "",
+      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY || "",
+      optimisticGoerli: process.env.OPTIMISTIC_ETHERSCAN_API_KEY || "",
+      avalanche: process.env.SNOWTRACE_API_KEY || "",
+      avalancheFuji: process.env.SNOWTRACE_API_KEY || "",
+      arbitrumOne: process.env.ARBISCAN_API_KEY || "",
+      arbitrumGoerli: process.env.ARBISCAN_API_KEY || "",
+      gnosis: process.env.GNOSISSCAN_API_KEY || "",
+    },
+    customChains: [],
   },
   contractSizer: {
     alphaSort: false,

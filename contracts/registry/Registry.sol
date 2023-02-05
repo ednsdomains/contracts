@@ -119,7 +119,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     TldClass.TldClass class_
   ) public onlyRole(ROOT_ROLE) {
     //    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST"); -> !isExists(getTokenId(tld)) always return true
-    require((!isExists(keccak256(tld))) && (!isExists(getTokenId(tld))), "TLD_EXIST");
+    // require((!isExists(keccak256(tld))) && (!isExists(getTokenId(tld))), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
 
@@ -139,9 +139,9 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
     emit NewTld(class_, tld, owner);
 
-    if (_records[keccak256(tld)].wrapper.enable) {
-      IWrapper(_records[keccak256(tld)].wrapper.address_).mint(owner, id);
-    }
+    // if (_records[keccak256(tld)].wrapper.enable) {
+    //   IWrapper(_records[keccak256(tld)].wrapper.address_).mint(owner, id);
+    // }
   }
 
   function setRecord(
@@ -329,6 +329,18 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     uint64 expiry
   ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXISTS");
+
+    address owner = getOwner(name, tld);
+    address currUser = getUser(host, name, tld);
+
+    if (owner == currUser && currUser != newUser) {
+      _unsyncHostUser[tld][name] += 1;
+    } else if (currUser != owner && currUser == newUser) {
+      if (_unsyncHostUser[tld][name] > 0) {
+        _unsyncHostUser[tld][name] -= 1;
+      }
+    }
+
     if (expiry == 0) {
       _records[tld].domains[name].hosts[host].user.expiry = getExpiry(name, tld);
     } else {
@@ -413,6 +425,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {}
 
   function bridged(bytes32 name, bytes32 tld) public onlyRole(BRIDGE_ROLE) {
+    require(_unsyncHostUser[tld][name] == 0, "UNSYNC_HOST_USER_EXISTS");
     _remove(name, tld);
   }
 

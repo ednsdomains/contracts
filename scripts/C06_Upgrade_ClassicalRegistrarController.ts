@@ -1,13 +1,12 @@
 import { ethers } from "hardhat";
-
-import { deployClassicalRegistrarController } from "./src/deploy";
-import { getContracts, getRegistrar, getRoot, getToken } from "./src/lib/get-contracts";
+import { getContracts } from "./src/lib/get-contracts";
+import { upgradeClassicalRegistrarController, upgradeRegistry } from "./src/upgrade";
 
 async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   const contracts = await getContracts(signer);
-  await deployClassicalRegistrarController({ signer, chainId, contracts });
+  await upgradeClassicalRegistrarController({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

@@ -7,7 +7,7 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
   const contracts = await getContracts(signer);
-  await deployTokenMock({ chainId, signer, contracts });
+  await deployTokenMock({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

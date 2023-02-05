@@ -13,6 +13,7 @@ import { LayerZeroProvider } from "../../typechain/LayerZeroProvider";
 import { Bridge } from "../../typechain/Bridge";
 import { InContractChain } from "./constants/chain";
 import { IContracts } from "./interfaces/contracts";
+import { verifyContract } from "./lib/verify-contract";
 
 export interface IDeployInput {
   chainId: number;
@@ -70,7 +71,6 @@ export const deployRoot = async (input: IDeployInput): Promise<Root> => {
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Root");
   const factory = await ethers.getContractFactory("Root", input.signer);
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.address, input.contracts.Registrar.address], { kind: "uups" });
-  _contract.deployTransaction;
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "Root", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -184,6 +184,7 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     ALL_CONTRACTS_DATA.push(_contract);
   }
   if (chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
+  await verifyContract(contract.address);
 };
 
 //

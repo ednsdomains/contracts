@@ -6,7 +6,7 @@
     },
     {
       "chainId": 5,
-      "names": ["ether"]
+      "names": ["_ether"]
     },
     {
       "chainId": 10,
@@ -86,7 +86,7 @@
     },
     {
       "chainId": 4002,
-      "names": ["ftm", "fantom"]
+      "names": ["_ftm"]
     },
     {
       "chainId": 4689,

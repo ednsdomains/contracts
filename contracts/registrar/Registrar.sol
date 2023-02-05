@@ -67,11 +67,11 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
   }
 
   function setControllerApproval(
-    bytes memory tld,
+    bytes32 tld,
     address controller,
     bool approved
   ) external onlyRole(ROOT_ROLE) {
-    controllers[controller][keccak256(tld)] = approved;
+    controllers[controller][tld] = approved;
     emit SetController(tld, controller, approved);
   }
 

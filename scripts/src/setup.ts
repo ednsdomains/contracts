@@ -50,7 +50,24 @@ export const setupRegistry = async (input: ISetupInput) => {
 };
 
 export const setupDefaultWrapper = async (input: ISetupInput) => {
-  //=== NOTHING NEED TO SETUP IN WRAPPER CONTRACT ==//
+  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
+
+  await _beforeSetup(input.signer, input.chainId, "DefaultWrapper");
+  const txs: Transaction[] = [];
+
+  const tx1 = await input.contracts.DefaultWrapper.setName("Test Domains");
+  await tx1.wait();
+  txs.push(tx1);
+
+  const tx2 = await input.contracts.DefaultWrapper.setSymbol("TDNS");
+  await tx2.wait();
+  txs.push(tx2);
+
+  const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.example.com");
+  await tx3.wait();
+  txs.push(tx3);
+
+  await _afterSetup(input.signer, input.chainId, "DefaultWrapper", [...txs]);
 };
 
 export const setupRegistrar = async (input: ISetupInput) => {
@@ -73,6 +90,7 @@ export const setupRoot = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
   await _beforeSetup(input.signer, input.chainId, "Root");
   const txs: Transaction[] = [];
   //====================//
@@ -82,9 +100,15 @@ export const setupRoot = async (input: ISetupInput) => {
   if (classical) {
     for (const tld_ of classical) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
         const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+        await tx.wait();
+        txs.push(tx);
+      }
+      const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
+      if (isExists && isWrapped.address_ === ZERO_ADDRESS) {
+        const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
         txs.push(tx);
       }
@@ -98,9 +122,15 @@ export const setupRoot = async (input: ISetupInput) => {
   if (universal) {
     for (const tld_ of universal) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
-        const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+        const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
+        await tx.wait();
+        txs.push(tx);
+      }
+      const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
+      if (isExists && isWrapped.address_ === ZERO_ADDRESS) {
+        const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
         txs.push(tx);
       }
@@ -119,9 +149,9 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
   const tlds = await getClassicalTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
-      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
-      if (!isExists) {
+      const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](_tld_);
+      if (isExists) {
         const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
         await tx.wait();
         txs.push(tx);
@@ -140,9 +170,9 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
   const tlds = await getUniversalTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
-      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(tld_));
-      if (!isExists) {
+      const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](_tld_);
+      if (isExists) {
         const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.UniversalRegistrarController.address, true);
         await tx.wait();
         txs.push(tx);
@@ -171,9 +201,12 @@ export const setupPortal = async (input: ISetupInput) => {
 
 export const setupBridge = async (input: ISetupInput) => {
   if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
+
   const isCurrMainnet = !!Mainnets.find((i) => i === input.chainId);
   const isCurrTestnet = !!Testnets.find((i) => i === input.chainId);
+
   await _beforeSetup(input.signer, input.chainId, "Bridge");
+
   const txs: Transaction[] = [];
 
   for (const network in NetworkConfig) {
@@ -206,9 +239,38 @@ export const setupBridge = async (input: ISetupInput) => {
   await _afterSetup(input.signer, input.chainId, "Bridge", [...txs]);
 };
 
+export const setupLayerZeroProvider = async (input: ISetupInput) => {
+  if (!input.contracts.LayerZeroProvider) throw new Error("`LayerZeroProvider` is not available");
+
+  const isCurrMainnet = !!Mainnets.find((i) => i === input.chainId);
+  const isCurrTestnet = !!Testnets.find((i) => i === input.chainId);
+
+  await _beforeSetup(input.signer, input.chainId, "LayerZeroProvider");
+
+  const txs: Transaction[] = [];
+
+  for (const network in NetworkConfig) {
+    const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
+    const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
+
+    const data = await getContractsData(NetworkConfig[network].chainId);
+
+    if (data && data.addresses.LayerZeroProvider && NetworkConfig[network].layerzero?.chainId) {
+      if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
+        const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(NetworkConfig[network].layerzero!.chainId, data.addresses.LayerZeroProvider);
+        if (!isTrustedRemote) {
+          const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(NetworkConfig[network].layerzero!.chainId, data.addresses.LayerZeroProvider);
+          await tx.wait();
+          txs.push(tx);
+        }
+      }
+    }
+  }
+  await _afterSetup(input.signer, input.chainId, "LayerZeroProvider", [...txs]);
+};
+
 const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
   const balance = await getBalance(signer);
-  console.log(`Signer account has [${ethers.utils.formatEther(balance)}]`);
   if (balance.eq(0)) {
     throw new Error(`Signer account ${signer.address} has [0] balance`);
   } else {
