@@ -25,7 +25,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   mapping(Chain.Chain => address) private _remoteBridges;
   mapping(bytes32 => uint16) private _chainIds;
 
-  mapping(address => uint256) private _counts;
+  mapping(address => uint256) private _nonces;
 
   function initialize(
     Chain.Chain selfChain,
@@ -72,34 +72,57 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     _receivedRequest[ref] = true;
   }
 
-  function _getRef(
-    uint256 id,
+  function getRef(
+    uint256 nonce,
     Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
     bytes32 name,
     bytes32 tld,
     address owner,
     uint64 expiry
-  ) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(id, dstChain, provider, name, tld, owner, expiry));
+  ) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(nonce, dstChain, provider, name, tld, owner, expiry));
+  }
+
+  function estimateFee(
+    Chain.Chain dstChain,
+    CrossChainProvider.CrossChainProvider provider,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (uint256) {
+    uint256 nonce = _nonces[_msgSender()];
+    bytes32 ref = getRef(nonce, dstChain, provider, name, tld, _registry.getOwner(name, tld), _registry.getExpiry(name, tld));
+    address dstBridge = getRemoteBridge(dstChain);
+    require(dstBridge != address(0x0), "DST_BRIDGE_MISSING");
+    uint16 dstChainId = getChainId(dstChain, provider);
+
+    bytes memory payload = abi.encode(dstBridge, ref);
+
+    return _portal.estimateFee(provider, dstChainId, payload);
   }
 
   function bridge(
+    uint256 nonce,
+    bytes32 ref,
     Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
     bytes32 name,
-    bytes32 tld,
-    address owner,
-    uint64 expiry
+    bytes32 tld
   ) external payable whenNotPaused {
     require(_selfChain != dstChain, "SELF_CHAIN");
+
     uint16 dstChainId = getChainId(dstChain, provider);
-    require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
-    require(_registry.getTldClass(tld) == TldClass.TldClass.UNIVERSAL, "ONLY_UNIVERSAL_TLD");
     require(dstChainId != 0, ""); // TODO:
 
-    uint256 id = _counts[_msgSender()];
-    bytes32 ref = _getRef(id, dstChain, provider, name, tld, owner, expiry);
+    require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
+    require(_registry.getTldClass(tld) == TldClass.TldClass.UNIVERSAL, "ONLY_UNIVERSAL_TLD");
+
+    uint256 nonce_ = _nonces[_msgSender()];
+    require(nonce_ == nonce, "INVALID_NONCE"); // TODO:
+
+    bytes32 ref_ = getRef(nonce, dstChain, provider, name, tld, _registry.getOwner(name, tld), _registry.getExpiry(name, tld));
+    require(ref_ == ref, "INVALID_REF");
+
     address dstBridge = getRemoteBridge(dstChain);
 
     bytes memory payload = abi.encode(dstBridge, ref);
@@ -108,17 +131,24 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
     _portal.send{ value: msg.value }(payable(_msgSender()), provider, dstChainId, payload);
 
-    _bridgedRequests[ref] = BridgedRequest({ dstChain: dstChain, provider: provider, tld: tld, name: name, owner: owner, expiry: expiry });
+    _bridgedRequests[ref] = BridgedRequest({
+      dstChain: dstChain,
+      provider: provider,
+      tld: tld,
+      name: name,
+      owner: _registry.getOwner(name, tld),
+      expiry: _registry.getExpiry(name, tld)
+    });
 
     _registry.bridged(name, tld);
 
-    emit Bridged(id, _msgSender(), ref);
+    emit Bridged(nonce, _msgSender(), ref);
 
-    _counts[_msgSender()] += 1;
+    _nonces[_msgSender()] += 1;
   }
 
   function accept(
-    uint256 id,
+    uint256 nonce,
     bytes32 ref,
     Chain.Chain srcChain,
     CrossChainProvider.CrossChainProvider provider,
@@ -130,7 +160,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     require(_receivedRequest[ref] == true, "REF_NOT_FOUND");
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    bytes32 ref_ = _getRef(id, srcChain, provider, name_, tld_, owner, expiry);
+    bytes32 ref_ = getRef(nonce, srcChain, provider, name_, tld_, owner, expiry);
     require(ref == ref_, "INVALID_REF");
     require(_msgSender() == owner, "ONLY_OWNER");
 
@@ -138,7 +168,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
     _acceptedRequests[ref] = AcceptedRequest({ srcChain: srcChain, provider: provider, tld: tld_, name: name_, owner: owner, expiry: expiry });
 
-    emit Accepted(id, _msgSender(), ref);
+    emit Accepted(nonce, _msgSender(), ref);
 
     _receivedRequest[ref] = false;
   }
@@ -171,8 +201,8 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     _chainIds[keccak256(abi.encodePacked(chain, provider))] = chainId;
   }
 
-  function getCount() public view returns (uint256) {
-    return _counts[_msgSender()];
+  function getNonce() public view returns (uint256) {
+    return _nonces[_msgSender()];
   }
 
   /* ========== UUPS ==========*/

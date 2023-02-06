@@ -8,7 +8,7 @@ import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
 import delay from "delay";
 import { Transaction } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
-import { getAllContractsData, getContractsData } from "./lib/get-contracts";
+import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
 
 export interface ISetupInput {
@@ -30,21 +30,29 @@ export const setupRegistry = async (input: ISetupInput) => {
   const txs: Transaction[] = [];
 
   //=== Grant different Roles to different deployed contracts ==//
-  const tx1 = await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
-  await tx1.wait();
-  txs.push(tx1);
-  // const tx2 = await input.contracts.Registry.grantRole(await input.contracts.Registry.PUBLIC_RESOLVER_ROLE(), input.contracts.PublicResolver.address);
-  // await tx2.wait();
-  // txs.push(tx2);
-  const tx3 = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
-  await tx3.wait();
-  txs.push(tx3);
-  const tx4 = await input.contracts.Registry.grantRole(await input.contracts.Registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
-  await tx4.wait();
-  txs.push(tx4);
-  const tx5 = await input.contracts.Registry.grantRole(await input.contracts.Registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
-  await tx5.wait();
-  txs.push(tx5);
+  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address))) {
+    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address))) {
+    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address))) {
+    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.BRIDGE_ROLE(), input.contracts.Bridge.address))) {
+    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
+    await tx.wait();
+    txs.push(tx);
+  }
 
   await _afterSetup(input.signer, input.chainId, "Registry", [...txs]);
 };
@@ -185,6 +193,7 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
 export const setupPortal = async (input: ISetupInput) => {
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
   if (!input.contracts.LayerZeroProvider) throw new Error("`LayerZeroProvider` is not available");
+  if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
 
   await _beforeSetup(input.signer, input.chainId, "Portal");
 
@@ -192,6 +201,17 @@ export const setupPortal = async (input: ISetupInput) => {
 
   if ((await input.contracts.Portal.getProvider(CrossChainProvider.LAYERZERO)) === ZERO_ADDRESS) {
     const tx = await input.contracts.Portal.setProvider(CrossChainProvider.LAYERZERO, input.contracts.LayerZeroProvider.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  if (!(await input.contracts.Portal.hasRole(await input.contracts.Portal.PROVIDER_ROLE(), input.contracts.LayerZeroProvider.address))) {
+    const tx = await input.contracts.Portal.grantRole(await input.contracts.Portal.PROVIDER_ROLE(), input.contracts.LayerZeroProvider.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+  if (!(await input.contracts.Portal.hasRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Bridge.address))) {
+    const tx = await input.contracts.Portal.grantRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Bridge.address);
     await tx.wait();
     txs.push(tx);
   }
@@ -218,7 +238,7 @@ export const setupBridge = async (input: ISetupInput) => {
       if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
         // Set LZ Chain ID
         const _chainId_ = await input.contracts.Bridge.getChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO);
-        if (!_chainId_) {
+        if (_chainId_ !== NetworkConfig[network].layerzero!.chainId) {
           const tx = await input.contracts.Bridge.setChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO, NetworkConfig[network].layerzero!.chainId);
           await tx.wait();
           txs.push(tx);

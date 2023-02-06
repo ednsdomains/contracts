@@ -22,7 +22,7 @@ interface IPortal {
     CrossChainProvider.CrossChainProvider provider,
     uint16 dstChainId,
     bytes calldata payload
-  ) external returns (uint256);
+  ) external view returns (uint256);
 
   function getProvider(CrossChainProvider.CrossChainProvider provider) external view returns (address);
 

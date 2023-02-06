@@ -163,7 +163,7 @@ const config: HardhatUserConfig = {
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY || "",
       optimisticGoerli: process.env.OPTIMISTIC_ETHERSCAN_API_KEY || "",
       avalanche: process.env.SNOWTRACE_API_KEY || "",
-      avalancheFuji: process.env.SNOWTRACE_API_KEY || "",
+      avalancheFujiTestnet: process.env.SNOWTRACE_API_KEY || "",
       arbitrumOne: process.env.ARBISCAN_API_KEY || "",
       arbitrumGoerli: process.env.ARBISCAN_API_KEY || "",
       gnosis: process.env.GNOSISSCAN_API_KEY || "",

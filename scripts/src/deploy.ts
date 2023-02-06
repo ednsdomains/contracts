@@ -11,7 +11,7 @@ import { setAllContractsData } from "./lib/set-contracts";
 import delay from "delay";
 import { LayerZeroProvider } from "../../typechain/LayerZeroProvider";
 import { Bridge } from "../../typechain/Bridge";
-import { InContractChain } from "./constants/chain";
+import { InContractChain } from "./constants/in-contract-chain";
 import { IContracts } from "./interfaces/contracts";
 import { verifyContract } from "./lib/verify-contract";
 

@@ -1,4 +1,4 @@
-import { InContractChain } from "./scripts/src/constants/chain";
+import { InContractChain } from "./scripts/src/constants/in-contract-chain";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -14,9 +14,9 @@ export enum Network {
   FANTOM = 250,
   FANTOM_TESTNET = 4002,
   OPTIMISM = 10,
-  OPTIMISM_KOVAN = 69,
+  OPTIMISM_GOERLI = 420,
   ARBITRUM = 42161,
-  ARBITRUM_RINKEBY = 421611,
+  ARBITRUM_GOERLI = 421613,
   IOTEX = 4689,
   IOTEX_TESTNET = 4690,
   OKC = 66,
@@ -54,8 +54,8 @@ export const Testnets = [
   Network.POLYGON_MUMBAI,
   Network.AVALANCHE_FUJI,
   Network.FANTOM_TESTNET,
-  Network.OPTIMISM_KOVAN,
-  Network.ARBITRUM_RINKEBY,
+  Network.OPTIMISM_GOERLI,
+  Network.ARBITRUM_GOERLI,
 ];
 
 export interface INetworkConfig {
@@ -130,7 +130,7 @@ const config: INetworkConfig = {
       coinId: 60,
     },
     layerzero: {
-      chainId: 10001,
+      chainId: 10121,
       endpoint: {
         address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
       },
@@ -178,7 +178,7 @@ const config: INetworkConfig = {
       coinId: 714,
     },
     layerzero: {
-      chainId: 10002,
+      chainId: 10102,
       endpoint: {
         address: "0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1",
       },
@@ -226,7 +226,7 @@ const config: INetworkConfig = {
       coinId: 9005,
     },
     layerzero: {
-      chainId: 10006,
+      chainId: 10106,
       endpoint: {
         address: "0x93f54D755A063cE7bB9e6Ac47Eccc8e33411d706",
       },
@@ -274,7 +274,7 @@ const config: INetworkConfig = {
       coinId: 966,
     },
     layerzero: {
-      chainId: 10009,
+      chainId: 10109,
       endpoint: {
         address: "0xf69186dfBa60DdB133E91E9A4B5673624293d8F8",
       },
@@ -312,24 +312,24 @@ const config: INetworkConfig = {
       },
     },
   },
-  [Network.ARBITRUM_RINKEBY]: {
-    chainId: Network.ARBITRUM_RINKEBY,
+  [Network.ARBITRUM_GOERLI]: {
+    chainId: Network.ARBITRUM_GOERLI,
     chain: InContractChain.ARBITRUM,
-    name: "Arbitrum Rinkeby",
+    name: "Arbitrum Goerli",
     symbol: "ETH",
-    url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: `https://arbitrum-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 9001,
     },
     layerzero: {
-      chainId: 10010,
+      chainId: 10143,
       endpoint: {
         address: "0x4D747149A57923Beb89f22E6B7B97f7D8c087A00",
       },
     },
     chainlink: {
       token: {
-        name: "ChainLink Token on Arbitrum Rinkeby",
+        name: "ChainLink Token on Arbitrum Goerli",
         symbol: "LINK",
         decimals: 18,
         address: "0x615fBe6372676474d9e6933d310469c9b68e9726",
@@ -360,24 +360,24 @@ const config: INetworkConfig = {
       },
     },
   },
-  [Network.OPTIMISM_KOVAN]: {
-    chainId: Network.OPTIMISM_KOVAN,
+  [Network.OPTIMISM_GOERLI]: {
+    chainId: Network.OPTIMISM_GOERLI,
     chain: InContractChain.OPTIMISM,
-    name: "Optimism Kovan",
+    name: "Optimism Goerli",
     symbol: "ETH",
-    url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: `https://optimism-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 614,
     },
     layerzero: {
-      chainId: 10011,
+      chainId: 10132,
       endpoint: {
         address: "0x72aB53a133b27Fa428ca7Dc263080807AfEc91b5",
       },
     },
     chainlink: {
       token: {
-        name: "ChainLink Token on Optimism Kovan",
+        name: "ChainLink Token on Optimism Goerli",
         symbol: "LINK",
         decimals: 18,
         address: "0x4911b761993b9c8c0d14Ba2d86902AF6B0074F5B",

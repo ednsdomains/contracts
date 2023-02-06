@@ -7,8 +7,8 @@ import "../../lib/TldClass.sol";
 import "./IReceiver.sol";
 
 interface IBridge is IReceiver {
-  event Bridged(uint256 indexed id, address indexed sender, bytes32 indexed ref);
-  event Accepted(uint256 indexed id, address indexed sender, bytes32 indexed ref);
+  event Bridged(uint256 indexed nonce, address indexed sender, bytes32 indexed ref);
+  event Accepted(uint256 indexed nonce, address indexed sender, bytes32 indexed ref);
   event Received(bytes32 indexed ref);
 
   struct AcceptedRequest {
@@ -29,17 +29,34 @@ interface IBridge is IReceiver {
     uint64 expiry;
   }
 
-  function bridge(
-    Chain.Chain chain,
+  function getRef(
+    uint256 nonce,
+    Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
     bytes32 name,
     bytes32 tld,
     address owner,
     uint64 expiry
+  ) external view returns (bytes32);
+
+  function estimateFee(
+    Chain.Chain dstChain,
+    CrossChainProvider.CrossChainProvider provider,
+    bytes32 name,
+    bytes32 tld
+  ) external view returns (uint256);
+
+  function bridge(
+    uint256 nonce,
+    bytes32 ref,
+    Chain.Chain dstChain,
+    CrossChainProvider.CrossChainProvider provider,
+    bytes32 name,
+    bytes32 tld
   ) external payable;
 
   function accept(
-    uint256 id,
+    uint256 nonce,
     bytes32 ref,
     Chain.Chain srcChain,
     CrossChainProvider.CrossChainProvider provider,
@@ -65,5 +82,5 @@ interface IBridge is IReceiver {
     uint16 chaindId
   ) external;
 
-  function getCount() external view returns (uint256);
+  function getNonce() external view returns (uint256);
 }
