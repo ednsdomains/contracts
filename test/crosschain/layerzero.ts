@@ -14,7 +14,7 @@ async function main() {
   const tld = "_universal";
 
   // ===== Polygon ===== //
-  const PolygonProvider = new ethers.providers.JsonRpcProvider("https://endpoints.omniatech.io/v1/matic/mumbai/public");
+  const PolygonProvider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/polygon_mumbai");
   const PolygonSigner = _signer.connect(PolygonProvider);
   const PolygonContracts = await getContracts(PolygonSigner);
   if (!PolygonContracts.Bridge || !PolygonContracts.UniversalRegistrarController || !PolygonContracts.Registry) throw new Error();
@@ -40,13 +40,16 @@ async function main() {
   const _name_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(name));
   const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld));
 
-  // console.log("LzProvider");
-  // await PolygonContracts.LayerZeroProvider?.estimateFee(10106, ethers.utils.toUtf8Bytes("hello world"), ethers.utils.toUtf8Bytes(""));
+  const lzChainId = await PolygonContracts.LayerZeroProvider?.getChainId(InContractChain.AVALANCHE);
+  console.log(`lzChainId: ${lzChainId}`);
+  if (!lzChainId) throw new Error("lzChainId undefined");
 
-  // console.log("Portal");
-  // await PolygonContracts.Portal?.estimateFee(CrossChainProvider.LAYERZERO, 10106, ethers.utils.toUtf8Bytes("hello world"));
+  console.log("LzProvider");
+  await PolygonContracts.LayerZeroProvider?.estimateFee(InContractChain.AVALANCHE, ethers.utils.defaultAbiCoder.encode(["string"], ["hello world"]));
 
-  // console.log(await PolygonContracts.Bridge.getChainId(InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO));
+  console.log("Portal");
+  await PolygonContracts.Portal?.estimateFee(CrossChainProvider.LAYERZERO, CrossChainProvider.LAYERZERO, ethers.utils.defaultAbiCoder.encode(["string"], ["hello world"]));
+
   const fee = await PolygonContracts.Bridge.estimateFee(InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, _name_, _tld_);
   console.log({ fee: ethers.utils.formatEther(fee) });
   if ((await PolygonSigner.getBalance()).lt(fee)) throw new Error("Insufficient funds");
@@ -64,6 +67,23 @@ async function main() {
     await PolygonContracts.Registry["getExpiry(bytes32,bytes32)"](_name_, _tld_),
   );
   console.log({ ref });
+
+  // if (PolygonContracts.Portal) {
+  //   if (!(await PolygonContracts.Portal.hasRole(await PolygonContracts.Portal.SENDER_ROLE(), PolygonSigner.address))) {
+  //     const tx3 = await PolygonContracts.Portal.grantRole(await PolygonContracts.Portal.SENDER_ROLE(), PolygonSigner.address);
+  //     await tx3.wait();
+  //   }
+  //   const fee = await PolygonContracts.Portal.estimateFee(InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, ethers.utils.toUtf8Bytes("hello world"));
+  //   console.log({ fee: ethers.utils.formatEther(fee) });
+
+  //   console.log(await PolygonContracts.Portal.getProvider(CrossChainProvider.LAYERZERO));
+
+  //   const tx4 = await PolygonContracts.Portal.send(PolygonSigner.address, InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, ethers.utils.toUtf8Bytes("hello world"), {
+  //     value: fee,
+  //   });
+  //   await tx4.wait();
+  //   console.log(tx4.hash);
+  // }
 
   const tx2 = await PolygonContracts.Bridge.bridge(nonce, ref, InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, _name_, _tld_, {
     value: fee,

@@ -1,5 +1,5 @@
 import { ethers, upgrades } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "../../../scripts/node_modules/@nomiclabs/hardhat-ethers/signers";
 import { Registry, Registry__factory } from "../../../typechain";
 
 export const deployRegistry = async (signer2: SignerWithAddress): Promise<[Registry, Registry]> => {

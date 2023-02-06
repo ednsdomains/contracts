@@ -23,7 +23,6 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   mapping(bytes32 => bool) private _receivedRequest;
 
   mapping(Chain.Chain => address) private _remoteBridges;
-  mapping(bytes32 => uint16) private _chainIds;
 
   mapping(address => uint256) private _nonces;
 
@@ -94,11 +93,10 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     bytes32 ref = getRef(nonce, dstChain, provider, name, tld, _registry.getOwner(name, tld), _registry.getExpiry(name, tld));
     address dstBridge = getRemoteBridge(dstChain);
     require(dstBridge != address(0x0), "DST_BRIDGE_MISSING");
-    uint16 dstChainId = getChainId(dstChain, provider);
 
     bytes memory payload = abi.encode(dstBridge, ref);
 
-    return _portal.estimateFee(provider, dstChainId, payload);
+    return _portal.estimateFee(dstChain, provider, payload);
   }
 
   function bridge(
@@ -111,14 +109,11 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   ) external payable whenNotPaused {
     require(_selfChain != dstChain, "SELF_CHAIN");
 
-    uint16 dstChainId = getChainId(dstChain, provider);
-    require(dstChainId != 0, ""); // TODO:
-
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
     require(_registry.getTldClass(tld) == TldClass.TldClass.UNIVERSAL, "ONLY_UNIVERSAL_TLD");
 
     uint256 nonce_ = _nonces[_msgSender()];
-    require(nonce_ == nonce, "INVALID_NONCE"); // TODO:
+    require(nonce_ == nonce, "INVALID_NONCE");
 
     bytes32 ref_ = getRef(nonce, dstChain, provider, name, tld, _registry.getOwner(name, tld), _registry.getExpiry(name, tld));
     require(ref_ == ref, "INVALID_REF");
@@ -127,9 +122,9 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
     bytes memory payload = abi.encode(dstBridge, ref);
 
-    require(msg.value >= _portal.estimateFee(provider, dstChainId, payload), "INSUFFICIENT_FEE");
+    // require(msg.value >= _portal.estimateFee(dstChain, provider, payload), "INSUFFICIENT_FEE");
 
-    _portal.send{ value: msg.value }(payable(_msgSender()), provider, dstChainId, payload);
+    _portal.send{ value: msg.value }(payable(_msgSender()), dstChain, provider, payload);
 
     _bridgedRequests[ref] = BridgedRequest({
       dstChain: dstChain,
@@ -187,18 +182,6 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
   function setRemoteBridge(Chain.Chain chain, address target) public onlyRole(ADMIN_ROLE) {
     _remoteBridges[chain] = target;
-  }
-
-  function getChainId(Chain.Chain chain, CrossChainProvider.CrossChainProvider provider) public view returns (uint16) {
-    return _chainIds[keccak256(abi.encodePacked(chain, provider))];
-  }
-
-  function setChainId(
-    Chain.Chain chain,
-    CrossChainProvider.CrossChainProvider provider,
-    uint16 chainId
-  ) public onlyRole(ADMIN_ROLE) {
-    _chainIds[keccak256(abi.encodePacked(chain, provider))] = chainId;
   }
 
   function getNonce() public view returns (uint256) {

@@ -92,6 +92,10 @@ const config: HardhatUserConfig = {
       chainId: 100,
       url: `https://solitary-dimensional-frost.xdai.quiknode.pro/${process.env.QUICKNODE_API_KEY}/`,
     },
+    gnosis_chiado: {
+      chainId: 10200,
+      url: `https://rpc.chiado.gnosis.gateway.fm`,
+    },
     iotex: {
       chainId: 4689,
       url: `https://rpc.ankr.com/iotex`,

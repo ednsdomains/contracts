@@ -16,6 +16,8 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   IPortal private _portal;
 
+  mapping(Chain.Chain => uint16) private _chainIds;
+
   function initialize(address _lzEndpoint, IPortal portal) public initializer {
     __LayerZeroProvider_init(_lzEndpoint, portal);
   }
@@ -32,12 +34,9 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
     _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  function estimateFee(
-    uint16 _dstChainId,
-    bytes calldata payload,
-    bytes calldata _adapterParams
-  ) public view returns (uint256) {
-    (uint256 nativeFee, uint256 zroFee) = lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, _adapterParams);
+  function estimateFee(Chain.Chain _dstChain, bytes calldata payload) public view returns (uint256) {
+    uint16 _dstChainId = getChainId(_dstChain);
+    (uint256 nativeFee, uint256 zroFee) = lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, new bytes(0));
     return nativeFee;
   }
 
@@ -53,28 +52,30 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   function send(
     address payable _from,
-    uint16 _dstChainId,
-    bytes calldata _payload,
-    bytes calldata _adapterParams
+    Chain.Chain _dstChain,
+    bytes calldata _payload
   ) external payable {
     require(_msgSender() == address(_portal), "ONLY_PORTAL");
-    _send(_from, _dstChainId, _payload, _adapterParams);
+    uint16 _dstChainId = getChainId(_dstChain);
+    _send(_from, _dstChainId, _payload);
   }
 
   function _send(
     address payable _from,
     uint16 _dstChainId,
-    bytes calldata payload,
-    bytes calldata _adapterParams
+    bytes calldata payload
   ) internal {
-    if (useCustomAdapterParams) {
-      _checkGasLimit(_dstChainId, FUNCTION_TYPE_SEND, _adapterParams, NO_EXTRA_GAS);
-    } else {
-      require(_adapterParams.length == 0, "LzApp: _adapterParams must be empty.");
-    }
-    _lzSend(_dstChainId, payload, _from, _from, _adapterParams);
+    _lzSend(_dstChainId, payload, _from);
     uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
     emit Sent(_from, _dstChainId, payload, nonce);
+  }
+
+  function getChainId(Chain.Chain chain) public view returns (uint16) {
+    return _chainIds[chain];
+  }
+
+  function setChainId(Chain.Chain chain, uint16 chainId) public onlyRole(ADMIN_ROLE) {
+    _chainIds[chain] = chainId;
   }
 
   /* ========== UUPS ==========*/

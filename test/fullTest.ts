@@ -1,4 +1,4 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "../scripts/node_modules/@nomiclabs/hardhat-ethers/signers";
 import { ClassicalRegistrarController, LayerZeroEndpointMock, PublicResolver, Registrar, Registry, Root, TokenMock, Wrapper } from "../typechain";
 import { ethers } from "hardhat";
 import { deployLayerZero } from "./lastest/deploy/layerZeroEndPointMock";

@@ -15,6 +15,8 @@ abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroR
   mapping(uint16 => bytes) public trustedRemoteLookup;
   mapping(uint16 => mapping(uint256 => uint256)) public minDstGasLookup;
 
+  event SendError(bytes reason);
+
   event SetTrustedRemote(uint16 _srcChainId, bytes _srcAddress);
   event SetMinDstGasLookup(uint16 _dstChainId, uint256 _type, uint256 _dstGasAmount);
 
@@ -53,13 +55,16 @@ abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroR
   function _lzSend(
     uint16 _dstChainId,
     bytes calldata _payload,
-    address payable _refundAddress,
-    address _zroPaymentAddress,
-    bytes calldata _adapterParams
+    address payable _sender
   ) internal virtual {
     bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
     require(trustedRemote.length != 0, "LzApp: destination chain is not a trusted source");
-    lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
+    lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _sender, _sender, new bytes(0));
+    // try lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _sender, _sender, new bytes(0)) {
+    //   // nothing
+    // } catch (bytes memory reason) {
+    //   emit SendError(reason);
+    // }
   }
 
   function _checkGasLimit(

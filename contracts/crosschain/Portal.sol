@@ -34,17 +34,17 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
 
   function send(
     address payable sender,
+    Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
-    uint16 dstChainId,
     bytes calldata payload // abi.encode(target_contract_address, abi.encodeWithSignature())
   ) external payable onlyRole(SENDER_ROLE) {
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
-      ILayerZeroProvider(_providers[provider]).send{ value: msg.value }(sender, dstChainId, payload, new bytes(0));
+      ILayerZeroProvider(_providers[provider]).send{ value: msg.value }(sender, dstChain, payload);
     } else {
       revert("Empty provider");
     }
 
-    emit Sent(sender, provider, dstChainId, payload);
+    emit Sent(sender, dstChain, provider, payload);
   }
 
   function receive_(CrossChainProvider.CrossChainProvider provider, bytes memory payload) external onlyRole(PROVIDER_ROLE) {
@@ -61,12 +61,12 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   }
 
   function estimateFee(
+    Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
-    uint16 dstChainId,
     bytes calldata payload
   ) external view returns (uint256) {
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
-      return ILayerZeroProvider(_providers[provider]).estimateFee(dstChainId, payload, new bytes(0));
+      return ILayerZeroProvider(_providers[provider]).estimateFee(dstChain, payload);
     } else {
       revert("Empty provider");
     }

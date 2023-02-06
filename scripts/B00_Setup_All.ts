@@ -4,6 +4,7 @@ import {
   setupBridge,
   setupClassicalRegistrarController,
   setupDefaultWrapper,
+  setupLayerZeroProvider,
   setupPortal,
   setupPublicResolver,
   setupRegistrar,
@@ -25,6 +26,7 @@ async function main() {
   await setupUniversalRegistrarController({ signer, chainId, contracts });
   await setupBridge({ signer, chainId, contracts });
   await setupPortal({ signer, chainId, contracts });
+  await setupLayerZeroProvider({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

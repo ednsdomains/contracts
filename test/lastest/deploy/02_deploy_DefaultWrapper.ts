@@ -1,4 +1,4 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "../../../scripts/node_modules/@nomiclabs/hardhat-ethers/signers";
 import { ethers, upgrades } from "hardhat";
 import { Registry__factory } from "../../../typechain";
 

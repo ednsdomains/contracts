@@ -1,20 +1,21 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+import "../../../../lib/Chain.sol";
+
 interface ILayerZeroProvider {
   event Sent(address indexed sender, uint16 indexed dstChainId, bytes indexed payload, uint64 nonce);
   event Received(uint16 indexed srcChainId, bytes indexed srcAddress, bytes indexed payload, uint64 nonce);
 
-  function estimateFee(
-    uint16 _dstChainId,
-    bytes memory _payload,
-    bytes memory _adaptorParams
-  ) external view returns (uint256);
+  function estimateFee(Chain.Chain _dstChain, bytes memory _payload) external view returns (uint256);
 
   function send(
     address payable _from,
-    uint16 _dstChainId,
-    bytes memory _payload,
-    bytes memory _adapterParams
+    Chain.Chain _dstChain,
+    bytes memory _payload
   ) external payable;
+
+  function getChainId(Chain.Chain chain) external returns (uint16);
+
+  function setChainId(Chain.Chain chain, uint16 chainId) external;
 }

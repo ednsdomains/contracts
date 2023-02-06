@@ -109,5 +109,5 @@ const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: C
   console.log(`Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
-  await verifyContract(contract.address);
+  // await verifyContract(contract.address);
 };

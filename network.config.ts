@@ -27,7 +27,8 @@ export enum Network {
   KCC_TESTNET = 322,
   VELAS_EVM = 106,
   VELAS_EVM_TESTNET = 111,
-  GNOSIS_CHAIN = 100,
+  GNOSIS = 100,
+  GNOSIS_CHIADO = 10200,
   MOONBEAM = 1284,
   MOONRIVER = 1285,
   // CRONOS = 25,
@@ -46,7 +47,7 @@ export enum Network {
   // TELOS_EVM_TESTNET = 41
 }
 
-export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM, Network.GNOSIS_CHAIN];
+export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM, Network.GNOSIS];
 
 export const Testnets = [
   Network.GOERLI,
@@ -56,6 +57,7 @@ export const Testnets = [
   Network.FANTOM_TESTNET,
   Network.OPTIMISM_GOERLI,
   Network.ARBITRUM_GOERLI,
+  Network.GNOSIS_CHIADO,
 ];
 
 export interface INetworkConfig {
@@ -495,11 +497,20 @@ const config: INetworkConfig = {
       coinId: 641,
     },
   },
-  [Network.GNOSIS_CHAIN]: {
-    chainId: Network.GNOSIS_CHAIN,
+  [Network.GNOSIS]: {
+    chainId: Network.GNOSIS,
     name: "Gnosis Chain",
     symbol: "XDAI",
     url: `https://rpc.gnosischain.com`,
+    slip44: {
+      coinId: 700,
+    },
+  },
+  [Network.GNOSIS]: {
+    chainId: Network.GNOSIS_CHIADO,
+    name: "Gnosis Chiado",
+    symbol: "XDAI",
+    url: `https://rpc.chiado.gnosis.gateway.fm`,
     slip44: {
       coinId: 700,
     },

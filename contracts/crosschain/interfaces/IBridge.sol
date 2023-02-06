@@ -74,13 +74,5 @@ interface IBridge is IReceiver {
 
   function setRemoteBridge(Chain.Chain chain, address target) external;
 
-  function getChainId(Chain.Chain chain, CrossChainProvider.CrossChainProvider provider) external view returns (uint16);
-
-  function setChainId(
-    Chain.Chain chain,
-    CrossChainProvider.CrossChainProvider provider,
-    uint16 chaindId
-  ) external;
-
   function getNonce() external view returns (uint256);
 }

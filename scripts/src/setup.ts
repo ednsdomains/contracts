@@ -237,12 +237,12 @@ export const setupBridge = async (input: ISetupInput) => {
     if (NetworkConfig[network].chain && NetworkConfig[network].layerzero) {
       if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
         // Set LZ Chain ID
-        const _chainId_ = await input.contracts.Bridge.getChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO);
-        if (_chainId_ !== NetworkConfig[network].layerzero!.chainId) {
-          const tx = await input.contracts.Bridge.setChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO, NetworkConfig[network].layerzero!.chainId);
-          await tx.wait();
-          txs.push(tx);
-        }
+        // const _chainId_ = await input.contracts.Bridge.getChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO);
+        // if (_chainId_ !== NetworkConfig[network].layerzero!.chainId) {
+        //   const tx = await input.contracts.Bridge.setChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO, NetworkConfig[network].layerzero!.chainId);
+        //   await tx.wait();
+        //   txs.push(tx);
+        // }
         // Set Trust Remote
         const data = await getContractsData(NetworkConfig[network].chainId);
         if (data && data.addresses.Bridge) {
@@ -273,15 +273,32 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
     const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
 
-    const data = await getContractsData(NetworkConfig[network].chainId);
+    if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
+      const data = await getContractsData(NetworkConfig[network].chainId);
 
-    if (data && data.addresses.LayerZeroProvider && NetworkConfig[network].layerzero?.chainId) {
-      if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
-        const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(NetworkConfig[network].layerzero!.chainId, data.addresses.LayerZeroProvider);
-        if (!isTrustedRemote) {
-          const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(NetworkConfig[network].layerzero!.chainId, data.addresses.LayerZeroProvider);
+      if (NetworkConfig[network].chain) {
+        const _lzChainId_ = await input.contracts.LayerZeroProvider.getChainId(NetworkConfig[network].chain!);
+        const _lzChainId = NetworkConfig[network].layerzero?.chainId;
+
+        if (_lzChainId && _lzChainId_ !== _lzChainId) {
+          const tx = await input.contracts.LayerZeroProvider.setChainId(NetworkConfig[network].chain!, _lzChainId);
           await tx.wait();
           txs.push(tx);
+        }
+
+        if (data && data.addresses.LayerZeroProvider && _lzChainId) {
+          const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(
+            _lzChainId,
+            ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]),
+          );
+          if (!isTrustedRemote) {
+            const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(
+              _lzChainId,
+              ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]),
+            );
+            await tx.wait();
+            txs.push(tx);
+          }
         }
       }
     }
