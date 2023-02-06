@@ -122,8 +122,6 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
     bytes memory payload = abi.encode(dstBridge, ref);
 
-    // require(msg.value >= _portal.estimateFee(dstChain, provider, payload), "INSUFFICIENT_FEE");
-
     _portal.send{ value: msg.value }(payable(_msgSender()), dstChain, provider, payload);
 
     _bridgedRequests[ref] = BridgedRequest({

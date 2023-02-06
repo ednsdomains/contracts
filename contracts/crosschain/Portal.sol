@@ -36,7 +36,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     address payable sender,
     Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
-    bytes calldata payload // abi.encode(target_contract_address, abi.encodeWithSignature())
+    bytes calldata payload
   ) external payable onlyRole(SENDER_ROLE) {
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       ILayerZeroProvider(_providers[provider]).send{ value: msg.value }(sender, dstChain, payload);
