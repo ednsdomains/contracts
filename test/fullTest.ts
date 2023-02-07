@@ -1,5 +1,5 @@
-import { SignerWithAddress } from "../scripts/node_modules/@nomiclabs/hardhat-ethers/signers";
-import { ClassicalRegistrarController, LayerZeroEndpointMock, PublicResolver, Registrar, Registry, Root, TokenMock, Wrapper } from "../typechain";
+import { ClassicalRegistrarController, LayerZeroEndpointMock, PublicResolver, Registrar,
+  Registry, Root, TokenMock, Wrapper } from "../typechain";
 import { ethers } from "hardhat";
 import { deployLayerZero } from "./lastest/deploy/layerZeroEndPointMock";
 import { deployRegistry } from "./lastest/deploy/01_registry";
@@ -11,12 +11,13 @@ import { deployRegistrar } from "./lastest/deploy/04_registrar";
 import { deployRoot } from "./lastest/deploy/05_root";
 import { deployTokenMock } from "./lastest/deploy/06_tokenMock";
 import { deployClassicalRegistrarController } from "./lastest/deploy/07_classicalRegistrarController";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Classical Test", function () {
   let signerList: SignerWithAddress[];
   // let fakeLzEndpointMock:LayerZeroEndpointMock;
   const today = new Date();
-  let use_registry: Registry;
+  let use_registry:Registry;
   let use_registry_ac2: Registry;
   let use_defaultWrapper: Wrapper;
   let use_publicResolver: PublicResolver;
@@ -30,6 +31,7 @@ describe("Classical Test", function () {
   const tldNode = ethers.utils.toUtf8Bytes("tld");
   const disableTldNode = ethers.utils.toUtf8Bytes("disableTld");
   const nameNode = ethers.utils.toUtf8Bytes("domain");
+  const subDomain = ethers.utils.toUtf8Bytes("sub");
   const srcChainID = 1;
 
   it("get Signer", async () => {
@@ -87,20 +89,20 @@ describe("Classical Test", function () {
   });
   describe("Setup Contract", function () {
     it("grant Role", async () => {
-      await use_registry.grantRole(await use_registry.ROOT_ROLE(), signerList[0].address);
+      await use_registry.grantRole(await use_registry.ROOT_ROLE(), use_root.address);
       await use_registry.grantRole(await use_registry.REGISTRAR_ROLE(), signerList[0].address);
     });
   });
   describe("TLD  Test", function () {
     it("Set tld record", async () => {
       const exipryDate = today.setFullYear(today.getFullYear() + 1);
-      await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode, signerList[0].address, use_publicResolver.address, exipryDate, true, 0);
+      await use_root.register(tldNode,use_publicResolver.address,exipryDate, signerList[0].address, true, 0);
       const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
       expect(owner).to.equal(true);
     });
     it("Set disable tld record", async () => {
       const exipryDate = today.setFullYear(today.getFullYear() + 1);
-      await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](disableTldNode, signerList[0].address, use_publicResolver.address, exipryDate, false, 0);
+      await use_root.register(disableTldNode,use_publicResolver.address,exipryDate, signerList[0].address, false, 0);
       const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
       expect(owner).to.equal(true);
     });
@@ -108,9 +110,9 @@ describe("Classical Test", function () {
       let throwError = false;
       try {
         const exipryDate = today.setFullYear(today.getFullYear() + 1);
-        await use_registry["setRecord(bytes,address,address,uint64,bool,uint8)"](tldNode, signerList[0].address, use_publicResolver.address, exipryDate, true, 0);
+        await use_root.register(tldNode,use_publicResolver.address,exipryDate, signerList[0].address, false, 0);
         const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
-        expect(owner).to.equal(true);
+        console.log("Not Error")
       } catch (e) {
         throwError = true;
       }
@@ -136,6 +138,13 @@ describe("Classical Test", function () {
       }
       expect(throwError).to.equal(true);
     });
+
+    it("Set Sub Domain record", async () => {
+        const exipryDate = today.setFullYear(today.getFullYear() + 1);
+        await use_registry["setRecord(bytes,bytes,bytes,uint16)"](subDomain, nameNode, tldNode, 36000);
+        const owner = await use_registry["isExists(bytes32,bytes32,bytes32)"](ethers.utils.keccak256(subDomain), ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode));
+        expect(owner).to.equal(true)
+    });
   });
 
   describe("Set Text Record", function () {
@@ -152,7 +161,6 @@ describe("Classical Test", function () {
       expect(getText).to.equal(dummyText);
     });
     it("Text Record - subDomain", async () => {
-      const subDomain = ethers.utils.toUtf8Bytes("sub");
       const dummyText = "subText";
       await use_publicResolver.setText(subDomain, nameNode, tldNode, dummyText);
       const getText = await use_publicResolver.getText(subDomain, nameNode, tldNode);
@@ -172,6 +180,22 @@ describe("Classical Test", function () {
       }
       const getText = await use_publicResolver_ac2.getText(hostNode, nameNode, tldNode);
       expect(getText).to.equal(originalValue);
+    });
+    it("Set Record with signer is not owner - subDomain", async () => {
+      const dummyText = "subText";
+      const newText = "new Text"
+      let error = false
+      try {
+        await use_publicResolver_ac2.setText(newText, nameNode, tldNode, dummyText);
+      }catch (e) {
+        console.log((e as Error).message)
+        error = true
+      }
+      const getText = await use_publicResolver.getText(subDomain, nameNode, tldNode);
+      const getHostText = await use_publicResolver.getText(hostNode, nameNode, tldNode);
+      expect(getText).to.equal(dummyText);
+      expect(getHostText).to.equal("Test Set Text Record OverWrite");
+      expect(error).to.equal(true)
     });
   });
   describe("Set Typed Text Record", function () {
