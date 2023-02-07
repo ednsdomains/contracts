@@ -212,4 +212,6 @@ interface IRegistry {
     bytes memory name,
     bytes memory tld
   ) external returns (uint256);
+
+  function getError() external view returns (bytes memory);
 }

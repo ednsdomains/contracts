@@ -275,27 +275,23 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 
     if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
       const data = await getContractsData(NetworkConfig[network].chainId);
+      const _remoteChain = NetworkConfig[network].chain;
 
-      if (NetworkConfig[network].chain) {
-        const _lzChainId_ = await input.contracts.LayerZeroProvider.getChainId(NetworkConfig[network].chain!);
-        const _lzChainId = NetworkConfig[network].layerzero?.chainId;
+      if (_remoteChain) {
+        const _onchainRemoteChainId = await input.contracts.LayerZeroProvider.getChainId(_remoteChain);
+        const _remoteLzChainId = NetworkConfig[network].layerzero?.chainId;
 
-        if (_lzChainId && _lzChainId_ !== _lzChainId) {
-          const tx = await input.contracts.LayerZeroProvider.setChainId(NetworkConfig[network].chain!, _lzChainId);
+        if (_remoteLzChainId && _onchainRemoteChainId !== _remoteLzChainId) {
+          const tx = await input.contracts.LayerZeroProvider.setChainId(_remoteChain, _remoteLzChainId);
           await tx.wait();
           txs.push(tx);
         }
 
-        if (data && data.addresses.LayerZeroProvider && _lzChainId) {
-          const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(
-            _lzChainId,
-            ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]),
-          );
+        if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
+          const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);
+          const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
           if (!isTrustedRemote) {
-            const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(
-              _lzChainId,
-              ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]),
-            );
+            const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
             await tx.wait();
             txs.push(tx);
           }

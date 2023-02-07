@@ -14,7 +14,6 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   bytes32 public constant PROVIDER_ROLE = keccak256("PROVIDER_ROLE");
 
   mapping(CrossChainProvider.CrossChainProvider => address) private _providers;
-  mapping(bytes32 => bytes) private _errors;
 
   function initialize() public initializer {
     __Portal_init();
@@ -55,7 +54,6 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
       // do nothing
     } catch (bytes memory reason) {
       bytes32 id = keccak256(payload);
-      _errors[keccak256(payload)] = payload;
       emit ReceiverError(id, target, reason);
     }
   }

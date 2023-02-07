@@ -119,6 +119,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     require(ref_ == ref, "INVALID_REF");
 
     address dstBridge = getRemoteBridge(dstChain);
+    require(dstBridge != address(0), "INVALID_BRIDGE");
 
     bytes memory payload = abi.encode(dstBridge, ref);
 

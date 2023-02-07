@@ -12,11 +12,15 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
   uint256 public constant FUNCTION_TYPE_SEND = 1;
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
+  event MessageFailedReason(bytes reason);
+
   bool public useCustomAdapterParams;
 
   IPortal private _portal;
 
   mapping(Chain.Chain => uint16) private _chainIds;
+
+  mapping(bytes32 => bytes) public reasons;
 
   function initialize(address _lzEndpoint, IPortal portal) public initializer {
     __LayerZeroProvider_init(_lzEndpoint, portal);
@@ -47,7 +51,13 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
     bytes calldata _payload
   ) internal override {
     emit Received(_srcChainId, _srcAddress, _payload, _nonce);
-    _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
+    try _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload) {
+      // do nothing
+    } catch (bytes memory reason) {
+      bytes32 payloadHash = keccak256(_payload);
+      reasons[payloadHash] = reason;
+      emit MessageFailedReason(reason);
+    }
   }
 
   function send(

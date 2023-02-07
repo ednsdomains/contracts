@@ -10,6 +10,7 @@ async function main() {
     for (const contract in data.addresses) {
       try {
         if (data.addresses[contract]) {
+          console.log(`Verifying ${contract}...`);
           await hre.run("verify:verify", {
             address: data.addresses[contract],
           });

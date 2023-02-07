@@ -31,6 +31,8 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   mapping(bytes32 => TldRecord.TldRecord) internal _records;
   mapping(uint256 => TokenRecord.TokenRecord) internal _tokenRecords;
 
+  bytes private _error;
+
   /* ========== Helper ==========*/
 
   modifier onlyWrapper(bytes32 tld) {
@@ -386,21 +388,21 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function _remove(bytes32 tld) internal {
-    emit RemoveTld(_records[tld].name);
-    delete _records[tld];
-    delete _tokenRecords[getTokenId(_records[tld].name)];
     if (_records[tld].wrapper.enable) {
       IWrapper(_records[tld].wrapper.address_).burn(getTokenId(_records[tld].name));
     }
+    emit RemoveTld(_records[tld].name);
+    delete _records[tld];
+    delete _tokenRecords[getTokenId(_records[tld].name)];
   }
 
   function _remove(bytes32 name, bytes32 tld) internal {
-    emit RemoveDomain(_join(_records[tld].domains[name].name, _records[tld].name));
-    delete _records[tld].domains[name];
-    delete _tokenRecords[getTokenId(_records[tld].domains[name].name, _records[tld].name)];
     if (_records[tld].wrapper.enable) {
       IWrapper(_records[tld].wrapper.address_).burn(getTokenId(_records[tld].domains[name].name, _records[tld].name));
     }
+    emit RemoveDomain(_join(_records[tld].domains[name].name, _records[tld].name));
+    delete _records[tld].domains[name];
+    delete _tokenRecords[getTokenId(_records[tld].domains[name].name, _records[tld].name)];
   }
 
   function _remove(
@@ -577,6 +579,10 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes memory tld
   ) public pure virtual returns (uint256) {
     return uint256(keccak256(_join(host, name_, tld)));
+  }
+
+  function getError() public view returns (bytes memory) {
+    return _error;
   }
 
   /* ========== UUPS ==========*/
