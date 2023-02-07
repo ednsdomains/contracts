@@ -72,4 +72,6 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     _registrar.renew(name, tld, expiry);
     _token.transferFrom(_msgSender(), address(_root), price);
   }
+
+  uint256[50] private __gap;
 }

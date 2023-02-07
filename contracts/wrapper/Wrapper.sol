@@ -307,4 +307,6 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
       interfaceID == type(IERC4907).interfaceId ||
       super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

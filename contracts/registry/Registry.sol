@@ -592,4 +592,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return interfaceID == type(IRegistry).interfaceId || super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

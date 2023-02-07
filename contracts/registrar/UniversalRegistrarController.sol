@@ -70,4 +70,6 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
   ) public pure {
     revert("FORBIDDEN");
   }
+
+  uint256[50] private __gap;
 }

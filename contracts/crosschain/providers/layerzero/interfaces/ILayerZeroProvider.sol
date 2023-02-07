@@ -5,7 +5,7 @@ import "../../../../lib/Chain.sol";
 
 interface ILayerZeroProvider {
   event Sent(address indexed sender, uint16 indexed dstChainId, bytes indexed payload, uint64 nonce);
-  event Received(uint16 indexed srcChainId, bytes indexed srcAddress, bytes indexed payload, uint64 nonce);
+  event MessageReceived(uint16 indexed srcChainId, bytes indexed srcAddress, bytes indexed payload, uint64 nonce);
 
   function estimateFee(Chain.Chain _dstChain, bytes memory _payload) external view returns (uint256);
 

@@ -69,6 +69,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
       ref := mload(add(payload, 32))
     }
     _receivedRequest[ref] = true;
+    emit Received(ref);
   }
 
   function getRef(
@@ -94,7 +95,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     address dstBridge = getRemoteBridge(dstChain);
     require(dstBridge != address(0x0), "DST_BRIDGE_MISSING");
 
-    bytes memory payload = abi.encode(dstBridge, ref);
+    bytes memory payload = abi.encode(dstBridge, abi.encodePacked(ref));
 
     return _portal.estimateFee(dstChain, provider, payload);
   }
@@ -121,7 +122,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     address dstBridge = getRemoteBridge(dstChain);
     require(dstBridge != address(0), "INVALID_BRIDGE");
 
-    bytes memory payload = abi.encode(dstBridge, ref);
+    bytes memory payload = abi.encode(dstBridge, abi.encodePacked(ref));
 
     _portal.send{ value: msg.value }(payable(_msgSender()), dstChain, provider, payload);
 
@@ -187,6 +188,12 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     return _nonces[_msgSender()];
   }
 
+  function isReceived(bytes32 ref) public view returns (bool) {
+    return _receivedRequest[ref];
+  }
+
   /* ========== UUPS ==========*/
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
+  uint256[50] private __gap;
 }

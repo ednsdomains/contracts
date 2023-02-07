@@ -199,7 +199,7 @@ export const setupPortal = async (input: ISetupInput) => {
 
   const txs: Transaction[] = [];
 
-  if ((await input.contracts.Portal.getProvider(CrossChainProvider.LAYERZERO)) === ZERO_ADDRESS) {
+  if ((await input.contracts.Portal.getProvider(CrossChainProvider.LAYERZERO)) !== input.contracts.LayerZeroProvider.address) {
     const tx = await input.contracts.Portal.setProvider(CrossChainProvider.LAYERZERO, input.contracts.LayerZeroProvider.address);
     await tx.wait();
     txs.push(tx);
@@ -210,6 +210,7 @@ export const setupPortal = async (input: ISetupInput) => {
     await tx.wait();
     txs.push(tx);
   }
+
   if (!(await input.contracts.Portal.hasRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Bridge.address))) {
     const tx = await input.contracts.Portal.grantRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Bridge.address);
     await tx.wait();

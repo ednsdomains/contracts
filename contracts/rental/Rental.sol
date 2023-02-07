@@ -81,4 +81,6 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
+  uint256[50] private __gap;
 }

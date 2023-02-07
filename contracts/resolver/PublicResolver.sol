@@ -28,4 +28,6 @@ contract PublicResolver is IPublicResolver, AddressResolver, MultiCoinAddressRes
   function supportsInterface(bytes4 interfaceID) public view override(AddressResolver, MultiCoinAddressResolver, NFTResolver, TextResolver, TypedTextResolver) returns (bool) {
     return interfaceID == type(IPublicResolver).interfaceId || super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

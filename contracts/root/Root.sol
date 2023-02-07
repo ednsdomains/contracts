@@ -105,4 +105,6 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return interfaceID == type(IRoot).interfaceId || super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

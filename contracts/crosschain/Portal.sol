@@ -80,4 +80,6 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
 
   /* ========== UUPS ==========*/
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
+  uint256[50] private __gap;
 }

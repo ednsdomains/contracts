@@ -29,16 +29,6 @@ interface IBridge is IReceiver {
     uint64 expiry;
   }
 
-  function getRef(
-    uint256 nonce,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
-    bytes32 name,
-    bytes32 tld,
-    address owner,
-    uint64 expiry
-  ) external view returns (bytes32);
-
   function estimateFee(
     Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
@@ -75,4 +65,16 @@ interface IBridge is IReceiver {
   function setRemoteBridge(Chain.Chain chain, address target) external;
 
   function getNonce() external view returns (uint256);
+
+  function getRef(
+    uint256 nonce,
+    Chain.Chain dstChain,
+    CrossChainProvider.CrossChainProvider provider,
+    bytes32 name,
+    bytes32 tld,
+    address owner,
+    uint64 expiry
+  ) external view returns (bytes32);
+
+  function isReceived(bytes32 ref) external view returns (bool);
 }

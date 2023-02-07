@@ -24,7 +24,7 @@
       "UniversalRegistrarController": "0xE799146B5e66eaD18aD8A10736C078Ef8366DeB5",
       "Portal": "0x8AC76De4cEC2B29Ba7356F4a7b9A5963fe3BfAb1",
       "Bridge": "0x9c2064a6910490c72146fe7FaD6871486f6655D4",
-      "LayerZeroProvider": "0x048b9e64Ef676EAD199904dd7FB675A2Bf7142F3"
+      "LayerZeroProvider": "0xD6175D85764eD66A0dc7484c908D837C2f2AF387"
     }
   },
   {
@@ -40,7 +40,7 @@
       "UniversalRegistrarController": "0xa5Fe6127fdec518D08f5aE98cf839Ac5110DB8FE",
       "Portal": "0x3E56F456e27A44140a77Af8545dA57a3A28cB872",
       "Bridge": "0x8633815ce23251c12375d5Ce3bcb4E29344502EB",
-      "LayerZeroProvider": "0xBc3b617C61B6b5B9c5678eF9BfE3218EEfA26D85"
+      "LayerZeroProvider": "0x5fF8300E10A4203a79dCcbA0bC263456a8fD05EA"
     }
   }
 ]

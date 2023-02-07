@@ -19,8 +19,9 @@ abstract contract NonblockingLayerZeroApp is Initializable, LayerZeroApp {
   }
 
   mapping(uint16 => mapping(bytes => mapping(uint64 => bytes32))) public failedMessages;
+  mapping(uint16 => mapping(bytes => mapping(uint64 => bytes))) public failedMessageReasons;
 
-  event MessageFailed(uint16 _srcChainId, bytes _srcAddress, uint64 _nonce, bytes _payload);
+  event MessageFailed(uint16 _srcChainId, bytes _srcAddress, uint64 _nonce, bytes _payload, bytes _resaon);
 
   // overriding the virtual function in LzReceiver
   function _blockingLzReceive(
@@ -32,10 +33,11 @@ abstract contract NonblockingLayerZeroApp is Initializable, LayerZeroApp {
     // try-catch all errors/exceptions
     try this.nonblockingLzReceive(_srcChainId, _srcAddress, _nonce, _payload) {
       // do nothing
-    } catch {
+    } catch (bytes memory _reason) {
       // error / exception
       failedMessages[_srcChainId][_srcAddress][_nonce] = keccak256(_payload);
-      emit MessageFailed(_srcChainId, _srcAddress, _nonce, _payload);
+      failedMessageReasons[_srcChainId][_srcAddress][_nonce] = _reason;
+      emit MessageFailed(_srcChainId, _srcAddress, _nonce, _payload, _reason);
     }
   }
 
@@ -79,5 +81,5 @@ abstract contract NonblockingLayerZeroApp is Initializable, LayerZeroApp {
    * variables without shifting down storage in the inheritance chain.
    * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
    */
-  uint256[50] private __gap;
+  uint256[49] private __gap;
 }
