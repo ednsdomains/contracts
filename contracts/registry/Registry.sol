@@ -386,6 +386,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function _remove(bytes32 tld) internal {
+    emit RemoveTld(_records[tld].name);
     delete _records[tld];
     delete _tokenRecords[getTokenId(_records[tld].name)];
     if (_records[tld].wrapper.enable) {
@@ -394,7 +395,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function _remove(bytes32 name, bytes32 tld) internal {
-    // require(getExpiry(name, tld) < block.timestamp, "DOMAIN_STILL_ALIVE");
+    emit RemoveDomain(_join(_records[tld].domains[name].name, _records[tld].name));
     delete _records[tld].domains[name];
     delete _tokenRecords[getTokenId(_records[tld].domains[name].name, _records[tld].name)];
     if (_records[tld].wrapper.enable) {
@@ -407,13 +408,12 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 name,
     bytes32 tld
   ) internal {
-    // require(isExists(host, name, tld) && getUser(host, name, tld) == getOwner(name, tld), "HOST_USER_NOT_OWNER"); // TODO:
+    emit RemoveHost(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
     delete _records[tld].domains[name].hosts[host];
     delete _tokenRecords[getTokenId(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name)];
     if (_records[tld].wrapper.enable) {
       IWrapper(_records[tld].wrapper.address_).burn(getTokenId(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
     }
-    emit RemoveHost(_join(_records[tld].domains[name].hosts[host].name, _records[tld].domains[name].name, _records[tld].name));
   }
 
   function prune(bytes32 name, bytes32 tld) public onlyDomainOwner(name, tld) onlyLiveDomain(name, tld) {}

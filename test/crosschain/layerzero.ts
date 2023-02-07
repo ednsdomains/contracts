@@ -10,86 +10,94 @@ async function main() {
   // const [_signer] = await ethers.getSigners();
   const _signer = new Wallet(process.env.PRIVATE_KEY!);
 
-  const name = "abcdefg123456789abcdefg123456789abcdef";
+  const name = "hello-world-3";
   const tld = "_universal";
 
+  // ===== Avalanche ===== //
+  const AvalancheProvider = new ethers.providers.JsonRpcProvider("https://api.avax-test.network/ext/bc/C/rpc	");
+  const AvalancheFeeData = await AvalancheProvider.getFeeData();
+  const AvalancheSigner = _signer.connect(AvalancheProvider);
+  const AvalancheContracts = await getContracts(AvalancheSigner);
+  if (!AvalancheContracts.Bridge || !AvalancheContracts.UniversalRegistrarController || !AvalancheContracts.Registry) throw new Error();
+
   // ===== Polygon ===== //
-  const PolygonProvider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/polygon_mumbai");
+  const PolygonProvider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com/");
   const PolygonSigner = _signer.connect(PolygonProvider);
   const PolygonContracts = await getContracts(PolygonSigner);
-  if (!PolygonContracts.Bridge || !PolygonContracts.UniversalRegistrarController || !PolygonContracts.Registry) throw new Error();
+  if (!PolygonContracts.Bridge || !PolygonContracts.UniversalRegistrarController) throw new Error();
 
-  // ===== Avalanche ===== //
-  // const AvalancheProvider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/avalanche_fuji");
-  // const AvalancheSigner = _signer.connect(AvalancheProvider);
-  // const AvalancheContracts = await getContracts(AvalancheSigner);
-  // if (!AvalancheContracts.Bridge || !AvalancheContracts.UniversalRegistrarController) throw new Error();
-
-  // Register Domain in Polygon
-  // console.log("Registering domain in Polygon...");
-  // const tx1 = await PolygonContracts.UniversalRegistrarController["register(bytes,bytes,address,uint64)"](
+  // Register Domain in Avalanche
+  // console.log("Registering domain in Avalanche...");
+  // const tx1 = await AvalancheContracts.UniversalRegistrarController["register(bytes,bytes,address,uint64)"](
   //   ethers.utils.toUtf8Bytes(name),
   //   ethers.utils.toUtf8Bytes(tld),
   //   _signer.address,
   //   luxon.DateTime.now().plus({ day: 1 }).toSeconds().toFixed(0),
+  //   {
+  //     type: 2,
+  //     maxFeePerGas: AvalancheFeeData.maxFeePerGas || undefined,
+  //     maxPriorityFeePerGas: AvalancheFeeData.maxPriorityFeePerGas || undefined,
+  //   },
   // );
   // await tx1.wait();
   // console.log("tx1+", tx1.hash);
+
+  // const lzChainId = await AvalancheContracts.LayerZeroProvider?.getChainId(InContractChain.POLYGON);
+  // console.log({ lzChainId });
 
   console.log(`Sending bridge request...`);
   const _name_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(name));
   const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld));
 
-  const lzChainId = await PolygonContracts.LayerZeroProvider?.getChainId(InContractChain.AVALANCHE);
-  console.log(`lzChainId: ${lzChainId}`);
-  if (!lzChainId) throw new Error("lzChainId undefined");
-
-  console.log("LzProvider");
-  await PolygonContracts.LayerZeroProvider?.estimateFee(InContractChain.AVALANCHE, ethers.utils.defaultAbiCoder.encode(["string"], ["hello world"]));
-
-  console.log("Portal");
-  await PolygonContracts.Portal?.estimateFee(CrossChainProvider.LAYERZERO, CrossChainProvider.LAYERZERO, ethers.utils.defaultAbiCoder.encode(["string"], ["hello world"]));
-
-  const fee = await PolygonContracts.Bridge.estimateFee(InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, _name_, _tld_);
+  const fee = await AvalancheContracts.Bridge.estimateFee(InContractChain.POLYGON, CrossChainProvider.LAYERZERO, _name_, _tld_);
   console.log({ fee: ethers.utils.formatEther(fee) });
-  if ((await PolygonSigner.getBalance()).lt(fee)) throw new Error("Insufficient funds");
+  if ((await AvalancheSigner.getBalance()).lt(fee)) throw new Error("Insufficient funds");
 
-  const nonce = await PolygonContracts.Bridge.getNonce();
+  const nonce = await AvalancheContracts.Bridge.getNonce();
   console.log({ nonce });
 
-  const ref = await PolygonContracts.Bridge.getRef(
+  const ref = await AvalancheContracts.Bridge.getRef(
     nonce,
-    InContractChain.AVALANCHE,
+    InContractChain.POLYGON,
     CrossChainProvider.LAYERZERO,
     _name_,
     _tld_,
-    await PolygonContracts.Registry["getOwner(bytes32,bytes32)"](_name_, _tld_),
-    await PolygonContracts.Registry["getExpiry(bytes32,bytes32)"](_name_, _tld_),
+    await AvalancheContracts.Registry["getOwner(bytes32,bytes32)"](_name_, _tld_),
+    await AvalancheContracts.Registry["getExpiry(bytes32,bytes32)"](_name_, _tld_),
   );
   console.log({ ref });
 
-  // if (PolygonContracts.Portal) {
-  //   if (!(await PolygonContracts.Portal.hasRole(await PolygonContracts.Portal.SENDER_ROLE(), PolygonSigner.address))) {
-  //     const tx3 = await PolygonContracts.Portal.grantRole(await PolygonContracts.Portal.SENDER_ROLE(), PolygonSigner.address);
-  //     await tx3.wait();
-  //   }
-  //   const fee = await PolygonContracts.Portal.estimateFee(InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, ethers.utils.toUtf8Bytes("hello world"));
-  //   console.log({ fee: ethers.utils.formatEther(fee) });
+  if (AvalancheContracts.Portal) {
+    if (!(await AvalancheContracts.Portal.hasRole(await AvalancheContracts.Portal.SENDER_ROLE(), _signer.address))) {
+      const tx = await AvalancheContracts.Portal.grantRole(await AvalancheContracts.Portal.SENDER_ROLE(), _signer.address);
+      await tx.wait();
+    }
+    const _fee = await AvalancheContracts.Portal.estimateFee(
+      InContractChain.POLYGON,
+      CrossChainProvider.LAYERZERO,
+      ethers.utils.defaultAbiCoder.encode(["address", "bytes32"], [PolygonContracts.Bridge.address, ref]),
+    );
+    console.log({ _fee: ethers.utils.formatEther(_fee) });
+    const tx = await AvalancheContracts.Portal.send(
+      _signer.address,
+      InContractChain.POLYGON,
+      CrossChainProvider.LAYERZERO,
+      ethers.utils.defaultAbiCoder.encode(["address", "bytes32"], [PolygonContracts.Bridge.address, ref]),
+      { value: _fee },
+    );
+    await tx.wait();
+    console.log(tx.hash);
+  }
 
-  //   console.log(await PolygonContracts.Portal.getProvider(CrossChainProvider.LAYERZERO));
-
-  //   const tx4 = await PolygonContracts.Portal.send(PolygonSigner.address, InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, ethers.utils.toUtf8Bytes("hello world"), {
+  // try {
+  //   const tx2 = await AvalancheContracts.Bridge.bridge(nonce, ref, InContractChain.POLYGON, CrossChainProvider.LAYERZERO, _name_, _tld_, {
   //     value: fee,
   //   });
-  //   await tx4.wait();
-  //   console.log(tx4.hash);
+  //   await tx2.wait();
+  //   console.log("tx2+", tx2.hash);
+  // } catch (err) {
+  //   console.error(err);
   // }
-
-  const tx2 = await PolygonContracts.Bridge.bridge(nonce, ref, InContractChain.AVALANCHE, CrossChainProvider.LAYERZERO, _name_, _tld_, {
-    value: fee,
-  });
-  await tx2.wait();
-  console.log("tx2+", tx2.hash);
 
   // console.log(`Accepting bridge request...`);
   // const tx3 = await AvalancheContracts.Bridge.accept(
@@ -99,8 +107,8 @@ async function main() {
   //   CrossChainProvider.LAYERZERO,
   //   ethers.utils.toUtf8Bytes(name),
   //   ethers.utils.toUtf8Bytes(tld),
-  //   await PolygonContracts.Registry["getOwner(bytes32,bytes32)"](ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld)),
-  //   await PolygonContracts.Registry["getExpiry(bytes32,bytes32)"](ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld)),
+  //   await AvalancheContracts.Registry["getOwner(bytes32,bytes32)"](ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld)),
+  //   await AvalancheContracts.Registry["getExpiry(bytes32,bytes32)"](ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld)),
   // );
   // await tx3.wait();
 }

@@ -15,13 +15,15 @@ interface IRegistry {
 
   event SetResolver(bytes fqdn, address newResolver);
   event SetOperator(bytes fqdn, address operator, bool approved);
-  event SetWrapper(bytes fqdn, address address_, bool enable);
+  event SetWrapper(bytes tld, address address_, bool enable);
   event SetUser(bytes fqdn, address newUser, uint64 expiry);
   event SetOwner(bytes fqdn, address owner);
   event SetEnable(bytes fqdn, bool enable);
   event SetExpiry(bytes fqdn, uint64 expiry);
 
   event RemoveHost(bytes fqdn);
+  event RemoveDomain(bytes fqdn);
+  event RemoveTld(bytes fqdn);
 
   /* ========== Mutative ==========*/
   function setRecord(

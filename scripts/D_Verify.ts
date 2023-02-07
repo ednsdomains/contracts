@@ -8,11 +8,15 @@ async function main() {
   const data = await getContractsData(chainId);
   if (data) {
     for (const contract in data.addresses) {
-      if (data.addresses[contract]) {
-        await hre.run("verify:verify", {
-          address: data.addresses[contract],
-        });
-        await delay(1000);
+      try {
+        if (data.addresses[contract]) {
+          await hre.run("verify:verify", {
+            address: data.addresses[contract],
+          });
+          await delay(1000);
+        }
+      } catch (error) {
+        // nothing
       }
     }
   }

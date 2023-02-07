@@ -25,10 +25,10 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
   function __LayerZeroProvider_init(address _lzEndpoint, IPortal portal) internal onlyInitializing {
     __Ownable_init();
     __LayerZeroProvider_init_unchained(_lzEndpoint, portal);
+    __NonblockingLayerZeroApp_init_unchained(_lzEndpoint);
   }
 
   function __LayerZeroProvider_init_unchained(address _lzEndpoint, IPortal portal) internal onlyInitializing {
-    __NonblockingLayerZeroApp_init_unchained(_lzEndpoint);
     _portal = portal;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());

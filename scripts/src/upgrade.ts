@@ -101,8 +101,8 @@ const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: 
   } else {
     console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
   }
-  console.log(`Upgrade procedure initiated, contract [${name}] will be upgrade on [${NetworkConfig[chainId].name}] in 10 seconds...`);
-  await delay(10000);
+  console.log(`Upgrade procedure initiated, contract [${name}] will be upgrade on [${NetworkConfig[chainId].name}] in 5 seconds...`);
+  await delay(5000);
 };
 
 const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName, contract: Contract) => {
