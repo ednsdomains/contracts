@@ -2,8 +2,6 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers, upgrades } from "hardhat";
 import { Registry, Registry__factory } from "../../../typechain";
 
-
-
 export const deployRegistry = async (signer2: SignerWithAddress): Promise<[Registry, Registry]> => {
   const RegistryFactory = await ethers.getContractFactory("Registry");
   const _registry = await upgrades.deployProxy(RegistryFactory, { kind: "uups" });

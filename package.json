@@ -1,10 +1,9 @@
 {
   "name": "edns-contracts",
   "scripts": {
-    "eth:compile": "hardhat compile",
-    "tron:compile": "tronbox compile",
+    "compile": "hardhat compile",
     "prettier": "prettier --write contracts/**/*.sol scripts/**/*.ts test/**/*.ts",
-    "test": "npx hardhat test ./test/fullTest.ts"
+    "test": "hardhat test ./test/fullTest.ts"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.4.1",
