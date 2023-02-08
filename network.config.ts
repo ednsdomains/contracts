@@ -151,7 +151,7 @@ const config: INetworkConfig = {
     chain: InContractChain.BNB,
     name: "BNB Chain",
     symbol: "BNB",
-    url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 714,
     },
@@ -175,7 +175,7 @@ const config: INetworkConfig = {
     chain: InContractChain.BNB,
     name: "BNB Chain Testnet",
     symbol: "tBNB",
-    url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/testnet/`,
     slip44: {
       coinId: 714,
     },
@@ -199,7 +199,7 @@ const config: INetworkConfig = {
     chain: InContractChain.AVALANCHE,
     name: "Avalanche C-Chain",
     symbol: "AVAX",
-    url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    url: `https://avalanche-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 9005,
     },
@@ -223,7 +223,7 @@ const config: INetworkConfig = {
     chain: InContractChain.AVALANCHE,
     name: "Avalanche Fuji",
     symbol: "AVAX",
-    url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    url: `https://avalanche-fuji.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 9005,
     },
@@ -343,7 +343,7 @@ const config: INetworkConfig = {
     chain: InContractChain.OPTIMISM,
     name: "Optimism",
     symbol: "ETH",
-    url: `https://optimism-arbitrum.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: `https://optimism-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     slip44: {
       coinId: 614,
     },
@@ -391,7 +391,7 @@ const config: INetworkConfig = {
     chain: InContractChain.FANTOM,
     name: "Fantom",
     symbol: "FTM",
-    url: `https://ftm.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    url: `https://ftm.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1007,
     },
@@ -415,7 +415,7 @@ const config: INetworkConfig = {
     chain: InContractChain.FANTOM,
     name: "Fantom testnet",
     symbol: "FTM",
-    url: `https://rpc.testnet.fantom.network/`,
+    url: `https://rpc.ankr.com/fantom_testnet`,
     slip44: {
       coinId: 1007,
     },
@@ -450,7 +450,7 @@ const config: INetworkConfig = {
     chain: InContractChain.IOTEX,
     name: "IoTeX Mainnet",
     symbol: "IOTX",
-    url: `https://babel-api.mainnet.iotex.io`,
+    url: `https://rpc.ankr.com/iotex`,
     slip44: {
       coinId: 304,
     },
@@ -492,7 +492,7 @@ const config: INetworkConfig = {
     chainId: Network.KCC,
     name: "KCC Mainnet",
     symbol: "KCS",
-    url: `https://rpc-mainnet.kcc.network	`,
+    url: `https://kcc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 641,
     },

@@ -81,7 +81,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     } else if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN || _tokenRecord.type_ == RecordType.RecordType.HOST) {
       return _registry.getOwner(_tokenRecord.domain, _tokenRecord.tld);
     } else {
-      revert(""); // TODO:
+      revert("INVALID_ENUM");
     }
   }
 
@@ -104,7 +104,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     } else if (_tokenRecord.type_ != RecordType.RecordType.DOMAIN) {
       _registry.setOwner(_tokenRecord.domain, _tokenRecord.tld, to);
     } else {
-      revert(""); // TODO:
+      revert("INVALID_ENUM");
     }
   }
 
@@ -270,7 +270,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
       _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
     } else {
-      revert(""); // TODO:
+      revert("INVALID_ENUM");
     }
     emit UpdateUser(tokenId, user, expiry);
   }
@@ -282,8 +282,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
       return _registry.getUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
-      revert(""); // TODO:
-    }
+      revert("INVALID_ENUM"); 
   }
 
   function userExpiry(uint256 tokenId) public view returns (uint256) {
@@ -293,7 +292,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
       return _registry.getUserExpiry(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
-      revert(""); // TODO:
+      revert("INVALID_ENUM");
     }
   }
 

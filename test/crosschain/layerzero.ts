@@ -87,7 +87,7 @@ async function main() {
   // const tx3 = await PolygonContracts.Bridge.accept(
   //   11,
   //   "0xfd0482619b9793e306b88ad44e48c06625267154bfb43e053d2030e7fd38c24f",
-  //   InContractChain.AVALANCHE,
+  //   InContractChain.POLYGON,
   //   CrossChainProvider.LAYERZERO,
   //   ethers.utils.toUtf8Bytes(name),
   //   ethers.utils.toUtf8Bytes(tld),

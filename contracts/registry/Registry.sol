@@ -9,7 +9,6 @@ import "./interfaces/IRegistry.sol";
 import "../lib/TldClass.sol";
 import "../wrapper/interfaces/IWrapper.sol";
 import "../lib/UserRecord.sol";
-import "hardhat/console.sol";
 
 contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
   using AddressUpgradeable for address;
@@ -89,7 +88,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   modifier onlyLiveDomain(bytes32 name, bytes32 tld) {
-    require(isLive(name, tld), "is Live"); // TODO:
+    require(isLive(name, tld), "DOMAIN_EXPIRED");
     _;
   }
 
@@ -317,7 +316,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     if (expiry == 0) {
       _records[tld].domains[name].user.expiry = getExpiry(name, tld);
     } else {
-      require(expiry <= getExpiry(name, tld), ""); // TODO:
+      require(expiry <= getExpiry(name, tld), "DOMAIN_OVERFLOW");
       _records[tld].domains[name].user.expiry = expiry;
     }
     emit SetUser(_join(_records[tld].domains[name].name, _records[tld].name), user, expiry);
@@ -346,7 +345,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     if (expiry == 0) {
       _records[tld].domains[name].hosts[host].user.expiry = getExpiry(name, tld);
     } else {
-      require(expiry <= getExpiry(name, tld), ""); // TODO:
+      require(expiry <= getExpiry(name, tld), "DOMAIN_OVERFLOW");
       _records[tld].domains[name].hosts[host].user.expiry = expiry;
     }
     _records[tld].domains[name].hosts[host].user.user = newUser;
@@ -354,7 +353,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   function setExpiry(bytes32 tld, uint64 expiry) public onlyRole(ROOT_ROLE) {
-    require(expiry > _records[tld].expiry && expiry > block.timestamp, ""); // TODO:
+    require(expiry > _records[tld].expiry && expiry > block.timestamp, "INVALID_EXPIRY");
     _records[tld].expiry = expiry;
     emit SetExpiry(_records[tld].name, expiry);
   }
@@ -364,8 +363,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes32 tld,
     uint64 expiry
   ) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
-    require(expiry > _records[tld].domains[name].expiry && expiry > block.timestamp, ""); // TODO:
-    _records[tld].domains[name].expiry = expiry;
+    require(expiry > _records[tld].domains[name].expiry && expiry > block.timestamp, "INVALID_EXPIRY");
     emit SetExpiry(_join(_records[tld].domains[name].name, _records[tld].name), expiry);
   }
 

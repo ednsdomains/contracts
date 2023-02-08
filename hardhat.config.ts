@@ -57,9 +57,9 @@ const config: HardhatUserConfig = {
       chainId: 10,
       url: `https://optimism-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    optimisim_kovan: {
-      chainId: 69,
-      url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    optimisim_goerli: {
+      chainId: 420,
+      url: `https://optimism-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Polygon
     polygon: {
@@ -75,9 +75,9 @@ const config: HardhatUserConfig = {
       chainId: 42161,
       url: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    arbitrum_rinkeby: {
-      chainId: 421611,
-      url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    arbitrum_goerli: {
+      chainId: 421613,
+      url: `https://arbitrum-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Avalanche
     avalanche: {

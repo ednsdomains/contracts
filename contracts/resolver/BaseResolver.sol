@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IPublicResolverSynchronizer.sol";
-import "hardhat/console.sol";
 
 abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -51,34 +50,9 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes32 host_ = keccak256(host);
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-
     return
       (_registry.getUser(host_, name_, tld_) == _msgSender() || _registry.isOperator(host_, name_, tld_, _msgSender())) &&
       _registry.getUserExpiry(host_, name_, tld_) >= block.timestamp;
-
-    // if (_registry.getUser(host_, domain_, tld_) == _registry.getOwner(domain_, tld_)) {
-    //   return
-    //     _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(domain_, tld_, _msgSender()) || _registry.isOperator(host_, domain_, tld_, _msgSender());
-    // } else {
-    //   //If SubDomain haven't user, owner able to setRecord
-    //   //TODO-SubDomain-Only-User-Or-Operator
-    //   if (_registry.getUser(host_, domain_, tld_) == address(0) && _registry.getOwner(domain_, tld_) == _msgSender()) {
-    //     return true;
-    //   } else {
-    //     return _msgSender() == _registry.getUser(host_, domain_, tld_) || _registry.isOperator(host_, domain_, tld_, _msgSender());
-    //   }
-    // }
-    //    if (host_ == AT) {
-    //      console.log("HOST IS AT");
-    //      return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
-    //    } else {
-    //      console.log(_registry.isExists(host_, domain_, tld_));
-    //      if (!_registry.isExists(host_, domain_, tld_)) {
-    //        return _registry.getUser(domain_, tld_) == _msgSender() || _registry.isOperator(domain_, tld_, _msgSender());
-    //      } else {
-    //        return _registry.getUser(host_, domain_, tld_) == _msgSender() || _registry.isOperator(host_, domain_, tld_, _msgSender());
-    //      }
-    //    }
   }
 
   function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
