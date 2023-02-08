@@ -11,6 +11,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
+import "hardhat/console.sol";
 
 contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
@@ -99,9 +100,11 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     }
     emit Transfer(from, to, tokenId);
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.type_ != RecordType.RecordType.TLD) {
+    if (_tokenRecord.type_ == RecordType.RecordType.TLD) {
+      console.log("tld");
       _registry.setOwner(_tokenRecord.tld, to);
-    } else if (_tokenRecord.type_ != RecordType.RecordType.DOMAIN) {
+    } else if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
+      console.log("domain");
       _registry.setOwner(_tokenRecord.domain, _tokenRecord.tld, to);
     } else {
       revert(""); // TODO:

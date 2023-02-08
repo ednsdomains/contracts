@@ -248,6 +248,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
   function setOwner(bytes32 tld, address owner_) public onlyTldOwnerOrWrapper(tld) {
     require(isExists(tld), "TLD_NOT_EXIST");
+    console.log("Set Owner Registry - TLD");
     _records[tld].owner = owner_;
 
     emit SetOwner(_records[tld].name, owner_);
@@ -260,7 +261,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyDomainOwnerOrWrapper(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].owner = newOwner;
-
+    console.log("Set Owner Registry - Domain");
     emit SetOwner(_join(_records[tld].domains[name].name, _records[tld].name), newOwner);
   }
 
