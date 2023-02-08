@@ -23,7 +23,7 @@ jobs:
           cache: "npm"
 
       - name: Installing dependencies
-        run: npm ci --only=production
+        run: npm install
 
       - name: Compile and create artifacts
         run: npm run compile
