@@ -5,6 +5,8 @@ import "./interfaces/IClassicalRegistrarController.sol";
 import "./BaseRegistrarController.sol";
 
 contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegistrarController {
+  using SafeERC20 for IERC20;
+
   function initialize(
     IERC20 token_,
     IRegistrar registrar_,
@@ -49,7 +51,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
     _registrar.register(name, tld, owner, expiry);
-    _token.transferFrom(_msgSender(), address(_root), price);
+    _token.safeTransferFrom(_msgSender(), address(_root), price);
   }
 
   function renew(
@@ -70,7 +72,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
     _registrar.renew(name, tld, expiry);
-    _token.transferFrom(_msgSender(), address(_root), price);
+    _token.safeTransferFrom(_msgSender(), address(_root), price);
   }
 
   uint256[50] private __gap;

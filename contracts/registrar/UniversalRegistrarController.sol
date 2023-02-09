@@ -8,6 +8,8 @@ import "./BaseRegistrarController.sol";
 import "../root/interfaces/IRoot.sol";
 
 contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegistrarController {
+  using SafeERC20 for IERC20;
+
   function initialize(
     IERC20 token_,
     IRegistrar registrar_,

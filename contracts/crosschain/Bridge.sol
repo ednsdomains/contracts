@@ -8,8 +8,9 @@ import "./interfaces/IPortal.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlUpgradeable {
+contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant TERMINATOR_ROLE = keccak256("TERMINATOR_ROLE");
 
@@ -40,6 +41,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     IPortal portal_
   ) internal onlyInitializing {
     __Bridge_init_unchained(selfChain, registry_, portal_);
+    __ReentrancyGuard_init_unchained();
   }
 
   function __Bridge_init_unchained(
@@ -107,7 +109,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     CrossChainProvider.CrossChainProvider provider,
     bytes32 name,
     bytes32 tld
-  ) external payable whenNotPaused {
+  ) external payable whenNotPaused nonReentrant {
     require(_selfChain != dstChain, "SELF_CHAIN");
 
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
@@ -13,6 +14,7 @@ import "../root/interfaces/IRoot.sol";
 
 abstract contract BaseRegistrarController is IBaseRegistrarController, AccessControlUpgradeable, UUPSUpgradeable, PausableUpgradeable, Helper {
   using ECDSAUpgradeable for bytes32;
+  using SafeERC20 for IERC20;
 
   IERC20 internal _token;
   IRegistrar internal _registrar;

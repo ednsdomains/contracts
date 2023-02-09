@@ -27,8 +27,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   mapping(bytes32 => TldRecord.TldRecord) internal _records;
   mapping(uint256 => TokenRecord.TokenRecord) internal _tokenRecords;
 
-  bytes private _error;
-
   /* ========== Helper ==========*/
 
   modifier onlyWrapper(bytes32 tld) {
@@ -573,10 +571,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bytes memory tld
   ) public pure virtual returns (uint256) {
     return uint256(keccak256(_join(host, name_, tld)));
-  }
-
-  function getError() public view returns (bytes memory) {
-    return _error;
   }
 
   /* ========== UUPS ==========*/
