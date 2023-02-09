@@ -316,11 +316,9 @@ describe("Classical Test", function () {
   describe("Transfer Domain", function () {
     it("Transfer Domain",async ()=>{
       const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode,tldNode)
-      // await use_registry["setOwner(bytes32,bytes32,address)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode),signerList[1].address)
       await use_defaultWrapper.transferFrom(signerList[0].address,signerList[1].address,tokenId)
       expect(await use_defaultWrapper.ownerOf(tokenId)).to.equal(signerList[1].address)
       expect(await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode))).to.equal(signerList[1].address)
-      // expect(await use_registry["getUser(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode))).to.equal(signerList[1].address)
     }) //  transfer -> setOwner at Wrapper and Registry. But not set user.
   });
 
