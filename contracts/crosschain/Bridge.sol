@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../lib/TldClass.sol";
@@ -111,7 +111,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     require(_selfChain != dstChain, "SELF_CHAIN");
 
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
-    require(_registry.getTldClass(tld) == TldClass.TldClass.UNIVERSAL, "ONLY_UNIVERSAL_TLD");
+    require(_registry.getTldClass(tld) == TldClass.TldClass.UNIVERSAL || _registry.getTldClass(tld) == TldClass.TldClass.OMNI, "ONLY_UNIVERSAL_OR_OMNI_TLD");
 
     uint256 nonce_ = _nonces[_msgSender()];
     require(nonce_ == nonce, "INVALID_NONCE");
@@ -124,7 +124,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
     bytes memory payload = abi.encode(dstBridge, abi.encodePacked(ref));
 
-    _portal.send{ value: msg.value }(payable(_msgSender()), dstChain, provider, payload);
+    _portal.send_{ value: msg.value }(payable(_msgSender()), dstChain, provider, payload);
 
     _bridgedRequests[ref] = BridgedRequest({
       dstChain: dstChain,
@@ -155,11 +155,13 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     require(_receivedRequest[ref] == true, "REF_NOT_FOUND");
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    bytes32 ref_ = getRef(nonce, srcChain, provider, name_, tld_, owner, expiry);
-    require(ref == ref_, "INVALID_REF");
-    require(_msgSender() == owner, "ONLY_OWNER");
 
-    _registry.setRecord(name, tld, owner, address(0x0), expiry);
+    if (!_registry.isExists(name_, tld_)) {
+      bytes32 ref_ = getRef(nonce, srcChain, provider, name_, tld_, owner, expiry);
+      require(ref == ref_, "INVALID_REF");
+      require(_msgSender() == owner, "ONLY_OWNER");
+      _registry.setRecord(name, tld, owner, address(0x0), expiry);
+    }
 
     _acceptedRequests[ref] = AcceptedRequest({ srcChain: srcChain, provider: provider, tld: tld_, name: name_, owner: owner, expiry: expiry });
 

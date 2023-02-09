@@ -120,7 +120,7 @@ async function main() {
   console.log("Start Avalanche to Polygon");
   const AvalancheFee = await AvalancheLayerZeroProvider.callStatic.estimateFees(10109, payload, ethers.utils.toUtf8Bytes(""));
   console.log("Avalanche Fee + ", ethers.utils.formatEther(AvalancheFee));
-  const tx1 = await AvalanchePortal.send(0, _signer.address, 10109, payload, { value: AvalancheFee });
+  const tx1 = await AvalanchePortal.send_(0, _signer.address, 10109, payload, { value: AvalancheFee });
   console.log(`Tx: ${tx1.hash}`);
   await tx1.wait();
   console.log(`Avalanche sent to Polygon through LayerZero.`);
@@ -129,7 +129,7 @@ async function main() {
   console.log("Start Polygon to Avalanche");
   const PolygonFee = await PolygonLayerZeroProvider.callStatic.estimateFees(10106, payload, ethers.utils.toUtf8Bytes(""));
   console.log("Polygon Fee + ", ethers.utils.formatEther(PolygonFee));
-  const tx2 = await PolygonPortal.send(0, _signer.address, 10106, payload, { value: PolygonFee });
+  const tx2 = await PolygonPortal.send_(0, _signer.address, 10106, payload, { value: PolygonFee });
   console.log(`Tx: ${tx2.hash}`);
   await tx2.wait();
   console.log(`Polygon sent to Avalanche through LayerZero.`);

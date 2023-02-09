@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../BaseResolver.sol";
@@ -74,4 +74,6 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
     return interfaceID == type(IAddressResolver).interfaceId || super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

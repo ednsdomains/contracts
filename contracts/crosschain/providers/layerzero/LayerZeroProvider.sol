@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -50,7 +50,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
     _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
   }
 
-  function send(
+  function send_(
     address payable _from,
     Chain.Chain _dstChain,
     bytes calldata _payload
@@ -80,4 +80,6 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   /* ========== UUPS ==========*/
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
+  uint256[50] private __gap;
 }

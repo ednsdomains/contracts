@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../BaseResolver.sol";
@@ -42,4 +42,6 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
   function supportsInterface(bytes4 interfaceID) public view virtual override returns (bool) {
     return interfaceID == type(TypedTextResolver).interfaceId || super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

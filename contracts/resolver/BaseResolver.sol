@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -83,4 +83,6 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     }
     return fqdn;
   }
+
+  uint256[50] private __gap;
 }

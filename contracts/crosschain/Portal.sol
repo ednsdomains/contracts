@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../lib/CrossChainProvider.sol";
@@ -31,14 +31,14 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  function send(
+  function send_(
     address payable sender,
     Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,
     bytes calldata payload
   ) external payable onlyRole(SENDER_ROLE) {
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
-      ILayerZeroProvider(_providers[provider]).send{ value: msg.value }(sender, dstChain, payload);
+      ILayerZeroProvider(_providers[provider]).send_{ value: msg.value }(sender, dstChain, payload);
     } else {
       revert("Empty provider");
     }

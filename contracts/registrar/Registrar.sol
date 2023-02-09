@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -13,6 +13,7 @@ import "./interfaces/IRegistrar.sol";
 contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Helper {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
+  bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
   mapping(address => mapping(bytes32 => bool)) public controllers;
 
@@ -31,14 +32,12 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
   function __BaseRegistrar_init_unchained(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
     _registry = registry_;
     _resolver = resolver_;
-    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setRoleAdmin(ROOT_ROLE, DEFAULT_ADMIN_ROLE);
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  modifier onlyController(bytes32 tld) {
-    require(controllers[_msgSender()][tld], "ONLY_CONTROLLER");
+  modifier onlyControllerOrBridge(bytes32 tld) {
+    require(controllers[_msgSender()][tld] || hasRole(BRIDGE_ROLE, _msgSender()), "ONLY_CONTROLLER");
     _;
   }
 
@@ -80,7 +79,7 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     bytes memory tld,
     address owner,
     uint64 expiry
-  ) external onlyController((keccak256(tld))) {
+  ) external onlyControllerOrBridge((keccak256(tld))) {
     require(valid(name), "INVALID_DOMAIN_NAME");
     require(isAvailable(name, tld), "DOMAIN_NOT_AVAILABLE");
     require(expiry + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
@@ -92,7 +91,7 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     bytes memory name,
     bytes memory tld,
     uint64 expiry
-  ) external onlyController(keccak256(tld)) {
+  ) external onlyControllerOrBridge(keccak256(tld)) {
     bytes32 _domain = keccak256(name);
     bytes32 _tld = keccak256(tld);
     uint64 expiry_ = _registry.getExpiry(_domain, _tld);
@@ -121,4 +120,6 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
   function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

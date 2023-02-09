@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../../lib/CrossChainProvider.sol";
@@ -10,7 +10,7 @@ interface IPortal {
   event ReceiverError(bytes32 id, address indexed receiver, bytes resaon);
 
   // EVM compatible send
-  function send(
+  function send_(
     address payable sender,
     Chain.Chain dstChain,
     CrossChainProvider.CrossChainProvider provider,

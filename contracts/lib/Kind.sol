@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.13;
 
-library RecordType {
-  enum RecordType {
+library Kind {
+  enum Kind {
     TLD,
     DOMAIN,
     HOST

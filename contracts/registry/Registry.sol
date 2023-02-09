@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -132,7 +132,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     uint256 id = getTokenId(tld);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.type_ = RecordType.RecordType.TLD;
+    _tokenRecord.kind = Kind.Kind.TLD;
     _tokenRecord.tld = keccak256(tld);
 
     emit NewTld(class_, tld, owner);
@@ -178,7 +178,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     emit NewDomain(name, tld, owner, expiry);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.type_ = RecordType.RecordType.DOMAIN;
+    _tokenRecord.kind = Kind.Kind.DOMAIN;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
 
@@ -208,7 +208,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     emit NewHost(host, name, tld);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(host, name, tld)];
-    _tokenRecord.type_ = RecordType.RecordType.HOST;
+    _tokenRecord.kind = Kind.Kind.HOST;
     _tokenRecord.tld = tld_;
     _tokenRecord.domain = name_;
     _tokenRecord.host = host_;

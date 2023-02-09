@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 interface IMultichainAnyCallV6Provider {
@@ -7,7 +7,7 @@ interface IMultichainAnyCallV6Provider {
 
   function estimateFees(uint16 _dstChainId, bytes memory _payload) external view returns (uint256);
 
-  function send(
+  function send_(
     address payable from,
     uint16 _dstChainId,
     bytes memory payload
