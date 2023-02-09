@@ -11,29 +11,29 @@ async function main() {
   const data = await getContractsData(chainId);
   if (!data) throw new Error("");
 
-  const names = ["Registry"];
+  // const names = ["Registry"];
 
-  // const names = [
-  //   "Registry",
-  //   "PublicResolver",
-  //   "Registrar",
-  //   "ClassicalRegistrarController",
-  //   "UniversalRegistrarController",
-  //   "Root",
-  //   "Wrapper",
-  //   "Portal",
-  //   "Bridge",
-  //   "LayerZeroProvider",
-  // ];
+  const names = [
+    "Registry",
+    "PublicResolver",
+    "Registrar",
+    "ClassicalRegistrarController",
+    "UniversalRegistrarController",
+    "Root",
+    "Wrapper",
+    "Portal",
+    "Bridge",
+    "LayerZeroProvider",
+  ];
 
-  const files = glob.sync("contracts/**/*.sol");
+  // const files = glob.sync("contracts/**/*.sol");
 
-  const paths = names.map((name) => files.find((file) => file.endsWith(`/${name}.sol`)));
-  console.log({ files, paths });
+  // const paths = names.map((name) => files.find((file) => file.endsWith(`/${name}.sol`)));
+  // console.log({ files, paths });
 
-  const rpc = NetworkConfig[chainId].url;
+  // const rpc = NetworkConfig[chainId].url;
 
-  console.log(`docker run --rm -w /tmp -v $\{PWD\}:/tmp mythril/myth analyze -a ${data.addresses.Token} --rpc ${rpc} --solv 0.8.17 -o text`);
+  console.log(`mythx analyze ${names.map((name) => `--include ${name}`).join(" ")}`);
 
   // if (data) {
   //   for (const path of paths) {

@@ -1,0 +1,23 @@
+output: mythx.json
+format: json
+
+analyze:
+  mode: standard
+  create-group: true
+  group-name: EDNS Omni
+  solc: 0.8.17
+  targets: contracts/
+  remappings:
+    - "@openzeppelin/contracts-upgradeable/=./node_modules/@openzeppelin/contracts-upgradeable/"
+  contracts:
+    - Registry
+    - PublicResolver
+    - Registrar
+    - ClassicalRegistrarController
+    - UniversalRegistrarController
+    - Root
+    - Wrapper
+    - Portal
+    - Bridge
+    - Synchronizer
+    - LayerZeroProvider
