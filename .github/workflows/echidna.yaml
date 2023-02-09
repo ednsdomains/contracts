@@ -22,7 +22,7 @@ jobs:
       - name: Compile and create artifacts
         run: npm run compile
       - name: Run Echidna
-        uses: crytic/echidna-action@v2
+        uses: crytic/echidna-action@v2.0.2
         with:
           solc-version: 0.8.17
           files: .
