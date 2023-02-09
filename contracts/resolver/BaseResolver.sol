@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
-import "./interfaces/IPublicResolverSynchronizer.sol";
 
 abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
