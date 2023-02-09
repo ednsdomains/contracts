@@ -29,6 +29,7 @@ jobs:
         id: slither
         with:
           node-version: 16
+          solc-version: 0.8.17
           sarif: results.sarif
           fail-on: none
       - name: Upload SARIF file

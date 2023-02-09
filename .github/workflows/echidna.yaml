@@ -25,9 +25,10 @@ jobs:
         uses: crytic/echidna-action@v2
         with:
           solc-version: 0.8.17
-          files: .
+          files: contracts/
           contract: Registry
           crytic-args: --hardhat-ignore-compile
+          format: text
 
   public-resolver:
     runs-on: ubuntu-latest
@@ -47,6 +48,7 @@ jobs:
         uses: crytic/echidna-action@v2
         with:
           solc-version: 0.8.17
-          files: .
+          files: contracts/
           contract: PublicResolver
           crytic-args: --hardhat-ignore-compile
+          format: text
