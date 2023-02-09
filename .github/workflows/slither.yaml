@@ -7,7 +7,7 @@ on:
     branches: [develop]
 
 jobs:
-  analyze:
+  slither:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -15,19 +15,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup Node
+      - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: "npm"
-
       - name: Installing dependencies
         run: npm install
-
       - name: Compile and create artifacts
         run: npm run compile
-
       - name: Run Slither
         uses: crytic/slither-action@v0.2.0
         id: slither
@@ -35,7 +31,6 @@ jobs:
           node-version: 16
           sarif: results.sarif
           fail-on: none
-
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
