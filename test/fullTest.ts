@@ -32,6 +32,7 @@ describe("Classical Test", function () {
   const disableTldNode = ethers.utils.toUtf8Bytes("disableTld");
   const nameNode = ethers.utils.toUtf8Bytes("domain");
   const subDomain = ethers.utils.toUtf8Bytes("sub");
+  const subDomain2 = ethers.utils.toUtf8Bytes("sub2");
   const srcChainID = 1;
 
   it("get Signer", async () => {
@@ -91,7 +92,10 @@ describe("Classical Test", function () {
     it("grant Role", async () => {
       await use_registry.grantRole(await use_registry.WRAPPER_ROLE(), use_defaultWrapper.address)
       await use_registry.grantRole(await use_registry.ROOT_ROLE(), use_root.address);
-      await use_registry.grantRole(await use_registry.REGISTRAR_ROLE(), signerList[0].address);
+      await use_registry.grantRole(await use_registry.REGISTRAR_ROLE(), use_registrar.address);
+      // await use_registry.grantRole(await use_registry.)
+
+      await use_registrar.grantRole(await use_registrar.ROOT_ROLE(),use_root.address)
     });
   });
   describe("TLD  Test", function () {
@@ -101,6 +105,11 @@ describe("Classical Test", function () {
       const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
       expect(owner).to.equal(true);
     });
+    it("setControllerApproval", async ()=>{
+      // use_registrar.setControllerApproval(ethers.utils.keccak256(tldNode),use_classicalRegistrarController.address,true)
+      await use_root.setControllerApproval(ethers.utils.keccak256(tldNode),use_classicalRegistrarController.address,true)
+      expect(await use_registrar.isControllerApproved(ethers.utils.keccak256(tldNode),use_classicalRegistrarController.address)).to.equal(true)
+    })
     it("Set disable tld record", async () => {
       const exipryDate = today.setFullYear(today.getFullYear() + 1);
       await use_root.register(disableTldNode,use_publicResolver.address,exipryDate, signerList[0].address, false, 0);
@@ -127,7 +136,8 @@ describe("Classical Test", function () {
   describe("Domain Test", function () {
     it("Set Domain record", async () => {
       const exipryDate = today.setFullYear(today.getFullYear() + 1);
-      await use_registry["setRecord(bytes,bytes,address,address,uint64)"](nameNode, tldNode, signerList[0].address, use_publicResolver.address, exipryDate);
+      // await use_registry["setRecord(bytes,bytes,address,address,uint64)"](nameNode, tldNode, signerList[0].address, use_publicResolver.address, exipryDate);
+      await use_classicalRegistrarController["register(bytes,bytes,address,uint64)"](nameNode,tldNode,signerList[0].address,exipryDate)
       const owner = await use_registry["isExists(bytes32,bytes32)"](ethers.utils.keccak256(nameNode), ethers.utils.keccak256(tldNode));
       expect(owner).to.equal(true);
     });
@@ -309,20 +319,36 @@ describe("Classical Test", function () {
       // await use_registry["setOwner(bytes32,bytes32,address)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode),signerList[1].address)
       await use_defaultWrapper.transferFrom(signerList[0].address,signerList[1].address,tokenId)
       expect(await use_defaultWrapper.ownerOf(tokenId)).to.equal(signerList[1].address)
-      // expect(await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode))).to.equal(signerList[1].address)
-    })
+      expect(await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode))).to.equal(signerList[1].address)
+      // expect(await use_registry["getUser(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode))).to.equal(signerList[1].address)
+    }) //  transfer -> setOwner at Wrapper and Registry. But not set user.
   });
 
   describe("Rental Domain", function () {
     it("Set User Domain",async ()=>{
       const exipryDate = new Date().setMonth(today.getMonth()+1);
-      console.log("Owner", await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode)))
-      console.log("User", await use_registry["getOwner(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode)))
       const tokenId = await use_registry["getTokenId(bytes,bytes)"](nameNode,tldNode)
       await use_defaultWrapper.setUser(tokenId,signerList[1].address,exipryDate)
       expect(await use_registry["getUser(bytes32,bytes32)"](ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode))).to.equal(signerList[1].address)
     })
   });
+
+  describe("Test after Rental", function (){
+    it("Set Sub Domain Record",async ()=>{
+      const exipryDate = today.setFullYear(today.getFullYear() + 1);
+      await use_registry_ac2["setRecord(bytes,bytes,bytes,uint16)"](subDomain2, nameNode, tldNode, 36000);
+      const owner = await use_registry["isExists(bytes32,bytes32,bytes32)"](ethers.utils.keccak256(subDomain2), ethers.utils.keccak256(nameNode),ethers.utils.keccak256(tldNode));
+      expect(owner).to.equal(true)
+    })
+    it("signer 1 can set Old Domain record",async ()=>{
+      await use_publicResolver.setText(subDomain, nameNode, tldNode, "I am old user");
+      expect(await use_publicResolver.getText(subDomain,nameNode,tldNode)).to.equal("I am old user")
+    })
+    it("signer 2 can set new Domain record",async ()=>{
+      await use_publicResolver_ac2.setText(subDomain2, nameNode, tldNode, "I am new user");
+      expect(await use_publicResolver.getText(subDomain2,nameNode,tldNode)).to.equal("I am new user")
+    })
+  })
 
 
 });
