@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../registry/interfaces/IRegistry.sol";
@@ -11,9 +11,10 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
-import "hardhat/console.sol";
+import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
 
-contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
 
   using AddressUpgradeable for address;
@@ -77,9 +78,9 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
 
   function ownerOf(uint256 tokenId) public view returns (address) {
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.type_ == RecordType.RecordType.TLD) {
+    if (_tokenRecord.kind == Kind.Kind.TLD) {
       return _registry.getOwner(_tokenRecord.tld);
-    } else if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN || _tokenRecord.type_ == RecordType.RecordType.HOST) {
+    } else if (_tokenRecord.kind == Kind.Kind.DOMAIN || _tokenRecord.kind == Kind.Kind.HOST) {
       return _registry.getOwner(_tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert(""); // TODO:
@@ -93,22 +94,22 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
   ) internal {
     require(ownerOf(tokenId) == from, "ERC721: transfer from incorrect owner");
     require(to != address(0), "ERC721: transfer to the zero address");
+    _beforeTokenTransfer(from, to, tokenId, 1);
     delete _tokenApprovals[tokenId];
     unchecked {
       _balances[from] -= 1;
       _balances[to] += 1;
     }
-    emit Transfer(from, to, tokenId);
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.type_ == RecordType.RecordType.TLD) {
-      console.log("tld");
+    if (_tokenRecord.kind == Kind.Kind.TLD) {
       _registry.setOwner(_tokenRecord.tld, to);
-    } else if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
-      console.log("domain");
+    } else if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
       _registry.setOwner(_tokenRecord.domain, _tokenRecord.tld, to);
     } else {
       revert(""); // TODO:
     }
+    emit Transfer(from, to, tokenId);
+    _afterTokenTransfer(from, to, tokenId, 1);
   }
 
   function _safeTransfer(
@@ -188,15 +189,28 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     return _operatorApprovals[owner][operator];
   }
 
-  function mint(address to, uint256 tokenId) external onlyRegistry {
+  function _mint(address to, uint256 tokenId) private {
+    _beforeTokenTransfer(address(0), to, tokenId, 1);
     _balances[to] += 1;
     emit Transfer(address(0), to, tokenId);
+    _afterTokenTransfer(address(0), to, tokenId, 1);
+  }
+
+  function mint(address to, uint256 tokenId) external onlyRegistry {
+    _mint(to, tokenId);
+  }
+
+  function _burn(uint256 tokenId) private {
+    address owner = ownerOf(tokenId);
+    _beforeTokenTransfer(owner, address(0), tokenId, 1);
+    delete _tokenApprovals[tokenId];
+    _resetTokenRoyalty(tokenId);
+    emit Transfer(owner, address(0), tokenId);
+    _afterTokenTransfer(owner, address(0), tokenId, 1);
   }
 
   function burn(uint256 tokenId) external onlyRegistry {
-    address owner = ownerOf(tokenId);
-    delete _tokenApprovals[tokenId];
-    emit Transfer(owner, address(0), tokenId);
+    _burn(tokenId);
   }
 
   function _checkOnERC721Received(
@@ -220,6 +234,31 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
       }
     } else {
       return true;
+    }
+  }
+
+  function _afterTokenTransfer(
+    address from,
+    address to,
+    uint256 firstTokenId,
+    uint256 batchSize
+  ) internal {
+    _transferVotingUnits(from, to, batchSize);
+  }
+
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256, /* firstTokenId */
+    uint256 batchSize
+  ) internal {
+    if (batchSize > 1) {
+      if (from != address(0)) {
+        _balances[from] -= batchSize;
+      }
+      if (to != address(0)) {
+        _balances[to] += batchSize;
+      }
     }
   }
 
@@ -268,9 +307,9 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
         (user == _msgSender() && uExpiry > block.timestamp && uExpiry >= expiry), // Current user transfering the usership to a new user
       "ERC4907: forbidden access"
     );
-    if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
+    if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
       _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
-    } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
+    } else if (_tokenRecord.kind == Kind.Kind.HOST) {
       _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
     } else {
       revert(""); // TODO:
@@ -280,9 +319,9 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
 
   function userOf(uint256 tokenId) public view returns (address) {
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
+    if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
       return _registry.getUser(_tokenRecord.domain, _tokenRecord.tld);
-    } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
+    } else if (_tokenRecord.kind == Kind.Kind.HOST) {
       return _registry.getUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert(""); // TODO:
@@ -291,18 +330,22 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
 
   function userExpiry(uint256 tokenId) public view returns (uint256) {
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
+    if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
       return _registry.getUserExpiry(_tokenRecord.domain, _tokenRecord.tld);
-    } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
+    } else if (_tokenRecord.kind == Kind.Kind.HOST) {
       return _registry.getUserExpiry(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert(""); // TODO:
     }
   }
 
+  function _getVotingUnits(address account) internal view virtual override returns (uint256) {
+    return balanceOf(account);
+  }
+
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 
-  function supportsInterface(bytes4 interfaceID) public view override(IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
+  function supportsInterface(bytes4 interfaceID) public view override(ERC2981Upgradeable, IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
     return
       interfaceID == type(IWrapper).interfaceId ||
       interfaceID == type(IERC721Upgradeable).interfaceId ||

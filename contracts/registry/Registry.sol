@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -9,7 +9,6 @@ import "./interfaces/IRegistry.sol";
 import "../lib/TldClass.sol";
 import "../wrapper/interfaces/IWrapper.sol";
 import "../lib/UserRecord.sol";
-import "hardhat/console.sol";
 
 contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
   using AddressUpgradeable for address;
@@ -136,7 +135,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     uint256 id = getTokenId(tld);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.type_ = RecordType.RecordType.TLD;
+    _tokenRecord.kind = Kind.Kind.TLD;
     _tokenRecord.tld = keccak256(tld);
 
     emit NewTld(class_, tld, owner);
@@ -182,7 +181,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     emit NewDomain(name, tld, owner, expiry);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
-    _tokenRecord.type_ = RecordType.RecordType.DOMAIN;
+    _tokenRecord.kind = Kind.Kind.DOMAIN;
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
 
@@ -212,7 +211,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     emit NewHost(host, name, tld);
 
     TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(host, name, tld)];
-    _tokenRecord.type_ = RecordType.RecordType.HOST;
+    _tokenRecord.kind = Kind.Kind.HOST;
     _tokenRecord.tld = tld_;
     _tokenRecord.domain = name_;
     _tokenRecord.host = host_;
@@ -248,7 +247,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
   function setOwner(bytes32 tld, address owner_) public onlyTldOwnerOrWrapper(tld) {
     require(isExists(tld), "TLD_NOT_EXIST");
-    console.log("Set Owner Registry - TLD");
     _records[tld].owner = owner_;
 
     emit SetOwner(_records[tld].name, owner_);
@@ -261,7 +259,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyDomainOwnerOrWrapper(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].owner = newOwner;
-    console.log("Set Owner Registry - Domain");
     emit SetOwner(_join(_records[tld].domains[name].name, _records[tld].name), newOwner);
   }
 

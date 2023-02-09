@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -16,7 +16,7 @@ contract MultichainV6Provider is IMultichainAnyCallV6Provider {
     return 0;
   }
 
-  function send(
+  function send_(
     address payable _from,
     uint16 _dstChainId,
     bytes memory payload

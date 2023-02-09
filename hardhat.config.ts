@@ -180,7 +180,7 @@ const config: HardhatUserConfig = {
     disambiguatePaths: false,
     only: [
       "Registry",
-      "BaseRegistrar",
+      "Registrar",
       "ClassicalRegistrarController",
       "UniversalRegistrarController",
       "BatchRegistrarController",
@@ -189,6 +189,7 @@ const config: HardhatUserConfig = {
       "Wrapper",
       "Bridge",
       "Portal",
+      "Synchronizer",
       "LayerZeroProvider",
     ],
   },

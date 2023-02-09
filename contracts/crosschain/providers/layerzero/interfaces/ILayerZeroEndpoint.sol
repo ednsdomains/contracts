@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 
 pragma solidity ^0.8.13;
 
@@ -46,7 +46,7 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
   // @param _srcAddress - the source chain contract address
   function getOutboundNonce(uint16 _dstChainId, address _srcAddress) external view returns (uint64);
 
-  // @notice gets a quote in source native gas, for the amount that send() requires to pay for message delivery
+  // @notice gets a quote in source native gas, for the amount that send_() requires to pay for message delivery
   // @param _dstChainId - the destination chain identifier
   // @param _userApplication - the user app address on this EVM chain
   // @param _payload - the custom message to send over LayerZero
@@ -86,7 +86,7 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
   // @param _userApplication - the user app address on this EVM chain
   function getReceiveLibraryAddress(address _userApplication) external view returns (address);
 
-  // @notice query if the non-reentrancy guard for send() is on
+  // @notice query if the non-reentrancy guard for send_() is on
   // @return true if the guard is on. false otherwise
   function isSendingPayload() external view returns (bool);
 
@@ -106,7 +106,7 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
     uint256 _configType
   ) external view returns (bytes memory);
 
-  // @notice get the send() LayerZero messaging library version
+  // @notice get the send_() LayerZero messaging library version
   // @param _userApplication - the contract address of the user application
   function getSendVersion(address _userApplication) external view returns (uint16);
 

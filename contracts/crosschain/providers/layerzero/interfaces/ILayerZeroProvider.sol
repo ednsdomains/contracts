@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
 import "../../../../lib/Chain.sol";
@@ -9,7 +9,7 @@ interface ILayerZeroProvider {
 
   function estimateFee(Chain.Chain _dstChain, bytes memory _payload) external view returns (uint256);
 
-  function send(
+  function send_(
     address payable _from,
     Chain.Chain _dstChain,
     bytes memory _payload
