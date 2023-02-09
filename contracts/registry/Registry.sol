@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "../utils/Helper.sol";
 import "./interfaces/IRegistry.sol";
 import "../lib/TldClass.sol";
@@ -11,8 +10,6 @@ import "../wrapper/interfaces/IWrapper.sol";
 import "../lib/UserRecord.sol";
 
 contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
-  using AddressUpgradeable for address;
-
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   address private _owner;
@@ -247,7 +244,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
   function setOwner(bytes32 tld, address owner_) public onlyTldOwnerOrWrapper(tld) {
     require(isExists(tld), "TLD_NOT_EXIST");
-    console.log("Set Owner Registry - TLD");
     _records[tld].owner = owner_;
 
     emit SetOwner(_records[tld].name, owner_);
@@ -260,7 +256,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyDomainOwnerOrWrapper(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
     _records[tld].domains[name].owner = newOwner;
-    console.log("Set Owner Registry - Domain");
     emit SetOwner(_join(_records[tld].domains[name].name, _records[tld].name), newOwner);
   }
 

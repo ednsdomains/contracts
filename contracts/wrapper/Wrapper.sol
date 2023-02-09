@@ -3,21 +3,15 @@ pragma solidity ^0.8.13;
 
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IWrapper.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
-import "hardhat/console.sol";
 
 contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
-
-  using AddressUpgradeable for address;
-  using StringsUpgradeable for uint256;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant RENTAL_ROLE = keccak256("RENTAL_ROLE");
@@ -101,10 +95,8 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     emit Transfer(from, to, tokenId);
     TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     if (_tokenRecord.type_ == RecordType.RecordType.TLD) {
-      console.log("tld");
       _registry.setOwner(_tokenRecord.tld, to);
     } else if (_tokenRecord.type_ == RecordType.RecordType.DOMAIN) {
-      console.log("domain");
       _registry.setOwner(_tokenRecord.domain, _tokenRecord.tld, to);
     } else {
       revert("INVALID_ENUM");
@@ -205,7 +197,7 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     uint256 tokenId,
     bytes memory data
   ) private returns (bool) {
-    if (to.isContract()) {
+    if (to.code.length > 0) {
       try IERC721ReceiverUpgradeable(to).onERC721Received(_msgSender(), from, tokenId, data) returns (bytes4 retval) {
         return retval == IERC721ReceiverUpgradeable.onERC721Received.selector;
       } catch (bytes memory reason) {
@@ -285,7 +277,8 @@ contract Wrapper is IWrapper, AccessControlUpgradeable, OwnableUpgradeable, UUPS
     } else if (_tokenRecord.type_ == RecordType.RecordType.HOST) {
       return _registry.getUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
-      revert("INVALID_ENUM"); 
+      revert("INVALID_ENUM");
+    }
   }
 
   function userExpiry(uint256 tokenId) public view returns (uint256) {
