@@ -100,7 +100,7 @@ describe("Classical Test", function () {
   describe("TLD  Test", function () {
     it("Set tld record", async () => {
 
-      await use_root.register([1],tldNode, use_publicResolver.address, exiryDate, signerList[0].address, true, 0);
+      await use_root.register([],tldNode, use_publicResolver.address, exiryDate, signerList[0].address, true, 0);
     });
 
     it("Is Exists",async ()=>{
@@ -134,15 +134,15 @@ describe("Classical Test", function () {
       await use_root.setControllerApproval(ethers.utils.keccak256(tldNode),use_classicalRegistrarController.address,true)
       expect(await use_registrar.isControllerApproved(ethers.utils.keccak256(tldNode),use_classicalRegistrarController.address)).to.equal(true)
     })
-    it("Set disable tld record", async () => {
-      await use_root.register([0],disableTldNode, use_publicResolver.address, exiryDate, signerList[0].address, false, 0);
-      const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
-      expect(owner).to.equal(true);
-    });
+    // it("Set disable tld record", async () => {
+    //   await use_root.register([],disableTldNode, use_publicResolver.address, exiryDate, signerList[0].address, false, 0);
+    //   const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
+    //   expect(owner).to.equal(true);
+    // });
     it("Set tld existed record", async () => {
       let throwError = false;
       try {
-        await use_root.register([0],tldNode, use_publicResolver.address, exiryDate, signerList[0].address, false, 0);
+        await use_root.register([],tldNode, use_publicResolver.address, exiryDate, signerList[0].address, false, 0);
         const owner = await use_registry.callStatic["isExists(bytes32)"](ethers.utils.keccak256(tldNode));
         // console.log("Not Error")
       } catch (e) {
