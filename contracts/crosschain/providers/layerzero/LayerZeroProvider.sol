@@ -11,6 +11,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
   uint256 public constant NO_EXTRA_GAS = 0;
   uint256 public constant FUNCTION_TYPE_SEND = 1;
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
   bool public useCustomAdapterParams;
 
@@ -24,14 +25,15 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   function __LayerZeroProvider_init(address _lzEndpoint, IPortal portal) internal onlyInitializing {
     __Ownable_init();
-    __LayerZeroProvider_init_unchained(_lzEndpoint, portal);
+    __LayerZeroProvider_init_unchained(portal);
     __NonblockingLayerZeroApp_init_unchained(_lzEndpoint);
   }
 
-  function __LayerZeroProvider_init_unchained(address _lzEndpoint, IPortal portal) internal onlyInitializing {
+  function __LayerZeroProvider_init_unchained(IPortal portal) internal onlyInitializing {
     _portal = portal;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
   function estimateFee(Chain.Chain _dstChain, bytes calldata payload) public view returns (uint256) {
@@ -74,7 +76,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
     return _chainIds[chain];
   }
 
-  function setChainId(Chain.Chain chain, uint16 chainId) public onlyRole(ADMIN_ROLE) {
+  function setChainId(Chain.Chain chain, uint16 chainId) public onlyRole(OPERATOR_ROLE) {
     _chainIds[chain] = chainId;
   }
 

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "../../lib/TldClass.sol";
+import "../../lib/Chain.sol";
 
 interface IRoot {
   event NewAuthorizer(address address_);
@@ -10,6 +11,7 @@ interface IRoot {
   event TldRenewed(bytes tld, uint256 expiry);
 
   function register(
+    Chain.Chain[] memory chains,
     bytes memory tld,
     address resolver,
     uint64 expiry,

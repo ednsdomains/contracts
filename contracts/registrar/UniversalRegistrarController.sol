@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IRegistrar.sol";
 import "./interfaces/IUniversalRegistrarController.sol";
 import "./BaseRegistrarController.sol";
 import "../root/interfaces/IRoot.sol";
 
 contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegistrarController {
-  using SafeERC20 for IERC20;
+  using SafeERC20Upgradeable for IERC20Upgradeable;
 
   function initialize(
-    IERC20 token_,
+    IERC20Upgradeable token_,
     IRegistrar registrar_,
     IRoot root_,
     uint256 coinId

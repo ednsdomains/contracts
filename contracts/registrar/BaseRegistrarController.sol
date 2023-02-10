@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
@@ -14,9 +15,9 @@ import "../root/interfaces/IRoot.sol";
 
 abstract contract BaseRegistrarController is IBaseRegistrarController, AccessControlUpgradeable, UUPSUpgradeable, PausableUpgradeable, Helper {
   using ECDSAUpgradeable for bytes32;
-  using SafeERC20 for IERC20;
+  using SafeERC20Upgradeable for IERC20Upgradeable;
 
-  IERC20 internal _token;
+  IERC20Upgradeable internal _token;
   IRegistrar internal _registrar;
   IRoot internal _root;
   uint256 internal COIN_ID;
@@ -25,7 +26,7 @@ abstract contract BaseRegistrarController is IBaseRegistrarController, AccessCon
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
   function __BaseRegistrarController_init(
-    IERC20 token_,
+    IERC20Upgradeable token_,
     IRegistrar registrar_,
     IRoot root_,
     uint256 coinId
@@ -35,7 +36,7 @@ abstract contract BaseRegistrarController is IBaseRegistrarController, AccessCon
   }
 
   function __BaseRegistrarController_init_unchained(
-    IERC20 token_,
+    IERC20Upgradeable token_,
     IRegistrar registrar_,
     IRoot root_,
     uint256 coinId

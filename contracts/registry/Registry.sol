@@ -17,10 +17,13 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   uint256 public constant GRACE_PERIOD = 30 days;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
   bytes32 public constant WRAPPER_ROLE = keccak256("WRAPPER_ROLE");
   bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
+
+  address public defaultWrapper;
 
   mapping(bytes32 => mapping(bytes32 => uint256)) private _unsyncHostUser;
 
@@ -103,10 +106,12 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   function __Registry_init_unchained() internal onlyInitializing {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
   /* ========== Mutative ==========*/
   function setRecord(
+    Chain.Chain[] memory chains,
     bytes memory tld,
     address owner,
     address resolver,
@@ -120,12 +125,20 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
 
     TldRecord.TldRecord storage _record = _records[keccak256(tld)];
+    _record.chains = chains;
     _record.name = tld;
     _record.owner = owner;
     _record.resolver = resolver;
     _record.expiry = expiry;
     _record.enable = enable;
     _record.class_ = class_;
+
+    if (defaultWrapper != address(0)) {
+      WrapperRecord.WrapperRecord storage _wrapper = _record.wrapper;
+      _wrapper.enable = enable;
+      _wrapper.address_ = defaultWrapper;
+      emit SetWrapper(tld, defaultWrapper, enable);
+    }
 
     uint256 id = getTokenId(tld);
 
@@ -324,6 +337,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     uint64 expiry
   ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXISTS");
+    require(newUser != address(0), "NULL_USER");
 
     address owner = getOwner(name, tld);
     address currUser = getUser(host, name, tld);
@@ -359,6 +373,10 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
     require(expiry > _records[tld].domains[name].expiry && expiry > block.timestamp, "INVALID_EXPIRY");
     emit SetExpiry(_join(_records[tld].domains[name].name, _records[tld].name), expiry);
+  }
+
+  function setDefaultWrapper(address address_) external onlyRole(OPERATOR_ROLE) {
+    defaultWrapper = address_;
   }
 
   /* ⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️ */

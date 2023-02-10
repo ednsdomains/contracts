@@ -18,6 +18,7 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   address internal _authorizer;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
   function initialize(IRegistry registry_, IRegistrar registrar) public initializer {
     __Root_init(registry_, registrar);
@@ -32,9 +33,11 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
     _registrar = registrar;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
   function register(
+    Chain.Chain[] memory chains,
     bytes memory tld,
     address resolver,
     uint64 expiry,
@@ -42,8 +45,13 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
     bool enable,
     TldClass.TldClass class_
   ) public onlyRole(ADMIN_ROLE) {
+    if (class_ == TldClass.TldClass.OMNI) {
+      require(chains.length > 0, "INVALID_CHAINS");
+    } else {
+      require(chains.length == 0, "INVALID_CHAINS");
+    }
     require(!_registry.isExists(keccak256(tld)) || _registry.getExpiry(keccak256(tld)) < block.timestamp, "TLD_EXISTS");
-    _registry.setRecord(tld, owner, resolver, expiry, enable, class_);
+    _registry.setRecord(chains, tld, owner, resolver, expiry, enable, class_);
     emit TldRegistered(tld, owner, expiry);
   }
 

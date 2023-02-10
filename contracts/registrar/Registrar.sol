@@ -12,6 +12,7 @@ import "./interfaces/IRegistrar.sol";
 
 contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Helper {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
   bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
@@ -34,6 +35,7 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     _resolver = resolver_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
   modifier onlyControllerOrBridge(bytes32 tld) {

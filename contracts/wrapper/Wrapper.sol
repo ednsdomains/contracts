@@ -10,12 +10,12 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
 
-contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant RENTAL_ROLE = keccak256("RENTAL_ROLE");
 
   string private _name;
@@ -60,6 +60,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessContro
     _registry = registry_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
     _name = name_;
     _symbol = symbol_;
   }
@@ -237,9 +238,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessContro
     address to,
     uint256 firstTokenId,
     uint256 batchSize
-  ) internal {
-    _transferVotingUnits(from, to, batchSize);
-  }
+  ) internal {}
 
   function _beforeTokenTransfer(
     address from,
@@ -263,7 +262,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessContro
     return _name;
   }
 
-  function setName(string memory name_) public onlyRole(ADMIN_ROLE) {
+  function setName(string memory name_) public onlyRole(OPERATOR_ROLE) {
     _name = name_;
   }
 
@@ -271,7 +270,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessContro
     return _symbol;
   }
 
-  function setSymbol(string memory symbol_) public onlyRole(ADMIN_ROLE) {
+  function setSymbol(string memory symbol_) public onlyRole(OPERATOR_ROLE) {
     _symbol = symbol_;
   }
 
@@ -279,7 +278,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessContro
     return string(abi.encodePacked(__baseURI, "/", StringsUpgradeable.toString(tokenId), "/", "payload.json"));
   }
 
-  function setBaseURI(string memory baseURI_) public virtual onlyRole(ADMIN_ROLE) {
+  function setBaseURI(string memory baseURI_) public virtual onlyRole(OPERATOR_ROLE) {
     __baseURI = bytes(baseURI_);
   }
 
@@ -332,10 +331,6 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, VotesUpgradeable, AccessContro
     } else {
       revert("INVALID_ENUM");
     }
-  }
-
-  function _getVotingUnits(address account) internal view virtual override returns (uint256) {
-    return balanceOf(account);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}

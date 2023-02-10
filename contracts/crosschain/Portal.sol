@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 
 contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant SENDER_ROLE = keccak256("SENDER_ROLE");
   bytes32 public constant PROVIDER_ROLE = keccak256("PROVIDER_ROLE");
 
@@ -29,6 +30,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   function __Portal_init_unchained() internal onlyInitializing {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
   function send_(
@@ -74,7 +76,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     return _providers[provider];
   }
 
-  function setProvider(CrossChainProvider.CrossChainProvider provider, address address_) external onlyRole(ADMIN_ROLE) {
+  function setProvider(CrossChainProvider.CrossChainProvider provider, address address_) external onlyRole(OPERATOR_ROLE) {
     _providers[provider] = address_;
   }
 

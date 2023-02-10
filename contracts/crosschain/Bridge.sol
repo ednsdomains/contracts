@@ -12,6 +12,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant TERMINATOR_ROLE = keccak256("TERMINATOR_ROLE");
 
   Chain.Chain private _selfChain;
@@ -54,13 +55,14 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     _selfChain = selfChain;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function pause() public onlyRole(ADMIN_ROLE) {
+  function pause() public onlyRole(OPERATOR_ROLE) {
     _pause();
   }
 
-  function unpause() public onlyRole(ADMIN_ROLE) {
+  function unpause() public onlyRole(OPERATOR_ROLE) {
     _unpause();
   }
 
@@ -184,7 +186,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     return _remoteBridges[chain];
   }
 
-  function setRemoteBridge(Chain.Chain chain, address target) public onlyRole(ADMIN_ROLE) {
+  function setRemoteBridge(Chain.Chain chain, address target) public onlyRole(OPERATOR_ROLE) {
     _remoteBridges[chain] = target;
   }
 

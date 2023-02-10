@@ -15,6 +15,7 @@ interface IRegistry {
 
   event SetResolver(bytes fqdn, address newResolver);
   event SetOperator(bytes fqdn, address operator, bool approved);
+  event SetDefaultWrppaer(address address_);
   event SetWrapper(bytes tld, address address_, bool enable);
   event SetUser(bytes fqdn, address newUser, uint64 expiry);
   event SetOwner(bytes fqdn, address owner);
@@ -27,6 +28,7 @@ interface IRegistry {
 
   /* ========== Mutative ==========*/
   function setRecord(
+    Chain.Chain[] memory chains,
     bytes memory tld,
     address owner,
     address resolver,
@@ -111,6 +113,8 @@ interface IRegistry {
     bytes32 tld,
     uint64 expiry
   ) external;
+
+  function setDefaultWrapper(address address_) external;
 
   function unsetRecord(
     bytes32 host,

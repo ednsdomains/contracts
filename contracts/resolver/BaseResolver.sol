@@ -6,13 +6,20 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
+import "./interfaces/IBaseResolver.sol";
+import "../lib/CrossChainProvider.sol";
+import "../lib/Chain.sol";
 
-abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+abstract contract BaseResolver is IBaseResolver, Helper, ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   IRegistry internal _registry;
+
+  ISynchronizer private _synchronizer;
+
+  mapping(address => CrossChainProvider.CrossChainProvider) private _synchronizerProviders;
 
   modifier onlyAuthorised(
     bytes memory host,
@@ -49,9 +56,10 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
     bytes32 host_ = keccak256(host);
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    return
-      (_registry.getUser(host_, name_, tld_) == _msgSender() || _registry.isOperator(host_, name_, tld_, _msgSender())) &&
+    bool isAuthorizedUser = (_registry.getUser(host_, name_, tld_) == _msgSender() || _registry.isOperator(host_, name_, tld_, _msgSender())) &&
       _registry.getUserExpiry(host_, name_, tld_) >= block.timestamp;
+    bool isSelfAuthorized = _msgSender() == address(this);
+    return isAuthorizedUser || isSelfAuthorized;
   }
 
   function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
@@ -81,6 +89,40 @@ abstract contract BaseResolver is Helper, ContextUpgradeable, AccessControlUpgra
       fqdn = keccak256(_join(host, name, tld));
     }
     return fqdn;
+  }
+
+  function _afterSet(bytes32 tld) internal {}
+
+  function _requestSync(Chain.Chain[] memory dstChains, bytes memory ctx) internal {
+    CrossChainProvider.CrossChainProvider provider = getSynchronizerProvider();
+    __requestSync(provider, dstChains, ctx);
+  }
+
+  function __requestSync(
+    CrossChainProvider.CrossChainProvider provider,
+    Chain.Chain[] memory dstChains,
+    bytes memory ctx
+  ) private {
+    _synchronizer.syncResolverRecord(provider, dstChains, ctx);
+    emit OutgoingSync(ctx);
+  }
+
+  function receiveSync(uint256 nonce, bytes memory ctx) external {
+    require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
+    (bool success, ) = address(this).call(ctx);
+    emit IncomingSync(success, nonce, ctx);
+  }
+
+  function setSynchronizer(ISynchronizer synchronizer_) external onlyRole(ADMIN_ROLE) {
+    _synchronizer = synchronizer_;
+  }
+
+  function getSynchronizerProvider() public view returns (CrossChainProvider.CrossChainProvider) {
+    return _synchronizerProviders[_msgSender()];
+  }
+
+  function setSynchronizerProvider(CrossChainProvider.CrossChainProvider provider) external {
+    _synchronizerProviders[_msgSender()] = provider;
   }
 
   uint256[50] private __gap;

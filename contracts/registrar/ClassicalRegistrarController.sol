@@ -5,10 +5,10 @@ import "./interfaces/IClassicalRegistrarController.sol";
 import "./BaseRegistrarController.sol";
 
 contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegistrarController {
-  using SafeERC20 for IERC20;
+  using SafeERC20Upgradeable for IERC20Upgradeable;
 
   function initialize(
-    IERC20 token_,
+    IERC20Upgradeable token_,
     IRegistrar registrar_,
     IRoot root_,
     uint256 coinId

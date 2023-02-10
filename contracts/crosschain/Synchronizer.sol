@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "../registry/interfaces/IRegistry.sol";
-
+import "../resolver/interfaces/IPublicResolver.sol";
 import "../lib/SyncAction.sol";
 import "./interfaces/ISynchronizer.sol";
 import "./interfaces/IPortal.sol";
@@ -13,14 +13,14 @@ import "./interfaces/IReceiver.sol";
 
 contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessControlUpgradeable, PausableUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
-  bytes32 public constant PUBLIC_RESOLVER_ROLE = keccak256("PUBLIC_RESOLVER_ROLE");
 
   Chain.Chain private _selfChain;
 
   IRegistry private _registry;
   IPortal private _portal;
+  IPublicResolver private _resolver;
 
   mapping(Chain.Chain => address) private _remoteSynchronizers;
 
@@ -50,13 +50,14 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     _selfChain = selfChain;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function pause() public onlyRole(ADMIN_ROLE) {
+  function pause() public onlyRole(OPERATOR_ROLE) {
     _pause();
   }
 
-  function unpause() public onlyRole(ADMIN_ROLE) {
+  function unpause() public onlyRole(OPERATOR_ROLE) {
     _unpause();
   }
 
@@ -181,7 +182,8 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
     bytes memory ctx
-  ) external payable onlyRole(PUBLIC_RESOLVER_ROLE) {
+  ) external payable {
+    require(_msgSender() == address(_resolver), "ONLY_RESOLVER");
     require(msg.value >= estimateSyncResolverRecordFee(provider, dstChains, ctx), "INSUFFICIENT_FUND");
     for (uint256 i = 0; i < dstChains.length; i++) {
       _sync(provider, dstChains[i], ctx);
@@ -220,7 +222,14 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     emit SyncedRenewDomain(_msgSender(), provider, dstChains, name, tld, expiry);
   }
 
-  function receive_(bytes memory payload) external {}
+  function receive_(bytes memory payload) external {
+    (SyncAction.SyncAction action, bytes memory ctx) = _unpackPayload(payload);
+    // if (action == SyncAction.SyncAction.RESOLVER_RECORD) {
+    //   try address(_resolver).call(ctx) {
+    //     // nothing
+    //   } catch (bytes memory error) {}
+    // }
+  }
 
   function getRemoteSynchronizer(Chain.Chain chain) public view returns (address) {
     return _remoteSynchronizers[chain];
