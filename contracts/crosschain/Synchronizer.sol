@@ -14,7 +14,7 @@ import "./interfaces/IReceiver.sol";
 contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessControlUpgradeable, PausableUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-  bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
+  bytes32 public constant REQUESTOR_ROLE = keccak256("REQUESTOR_ROLE");
 
   Chain.Chain private _selfChain;
 
@@ -61,174 +61,69 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     _unpause();
   }
 
-  function _packPayload(
-    address dstSynchronizer,
+  function _packPayload(address dstSynchronizer, bytes memory ctx) private pure returns (bytes memory) {
+    return abi.encode(dstSynchronizer, ctx);
+  }
+
+  function _packContext(SyncAction.SyncAction action, bytes memory ews) private pure returns (bytes memory) {
+    return abi.encode(action, ews);
+  }
+
+  function _unpackContext(bytes memory ctx) private pure returns (SyncAction.SyncAction action, bytes memory ews) {
+    return abi.decode(ctx, (SyncAction.SyncAction, bytes));
+  }
+
+  function estimateSyncFee(
     SyncAction.SyncAction action,
-    bytes memory ctx
-  ) private pure returns (bytes memory) {
-    return abi.encode(dstSynchronizer, action, ctx);
-  }
-
-  function _unpackPayload(bytes memory payload) private pure returns (SyncAction.SyncAction action, bytes memory ctx) {
-    return abi.decode(payload, (SyncAction.SyncAction, bytes));
-  }
-
-  function _packSyncRegisterDomainContext(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) private pure returns (bytes memory) {
-    return abi.encode(name, tld, owner, expiry);
-  }
-
-  function _unpackSyncRegisterDomainContext(bytes memory ctx)
-    private
-    pure
-    returns (
-      bytes memory name,
-      bytes memory tld,
-      address owner,
-      uint64 expiry
-    )
-  {
-    return abi.decode(ctx, (bytes, bytes, address, uint64));
-  }
-
-  function _packSyncRenewDomainContext(
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  ) private pure returns (bytes memory) {
-    return abi.encode(name, tld, expiry);
-  }
-
-  function _unpackSyncRenewDomainContext(bytes memory ctx)
-    private
-    pure
-    returns (
-      bytes32 name,
-      bytes32 tld,
-      uint64 expiry
-    )
-  {
-    return abi.decode(ctx, (bytes32, bytes32, uint64));
-  }
-
-  function estimateSyncResolverRecordFee(
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
-    bytes memory ctx
+    bytes memory ews
   ) public view returns (uint256) {
     uint256 fee = 0;
     for (uint256 i = 0; i < dstChains.length; i++) {
       Chain.Chain dstChain = dstChains[i];
       address dstSynchronizer = getRemoteSynchronizer(dstChain);
-      bytes memory payload = _packPayload(dstSynchronizer, SyncAction.SyncAction.RESOLVER_RECORD, ctx);
+      bytes memory ctx = _packContext(action, ews);
+      bytes memory payload = _packPayload(dstSynchronizer, ctx);
       fee += _portal.estimateFee(dstChain, provider, payload);
     }
     return fee;
   }
 
-  function estimateSyncRegisterDomainFee(
+  function sync(
+    SyncAction.SyncAction action,
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) public view returns (uint256) {
-    uint256 fee = 0;
-    bytes memory ctx = _packSyncRegisterDomainContext(name, tld, owner, expiry);
-    for (uint256 i = 0; i < dstChains.length; i++) {
-      Chain.Chain dstChain = dstChains[i];
-      address dstSynchronizer = getRemoteSynchronizer(dstChain);
-      bytes memory payload = _packPayload(dstSynchronizer, SyncAction.SyncAction.REGISTER_DOMAIN, ctx);
-      fee += _portal.estimateFee(dstChain, provider, payload);
-    }
-    return fee;
-  }
-
-  function estimateSyncRenewDomainFee(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  ) public view returns (uint256) {
-    uint256 fee = 0;
-    bytes memory ctx = _packSyncRenewDomainContext(name, tld, expiry);
-    for (uint256 i = 0; i < dstChains.length; i++) {
-      Chain.Chain dstChain = dstChains[i];
-      address dstSynchronizer = getRemoteSynchronizer(dstChain);
-      bytes memory payload = _packPayload(dstSynchronizer, SyncAction.SyncAction.RENEW_DOMAIN, ctx);
-      fee += _portal.estimateFee(dstChain, provider, payload);
-    }
-    return fee;
+    bytes memory ews
+  ) external payable onlyRole(REQUESTOR_ROLE) {
+    require(msg.value >= estimateSyncFee(action, provider, dstChains, ews), "INSUFFICIENT_FEE");
+    _sync(action, provider, dstChains, ews);
   }
 
   function _sync(
+    SyncAction.SyncAction action,
     CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain dstChain,
-    bytes memory ctx
+    Chain.Chain[] memory dstChains,
+    bytes memory ews
   ) private {
-    address dstSynchronizer = getRemoteSynchronizer(dstChain);
-    bytes memory payload = abi.encode(dstSynchronizer, ctx);
-    uint256 fee = _portal.estimateFee(dstChain, provider, payload);
-    _portal.send_{ value: fee }(payable(_msgSender()), dstChain, provider, payload);
-  }
-
-  function syncResolverRecord(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes memory ctx
-  ) external payable {
-    require(_msgSender() == address(_resolver), "ONLY_RESOLVER");
-    require(msg.value >= estimateSyncResolverRecordFee(provider, dstChains, ctx), "INSUFFICIENT_FUND");
     for (uint256 i = 0; i < dstChains.length; i++) {
-      _sync(provider, dstChains[i], ctx);
+      Chain.Chain dstChain = dstChains[i];
+      address dstSynchronizer = getRemoteSynchronizer(dstChain);
+      bytes memory ctx = _packContext(action, ews);
+      bytes memory payload = _packPayload(dstSynchronizer, ctx);
+      uint256 fee = _portal.estimateFee(dstChain, provider, payload);
+      _portal.send_{ value: fee }(payable(_msgSender()), dstChain, provider, payload);
     }
-    emit SyncedResolverRecord(_msgSender(), provider, dstChains, ctx);
   }
 
-  function syncRegisterDomain(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) external payable onlyRole(REGISTRAR_ROLE) {
-    bytes memory ctx = _packSyncRegisterDomainContext(name, tld, owner, expiry);
-    require(msg.value >= estimateSyncRegisterDomainFee(provider, dstChains, name, tld, owner, expiry), "INSUFFICIENT_FUND");
-    for (uint256 i = 0; i < dstChains.length; i++) {
-      _sync(provider, dstChains[i], ctx);
+  function receive_(bytes memory ctx) external {
+    // TODO:
+    (SyncAction.SyncAction action, bytes memory ews) = _unpackContext(ctx);
+    if (action == SyncAction.SyncAction.REGISTRY) {
+      address(_registry).call(ews);
+    } else if (action == SyncAction.SyncAction.RESOLVER) {
+      address(_resolver).call(ews);
     }
-    emit SyncedRegisterDomain(_msgSender(), provider, dstChains, name, tld, owner, expiry);
-  }
-
-  function syncRenewDomain(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  ) external payable onlyRole(REGISTRAR_ROLE) {
-    bytes memory ctx = _packSyncRenewDomainContext(name, tld, expiry);
-    require(msg.value >= estimateSyncRenewDomainFee(provider, dstChains, name, tld, expiry), "INSUFFICIENT_FUND");
-    for (uint256 i = 0; i < dstChains.length; i++) {
-      _sync(provider, dstChains[i], ctx);
-    }
-    emit SyncedRenewDomain(_msgSender(), provider, dstChains, name, tld, expiry);
-  }
-
-  function receive_(bytes memory payload) external {
-    (SyncAction.SyncAction action, bytes memory ctx) = _unpackPayload(payload);
-    // if (action == SyncAction.SyncAction.RESOLVER_RECORD) {
-    //   try address(_resolver).call(ctx) {
-    //     // nothing
-    //   } catch (bytes memory error) {}
-    // }
   }
 
   function getRemoteSynchronizer(Chain.Chain chain) public view returns (address) {

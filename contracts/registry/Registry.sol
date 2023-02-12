@@ -12,8 +12,6 @@ import "../lib/UserRecord.sol";
 contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 internal constant AT = keccak256(bytes("@"));
 
-  address private _owner;
-
   uint256 public constant GRACE_PERIOD = 30 days;
 
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -110,6 +108,7 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   }
 
   /* ========== Mutative ==========*/
+
   function setRecord(
     Chain.Chain[] memory chains,
     bytes memory tld,
@@ -119,8 +118,6 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     bool enable,
     TldClass.TldClass class_
   ) public onlyRole(ROOT_ROLE) {
-    //    require(!isExists(keccak256(tld)) && !isExists(getTokenId(tld)), "TLD_EXIST"); -> !isExists(getTokenId(tld)) always return true
-    // require((!isExists(keccak256(tld))) && (!isExists(getTokenId(tld))), "TLD_EXIST");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
 
@@ -134,23 +131,14 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     _record.class_ = class_;
 
     if (defaultWrapper != address(0)) {
-      WrapperRecord.WrapperRecord storage _wrapper = _record.wrapper;
-      _wrapper.enable = enable;
-      _wrapper.address_ = defaultWrapper;
-      emit SetWrapper(tld, defaultWrapper, enable);
+      _setWrapper(keccak256(tld), true, defaultWrapper);
     }
 
-    uint256 id = getTokenId(tld);
-
-    TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[id];
+    TokenRecord.TokenRecord storage _tokenRecord = _tokenRecords[getTokenId(tld)];
     _tokenRecord.kind = Kind.Kind.TLD;
     _tokenRecord.tld = keccak256(tld);
 
     emit NewTld(class_, tld, owner);
-
-    // if (_records[keccak256(tld)].wrapper.enable) {
-    //   IWrapper(_records[keccak256(tld)].wrapper.address_).mint(owner, id);
-    // }
   }
 
   function setRecord(
@@ -168,13 +156,11 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
       resolver = _records[keccak256(tld)].resolver;
     }
 
-    bool isExists_ = isExists(keccak256(name), keccak256(tld));
-
     uint256 id = getTokenId(name, tld);
 
     if (_records[keccak256(tld)].wrapper.enable) {
       IWrapper(_records[keccak256(tld)].wrapper.address_).mint(owner, id);
-      if (isExists_) {
+      if (isExists(keccak256(name), keccak256(tld))) {
         _remove(keccak256(name), keccak256(tld));
         IWrapper(_records[keccak256(tld)].wrapper.address_).burn(id);
       }
@@ -302,15 +288,23 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     emit SetEnable(_records[tld].name, enable);
   }
 
+  function _setWrapper(
+    bytes32 tld,
+    bool enable,
+    address address_
+  ) private {
+    WrapperRecord.WrapperRecord storage _wrapper = _records[tld].wrapper;
+    _wrapper.enable = enable;
+    _wrapper.address_ = address_;
+    emit SetWrapper(_records[tld].name, address_, enable);
+  }
+
   function setWrapper(
     bytes32 tld,
     bool enable,
     address address_
   ) public onlyTldOwner(tld) {
-    WrapperRecord.WrapperRecord storage _wrapper = _records[tld].wrapper;
-    _wrapper.enable = enable;
-    _wrapper.address_ = address_;
-    emit SetWrapper(_records[tld].name, address_, enable);
+    _setWrapper(tld, enable, address_);
   }
 
   function setUser(
@@ -397,14 +391,14 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     _remove(host, name, tld);
   }
 
-  function _remove(bytes32 tld) internal {
-    if (_records[tld].wrapper.enable) {
-      IWrapper(_records[tld].wrapper.address_).burn(getTokenId(_records[tld].name));
-    }
-    emit RemoveTld(_records[tld].name);
-    delete _records[tld];
-    delete _tokenRecords[getTokenId(_records[tld].name)];
-  }
+  // function _remove(bytes32 tld) internal {
+  //   if (_records[tld].wrapper.enable) {
+  //     IWrapper(_records[tld].wrapper.address_).burn(getTokenId(_records[tld].name));
+  //   }
+  //   emit RemoveTld(_records[tld].name);
+  //   delete _records[tld];
+  //   delete _tokenRecords[getTokenId(_records[tld].name)];
+  // }
 
   function _remove(bytes32 name, bytes32 tld) internal {
     if (_records[tld].wrapper.enable) {
@@ -428,13 +422,13 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
     }
   }
 
-  function prune(bytes32 name, bytes32 tld) public onlyDomainOwner(name, tld) onlyLiveDomain(name, tld) {}
+  // function prune(bytes32 name, bytes32 tld) public onlyDomainOwner(name, tld) onlyLiveDomain(name, tld) {}
 
-  function prune(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {}
+  // function prune(
+  //   bytes32 host,
+  //   bytes32 name,
+  //   bytes32 tld
+  // ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {}
 
   function bridged(bytes32 name, bytes32 tld) public onlyRole(BRIDGE_ROLE) {
     require(_unsyncHostUser[tld][name] == 0, "UNSYNC_HOST_USER_EXISTS");
@@ -482,6 +476,10 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
 
   function getTldClass(bytes32 tld) public view returns (TldClass.TldClass) {
     return _records[tld].class_;
+  }
+
+  function getTldChains(bytes32 tld) public view returns (Chain.Chain[] memory) {
+    return _records[tld].chains;
   }
 
   function getWrapper(bytes32 tld) public view returns (WrapperRecord.WrapperRecord memory) {

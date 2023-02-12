@@ -55,5 +55,9 @@
     "typechain": "^5.2.0",
     "typeorm": "^0.3.11",
     "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@connext/smart-contracts": "^0.2.6",
+    "@routerprotocol/router-crosstalk": "^0.1.6"
   }
 }

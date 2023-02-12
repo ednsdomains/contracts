@@ -8,7 +8,6 @@ export enum InContractChain {
   ARBITRUM,
   IOTEX,
   OKC,
-  KCC,
   GNOSIS,
-  MIXIN,
+  CELO,
 }

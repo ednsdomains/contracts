@@ -91,26 +91,22 @@ abstract contract BaseResolver is IBaseResolver, Helper, ContextUpgradeable, Acc
     return fqdn;
   }
 
-  function _afterSet(bytes32 tld) internal {}
+  function _afterSet(bytes32 tld, bytes memory ews) internal {
+    if (_registry.getTldClass(tld) == TldClass.TldClass.OMNI && _registry.getTldChains(tld).length > 0) {
+      _requestSync(_registry.getTldChains(tld), ews);
+    }
+  }
 
-  function _requestSync(Chain.Chain[] memory dstChains, bytes memory ctx) internal {
+  function _requestSync(Chain.Chain[] memory dstChains, bytes memory ews) internal {
     CrossChainProvider.CrossChainProvider provider = getSynchronizerProvider();
-    __requestSync(provider, dstChains, ctx);
+    _synchronizer.sync(SyncAction.SyncAction.RESOLVER, provider, dstChains, ews);
+    emit OutgoingSync(ews);
   }
 
-  function __requestSync(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes memory ctx
-  ) private {
-    _synchronizer.syncResolverRecord(provider, dstChains, ctx);
-    emit OutgoingSync(ctx);
-  }
-
-  function receiveSync(uint256 nonce, bytes memory ctx) external {
+  function receiveSync(bytes memory ews) external {
     require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
-    (bool success, ) = address(this).call(ctx);
-    emit IncomingSync(success, nonce, ctx);
+    (bool success, ) = address(this).call(ews);
+    emit IncomingSync(success, ews);
   }
 
   function setSynchronizer(ISynchronizer synchronizer_) external onlyRole(ADMIN_ROLE) {

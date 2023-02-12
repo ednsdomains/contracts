@@ -12,8 +12,7 @@ library Chain {
     ARBITRUM,
     IOTEX,
     OKC,
-    KCC,
     GNOSIS,
-    MIXIN
+    CELO
   }
 }

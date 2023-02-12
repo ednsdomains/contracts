@@ -30,7 +30,6 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
   }
 
   function isAvailable(bytes memory name, bytes memory tld) public view returns (bool) {
-    // return valid(name, tld) && _registrar.isAvailable(name, tld);
     _registrar.isAvailable(name, tld);
   }
 

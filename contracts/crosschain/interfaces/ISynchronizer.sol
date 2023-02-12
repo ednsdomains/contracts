@@ -6,69 +6,21 @@ import "../../lib/SyncAction.sol";
 import "../../lib/CrossChainProvider.sol";
 
 interface ISynchronizer {
-  event SyncedResolverRecord(address indexed sender, CrossChainProvider.CrossChainProvider indexed provider, Chain.Chain[] indexed dstChains, bytes ctx);
-  event SyncedRegisterDomain(
-    address indexed sender,
-    CrossChainProvider.CrossChainProvider indexed provider,
-    Chain.Chain[] indexed dstChains,
-    bytes name,
-    bytes tld,
-    address owner,
-    uint64 expiry
-  );
-  event SyncedRenewDomain(
-    address indexed sender,
-    CrossChainProvider.CrossChainProvider indexed provider,
-    Chain.Chain[] indexed dstChains,
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  );
+  event SyncResolver(address indexed sender, CrossChainProvider.CrossChainProvider indexed provider, Chain.Chain[] indexed dstChains, bytes ctx);
+  event SyncRegistrar(address indexed sender, CrossChainProvider.CrossChainProvider indexed provider, Chain.Chain[] indexed dstChains, bytes ctx);
 
-  function estimateSyncResolverRecordFee(
+  function estimateSyncFee(
+    SyncAction.SyncAction action,
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
-    bytes memory payload
+    bytes memory ews
   ) external view returns (uint256);
 
-  function estimateSyncRegisterDomainFee(
+  function sync(
+    SyncAction.SyncAction action,
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) external view returns (uint256);
-
-  function estimateSyncRenewDomainFee(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  ) external view returns (uint256);
-
-  function syncResolverRecord(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes memory payload
-  ) external payable;
-
-  function syncRegisterDomain(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) external payable;
-
-  function syncRenewDomain(
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
+    bytes memory ews
   ) external payable;
 
   function getRemoteSynchronizer(Chain.Chain chain) external view returns (address);

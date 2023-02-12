@@ -5,10 +5,10 @@ import "../../crosschain/interfaces/ISynchronizer.sol";
 import "../../lib/CrossChainProvider.sol";
 
 interface IBaseResolver {
-  event IncomingSync(bool success, uint256 nonce, bytes ctx);
-  event OutgoingSync(bytes ctx);
+  event IncomingSync(bool success, bytes ews);
+  event OutgoingSync(bytes ews);
 
-  function receiveSync(uint256 nonce, bytes memory ctx) external; // Incoming sync action
+  function receiveSync(bytes memory ews) external; // Incoming sync action
 
   function setSynchronizer(ISynchronizer synchronizer_) external;
 

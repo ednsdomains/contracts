@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IContracts } from "./interfaces/contracts";
-import { getClassicalTlds, getUniversalTlds } from "./lib/get-tlds";
+import { getClassicalTlds, getUniversalTldChainIds, getUniversalTlds } from "./lib/get-tlds";
 import { ContractName } from "./constants/contract-name";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
@@ -10,6 +10,8 @@ import { Transaction } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
 import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
+import TLDs from "../../static/tlds.json";
+import { getInContractChain } from "./lib/get-in-contract-chain";
 
 export interface ISetupInput {
   chainId: number;
@@ -110,7 +112,7 @@ export const setupRoot = async (input: ISetupInput) => {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
       const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
-        const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+        const tx = await input.contracts.Root.register([], _tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
         await tx.wait();
         txs.push(tx);
       }
@@ -132,9 +134,13 @@ export const setupRoot = async (input: ISetupInput) => {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
       const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
-        const tx = await input.contracts.Root.register(_tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
-        await tx.wait();
-        txs.push(tx);
+        const chainIds = await getUniversalTldChainIds(tld_);
+        if (chainIds) {
+          const chains = await Promise.all([...chainIds.map((chainId) => getInContractChain(chainId))]);
+          const tx = await input.contracts.Root.register([...chains], _tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 1); // 2147483647 => Year 2038 problem && 1 === TldClass.UNIVERSAL
+          await tx.wait();
+          txs.push(tx);
+        }
       }
       const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
       if (isExists && isWrapped.address_ === ZERO_ADDRESS) {

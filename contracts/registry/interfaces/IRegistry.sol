@@ -122,13 +122,13 @@ interface IRegistry {
     bytes32 tld
   ) external;
 
-  function prune(bytes32 name, bytes32 tld) external;
+  // function prune(bytes32 name, bytes32 tld) external;
 
-  function prune(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) external;
+  // function prune(
+  //   bytes32 host,
+  //   bytes32 name,
+  //   bytes32 tld
+  // ) external;
 
   function bridged(bytes32 name, bytes32 tld) external;
 
@@ -149,6 +149,8 @@ interface IRegistry {
   function getGracePeriod() external view returns (uint256);
 
   function getTldClass(bytes32 tld) external view returns (TldClass.TldClass);
+
+  function getTldChains(bytes32 tld) external view returns (Chain.Chain[] memory);
 
   function getWrapper(bytes32 tld) external view returns (WrapperRecord.WrapperRecord memory);
 

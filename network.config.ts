@@ -21,8 +21,8 @@ export enum Network {
   IOTEX_TESTNET = 4690,
   OKC = 66,
   OKC_TESTNET = 65,
-  HECO = 128,
-  HECO_TESTNET = 256,
+  // HECO = 128,
+  // HECO_TESTNET = 256,
   KCC = 321,
   KCC_TESTNET = 322,
   VELAS_EVM = 106,
@@ -31,6 +31,8 @@ export enum Network {
   GNOSIS_CHIADO = 10200,
   MOONBEAM = 1284,
   MOONRIVER = 1285,
+  // ASTR = 492,
+  // METIS = 1088,
   // CRONOS = 25,
   // CRONOS_TESTNET = 338,
   // EVMOS = 9001,
@@ -41,13 +43,25 @@ export enum Network {
   // AURORA_TESTNET = 1313161555,
   // FUSE = 122,
   // FUSE_TESTNET = 123,
-  // CELO = 42220,
-  // CELO_ALFAJORES = 44787,
+  CELO = 42220,
+  CELO_ALFAJORES = 44787,
   // TELOS_EVM = 40,
   // TELOS_EVM_TESTNET = 41
 }
 
-export const Mainnets = [Network.ETHEREUM, Network.BNB_CHAIN, Network.POLYGON, Network.AVALANCHE, Network.FANTOM, Network.OPTIMISM, Network.ARBITRUM, Network.GNOSIS];
+export const Mainnets = [
+  Network.ETHEREUM,
+  Network.BNB_CHAIN,
+  Network.POLYGON,
+  Network.AVALANCHE,
+  Network.FANTOM,
+  Network.OPTIMISM,
+  Network.ARBITRUM,
+  Network.GNOSIS,
+  Network.CELO,
+  Network.OKC,
+  Network.IOTEX,
+];
 
 export const Testnets = [
   Network.GOERLI,
@@ -58,6 +72,9 @@ export const Testnets = [
   Network.OPTIMISM_GOERLI,
   Network.ARBITRUM_GOERLI,
   Network.GNOSIS_CHIADO,
+  Network.CELO_ALFAJORES,
+  Network.OKC_TESTNET,
+  Network.IOTEX_TESTNET,
 ];
 
 export interface INetworkConfig {
@@ -67,6 +84,21 @@ export interface INetworkConfig {
     name: string;
     symbol: string;
     url: string;
+    routerProtocol?: {};
+    multichain?: {
+      v6?: {
+        chainId: number;
+        endpoint: {
+          address: string;
+        };
+      };
+      v7?: {
+        chainId: number;
+        endpoint: {
+          address: string;
+        };
+      };
+    };
     layerzero?: {
       chainId: number;
       endpoint: {
@@ -113,6 +145,14 @@ const config: INetworkConfig = {
         address: "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.ETHEREUM,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token",
@@ -135,6 +175,14 @@ const config: INetworkConfig = {
       chainId: 10121,
       endpoint: {
         address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
+      },
+    },
+    multichain: {
+      v6: {
+        chainId: Network.GOERLI,
+        endpoint: {
+          address: "0x3D4e1981f822e87A1A4C05F2e4b3bcAdE5406AE3",
+        },
       },
     },
     chainlink: {
@@ -161,6 +209,14 @@ const config: INetworkConfig = {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.BNB_CHAIN,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token",
@@ -185,6 +241,14 @@ const config: INetworkConfig = {
         address: "0x6Fcb97553D41516Cb228ac03FdC8B9a0a9df04A1",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.BNB_CHAIN_TESTNET,
+        endpoint: {
+          address: "0xD2b88BA56891d43fB7c108F23FE6f92FEbD32045",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token",
@@ -207,6 +271,14 @@ const config: INetworkConfig = {
       chainId: 6,
       endpoint: {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
+      },
+    },
+    multichain: {
+      v6: {
+        chainId: Network.AVALANCHE,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
       },
     },
     chainlink: {
@@ -257,6 +329,14 @@ const config: INetworkConfig = {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.POLYGON,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token",
@@ -305,6 +385,14 @@ const config: INetworkConfig = {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.ARBITRUM,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token on Arbitrum Mainnet",
@@ -326,7 +414,7 @@ const config: INetworkConfig = {
     layerzero: {
       chainId: 10143,
       endpoint: {
-        address: "0x4D747149A57923Beb89f22E6B7B97f7D8c087A00",
+        address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
       },
     },
     chainlink: {
@@ -353,6 +441,14 @@ const config: INetworkConfig = {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.OPTIMISM,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token on Optimism Mainnet",
@@ -374,7 +470,7 @@ const config: INetworkConfig = {
     layerzero: {
       chainId: 10132,
       endpoint: {
-        address: "0x72aB53a133b27Fa428ca7Dc263080807AfEc91b5",
+        address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
       },
     },
     chainlink: {
@@ -401,6 +497,14 @@ const config: INetworkConfig = {
         address: "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
       },
     },
+    multichain: {
+      v6: {
+        chainId: Network.FANTOM,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
     chainlink: {
       token: {
         name: "ChainLink Token on Fantom",
@@ -425,6 +529,14 @@ const config: INetworkConfig = {
         address: "0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf",
       },
     },
+    multichain: {
+      v6: {
+        chainId: 4002,
+        endpoint: {
+          address: "0xc629d02732EE932db1fa83E1fcF93aE34aBFc96B",
+        },
+      },
+    },
     // TODO: chainlink
     chainlink: {
       token: {
@@ -432,6 +544,24 @@ const config: INetworkConfig = {
         symbol: "LINK",
         decimals: 18,
         address: "0xfaFedb041c0DD4fA2Dc0d87a6B0979Ee6FA7af5F",
+      },
+    },
+  },
+  [Network.IOTEX]: {
+    chainId: Network.IOTEX,
+    chain: InContractChain.IOTEX,
+    name: "IoTeX Mainnet",
+    symbol: "IOTX",
+    url: `https://iotex-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
+    slip44: {
+      coinId: 304,
+    },
+    multichain: {
+      v6: {
+        chainId: Network.IOTEX,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
       },
     },
   },
@@ -445,40 +575,43 @@ const config: INetworkConfig = {
       coinId: 304,
     },
   },
-  [Network.IOTEX]: {
-    chainId: Network.IOTEX,
-    chain: InContractChain.IOTEX,
-    name: "IoTeX Mainnet",
-    symbol: "IOTX",
-    url: `https://rpc.ankr.com/iotex`,
-    slip44: {
-      coinId: 304,
-    },
-  },
+
   [Network.OKC_TESTNET]: {
     chainId: Network.OKC_TESTNET,
     name: "OKC Testnet",
     symbol: "OKT",
     url: `https://exchaintestrpc.okex.org`,
+    layerzero: {
+      chainId: 10155,
+      endpoint: {
+        address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+      },
+    },
   },
   [Network.OKC]: {
     chainId: Network.OKC,
     name: "OKC Mainnet",
     symbol: "OKT",
-    url: `https://exchainrpc.okex.org`,
+    url: `https://oKc-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
+    layerzero: {
+      chainId: 155,
+      endpoint: {
+        address: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
+      },
+    },
   },
-  [Network.HECO_TESTNET]: {
-    chainId: Network.HECO_TESTNET,
-    name: "HECO Testnet",
-    symbol: "HT",
-    url: `https://http-testnet.hecochain.com/`,
-  },
-  [Network.HECO]: {
-    chainId: Network.HECO,
-    name: "HECO Mainnet",
-    symbol: "HT",
-    url: `https://http-mainnet.hecochain.com`,
-  },
+  // [Network.HECO_TESTNET]: {
+  //   chainId: Network.HECO_TESTNET,
+  //   name: "HECO Testnet",
+  //   symbol: "HT",
+  //   url: `https://http-testnet.hecochain.com/`,
+  // },
+  // [Network.HECO]: {
+  //   chainId: Network.HECO,
+  //   name: "HECO Mainnet",
+  //   symbol: "HT",
+  //   url: `https://http-mainnet.hecochain.com`,
+  // },
   [Network.KCC_TESTNET]: {
     chainId: Network.KCC_TESTNET,
     name: "KCC Testnet",
@@ -505,14 +638,34 @@ const config: INetworkConfig = {
     slip44: {
       coinId: 700,
     },
+    layerzero: {
+      chainId: 145,
+      endpoint: {
+        address: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
+      },
+    },
+    multichain: {
+      v6: {
+        chainId: Network.GNOSIS,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
   },
-  [Network.GNOSIS]: {
+  [Network.GNOSIS_CHIADO]: {
     chainId: Network.GNOSIS_CHIADO,
     name: "Gnosis Chiado",
     symbol: "XDAI",
     url: `https://rpc.chiado.gnosis.gateway.fm`,
     slip44: {
       coinId: 700,
+    },
+    layerzero: {
+      chainId: 10145,
+      endpoint: {
+        address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+      },
     },
   },
   [Network.MOONBEAM]: {
@@ -531,6 +684,38 @@ const config: INetworkConfig = {
     url: `https://rpc.api.moonriver.moonbeam.network`,
     slip44: {
       coinId: 1285,
+    },
+    multichain: {
+      v6: {
+        chainId: Network.MOONRIVER,
+        endpoint: {
+          address: "0xC10Ef9F491C9B59f936957026020C321651ac078",
+        },
+      },
+    },
+  },
+  [Network.CELO]: {
+    chainId: Network.CELO,
+    name: "Celo Mainnet",
+    symbol: "CELO",
+    url: `https://celo-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    layerzero: {
+      chainId: 125,
+      endpoint: {
+        address: "0x3A73033C0b1407574C76BdBAc67f126f6b4a9AA9",
+      },
+    },
+  },
+  [Network.CELO_ALFAJORES]: {
+    chainId: Network.CELO_ALFAJORES,
+    name: "Celo Alfajores Testnet",
+    symbol: "CELO",
+    url: `https://celo-alfajores.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    layerzero: {
+      chainId: 10125,
+      endpoint: {
+        address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+      },
     },
   },
 };
