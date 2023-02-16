@@ -99,13 +99,17 @@ abstract contract BaseResolver is IBaseResolver, Helper, ContextUpgradeable, Acc
 
   function _requestSync(Chain.Chain[] memory dstChains, bytes memory ews) internal {
     CrossChainProvider.CrossChainProvider provider = getSynchronizerProvider();
-    _synchronizer.sync(SyncAction.SyncAction.RESOLVER, provider, dstChains, ews);
-    emit OutgoingSync(ews);
+    try _synchronizer.sync(SyncAction.SyncAction.RESOLVER, provider, dstChains, ews) {
+      emit OutgoingSync(ews);
+    } catch (bytes memory reason) {
+      emit OutgoingSyncError(ews, reason);
+    }
   }
 
   function receiveSync(bytes memory ews) external {
     require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
     (bool success, ) = address(this).call(ews);
+    // if (!success) emit IncomingSyncError(ews);
     emit IncomingSync(success, ews);
   }
 

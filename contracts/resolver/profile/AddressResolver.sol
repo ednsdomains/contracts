@@ -17,6 +17,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _addresses[_getUser(host, name, tld)][fqdn] = address_;
     emit SetAddress(host, name, tld, address_);
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setAddress(host,name,tld,address_)", host, name, tld, address_));
   }
 
   function setAddress(

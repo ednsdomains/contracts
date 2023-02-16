@@ -29,6 +29,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _nfts[_getUser(host, name, tld)][fqdn][chainId] = NFT({ contract_: contract_, tokenId: tokenId });
     emit SetNFT(host, name, tld, chainId, contract_, tokenId);
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setNFT(host,name,tld,uint256,address,uint256)", host, name, tld, chainId, contract_, tokenId));
   }
 
   function getNFT(

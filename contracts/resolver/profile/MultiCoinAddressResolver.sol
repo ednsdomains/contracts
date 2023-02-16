@@ -17,6 +17,7 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     bytes32 fqdn = _getFqdn(host, name, tld);
     _multiCoinAddresses[_getUser(host, name, tld)][fqdn][coin] = address_;
     emit SetMultiCoinAddress(host, name, tld, coin, bytes(address_));
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setMultiCoinAddress(host,name,tld,uint256,bytes)", host, name, tld, coin, address_));
   }
 
   function setMultiCoinAddress(

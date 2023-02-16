@@ -7,6 +7,8 @@ import "../../lib/CrossChainProvider.sol";
 interface IBaseResolver {
   event IncomingSync(bool success, bytes ews);
   event OutgoingSync(bytes ews);
+  event IncomingSyncError(bytes ews, bytes reason);
+  event OutgoingSyncError(bytes ews, bytes reason);
 
   function receiveSync(bytes memory ews) external; // Incoming sync action
 
