@@ -9,3 +9,5 @@ typechain
 cache
 artifacts
 .vscode/
+
+.solcx-lock-*
