@@ -17,7 +17,6 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _addresses[_getUser(host, name, tld)][fqdn] = address_;
     emit SetAddress(host, name, tld, address_);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("_setAddress(host,name,tld,address_)", host, name, tld, address_));
   }
 
   function setAddress(
@@ -27,6 +26,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setAddress(host, name, tld, address_);
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
   function getAddress(
@@ -66,6 +66,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setReverseAddress(host, name, tld, address_);
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
   function getReverseAddress(address address_) public view returns (string memory) {

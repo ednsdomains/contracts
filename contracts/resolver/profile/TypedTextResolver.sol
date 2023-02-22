@@ -17,7 +17,6 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _typedTexts[_getUser(host, name, tld)][fqdn][keccak256(type_)] = text;
     emit SetTypedText(host, name, tld, type_, text);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("_setTypedText(host,name,tld,byte,text)", host, name, tld, type_, text));
   }
 
   function setTypedText(
@@ -28,6 +27,7 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
     string memory text
   ) public onlyLive(name, tld) {
     _setTypedText(host, name, tld, type_, text);
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setTypedText(bytes,bytes,bytes,bytes,string)", host, name, tld, type_, text));
   }
 
   function getTypedText(

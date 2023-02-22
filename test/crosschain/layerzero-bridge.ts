@@ -18,7 +18,7 @@ async function main() {
   console.log({ name, tld });
 
   // ===== Avalanche ===== //
-  const AvalancheProvider = new ethers.providers.JsonRpcProvider("https://api.avax-test.network/ext/bc/C/rpc	");
+  const AvalancheProvider = new ethers.providers.JsonRpcProvider("https://api.avax-test.network/ext/bc/C/rpc");
   const AvalancheFeeData = await AvalancheProvider.getFeeData();
   const AvalancheSigner = _signer.connect(AvalancheProvider);
   const AvalancheContracts = await getContracts(AvalancheSigner);

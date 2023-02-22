@@ -23,6 +23,7 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   IPublicResolver private _resolver;
 
   mapping(Chain.Chain => address) private _remoteSynchronizers;
+  mapping(address => CrossChainProvider.CrossChainProvider) private _userDefaultProviders;
 
   function initialize(
     Chain.Chain selfChain,
@@ -132,6 +133,15 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
 
   function setRemoteSynchronizer(Chain.Chain chain, address target) public {
     _remoteSynchronizers[chain] = target;
+  }
+
+  function getUserDefaultProvider(address user) public view returns (CrossChainProvider.CrossChainProvider) {
+    return _userDefaultProviders[user];
+  }
+
+  function setUserDefaultProvider(address user, CrossChainProvider.CrossChainProvider provider) public {
+    require(user == _msgSender(), "ONLY_SELF");
+    _userDefaultProviders[user] = provider;
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}

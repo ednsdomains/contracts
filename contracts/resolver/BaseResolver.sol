@@ -3,23 +3,19 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "./interfaces/IBaseResolver.sol";
-import "../lib/CrossChainProvider.sol";
 import "../lib/Chain.sol";
+import "../crosschain/SynchronizerApplication.sol";
+import "../crosschain/interfaces/ISynchronizer.sol";
 
-abstract contract BaseResolver is IBaseResolver, Helper, ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
+abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   IRegistry internal _registry;
-
-  ISynchronizer private _synchronizer;
-
-  mapping(address => CrossChainProvider.CrossChainProvider) private _synchronizerProviders;
 
   modifier onlyAuthorised(
     bytes memory host,
@@ -93,36 +89,12 @@ abstract contract BaseResolver is IBaseResolver, Helper, ContextUpgradeable, Acc
 
   function _afterSet(bytes32 tld, bytes memory ews) internal {
     if (_registry.getTldClass(tld) == TldClass.TldClass.OMNI && _registry.getTldChains(tld).length > 0) {
-      _requestSync(_registry.getTldChains(tld), ews);
+      _requestSync(SyncAction.SyncAction.RESOLVER, _registry.getTldChains(tld), ews);
     }
   }
 
-  function _requestSync(Chain.Chain[] memory dstChains, bytes memory ews) internal {
-    CrossChainProvider.CrossChainProvider provider = getSynchronizerProvider();
-    try _synchronizer.sync(SyncAction.SyncAction.RESOLVER, provider, dstChains, ews) {
-      emit OutgoingSync(ews);
-    } catch (bytes memory reason) {
-      emit OutgoingSyncError(ews, reason);
-    }
-  }
-
-  function receiveSync(bytes memory ews) external {
-    require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
-    (bool success, ) = address(this).call(ews);
-    // if (!success) emit IncomingSyncError(ews);
-    emit IncomingSync(success, ews);
-  }
-
-  function setSynchronizer(ISynchronizer synchronizer_) external onlyRole(ADMIN_ROLE) {
-    _synchronizer = synchronizer_;
-  }
-
-  function getSynchronizerProvider() public view returns (CrossChainProvider.CrossChainProvider) {
-    return _synchronizerProviders[_msgSender()];
-  }
-
-  function setSynchronizerProvider(CrossChainProvider.CrossChainProvider provider) external {
-    _synchronizerProviders[_msgSender()] = provider;
+  function setSynchronizer(ISynchronizer synchronizer_) public onlyRole(ADMIN_ROLE) {
+    _setSynchronizer(synchronizer_);
   }
 
   uint256[50] private __gap;

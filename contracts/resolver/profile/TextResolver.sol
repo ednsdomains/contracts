@@ -16,7 +16,6 @@ abstract contract TextResolver is ITextResolver, BaseResolver {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _texts[_getUser(host, name, tld)][fqdn] = text;
     emit SetText(host, name, tld, text);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("_setText(host,name,tld,text)", host, name, tld, text));
   }
 
   function setText(
@@ -26,6 +25,7 @@ abstract contract TextResolver is ITextResolver, BaseResolver {
     string memory text
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setText(host, name, tld, text);
+    _afterSet(keccak256(tld), abi.encodeWithSignature("_setText(bytes,bytes,bytes,string)", host, name, tld, text));
   }
 
   function getText(

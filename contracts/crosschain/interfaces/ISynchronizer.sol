@@ -26,4 +26,8 @@ interface ISynchronizer {
   function getRemoteSynchronizer(Chain.Chain chain) external view returns (address);
 
   function setRemoteSynchronizer(Chain.Chain chain, address target) external;
+
+  function getUserDefaultProvider(address user) external view returns (CrossChainProvider.CrossChainProvider);
+
+  function setUserDefaultProvider(address user, CrossChainProvider.CrossChainProvider provider) external;
 }

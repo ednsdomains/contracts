@@ -9,8 +9,10 @@ import "../utils/Helper.sol";
 import "../registry/interfaces/IRegistry.sol";
 import "../resolver/interfaces/IPublicResolver.sol";
 import "./interfaces/IRegistrar.sol";
+import "../crosschain/SynchronizerApplication.sol";
+import "../crosschain/interfaces/ISynchronizer.sol";
 
-contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Helper {
+contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradeable, UUPSUpgradeable, Helper {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant ROOT_ROLE = keccak256("ROOT_ROLE");
@@ -82,6 +84,20 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     address owner,
     uint64 expiry
   ) external onlyControllerOrBridge((keccak256(tld))) {
+    _register(name, tld, owner, expiry);
+
+    bytes32 _tld = keccak256(tld);
+    if (_registry.getTldClass(_tld) == TldClass.TldClass.OMNI && _registry.getTldChains(_tld).length > 0) {
+      _requestSync(SyncAction.SyncAction.RESOLVER, _registry.getTldChains(_tld), abi.encodeWithSignature("_register(bytes,bytes,address,uint64)", name, tld, owner, expiry));
+    }
+  }
+
+  function _register(
+    bytes memory name,
+    bytes memory tld,
+    address owner,
+    uint64 expiry
+  ) private {
     require(valid(name), "INVALID_DOMAIN_NAME");
     require(isAvailable(name, tld), "DOMAIN_NOT_AVAILABLE");
     require(expiry + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
@@ -94,6 +110,19 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
     bytes memory tld,
     uint64 expiry
   ) external onlyControllerOrBridge(keccak256(tld)) {
+    _renew(name, tld, expiry);
+
+    bytes32 _tld = keccak256(tld);
+    if (_registry.getTldClass(_tld) == TldClass.TldClass.OMNI && _registry.getTldChains(_tld).length > 0) {
+      _requestSync(SyncAction.SyncAction.RESOLVER, _registry.getTldChains(_tld), abi.encodeWithSignature("_renew(bytes,bytes,uint64)", name, tld, expiry));
+    }
+  }
+
+  function _renew(
+    bytes memory name,
+    bytes memory tld,
+    uint64 expiry
+  ) private {
     bytes32 _domain = keccak256(name);
     bytes32 _tld = keccak256(tld);
     uint64 expiry_ = _registry.getExpiry(_domain, _tld);
@@ -116,6 +145,10 @@ contract Registrar is IRegistrar, AccessControlUpgradeable, UUPSUpgradeable, Hel
   //   _registry.setOwner(keccak256(name), keccak256(tld), owner);
   //   emit DomainReclaimed(name, tld, owner);
   // }
+
+  function setSynchronizer(ISynchronizer synchronizer_) external onlyRole(ADMIN_ROLE) {
+    _setSynchronizer(synchronizer_);
+  }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 
