@@ -9,4 +9,5 @@ export type ContractName =
   | "Token"
   | "Portal"
   | "Bridge"
+  | "Synchronizer"
   | "LayerZeroProvider";

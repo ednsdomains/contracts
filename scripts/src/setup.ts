@@ -10,7 +10,6 @@ import { Transaction } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
 import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
-import TLDs from "../../static/tlds.json";
 import { getInContractChain } from "./lib/get-in-contract-chain";
 
 export interface ISetupInput {
@@ -85,15 +84,34 @@ export const setupRegistrar = async (input: ISetupInput) => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
 
   await _beforeSetup(input.signer, input.chainId, "Registrar");
+  const txs: Transaction[] = [];
 
   const tx = await input.contracts.Registrar.grantRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address);
   await tx.wait();
+  txs.push(tx);
 
-  await _afterSetup(input.signer, input.chainId, "Registrar", [tx]);
+  if (input.contracts.Synchronizer) {
+    const tx1 = await input.contracts.Registrar.setSynchronizer(input.contracts.Synchronizer.address);
+    await tx1.wait();
+    txs.push(tx1);
+  }
+
+  await _afterSetup(input.signer, input.chainId, "Registrar", [...txs]);
 };
 
 export const setupPublicResolver = async (input: ISetupInput) => {
-  //=== NOTHING NEED TO SETUP IN WRAPPER CONTRACT ==//
+  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
+
+  await _beforeSetup(input.signer, input.chainId, "PublicResolver");
+  const txs: Transaction[] = [];
+
+  if (input.contracts.Synchronizer) {
+    const tx1 = await input.contracts.PublicResolver.setSynchronizer(input.contracts.Synchronizer.address);
+    await tx1.wait();
+    txs.push(tx1);
+  }
+
+  await _afterSetup(input.signer, input.chainId, "PublicResolver", [...txs]);
 };
 
 export const setupRoot = async (input: ISetupInput) => {
@@ -239,18 +257,8 @@ export const setupBridge = async (input: ISetupInput) => {
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
     const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
-
-    // ===== LayerZero ===== //
     if (NetworkConfig[network].chain && NetworkConfig[network].layerzero) {
       if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
-        // Set LZ Chain ID
-        // const _chainId_ = await input.contracts.Bridge.getChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO);
-        // if (_chainId_ !== NetworkConfig[network].layerzero!.chainId) {
-        //   const tx = await input.contracts.Bridge.setChainId(NetworkConfig[network].chain!, CrossChainProvider.LAYERZERO, NetworkConfig[network].layerzero!.chainId);
-        //   await tx.wait();
-        //   txs.push(tx);
-        // }
-        // Set Trust Remote
         const data = await getContractsData(NetworkConfig[network].chainId);
         if (data && data.addresses.Bridge) {
           const _address_ = await input.contracts.Bridge.getRemoteBridge(NetworkConfig[network].chain!);
@@ -264,6 +272,36 @@ export const setupBridge = async (input: ISetupInput) => {
     }
   }
   await _afterSetup(input.signer, input.chainId, "Bridge", [...txs]);
+};
+
+export const setupSynchronizer = async (input: ISetupInput) => {
+  if (!input.contracts.Synchronizer) throw new Error("`Synchronizer` is not available");
+
+  const isCurrMainnet = !!Mainnets.find((i) => i === input.chainId);
+  const isCurrTestnet = !!Testnets.find((i) => i === input.chainId);
+
+  await _beforeSetup(input.signer, input.chainId, "Synchronizer");
+
+  const txs: Transaction[] = [];
+
+  for (const network in NetworkConfig) {
+    const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
+    const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
+    if (NetworkConfig[network].chain && NetworkConfig[network].layerzero) {
+      if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
+        const data = await getContractsData(NetworkConfig[network].chainId);
+        if (data && data.addresses.Synchronizer) {
+          const _address_ = await input.contracts.Synchronizer.getRemoteSynchronizer(NetworkConfig[network].chain!);
+          if (_address_ === ZERO_ADDRESS) {
+            const tx = await input.contracts.Synchronizer.setRemoteSynchronizer(NetworkConfig[network].chain!, data.addresses.Synchronizer);
+            await tx.wait();
+            txs.push(tx);
+          }
+        }
+      }
+    }
+  }
+  await _afterSetup(input.signer, input.chainId, "Synchronizer", [...txs]);
 };
 
 export const setupLayerZeroProvider = async (input: ISetupInput) => {
@@ -316,8 +354,8 @@ const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: Co
   } else {
     console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
   }
-  console.log(`Setup procedure initiated, contract [${name}] will be setup on [${NetworkConfig[chainId].name}] in 5 seconds...`);
-  await delay(5000);
+  console.log(`Setup procedure initiated, contract [${name}] will be setup on [${NetworkConfig[chainId].name}] in 3 seconds...`);
+  await delay(3000);
 };
 
 const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName, txs: Transaction[]) => {

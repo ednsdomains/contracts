@@ -10,6 +10,7 @@ import {
   setupRegistrar,
   setupRegistry,
   setupRoot,
+  setupSynchronizer,
   setupUniversalRegistrarController,
 } from "./src/setup";
 
@@ -25,6 +26,7 @@ async function main() {
   await setupClassicalRegistrarController({ signer, chainId, contracts });
   await setupUniversalRegistrarController({ signer, chainId, contracts });
   await setupBridge({ signer, chainId, contracts });
+  await setupSynchronizer({ signer, chainId, contracts });
   await setupPortal({ signer, chainId, contracts });
   await setupLayerZeroProvider({ signer, chainId, contracts });
 }

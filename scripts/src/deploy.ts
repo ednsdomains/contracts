@@ -1,7 +1,7 @@
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import NetworkConfig from "../../network.config";
-import { PublicResolver, Registry, Root, ClassicalRegistrarController, Registrar, Wrapper, TokenMock, Portal, UniversalRegistrarController } from "../../typechain";
+import { PublicResolver, Registry, Root, ClassicalRegistrarController, Registrar, Wrapper, TokenMock, Portal, UniversalRegistrarController, Synchronizer } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction } from "ethers";
 import { getAllContractsData, getContractAddress, isContractDeployed } from "./lib/get-contracts";
@@ -11,9 +11,7 @@ import { setAllContractsData } from "./lib/set-contracts";
 import delay from "delay";
 import { LayerZeroProvider } from "../../typechain/LayerZeroProvider";
 import { Bridge } from "../../typechain/Bridge";
-import { InContractChain } from "./constants/in-contract-chain";
 import { IContracts } from "./interfaces/contracts";
-import { verifyContract } from "./lib/verify-contract";
 
 export interface IDeployInput {
   chainId: number;
@@ -140,6 +138,19 @@ export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
   return contract;
 };
 
+export const deploySynchronizer = async (input: IDeployInput): Promise<Synchronizer> => {
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Portal) throw new Error("`Portal` is not available");
+  const chain = NetworkConfig[input.chainId].chain;
+  await _beforeDeploy(input.signer, await input.signer.getChainId(), "Synchronizer");
+  const factory = await ethers.getContractFactory("Synchronizer", input.signer);
+  const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.address, input.contracts.Portal.address], { kind: "uups" });
+  await _contract.deployed();
+  await _afterDeploy(await input.signer.getChainId(), "Synchronizer", _contract, _contract.deployTransaction);
+  const contract = factory.attach(_contract.address);
+  return contract;
+};
+
 export const deployLayerZeroProvider = async (input: IDeployInput): Promise<LayerZeroProvider> => {
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "LayerZeroProvider");
@@ -164,8 +175,8 @@ const _beforeDeploy = async (signer: SignerWithAddress, chainId: number, name: C
   if (balance.eq(0)) throw new Error(`Signer account ${signer.address} has [0] balance`);
 
   // Announce ready for the deployment
-  console.log(`Deployment initiated, contract [${name}] will be deploy on [${NetworkConfig[chainId].name}] in 5 seconds...`);
-  await delay(5000);
+  console.log(`Deployment initiated, contract [${name}] will be deploy on [${NetworkConfig[chainId].name}] in 3 seconds...`);
+  await delay(3000);
 };
 
 const _afterDeploy = async (chainId: number, name: ContractName, contract: Contract, tx: Transaction) => {

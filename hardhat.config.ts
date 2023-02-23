@@ -173,11 +173,11 @@ if (config.networks) {
       if (NetworkConfig[chainId]) {
         // @ts-ignore
         config.networks[network].url = NetworkConfig[chainId].url;
+        if (process.env.PRIVATE_KEY) config.networks[network]!.accounts = [process.env.PRIVATE_KEY];
       } else {
         delete config.networks[network];
       }
     }
   }
 }
-
 export default config;

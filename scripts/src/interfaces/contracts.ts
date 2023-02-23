@@ -11,6 +11,7 @@ import {
   BatchRegistrarController,
   Portal,
   LayerZeroProvider,
+  Synchronizer,
 } from "../../../typechain";
 
 export interface IContracts {
@@ -24,5 +25,6 @@ export interface IContracts {
   Token?: IERC20;
   Portal?: Portal;
   Bridge?: Bridge;
+  Synchronizer?: Synchronizer;
   LayerZeroProvider?: LayerZeroProvider;
 }

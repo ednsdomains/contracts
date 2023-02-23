@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
-import { Bridge, ClassicalRegistrarController, ERC20, LayerZeroProvider, Portal, PublicResolver, Registrar, Registry, Root, Wrapper } from "../../../typechain";
+import { Bridge, ClassicalRegistrarController, ERC20, LayerZeroProvider, Portal, PublicResolver, Registrar, Registry, Root, Synchronizer, Wrapper } from "../../../typechain";
 import { ContractName } from "../constants/contract-name";
 import { IContracts } from "../interfaces/contracts";
 import { UniversalRegistrarController } from "../../../typechain/UniversalRegistrarController";
@@ -20,6 +20,7 @@ export interface IGetContractsData {
     DefaultWrapper: string | null;
     Token: string | null;
     Bridge: string | null;
+    Synchronizer: string | null;
     Portal: string | null;
     LayerZeroProvider: string | null;
     [key: string]: string | null;
@@ -57,6 +58,7 @@ export async function getContracts(signer: Signer): Promise<IContracts> {
     UniversalRegistrarController: await getUniversalRegistrarController(signer),
     Bridge: await getBridge(signer),
     Portal: await getPortal(signer),
+    Synchronizer: await getSynchronizer(signer),
     LayerZeroProvider: await getLayerZeroProvider(signer),
   };
 }
@@ -157,6 +159,16 @@ export async function getBridge(signer: Signer): Promise<Bridge | undefined> {
   if (data?.addresses.Bridge) {
     const factory = await ethers.getContractFactory("Bridge");
     return factory.attach(data.addresses.Bridge);
+  }
+  return undefined;
+}
+
+export async function getSynchronizer(signer: Signer): Promise<Synchronizer | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.Synchronizer) {
+    const factory = await ethers.getContractFactory("Synchronizer");
+    return factory.attach(data.addresses.Synchronizer);
   }
   return undefined;
 }
