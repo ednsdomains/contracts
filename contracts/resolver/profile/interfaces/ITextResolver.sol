@@ -9,7 +9,7 @@ interface ITextResolver {
     bytes memory name,
     bytes memory tld,
     string memory text
-  ) external;
+  ) external payable;
 
   function getText(
     bytes memory host,

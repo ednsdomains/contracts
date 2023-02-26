@@ -16,7 +16,7 @@ interface INFTResolver {
     uint256 chainId,
     address contract_,
     uint256 tokenId
-  ) external;
+  ) external payable;
 
   function getNFT(
     bytes memory host,

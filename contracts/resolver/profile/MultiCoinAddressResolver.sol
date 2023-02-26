@@ -25,7 +25,7 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     bytes memory tld,
     uint256 coin,
     bytes memory address_
-  ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setMultiCoinAddress(host, name, tld, coin, address_);
     _afterSet(keccak256(tld), abi.encodeWithSignature("setMultiCoinAddress(bytes,bytes,bytes,uint256,bytes)", host, name, tld, coin, address_));
   }

@@ -6,10 +6,10 @@ import "../../lib/SyncAction.sol";
 import "../../lib/CrossChainProvider.sol";
 
 interface ISynchronizer {
-  event LowLevelError(bytes reason);
-  event SynchronizerApplicationError(SyncAction.SyncAction action, string reason);
-  event PortalError(SyncAction.SyncAction action, string reason);
-  event PanicError(uint256 code);
+  event ApplicationError(SyncAction.SyncAction action, string reason);
+
+  event IncomingSync(SyncAction.SyncAction action, address target);
+  event OutgoingSync(SyncAction.SyncAction action, CrossChainProvider.CrossChainProvider provider, Chain.Chain[] dstChains);
 
   function estimateSyncFee(
     SyncAction.SyncAction action,

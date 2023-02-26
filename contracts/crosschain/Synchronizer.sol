@@ -118,21 +118,13 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
         address dstSynchronizer = getRemoteSynchronizer(dstChain);
         bytes memory payload = _packPayload(dstSynchronizer, ctx);
         uint256 fee = _portal.estimateFee(dstChain, provider, payload);
-        try _portal.send_{ value: fee }(sender, dstChain, provider, payload) {
-          //nothing
-        } catch Error(string memory reason) {
-          emit PortalError(action, reason);
-        } catch Panic(uint256 code) {
-          emit PanicError(code);
-        } catch (bytes memory reason) {
-          emit LowLevelError(reason);
-        }
+        _portal.send_{ value: fee }(sender, dstChain, provider, payload);
       }
     }
+    emit OutgoingSync(action, provider, dstChains);
   }
 
   function receive_(bytes memory ctx) external {
-    // TODO:
     (SyncAction.SyncAction action, bytes memory ews) = _unpackContext(ctx);
     address app;
     if (action == SyncAction.SyncAction.REGISTRAR) {
@@ -143,9 +135,9 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
 
     if (app != address(0)) {
       try ISynchronizerApplication(app).receiveSync(ews) {
-        // nothing
+        emit IncomingSync(action, address(app));
       } catch Error(string memory reason) {
-        emit SynchronizerApplicationError(action, reason);
+        emit ApplicationError(action, reason);
       }
     }
   }

@@ -524,7 +524,7 @@ const config: INetworkConfig = {
       coinId: 1007,
     },
     layerzero: {
-      chainId: 10012,
+      chainId: 10112,
       endpoint: {
         address: "0x7dcAD72640F835B0FA36EFD3D6d3ec902C7E5acf",
       },
@@ -537,7 +537,6 @@ const config: INetworkConfig = {
         },
       },
     },
-    // TODO: chainlink
     chainlink: {
       token: {
         name: "ChainLink Token on Fantom",

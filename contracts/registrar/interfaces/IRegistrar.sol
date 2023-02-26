@@ -27,6 +27,7 @@ interface IRegistrar {
   ) external;
 
   function register(
+    address sender,
     bytes memory name,
     bytes memory tld,
     address owner,
@@ -34,6 +35,7 @@ interface IRegistrar {
   ) external payable;
 
   function renew(
+    address sender,
     bytes memory name,
     bytes memory tld,
     uint64 expiry

@@ -17,7 +17,7 @@ interface IContentHashResolver {
     string memory name,
     string memory tld,
     bytes memory hash
-  ) external;
+  ) external payable;
 
   function getContentHash(
     bytes memory host,
@@ -31,7 +31,7 @@ interface IContentHashResolver {
     string memory tld,
     ContentHashProtocol type_,
     bytes memory hash
-  ) external;
+  ) external payable;
 
   function getTypedContentHash(
     bytes memory host,

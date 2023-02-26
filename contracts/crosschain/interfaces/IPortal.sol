@@ -5,13 +5,11 @@ import "../../lib/CrossChainProvider.sol";
 import "../../lib/Chain.sol";
 
 interface IPortal {
-  event Sent(address indexed sender, Chain.Chain dstChain, CrossChainProvider.CrossChainProvider provider, bytes payload);
-  event Received(CrossChainProvider.CrossChainProvider provider, bytes payload);
-  event ReceiverError(bytes32 id, address indexed receiver, string resaon);
+  event PacketSent(address indexed sender, Chain.Chain dstChain, CrossChainProvider.CrossChainProvider provider);
+  event PacketReceived(CrossChainProvider.CrossChainProvider provider);
 
+  event ReceiverError(bytes32 id, address indexed receiver, string resaon);
   event ProviderError(CrossChainProvider.CrossChainProvider provider, string reason);
-  event PanicError(uint256 code);
-  event LowLevelError(bytes reason);
 
   // EVM compatible send
   function send_(

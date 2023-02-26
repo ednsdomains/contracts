@@ -8,8 +8,9 @@ import "./interfaces/IRegistry.sol";
 import "../lib/TldClass.sol";
 import "../wrapper/interfaces/IWrapper.sol";
 import "../lib/UserRecord.sol";
+import "../crosschain/SynchronizerApplication.sol";
 
-contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeable {
+contract Registry is IRegistry, Helper, SynchronizerApplication, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   uint256 public constant GRACE_PERIOD = 30 days;
@@ -588,6 +589,13 @@ contract Registry is IRegistry, Helper, AccessControlUpgradeable, UUPSUpgradeabl
   ) public pure virtual returns (uint256) {
     return uint256(keccak256(_join(host, name_, tld)));
   }
+
+  /* ========== Synchronizer ==========*/
+  function setSynchronizer(ISynchronizer synchronizer_) external onlyRole(ADMIN_ROLE) {
+    _setSynchronizer(synchronizer_);
+  }
+
+  // function _afterSet() {}
 
   /* ========== UUPS ==========*/
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}

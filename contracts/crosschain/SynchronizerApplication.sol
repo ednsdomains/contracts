@@ -15,19 +15,18 @@ abstract contract SynchronizerApplication is ISynchronizerApplication, ContextUp
     bytes memory ews
   ) internal virtual {
     CrossChainProvider.CrossChainProvider provider = _synchronizer.getUserDefaultProvider(_msgSender());
-    require(msg.value >= _synchronizer.estimateSyncFee(action, provider, dstChains, ews), "INSUFFICIENT_FEE");
+    // require(msg.value >= _synchronizer.estimateSyncFee(action, provider, dstChains, ews), "INSUFFICIENT_FEE");
     try _synchronizer.sync{ value: msg.value }(sender, action, provider, dstChains, ews) {
-      emit OutgoingSync(ews);
+      emit RequestSync(ews);
     } catch (bytes memory reason) {
-      emit OutgoingSyncError(ews, reason);
+      emit SyncError(ews, reason);
     }
   }
 
   function receiveSync(bytes memory ews) external virtual {
     require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
     (bool success, ) = address(this).call(ews);
-    // if (!success) emit IncomingSyncError(ews);
-    emit IncomingSync(success, ews);
+    emit ExecuteSync(success, ews);
   }
 
   function _setSynchronizer(ISynchronizer synchronizer_) internal {

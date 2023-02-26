@@ -17,11 +17,6 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
 
   IRegistry internal _registry;
 
-  modifier onlySelf() {
-    require(_msgSender() == address(this), "ONLY_SELF");
-    _;
-  }
-
   modifier onlyAuthorised(
     bytes memory host,
     bytes memory name,

@@ -39,7 +39,7 @@ contract OmniRegistrarController is IOmniRegistrarController, BaseRegistrarContr
     address owner,
     uint64 expiry
   ) public payable override onlyRole(OPERATOR_ROLE) {
-    _registrar.register{ value: msg.value }(name, tld, owner, expiry);
+    _registrar.register{ value: msg.value }(_msgSender(), name, tld, owner, expiry);
   }
 
   function register(
@@ -58,7 +58,7 @@ contract OmniRegistrarController is IOmniRegistrarController, BaseRegistrarContr
     bytes memory tld,
     uint64 expiry
   ) public payable override onlyRole(OPERATOR_ROLE) {
-    _registrar.renew{ value: msg.value }(name, tld, expiry);
+    _registrar.renew{ value: msg.value }(_msgSender(), name, tld, expiry);
   }
 
   function renew(

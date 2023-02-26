@@ -24,7 +24,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     bytes memory name,
     bytes memory tld,
     address address_
-  ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setAddress(host, name, tld, address_);
     _afterSet(keccak256(tld), abi.encodeWithSignature("setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
@@ -64,7 +64,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     bytes memory name,
     bytes memory tld,
     address address_
-  ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setReverseAddress(host, name, tld, address_);
     _afterSet(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }

@@ -5,10 +5,9 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "./ISynchronizer.sol";
 
 interface ISynchronizerApplication {
-  event IncomingSync(bool success, bytes ews);
-  event OutgoingSync(bytes ews);
-  event IncomingSyncError(bytes ews, bytes reason);
-  event OutgoingSyncError(bytes ews, bytes reason);
+  event ExecuteSync(bool success, bytes ews);
+  event RequestSync(bytes ews);
+  event SyncError(bytes ews, bytes reason);
 
   function receiveSync(bytes memory ews) external; // Incoming sync action
 

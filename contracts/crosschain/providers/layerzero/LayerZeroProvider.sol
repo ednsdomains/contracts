@@ -4,33 +4,32 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./interfaces/ILayerZeroProvider.sol";
-import "./NonblockingLayerZeroApp.sol";
+import "./interfaces/ILayerZeroEndpoint.sol";
 import "../../interfaces/IPortal.sol";
 
-contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLayerZeroApp, AccessControlUpgradeable {
-  uint256 public constant NO_EXTRA_GAS = 0;
-  uint256 public constant FUNCTION_TYPE_SEND = 1;
+contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControlUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
-  bool public useCustomAdapterParams;
-
   IPortal private _portal;
+  ILayerZeroEndpoint private _lzEndpoint;
 
   mapping(Chain.Chain => uint16) private _chainIds;
+  mapping(uint16 => bytes) public trustedRemotes;
 
-  function initialize(address _lzEndpoint, IPortal portal) public initializer {
-    __LayerZeroProvider_init(_lzEndpoint, portal);
+  bytes public v1AdaptorParameters;
+
+  function initialize(address lzEndpoint_, IPortal portal) public initializer {
+    __LayerZeroProvider_init(lzEndpoint_, portal);
   }
 
-  function __LayerZeroProvider_init(address _lzEndpoint, IPortal portal) internal onlyInitializing {
-    __Ownable_init();
-    __LayerZeroProvider_init_unchained(portal);
-    __NonblockingLayerZeroApp_init_unchained(_lzEndpoint);
+  function __LayerZeroProvider_init(address lzEndpoint_, IPortal portal) internal onlyInitializing {
+    __LayerZeroProvider_init_unchained(lzEndpoint_, portal);
   }
 
-  function __LayerZeroProvider_init_unchained(IPortal portal) internal onlyInitializing {
+  function __LayerZeroProvider_init_unchained(address lzEndpoint_, IPortal portal) internal onlyInitializing {
     _portal = portal;
+    _lzEndpoint = ILayerZeroEndpoint(lzEndpoint_);
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
     _grantRole(OPERATOR_ROLE, _msgSender());
@@ -38,18 +37,8 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   function estimateFee(Chain.Chain _dstChain, bytes calldata payload) public view returns (uint256) {
     uint16 _dstChainId = getChainId(_dstChain);
-    (uint256 nativeFee, uint256 zroFee) = lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, new bytes(0));
+    (uint256 nativeFee, ) = _lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, v1AdaptorParameters);
     return nativeFee;
-  }
-
-  function _nonblockingLzReceive(
-    uint16 _srcChainId,
-    bytes calldata _srcAddress,
-    uint64 _nonce,
-    bytes calldata _payload
-  ) internal override {
-    emit MessageReceived(_srcChainId, _srcAddress, _payload, _nonce);
-    _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
   }
 
   function send_(
@@ -63,13 +52,42 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
   }
 
   function _send(
-    address payable _from,
+    address payable _sender,
     uint16 _dstChainId,
-    bytes calldata payload
+    bytes calldata _payload
   ) internal {
-    _lzSend(_dstChainId, payload, _from);
-    // uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
-    // emit Sent(_from, _dstChainId, payload, nonce);
+    bytes memory trustedRemote = trustedRemotes[_dstChainId];
+    require(trustedRemote.length != 0, "UNTRUST_REMOTE");
+    _lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _sender, _sender, v1AdaptorParameters);
+    uint64 nonce = _lzEndpoint.getOutboundNonce(_dstChainId, address(this));
+    emit MessageSent(_sender, _dstChainId, _payload, nonce);
+  }
+
+  function lzReceive(
+    uint16 _srcChainId,
+    bytes calldata _srcAddress,
+    uint64 _nonce,
+    bytes calldata _payload
+  ) public {
+    require(_msgSender() == address(_lzEndpoint), "INVALID_ENDPOINT");
+    bytes memory trustedRemote = trustedRemotes[_srcChainId];
+    require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "IINVALID_SOURCE");
+    bytes32 ref = keccak256(abi.encodePacked(_nonce, _payload));
+    emit MessageReceived(_srcChainId, _srcAddress, ref, _payload, _nonce);
+    try this.receive_(_payload) {
+      emit MessageDelivered(ref);
+    } catch Error(string memory reason) {
+      emit MessageDeliverFailed(ref, reason);
+    }
+  }
+
+  function receive_(bytes calldata _payload) public {
+    require(_msgSender() == address(this), "ONLY_SELF");
+    _receive(_payload);
+  }
+
+  function _receive(bytes calldata _payload) internal {
+    _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
   }
 
   function getChainId(Chain.Chain chain) public view returns (uint16) {
@@ -78,6 +96,21 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
 
   function setChainId(Chain.Chain chain, uint16 chainId) public onlyRole(OPERATOR_ROLE) {
     _chainIds[chain] = chainId;
+  }
+
+  function setTrustedRemote(uint16 _srcChainId, bytes calldata _srcAddress) external onlyRole(OPERATOR_ROLE) {
+    trustedRemotes[_srcChainId] = _srcAddress;
+    emit SetTrustedRemote(_srcChainId, _srcAddress);
+  }
+
+  function isTrustedRemote(uint16 _srcChainId, bytes calldata _srcAddress) external view returns (bool) {
+    bytes memory trustedSource = trustedRemotes[_srcChainId];
+    return keccak256(trustedSource) == keccak256(_srcAddress);
+  }
+
+  function setV1AdaptorParameters(uint256 dstGasLimit) external onlyRole(OPERATOR_ROLE) {
+    uint16 version = 1;
+    v1AdaptorParameters = abi.encodePacked(version, dstGasLimit);
   }
 
   /* ========== UUPS ==========*/

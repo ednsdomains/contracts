@@ -10,7 +10,7 @@ interface IMultiCoinAddressResolver {
     bytes memory tld,
     uint256 coin,
     bytes memory address_
-  ) external;
+  ) external payable;
 
   function getMultiCoinAddress(
     bytes memory host,

@@ -141,7 +141,7 @@ export const setupRoot = async (input: ISetupInput) => {
         txs.push(tx);
       }
       const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
-      if (isExists && isWrapped.address_ === ZERO_ADDRESS) {
+      if (isWrapped.address_ === ZERO_ADDRESS) {
         const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
         txs.push(tx);
@@ -193,7 +193,7 @@ export const setupRoot = async (input: ISetupInput) => {
         }
       }
       const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
-      if (isExists && isWrapped.address_ === ZERO_ADDRESS) {
+      if (isWrapped.address_ === ZERO_ADDRESS) {
         const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
         txs.push(tx);
@@ -347,6 +347,7 @@ export const setupSynchronizer = async (input: ISetupInput) => {
   if (input.contracts.Registrar) {
     if (!(await input.contracts.Synchronizer.hasRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.Registrar.address))) {
       const tx = await input.contracts.Synchronizer.grantRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.Registrar.address);
+      await tx.wait();
       txs.push(tx);
     }
   }
@@ -354,6 +355,7 @@ export const setupSynchronizer = async (input: ISetupInput) => {
   if (input.contracts.PublicResolver) {
     if (!(await input.contracts.Synchronizer.hasRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.PublicResolver.address))) {
       const tx = await input.contracts.Synchronizer.grantRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.PublicResolver.address);
+      await tx.wait();
       txs.push(tx);
     }
   }
@@ -417,6 +419,15 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
         }
       }
     }
+  }
+
+  const DST_GAS_LIMIT = 1000000;
+
+  const adaptorParams = ethers.utils.solidityPack(["uint16", "uint256"], [1, DST_GAS_LIMIT]);
+  if ((await input.contracts.LayerZeroProvider.v1AdaptorParameters()) !== adaptorParams) {
+    const tx = await input.contracts.LayerZeroProvider.setV1AdaptorParameters(DST_GAS_LIMIT);
+    await tx.wait();
+    txs.push(tx);
   }
   await _afterSetup(input.signer, input.chainId, "LayerZeroProvider", [...txs]);
 };

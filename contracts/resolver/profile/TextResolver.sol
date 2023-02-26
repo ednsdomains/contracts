@@ -23,7 +23,7 @@ abstract contract TextResolver is ITextResolver, BaseResolver {
     bytes memory name,
     bytes memory tld,
     string memory text
-  ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setText(host, name, tld, text);
     _afterSet(keccak256(tld), abi.encodeWithSignature("setText(bytes,bytes,bytes,string)", host, name, tld, text));
   }

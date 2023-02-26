@@ -10,7 +10,7 @@ interface ITypedTextResolver {
     bytes memory tld,
     bytes memory type_,
     string memory text
-  ) external;
+  ) external payable;
 
   function getTypedText(
     bytes memory host,

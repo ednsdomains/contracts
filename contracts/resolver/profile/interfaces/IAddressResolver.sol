@@ -10,7 +10,7 @@ interface IAddressResolver {
     bytes memory name,
     bytes memory tld,
     address address_
-  ) external;
+  ) external payable;
 
   function getAddress(
     bytes memory host,
@@ -23,7 +23,7 @@ interface IAddressResolver {
     bytes memory name,
     bytes memory tld,
     address address_
-  ) external;
+  ) external payable;
 
   function getReverseAddress(address address_) external returns (string memory);
 }

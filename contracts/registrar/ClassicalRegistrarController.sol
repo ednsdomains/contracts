@@ -37,7 +37,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     address owner,
     uint64 expiry
   ) public payable onlyRole(OPERATOR_ROLE) {
-    _registrar.register(name, tld, owner, expiry);
+    _registrar.register(_msgSender(), name, tld, owner, expiry);
   }
 
   function register(
@@ -48,10 +48,11 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     uint256 price,
     bytes calldata signature
   ) public payable {
-    require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
-    require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
-    _registrar.register(name, tld, owner, expiry);
-    _token.safeTransferFrom(_msgSender(), address(_root), price);
+    revert("FORBIDDEN");
+    // require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
+    // require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
+    // _registrar.register(_msgSender(), name, tld, owner, expiry);
+    // _token.safeTransferFrom(_msgSender(), address(_root), price);
   }
 
   function renew(
@@ -59,7 +60,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     bytes memory tld,
     uint64 expiry
   ) public payable onlyRole(OPERATOR_ROLE) {
-    _registrar.renew(name, tld, expiry);
+    _registrar.renew(_msgSender(), name, tld, expiry);
   }
 
   function renew(
@@ -69,10 +70,11 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     uint256 price,
     bytes calldata signature
   ) public payable {
-    require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
-    require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
-    _registrar.renew(name, tld, expiry);
-    _token.safeTransferFrom(_msgSender(), address(_root), price);
+    revert("FORBIDDEN");
+    // require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
+    // require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
+    // _registrar.renew(_msgSender(), name, tld, expiry);
+    // _token.safeTransferFrom(_msgSender(), address(_root), price);
   }
 
   uint256[50] private __gap;
