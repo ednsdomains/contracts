@@ -6,11 +6,12 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/ILayerZeroReceiver.sol";
 import "./interfaces/ILayerZeroUserApplicationConfig.sol";
 import "./interfaces/ILayerZeroEndpoint.sol";
+import "./interfaces/ILayerZeroApp.sol";
 
 /*
  * a generic LzReceiver implementation
  */
-abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroReceiver, ILayerZeroUserApplicationConfig {
+abstract contract LayerZeroApp is ILayerZeroApp, Initializable, OwnableUpgradeable {
   ILayerZeroEndpoint public lzEndpoint;
   mapping(uint16 => bytes) public trustedRemoteLookup;
   mapping(uint16 => mapping(uint256 => uint256)) public minDstGasLookup;
@@ -57,7 +58,13 @@ abstract contract LayerZeroApp is Initializable, OwnableUpgradeable, ILayerZeroR
   ) internal virtual {
     bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
     require(trustedRemote.length != 0, "LzApp: destination chain is not a trusted source");
-    lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _sender, _sender, new bytes(0));
+    try lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _sender, _sender, new bytes(0)) {
+      // nothing
+    } catch Error(string memory reason) {
+      emit SendError(reason);
+    } catch (bytes memory reason) {
+      emit LowLevelError(reason);
+    }
   }
 
   function _checkGasLimit(

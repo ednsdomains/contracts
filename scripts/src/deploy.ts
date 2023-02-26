@@ -1,7 +1,19 @@
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import NetworkConfig from "../../network.config";
-import { PublicResolver, Registry, Root, ClassicalRegistrarController, Registrar, Wrapper, TokenMock, Portal, UniversalRegistrarController, Synchronizer } from "../../typechain";
+import {
+  PublicResolver,
+  Registry,
+  Root,
+  ClassicalRegistrarController,
+  Registrar,
+  Wrapper,
+  TokenMock,
+  Portal,
+  UniversalRegistrarController,
+  Synchronizer,
+  OmniRegistrarController,
+} from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction } from "ethers";
 import { getAllContractsData, getContractAddress, isContractDeployed } from "./lib/get-contracts";
@@ -115,6 +127,22 @@ export const deployUniversalRegistrarController = async (input: IDeployInput): P
   return contract;
 };
 
+export const deployOmniRegistrarController = async (input: IDeployInput): Promise<OmniRegistrarController> => {
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.Token) throw new Error("`Token` is not available");
+  await _beforeDeploy(input.signer, await input.signer.getChainId(), "OmniRegistrarController");
+  const factory = await ethers.getContractFactory("OmniRegistrarController", input.signer);
+  const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token.address, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
+    kind: "uups",
+  });
+  await _contract.deployed();
+  await _afterDeploy(await input.signer.getChainId(), "OmniRegistrarController", _contract, _contract.deployTransaction);
+  const contract = factory.attach(_contract.address);
+  return contract;
+};
+
 export const deployPortal = async (input: IDeployInput): Promise<Portal> => {
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Portal");
   const factory = await ethers.getContractFactory("Portal", input.signer);
@@ -139,12 +167,12 @@ export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
 };
 
 export const deploySynchronizer = async (input: IDeployInput): Promise<Synchronizer> => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
   const chain = NetworkConfig[input.chainId].chain;
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Synchronizer");
   const factory = await ethers.getContractFactory("Synchronizer", input.signer);
-  const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.address, input.contracts.Portal.address], { kind: "uups" });
+  const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registrar.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "Synchronizer", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);

@@ -41,7 +41,7 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
   }
 
   modifier onlyControllerOrBridge(bytes32 tld) {
-    require(controllers[_msgSender()][tld] || hasRole(BRIDGE_ROLE, _msgSender()), "ONLY_CONTROLLER");
+    require(controllers[_msgSender()][tld] || hasRole(BRIDGE_ROLE, _msgSender()) || _msgSender() == address(this), "ONLY_CONTROLLER");
     _;
   }
 
@@ -83,12 +83,18 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     bytes memory tld,
     address owner,
     uint64 expiry
-  ) external onlyControllerOrBridge((keccak256(tld))) {
+  ) external payable onlyControllerOrBridge((keccak256(tld))) {
     _register(name, tld, owner, expiry);
-
-    bytes32 _tld = keccak256(tld);
-    if (_registry.getTldClass(_tld) == TldClass.TldClass.OMNI && _registry.getTldChains(_tld).length > 0) {
-      _requestSync(SyncAction.SyncAction.RESOLVER, _registry.getTldChains(_tld), abi.encodeWithSignature("_register(bytes,bytes,address,uint64)", name, tld, owner, expiry));
+    if (_msgSender() != address(this)) {
+      bytes32 _tld = keccak256(tld);
+      if (_registry.getTldClass(_tld) == TldClass.TldClass.OMNI && _registry.getTldChains(_tld).length > 0) {
+        _requestSync(
+          payable(_msgSender()),
+          SyncAction.SyncAction.REGISTRAR,
+          _registry.getTldChains(_tld),
+          abi.encodeWithSignature("register(bytes,bytes,address,uint64)", name, tld, owner, expiry)
+        );
+      }
     }
   }
 
@@ -109,12 +115,13 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     bytes memory name,
     bytes memory tld,
     uint64 expiry
-  ) external onlyControllerOrBridge(keccak256(tld)) {
+  ) external payable onlyControllerOrBridge(keccak256(tld)) {
     _renew(name, tld, expiry);
-
-    bytes32 _tld = keccak256(tld);
-    if (_registry.getTldClass(_tld) == TldClass.TldClass.OMNI && _registry.getTldChains(_tld).length > 0) {
-      _requestSync(SyncAction.SyncAction.RESOLVER, _registry.getTldChains(_tld), abi.encodeWithSignature("_renew(bytes,bytes,uint64)", name, tld, expiry));
+    if (_msgSender() != address(this)) {
+      bytes32 _tld = keccak256(tld);
+      if (_registry.getTldClass(_tld) == TldClass.TldClass.OMNI && _registry.getTldChains(_tld).length > 0) {
+        _requestSync(payable(_msgSender()), SyncAction.SyncAction.REGISTRAR, _registry.getTldChains(_tld), abi.encodeWithSignature("renew(bytes,bytes,uint64)", name, tld, expiry));
+      }
     }
   }
 

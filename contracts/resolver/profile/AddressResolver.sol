@@ -26,7 +26,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setAddress(host, name, tld, address_);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("_setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
+    _afterSet(keccak256(tld), abi.encodeWithSignature("setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
   function getAddress(
@@ -66,7 +66,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     address address_
   ) public onlyLive(name, tld) onlyAuthorised(host, name, tld) {
     _setReverseAddress(host, name, tld, address_);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("_setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
+    _afterSet(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
   function getReverseAddress(address address_) public view returns (string memory) {

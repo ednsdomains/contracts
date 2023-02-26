@@ -40,11 +40,18 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     bytes calldata payload
   ) external payable onlyRole(SENDER_ROLE) {
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
-      ILayerZeroProvider(_providers[provider]).send_{ value: msg.value }(sender, dstChain, payload);
+      try ILayerZeroProvider(_providers[provider]).send_{ value: msg.value }(sender, dstChain, payload) {
+        //nothing
+      } catch Error(string memory reason) {
+        emit ProviderError(CrossChainProvider.CrossChainProvider.LAYERZERO, reason);
+      } catch Panic(uint256 code) {
+        emit PanicError(code);
+      } catch (bytes memory reason) {
+        emit LowLevelError(reason);
+      }
     } else {
-      revert("Empty provider");
+      revert("INVALID_PROVIDER");
     }
-
     emit Sent(sender, dstChain, provider, payload);
   }
 
@@ -54,9 +61,11 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     (address target, bytes memory ctx) = abi.decode(payload, (address, bytes));
     try IReceiver(target).receive_(ctx) {
       // do nothing
-    } catch (bytes memory reason) {
+    } catch Error(string memory reason) {
       bytes32 id = keccak256(payload);
       emit ReceiverError(id, target, reason);
+    } catch (bytes memory reason) {
+      emit LowLevelError(reason);
     }
   }
 
@@ -68,7 +77,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       return ILayerZeroProvider(_providers[provider]).estimateFee(dstChain, payload);
     } else {
-      revert("Empty provider");
+      revert("INVALID_PROVIDER");
     }
   }
 

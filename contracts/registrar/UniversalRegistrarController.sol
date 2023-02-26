@@ -38,7 +38,7 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     bytes memory tld,
     address owner,
     uint64 expiry
-  ) public onlyRole(OPERATOR_ROLE) {
+  ) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.register(name, tld, owner, expiry);
   }
 
@@ -49,7 +49,7 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     uint64,
     uint256,
     bytes calldata
-  ) public pure {
+  ) public payable {
     revert("FORBIDDEN");
   }
 
@@ -57,7 +57,7 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     bytes memory name,
     bytes memory tld,
     uint64 expiry
-  ) public onlyRole(OPERATOR_ROLE) {
+  ) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.renew(name, tld, expiry);
   }
 
@@ -67,7 +67,7 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     uint64,
     uint256,
     bytes calldata
-  ) public pure {
+  ) public payable {
     revert("FORBIDDEN");
   }
 

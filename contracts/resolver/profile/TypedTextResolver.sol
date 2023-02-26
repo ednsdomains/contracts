@@ -27,7 +27,7 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
     string memory text
   ) public onlyLive(name, tld) {
     _setTypedText(host, name, tld, type_, text);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("_setTypedText(bytes,bytes,bytes,bytes,string)", host, name, tld, type_, text));
+    _afterSet(keccak256(tld), abi.encodeWithSignature("setTypedText(bytes,bytes,bytes,bytes,string)", host, name, tld, type_, text));
   }
 
   function getTypedText(

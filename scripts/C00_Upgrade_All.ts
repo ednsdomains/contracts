@@ -4,11 +4,13 @@ import {
   upgradeBridge,
   upgradeClassicalRegistrarController,
   upgradeLayerZeroProvider,
+  upgradeOmniRegistrarController,
   upgradePortal,
   upgradePublicResolver,
   upgradeRegistrar,
   upgradeRegistry,
   upgradeRoot,
+  upgradeSynchronizer,
   upgradeUniversalRegistrarController,
   upgradeWrapper,
 } from "./src/upgrade";
@@ -24,8 +26,10 @@ async function main() {
   await upgradeRoot({ signer, chainId, contracts });
   await upgradeClassicalRegistrarController({ signer, chainId, contracts });
   await upgradeUniversalRegistrarController({ signer, chainId, contracts });
+  await upgradeOmniRegistrarController({ signer, chainId, contracts });
   await upgradePortal({ signer, chainId, contracts });
   await upgradeBridge({ signer, chainId, contracts });
+  await upgradeSynchronizer({ signer, chainId, contracts });
   await upgradeLayerZeroProvider({ signer, chainId, contracts });
 }
 

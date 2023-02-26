@@ -12,6 +12,7 @@ import {
   Portal,
   LayerZeroProvider,
   Synchronizer,
+  OmniRegistrarController,
 } from "../../../typechain";
 
 export interface IContracts {
@@ -20,6 +21,7 @@ export interface IContracts {
   Registrar?: Registrar;
   ClassicalRegistrarController?: ClassicalRegistrarController;
   UniversalRegistrarController?: UniversalRegistrarController;
+  OmniRegistrarController?: OmniRegistrarController;
   Root?: Root;
   DefaultWrapper?: Wrapper;
   Token?: IERC20;

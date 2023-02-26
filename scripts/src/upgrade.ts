@@ -70,6 +70,14 @@ export async function upgradeUniversalRegistrarController(input: IUpgradeInput):
   await _afterUpgrade(input.signer, input.chainId, "UniversalRegistrarController", input.contracts.UniversalRegistrarController);
 }
 
+export async function upgradeOmniRegistrarController(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.OmniRegistrarController) throw new Error("`OmniRegistrarController` is not available");
+  const factory = await ethers.getContractFactory("OmniRegistrarController", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "OmniRegistrarController");
+  await upgrades.upgradeProxy(input.contracts.OmniRegistrarController, factory);
+  await _afterUpgrade(input.signer, input.chainId, "OmniRegistrarController", input.contracts.OmniRegistrarController);
+}
+
 export async function upgradeBridge(input: IUpgradeInput): Promise<void> {
   if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
   const factory = await ethers.getContractFactory("Bridge", input.signer);
@@ -84,6 +92,14 @@ export async function upgradePortal(input: IUpgradeInput): Promise<void> {
   await _beforeUpgrade(input.signer, input.chainId, "Portal");
   await upgrades.upgradeProxy(input.contracts.Portal, factory);
   await _afterUpgrade(input.signer, input.chainId, "Portal", input.contracts.Portal);
+}
+
+export async function upgradeSynchronizer(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.Synchronizer) throw new Error("`Synchronizer` is not available");
+  const factory = await ethers.getContractFactory("Synchronizer", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Synchronizer");
+  await upgrades.upgradeProxy(input.contracts.Synchronizer, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Synchronizer", input.contracts.Synchronizer);
 }
 
 export async function upgradeLayerZeroProvider(input: IUpgradeInput): Promise<void> {
@@ -101,13 +117,12 @@ const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: 
   } else {
     console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
   }
-  console.log(`Upgrade procedure initiated, contract [${name}] will be upgrade on [${NetworkConfig[chainId].name}] in 5 seconds...`);
-  await delay(5000);
+  console.log(`Upgrade procedure initiated, contract [${name}] will be upgrade on [${NetworkConfig[chainId].name}] in 3 seconds...`);
+  await delay(3000);
 };
 
 const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName, contract: Contract) => {
   console.log(`Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
-  // await verifyContract(contract.address);
 };

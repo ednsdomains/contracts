@@ -8,13 +8,13 @@ interface IBaseRegistrarController is IAccessControlUpgradeable {
     bytes memory tld,
     address owner,
     uint64 expiry
-  ) external;
+  ) external payable;
 
   function renew(
     bytes memory name,
     bytes memory tld,
     uint64 expiry
-  ) external;
+  ) external payable;
 
   function register(
     bytes memory name,
@@ -23,7 +23,7 @@ interface IBaseRegistrarController is IAccessControlUpgradeable {
     uint64 expiry,
     uint256 price,
     bytes calldata signature
-  ) external;
+  ) external payable;
 
   function renew(
     bytes memory name,
@@ -31,5 +31,5 @@ interface IBaseRegistrarController is IAccessControlUpgradeable {
     uint64 expiry,
     uint256 price,
     bytes calldata signature
-  ) external;
+  ) external payable;
 }

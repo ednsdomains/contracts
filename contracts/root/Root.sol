@@ -45,10 +45,10 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
     bool enable,
     TldClass.TldClass class_
   ) public onlyRole(ADMIN_ROLE) {
-    if (class_ == TldClass.TldClass.OMNI) {
-      require(chains.length > 0, "INVALID_CHAINS");
-    } else {
+    if (class_ == TldClass.TldClass.CLASSICAL) {
       require(chains.length == 0, "INVALID_CHAINS");
+    } else {
+      require(chains.length > 0, "INVALID_CHAINS");
     }
     require(!_registry.isExists(keccak256(tld)) || _registry.getExpiry(keccak256(tld)) < block.timestamp, "TLD_EXISTS");
     _registry.setRecord(chains, tld, owner, resolver, expiry, enable, class_);

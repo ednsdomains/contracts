@@ -4,6 +4,7 @@ import {
   deployBridge,
   deployClassicalRegistrarController,
   deployLayerZeroProvider,
+  deployOmniRegistrarController,
   deployPortal,
   deployPublicResolver,
   deployRegistrar,
@@ -35,6 +36,8 @@ async function main() {
   await deployClassicalRegistrarController({ signer, chainId, contracts });
   contracts = await getContracts(signer);
   await deployUniversalRegistrarController({ signer, chainId, contracts });
+  contracts = await getContracts(signer);
+  await deployOmniRegistrarController({ signer, chainId, contracts });
   contracts = await getContracts(signer);
   await deployPortal({ signer, chainId, contracts });
   contracts = await getContracts(signer);

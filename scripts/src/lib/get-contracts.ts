@@ -2,7 +2,20 @@ import fs from "fs";
 import path from "path";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
-import { Bridge, ClassicalRegistrarController, ERC20, LayerZeroProvider, Portal, PublicResolver, Registrar, Registry, Root, Synchronizer, Wrapper } from "../../../typechain";
+import {
+  Bridge,
+  ClassicalRegistrarController,
+  ERC20,
+  LayerZeroProvider,
+  OmniRegistrarController,
+  Portal,
+  PublicResolver,
+  Registrar,
+  Registry,
+  Root,
+  Synchronizer,
+  Wrapper,
+} from "../../../typechain";
 import { ContractName } from "../constants/contract-name";
 import { IContracts } from "../interfaces/contracts";
 import { UniversalRegistrarController } from "../../../typechain/UniversalRegistrarController";
@@ -16,6 +29,7 @@ export interface IGetContractsData {
     Registrar: string | null;
     ClassicalRegistrarController: string | null;
     UniversalRegistrarController: string | null;
+    OmniRegistrarController: string | null;
     Root: string | null;
     DefaultWrapper: string | null;
     Token: string | null;
@@ -56,6 +70,7 @@ export async function getContracts(signer: Signer): Promise<IContracts> {
     Token: await getToken(signer),
     ClassicalRegistrarController: await getClassicalRegistrarController(signer),
     UniversalRegistrarController: await getUniversalRegistrarController(signer),
+    OmniRegistrarController: await getOmniRegistrarController(signer),
     Bridge: await getBridge(signer),
     Portal: await getPortal(signer),
     Synchronizer: await getSynchronizer(signer),
@@ -119,6 +134,16 @@ export async function getUniversalRegistrarController(signer: Signer): Promise<U
   if (data?.addresses.UniversalRegistrarController) {
     const factory = await ethers.getContractFactory("UniversalRegistrarController");
     return factory.attach(data.addresses.UniversalRegistrarController);
+  }
+  return undefined;
+}
+
+export async function getOmniRegistrarController(signer: Signer): Promise<OmniRegistrarController | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.OmniRegistrarController) {
+    const factory = await ethers.getContractFactory("OmniRegistrarController");
+    return factory.attach(data.addresses.OmniRegistrarController);
   }
   return undefined;
 }

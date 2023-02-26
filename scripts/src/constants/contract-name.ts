@@ -5,6 +5,7 @@ export type ContractName =
   | "Registrar"
   | "ClassicalRegistrarController"
   | "UniversalRegistrarController"
+  | "OmniRegistrarController"
   | "Root"
   | "Token"
   | "Portal"

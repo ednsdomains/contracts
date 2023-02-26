@@ -2,7 +2,7 @@
   {
     "chainId": 0,
     "addresses": {
-      "Registry": null,
+      "Registry": "0xdfC50dD08B2A120ed920a2c0E3C39cdB4e950450",
       "PublicResolver": null,
       "Registrar": null,
       "ClassicalRegistrarController": null,
@@ -14,52 +14,37 @@
   {
     "chainId": 80001,
     "addresses": {
-      "Registry": "0x4eeE029B09070C2c9973EE9fc5b0DF0460a9f907",
-      "PublicResolver": "0xFD8D101d3FD6090155b55811f45471991f705dB4",
-      "Registrar": "0xb6aB49248cbC6a8775cc998737f60c87D1c7085d",
-      "ClassicalRegistrarController": "0xDBE56aeB14F76208542f554576bB009d17914C26",
-      "Root": "0xEF38831C7844D7EbBB1a0129e6ce757F1F268715",
-      "DefaultWrapper": "0xf0D9dE824E86b640e66625cc7E636060AaDE3027",
-      "Token": "0xD5930Be90baa54138800f94779d102C7CA517FFE",
-      "UniversalRegistrarController": "0x51B648612C46Fcf1C5f59c9125dEF9ba029905c6",
-      "Portal": "0xcd7AD8E85A7D1Fe52a723A2B1623E4E4DC8B148f",
-      "Bridge": "0x59Ad0562C55af4D151692337630EB11a9D3e4407",
-      "Synchronizer": "0xD8b2C9DfCb16d3A89dfbb1E38A0Cbc6BA9F695EB",
-      "LayerZeroProvider": "0x617E74d54c0D0f9e5E4b22E2354E84a88fA72650"
+      "Registry": "0x3612C1Ed61788A389BD3c26FfEc0A2e1B4765A26",
+      "PublicResolver": "0x55f115F9dC40b2f459597D63172c719F78B5898C",
+      "Registrar": "0x0Fc7c7959B677edf1Fc07790EAC2d0E8A125De61",
+      "ClassicalRegistrarController": "0x718d21E027EB72e7d39C2cfB7C20F9A486FC06d3",
+      "Root": "0x80b0d3248D0B4b6112740Bc41c18Ab5eAc1920Fe",
+      "DefaultWrapper": "0xEca44119b1b81741BE5F25e13443e4eeCc05D433",
+      "Token": "0xF839123d5f350F1B19D6E8faD6ba2fCc5ad210D3",
+      "UniversalRegistrarController": "0xdc9A9FaE9c3e53B9df13c46F2E21c41562B0250D",
+      "OmniRegistrarController": "0x2FBBb72406e7b9cBac2fE139038C4b6a0be17E9B",
+      "Portal": "0xDeaB37d64e8B1176d4b1a7fC35DC212bE3d277f0",
+      "Bridge": "0x4Cd9f4a4585D2E202e76766Dde7A063D19C30774",
+      "Synchronizer": "0xb155dB8338F3556F1e3adAD7a47C803688621d38",
+      "LayerZeroProvider": "0x7c6e8b8f5B218666CF8aC8741D12DB662834cAb1"
     }
   },
   {
     "chainId": 43113,
     "addresses": {
-      "Registry": "0xfEaC63157C2E3eC63A4edd4c0605617D6ed9Be32",
-      "PublicResolver": "0x349AeeB38D1C779A777Dd3a5df90d0988638Dfd3",
-      "Registrar": "0x577c80B72C8332E2f24Ee44E32859A2DFee49686",
-      "ClassicalRegistrarController": "0x2442833b45541aAf6F98A452b1b1026EA0f72d77",
-      "Root": "0x44D51e76dbF7806c802Eb27C66BCe0549e354B1B",
-      "DefaultWrapper": "0x2F90767F6625F219eF6851eD9BC3F6BC75665bBa",
-      "Token": "0xc1Ae6A5Ec13A1b114f62Ce3904cb99233913Df0c",
-      "UniversalRegistrarController": "0x21847cdd7e7FFc6b8E5C0c15fe309A6fc905686f",
-      "Portal": "0x37117A9c8c9288cf7B8bB964dC5431AA0b8a1808",
-      "Bridge": "0xd99A16D566b33BEE35dA16cF17937166cb470591",
-      "Synchronizer": "0x73843C2855f4df11a05F2370388C0ef22Ad67304",
-      "LayerZeroProvider": "0x048b9e64Ef676EAD199904dd7FB675A2Bf7142F3"
-    }
-  },
-  {
-    "chainId": 97,
-    "addresses": {
-      "Registry": "0x774e066c4FF851fE18af79EDD00089fF3833878b",
-      "PublicResolver": "0x110f906377E0F358B9F18FbD17380A170Bc1286a",
-      "Registrar": "0x43063c65CD452f6d118f7E5867928e853880D50B",
-      "ClassicalRegistrarController": "0x8D178830B23936FC542D7fc8A8fcC7e350170f76",
-      "Root": "0xf9e395D8508Fac87E00acCFB97c71be603025cB1",
-      "DefaultWrapper": "0x224AD3388242766D62559Db9889Dc0cB1aF9b44a",
-      "Token": "0x4AC7f77BfA1B085028970a441685F6D5c4A7F331",
-      "UniversalRegistrarController": "0x124eE908f6Bcd4b010aa4501F48871F0723f00A8",
-      "Portal": "0x4Ee2f0289759612E17da513278492CE69D2f655d",
-      "Bridge": "0x40e4D906B13c95a6D00fe3B37B0769ebE25a50f5",
-      "Synchronizer": "0x59f7A982131DCf7269Dad91f8a22aa83Ffe791fE",
-      "LayerZeroProvider": "0xD582dC4f5674e62d39D53AE24095D197E8D58E40"
+      "Portal": "0xEE0EFCffBC7af8a250e394449ea6dD22D6eB2253",
+      "Synchronizer": "0x566BaC0ff9e37a9C236072b62Cf0684b7096a9b4",
+      "Registry": "0xdfC50dD08B2A120ed920a2c0E3C39cdB4e950450",
+      "PublicResolver": "0x3884acFFc3106Db4380c1272ab6211DcF7Fc0352",
+      "Registrar": "0xb52999e69ab03da1aBbFBE34DE8C67EcC664c6CB",
+      "ClassicalRegistrarController": "0x5c30A64c0Fced595B45BB08124a099Db228B8e3B",
+      "Root": "0x3771278BDEB442402E643e47C6B9F01E48Ecc072",
+      "DefaultWrapper": "0xD15579141d054591C39645762fF322192629F5F1",
+      "Token": "0xd059Ff56a6165d98d53C30a100928e15aAD325ec",
+      "UniversalRegistrarController": "0x6118D81D2F13158d7e89ab7B427f00359748Ad29",
+      "OmniRegistrarController": "0xe2E5303c63230aB64CAa3b6666d23da36D5De7DD",
+      "Bridge": "0x5f3cc78BC66C57FD9D1910Ea616217F7422787Cf",
+      "LayerZeroProvider": "0x2882867ae7F2d9994B36a465A134843AA94bfd16"
     }
   }
 ]

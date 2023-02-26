@@ -3,13 +3,11 @@ import { getContracts } from "../../scripts/src/lib/get-contracts";
 import * as luxon from "luxon";
 import { InContractChain } from "../../scripts/src/constants/in-contract-chain";
 import { CrossChainProvider } from "../../scripts/src/constants/cross-chain-provider";
-import { Bridge } from "../../typechain/Bridge";
-import { Wallet } from "ethers";
 import delay from "delay";
 
 async function main() {
-  // const [_signer] = await ethers.getSigners();
-  const _signer = new Wallet(process.env.PRIVATE_KEY!);
+  if (!process.env.PRIVATE_KEY) throw new Error("Private key is missing");
+  const _signer = new ethers.Wallet(process.env.PRIVATE_KEY);
 
   const name = `hello-world-${luxon.DateTime.now().toSeconds().toFixed(0)}`;
   const tld = "_universal";
@@ -17,14 +15,14 @@ async function main() {
 
   console.log({ name, tld });
 
-  // ===== Avalanche ===== //
+  // ===== Avalanche Fuji ===== //
   const AvalancheProvider = new ethers.providers.JsonRpcProvider("https://api.avax-test.network/ext/bc/C/rpc");
   const AvalancheFeeData = await AvalancheProvider.getFeeData();
   const AvalancheSigner = _signer.connect(AvalancheProvider);
   const AvalancheContracts = await getContracts(AvalancheSigner);
   if (!AvalancheContracts.Bridge || !AvalancheContracts.UniversalRegistrarController || !AvalancheContracts.Registry) throw new Error();
 
-  // ===== Polygon ===== //
+  // ===== Polygon Mumbai ===== //
   const PolygonProvider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com/");
   const PolygonSigner = _signer.connect(PolygonProvider);
   const PolygonContracts = await getContracts(PolygonSigner);
@@ -77,7 +75,7 @@ async function main() {
   console.log({
     nonce: nonce.toNumber(),
     ref,
-    name: ethers.utils.hexlify(ethers.utils.toUtf8Bytes(tld)),
+    name: ethers.utils.hexlify(ethers.utils.toUtf8Bytes(name)),
     tld: ethers.utils.hexlify(ethers.utils.toUtf8Bytes(tld)),
     owner: _signer.address,
     expiry,
@@ -85,14 +83,14 @@ async function main() {
 
   // console.log(`Accepting bridge request...`);
   // const tx3 = await PolygonContracts.Bridge.accept(
-  //   11,
-  //   "0xfd0482619b9793e306b88ad44e48c06625267154bfb43e053d2030e7fd38c24f",
+  //   1,
+  //   "0x875ee729df9f432d3d826976b5e17d3a7fa51978a4e0602f4bec9f98ad44b660",
   //   InContractChain.POLYGON,
   //   CrossChainProvider.LAYERZERO,
-  //   ethers.utils.toUtf8Bytes(name),
+  //   ethers.utils.arrayify("0x68656c6c6f2d776f726c642d31363737333233373837"),
   //   ethers.utils.toUtf8Bytes(tld),
   //   "0xCD58F85e6Ec23733143599Fe0f982fC1d3f6C12c",
-  //   1675880440,
+  //   1677410187,
   // );
   // await tx3.wait();
   // console.log("tx3+", tx3.hash);

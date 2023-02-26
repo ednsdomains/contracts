@@ -68,8 +68,8 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, NonblockingLa
     bytes calldata payload
   ) internal {
     _lzSend(_dstChainId, payload, _from);
-    uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
-    emit Sent(_from, _dstChainId, payload, nonce);
+    // uint64 nonce = lzEndpoint.getOutboundNonce(_dstChainId, address(this));
+    // emit Sent(_from, _dstChainId, payload, nonce);
   }
 
   function getChainId(Chain.Chain chain) public view returns (uint16) {

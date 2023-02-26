@@ -31,13 +31,13 @@ interface IRegistrar {
     bytes memory tld,
     address owner,
     uint64 expiry
-  ) external;
+  ) external payable;
 
   function renew(
     bytes memory name,
     bytes memory tld,
     uint64 expiry
-  ) external;
+  ) external payable;
 
   // function reclaim(
   //   bytes memory name,

@@ -4,12 +4,13 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "../registry/interfaces/IRegistry.sol";
+import "../registrar/interfaces/IRegistrar.sol";
 import "../resolver/interfaces/IPublicResolver.sol";
 import "../lib/SyncAction.sol";
 import "./interfaces/ISynchronizer.sol";
 import "./interfaces/IPortal.sol";
 import "./interfaces/IReceiver.sol";
+import "./interfaces/ISynchronizerApplication.sol";
 
 contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessControlUpgradeable, PausableUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -18,7 +19,7 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
 
   Chain.Chain private _selfChain;
 
-  IRegistry private _registry;
+  IRegistrar private _registrar;
   IPortal private _portal;
   IPublicResolver private _resolver;
 
@@ -27,26 +28,26 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
 
   function initialize(
     Chain.Chain selfChain,
-    IRegistry registry_,
+    IRegistrar registrar_,
     IPortal portal_
   ) public initializer {
-    __Synchronizer_init(selfChain, registry_, portal_);
+    __Synchronizer_init(selfChain, registrar_, portal_);
   }
 
   function __Synchronizer_init(
     Chain.Chain selfChain,
-    IRegistry registry_,
+    IRegistrar registrar_,
     IPortal portal_
   ) internal onlyInitializing {
-    __Synchronizer_init_unchained(selfChain, registry_, portal_);
+    __Synchronizer_init_unchained(selfChain, registrar_, portal_);
   }
 
   function __Synchronizer_init_unchained(
     Chain.Chain selfChain,
-    IRegistry registry_,
+    IRegistrar registrar_,
     IPortal portal_
   ) internal onlyInitializing {
-    _registry = registry_;
+    _registrar = registrar_;
     _portal = portal_;
     _selfChain = selfChain;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -83,47 +84,69 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     uint256 fee = 0;
     for (uint256 i = 0; i < dstChains.length; i++) {
       Chain.Chain dstChain = dstChains[i];
-      address dstSynchronizer = getRemoteSynchronizer(dstChain);
-      bytes memory ctx = _packContext(action, ews);
-      bytes memory payload = _packPayload(dstSynchronizer, ctx);
-      fee += _portal.estimateFee(dstChain, provider, payload);
+      if (dstChain != _selfChain) {
+        address dstSynchronizer = getRemoteSynchronizer(dstChain);
+        bytes memory ctx = _packContext(action, ews);
+        bytes memory payload = _packPayload(dstSynchronizer, ctx);
+        fee += _portal.estimateFee(dstChain, provider, payload);
+      }
     }
     return fee;
   }
 
   function sync(
+    address payable sender,
     SyncAction.SyncAction action,
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
     bytes memory ews
   ) external payable onlyRole(REQUESTOR_ROLE) {
-    require(msg.value >= estimateSyncFee(action, provider, dstChains, ews), "INSUFFICIENT_FEE");
-    _sync(action, provider, dstChains, ews);
+    _sync(sender, action, provider, dstChains, ews);
   }
 
   function _sync(
+    address payable sender,
     SyncAction.SyncAction action,
     CrossChainProvider.CrossChainProvider provider,
     Chain.Chain[] memory dstChains,
     bytes memory ews
   ) private {
+    bytes memory ctx = _packContext(action, ews);
     for (uint256 i = 0; i < dstChains.length; i++) {
       Chain.Chain dstChain = dstChains[i];
-      address dstSynchronizer = getRemoteSynchronizer(dstChain);
-      bytes memory ctx = _packContext(action, ews);
-      bytes memory payload = _packPayload(dstSynchronizer, ctx);
-      uint256 fee = _portal.estimateFee(dstChain, provider, payload);
-      _portal.send_{ value: fee }(payable(_msgSender()), dstChain, provider, payload);
+      if (dstChain != _selfChain) {
+        address dstSynchronizer = getRemoteSynchronizer(dstChain);
+        bytes memory payload = _packPayload(dstSynchronizer, ctx);
+        uint256 fee = _portal.estimateFee(dstChain, provider, payload);
+        try _portal.send_{ value: fee }(sender, dstChain, provider, payload) {
+          //nothing
+        } catch Error(string memory reason) {
+          emit PortalError(action, reason);
+        } catch Panic(uint256 code) {
+          emit PanicError(code);
+        } catch (bytes memory reason) {
+          emit LowLevelError(reason);
+        }
+      }
     }
   }
 
   function receive_(bytes memory ctx) external {
     // TODO:
     (SyncAction.SyncAction action, bytes memory ews) = _unpackContext(ctx);
-    if (action == SyncAction.SyncAction.REGISTRY) {
-      address(_registry).call(ews);
+    address app;
+    if (action == SyncAction.SyncAction.REGISTRAR) {
+      app = address(_registrar);
     } else if (action == SyncAction.SyncAction.RESOLVER) {
-      address(_resolver).call(ews);
+      app = address(_resolver);
+    }
+
+    if (app != address(0)) {
+      try ISynchronizerApplication(app).receiveSync(ews) {
+        // nothing
+      } catch Error(string memory reason) {
+        emit SynchronizerApplicationError(action, reason);
+      }
     }
   }
 

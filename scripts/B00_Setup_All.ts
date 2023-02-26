@@ -5,6 +5,7 @@ import {
   setupClassicalRegistrarController,
   setupDefaultWrapper,
   setupLayerZeroProvider,
+  setupOmniRegistrarController,
   setupPortal,
   setupPublicResolver,
   setupRegistrar,
@@ -25,6 +26,7 @@ async function main() {
   await setupRoot({ signer, chainId, contracts });
   await setupClassicalRegistrarController({ signer, chainId, contracts });
   await setupUniversalRegistrarController({ signer, chainId, contracts });
+  await setupOmniRegistrarController({ signer, chainId, contracts });
   await setupBridge({ signer, chainId, contracts });
   await setupSynchronizer({ signer, chainId, contracts });
   await setupPortal({ signer, chainId, contracts });

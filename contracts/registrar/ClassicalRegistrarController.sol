@@ -36,7 +36,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     bytes memory tld,
     address owner,
     uint64 expiry
-  ) public onlyRole(OPERATOR_ROLE) {
+  ) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.register(name, tld, owner, expiry);
   }
 
@@ -47,7 +47,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     uint64 expiry,
     uint256 price,
     bytes calldata signature
-  ) public {
+  ) public payable {
     require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
     _registrar.register(name, tld, owner, expiry);
@@ -58,7 +58,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     bytes memory name,
     bytes memory tld,
     uint64 expiry
-  ) public onlyRole(OPERATOR_ROLE) {
+  ) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.renew(name, tld, expiry);
   }
 
@@ -68,7 +68,7 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     uint64 expiry,
     uint256 price,
     bytes calldata signature
-  ) public {
+  ) public payable {
     require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
     _registrar.renew(name, tld, expiry);

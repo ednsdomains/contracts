@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IContracts } from "./interfaces/contracts";
-import { getClassicalTlds, getUniversalTldChainIds, getUniversalTlds } from "./lib/get-tlds";
+import { getClassicalTlds, getOmniTldChainIds, getOmniTlds, getUniversalTldChainIds, getUniversalTlds } from "./lib/get-tlds";
 import { ContractName } from "./constants/contract-name";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
@@ -64,17 +64,21 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
   await _beforeSetup(input.signer, input.chainId, "DefaultWrapper");
   const txs: Transaction[] = [];
 
-  const tx1 = await input.contracts.DefaultWrapper.setName("Test Domains");
-  await tx1.wait();
-  txs.push(tx1);
+  if ((await input.contracts.DefaultWrapper.name()) !== "Test Domains") {
+    const tx = await input.contracts.DefaultWrapper.setName("Test Domains");
+    await tx.wait();
+    txs.push(tx);
+  }
 
-  const tx2 = await input.contracts.DefaultWrapper.setSymbol("TDNS");
-  await tx2.wait();
-  txs.push(tx2);
+  if ((await input.contracts.DefaultWrapper.symbol()) !== "TDNS") {
+    const tx = await input.contracts.DefaultWrapper.setSymbol("TDNS");
+    await tx.wait();
+    txs.push(tx);
+  }
 
-  const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.example.com");
-  await tx3.wait();
-  txs.push(tx3);
+  // const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.gdn");
+  // await tx3.wait();
+  // txs.push(tx3);
 
   await _afterSetup(input.signer, input.chainId, "DefaultWrapper", [...txs]);
 };
@@ -86,9 +90,11 @@ export const setupRegistrar = async (input: ISetupInput) => {
   await _beforeSetup(input.signer, input.chainId, "Registrar");
   const txs: Transaction[] = [];
 
-  const tx = await input.contracts.Registrar.grantRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address);
-  await tx.wait();
-  txs.push(tx);
+  if (!(await input.contracts.Registrar.hasRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address))) {
+    const tx = await input.contracts.Registrar.grantRole(await input.contracts.Registrar.ROOT_ROLE(), input.contracts.Root.address);
+    await tx.wait();
+    txs.push(tx);
+  }
 
   if (input.contracts.Synchronizer) {
     const tx1 = await input.contracts.Registrar.setSynchronizer(input.contracts.Synchronizer.address);
@@ -161,6 +167,32 @@ export const setupRoot = async (input: ISetupInput) => {
         }
       }
       const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
+      if (isWrapped.address_ === ZERO_ADDRESS) {
+        const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
+        await tx.wait();
+        txs.push(tx);
+      }
+    }
+  }
+
+  //===============//
+  //== Omni TLDs ==//
+  //===============//
+  const omni = await getOmniTlds(input.chainId);
+  if (omni) {
+    for (const tld_ of omni) {
+      const _tld_ = ethers.utils.toUtf8Bytes(tld_);
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
+      if (!isExists) {
+        const chainIds = await getOmniTldChainIds(tld_);
+        if (chainIds) {
+          const chains = await Promise.all([...chainIds.map((chainId) => getInContractChain(chainId))]);
+          const tx = await input.contracts.Root.register([...chains], _tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 2); // 2147483647 => Year 2038 problem && 2 === TldClass.OMNI
+          await tx.wait();
+          txs.push(tx);
+        }
+      }
+      const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
       if (isExists && isWrapped.address_ === ZERO_ADDRESS) {
         const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
@@ -214,10 +246,32 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
   await _afterSetup(input.signer, input.chainId, "UniversalRegistrarController", [...txs]);
 };
 
+export const setupOmniRegistrarController = async (input: ISetupInput) => {
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.OmniRegistrarController) throw new Error("`OmniRegistrarController` is not available");
+  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  await _beforeSetup(input.signer, input.chainId, "OmniRegistrarController");
+  const txs: Transaction[] = [];
+  const tlds = await getOmniTlds(input.chainId);
+  if (tlds && tlds.length) {
+    for (const tld_ of tlds) {
+      const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
+      const isExists = await input.contracts.Registry["isExists(bytes32)"](_tld_);
+      if (isExists) {
+        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.OmniRegistrarController.address, true);
+        await tx.wait();
+        txs.push(tx);
+      }
+    }
+  }
+  await _afterSetup(input.signer, input.chainId, "OmniRegistrarController", [...txs]);
+};
+
 export const setupPortal = async (input: ISetupInput) => {
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
   if (!input.contracts.LayerZeroProvider) throw new Error("`LayerZeroProvider` is not available");
   if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
+  if (!input.contracts.Synchronizer) throw new Error("`Synchronizer` is not available");
 
   await _beforeSetup(input.signer, input.chainId, "Portal");
 
@@ -237,6 +291,12 @@ export const setupPortal = async (input: ISetupInput) => {
 
   if (!(await input.contracts.Portal.hasRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Bridge.address))) {
     const tx = await input.contracts.Portal.grantRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Bridge.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  if (!(await input.contracts.Portal.hasRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Synchronizer.address))) {
+    const tx = await input.contracts.Portal.grantRole(await input.contracts.Portal.SENDER_ROLE(), input.contracts.Synchronizer.address);
     await tx.wait();
     txs.push(tx);
   }
@@ -283,6 +343,20 @@ export const setupSynchronizer = async (input: ISetupInput) => {
   await _beforeSetup(input.signer, input.chainId, "Synchronizer");
 
   const txs: Transaction[] = [];
+
+  if (input.contracts.Registrar) {
+    if (!(await input.contracts.Synchronizer.hasRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.Registrar.address))) {
+      const tx = await input.contracts.Synchronizer.grantRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.Registrar.address);
+      txs.push(tx);
+    }
+  }
+
+  if (input.contracts.PublicResolver) {
+    if (!(await input.contracts.Synchronizer.hasRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.PublicResolver.address))) {
+      const tx = await input.contracts.Synchronizer.grantRole(await input.contracts.Synchronizer.REQUESTOR_ROLE(), input.contracts.PublicResolver.address);
+      txs.push(tx);
+    }
+  }
 
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);

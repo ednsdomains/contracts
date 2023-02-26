@@ -17,6 +17,11 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
 
   IRegistry internal _registry;
 
+  modifier onlySelf() {
+    require(_msgSender() == address(this), "ONLY_SELF");
+    _;
+  }
+
   modifier onlyAuthorised(
     bytes memory host,
     bytes memory name,
@@ -88,8 +93,10 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
   }
 
   function _afterSet(bytes32 tld, bytes memory ews) internal {
-    if (_registry.getTldClass(tld) == TldClass.TldClass.OMNI && _registry.getTldChains(tld).length > 0) {
-      _requestSync(SyncAction.SyncAction.RESOLVER, _registry.getTldChains(tld), ews);
+    if (_msgSender() != address(this)) {
+      if (_registry.getTldClass(tld) == TldClass.TldClass.OMNI && _registry.getTldChains(tld).length > 0) {
+        _requestSync(payable(_msgSender()), SyncAction.SyncAction.RESOLVER, _registry.getTldChains(tld), ews);
+      }
     }
   }
 
