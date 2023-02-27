@@ -4,11 +4,9 @@ pragma solidity ^0.8.13;
 
 import "./UserRecord.sol";
 
-library HostRecord {
-  struct HostRecord {
-    bytes name;
-    uint16 ttl;
-    UserRecord.UserRecord user;
-    mapping(address => mapping(address => bool)) operators;
-  }
+struct HostRecord {
+  bytes name;
+  uint16 ttl;
+  UserRecord user;
+  mapping(address => mapping(address => bool)) operators;
 }

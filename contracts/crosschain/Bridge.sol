@@ -15,7 +15,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant TERMINATOR_ROLE = keccak256("TERMINATOR_ROLE");
 
-  Chain.Chain private _selfChain;
+  Chain private _selfChain;
 
   IRegistry private _registry;
   IPortal private _portal;
@@ -24,12 +24,12 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   mapping(bytes32 => BridgedRequest) private _bridgedRequests;
   mapping(bytes32 => bool) private _receivedRequest;
 
-  mapping(Chain.Chain => address) private _remoteBridges;
+  mapping(Chain => address) private _remoteBridges;
 
   mapping(address => uint256) private _nonces;
 
   function initialize(
-    Chain.Chain selfChain,
+    Chain selfChain,
     IRegistry registry_,
     IPortal portal_
   ) public initializer {
@@ -37,7 +37,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   }
 
   function __Bridge_init(
-    Chain.Chain selfChain,
+    Chain selfChain,
     IRegistry registry_,
     IPortal portal_
   ) internal onlyInitializing {
@@ -46,7 +46,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   }
 
   function __Bridge_init_unchained(
-    Chain.Chain selfChain,
+    Chain selfChain,
     IRegistry registry_,
     IPortal portal_
   ) internal onlyInitializing {
@@ -78,8 +78,8 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
   function getRef(
     uint256 nonce,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes32 name,
     bytes32 tld,
     address owner,
@@ -89,8 +89,8 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   }
 
   function estimateFee(
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes32 name,
     bytes32 tld
   ) external view returns (uint256) {
@@ -107,15 +107,15 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   function bridge(
     uint256 nonce,
     bytes32 ref,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes32 name,
     bytes32 tld
   ) external payable whenNotPaused nonReentrant {
     require(_selfChain != dstChain, "SELF_CHAIN");
 
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
-    require(_registry.getTldClass(tld) == TldClass.TldClass.UNIVERSAL || _registry.getTldClass(tld) == TldClass.TldClass.OMNI, "ONLY_UNIVERSAL_OR_OMNI_TLD");
+    require(_registry.getClass(tld) == TldClass.UNIVERSAL || _registry.getClass(tld) == TldClass.OMNI, "ONLY_UNIVERSAL_OR_OMNI_TLD");
 
     uint256 nonce_ = _nonces[_msgSender()];
     require(nonce_ == nonce, "INVALID_NONCE");
@@ -139,7 +139,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
       expiry: _registry.getExpiry(name, tld)
     });
 
-    _registry.bridged(name, tld);
+    _registry.bridge(name, tld);
 
     emit Bridged(nonce, _msgSender(), ref);
 
@@ -149,8 +149,8 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
   function accept(
     uint256 nonce,
     bytes32 ref,
-    Chain.Chain srcChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain srcChain,
+    CrossChainProvider provider,
     bytes memory name,
     bytes memory tld,
     address owner,
@@ -182,11 +182,11 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     return _bridgedRequests[ref];
   }
 
-  function getRemoteBridge(Chain.Chain chain) public view returns (address) {
+  function getRemoteBridge(Chain chain) public view returns (address) {
     return _remoteBridges[chain];
   }
 
-  function setRemoteBridge(Chain.Chain chain, address target) public onlyRole(OPERATOR_ROLE) {
+  function setRemoteBridge(Chain chain, address target) public onlyRole(OPERATOR_ROLE) {
     _remoteBridges[chain] = target;
   }
 

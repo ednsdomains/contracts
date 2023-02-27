@@ -37,15 +37,15 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   }
 
   function register(
-    Chain.Chain[] memory chains,
+    Chain[] memory chains,
     bytes memory tld,
     address resolver,
     uint64 expiry,
     address owner,
     bool enable,
-    TldClass.TldClass class_
+    TldClass class_
   ) public onlyRole(ADMIN_ROLE) {
-    if (class_ == TldClass.TldClass.CLASSICAL) {
+    if (class_ == TldClass.CLASSICAL) {
       require(chains.length == 0, "INVALID_CHAINS");
     } else {
       require(chains.length > 0, "INVALID_CHAINS");
@@ -63,7 +63,7 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
 
   function transfer(bytes memory tld, address newOwner) public onlyRole(ADMIN_ROLE) {
     uint256 tokenId = _registry.getTokenId(tld);
-    WrapperRecord.WrapperRecord memory _wrapper = _registry.getWrapper(keccak256(tld));
+    WrapperRecord memory _wrapper = _registry.getWrapper(keccak256(tld));
     Wrapper(_wrapper.address_).transferFrom(address(this), newOwner, tokenId);
   }
 

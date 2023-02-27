@@ -89,8 +89,8 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
 
   function _afterSet(bytes32 tld, bytes memory ews) internal {
     if (_msgSender() != address(this)) {
-      if (_registry.getTldClass(tld) == TldClass.TldClass.OMNI && _registry.getTldChains(tld).length > 0) {
-        _requestSync(payable(_msgSender()), SyncAction.SyncAction.RESOLVER, _registry.getTldChains(tld), ews);
+      if (_registry.getClass(tld) == TldClass.OMNI && _registry.getChains(tld).length > 0) {
+        _requestSync(payable(_msgSender()), SyncAction.RESOLVER, _registry.getChains(tld), ews);
       }
     }
   }

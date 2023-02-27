@@ -11,11 +11,11 @@ interface IMultichainAnyCallV6Provider {
 
   function send_(
     address payable _from,
-    Chain.Chain _dstChain,
+    Chain _dstChain,
     bytes memory _payload
   ) external payable;
 
-  function getChainId(Chain.Chain chain) external returns (uint16);
+  function getChainId(Chain chain) external returns (uint16);
 
-  function setChainId(Chain.Chain chain, uint16 chainId) external;
+  function setChainId(Chain chain, uint16 chainId) external;
 }

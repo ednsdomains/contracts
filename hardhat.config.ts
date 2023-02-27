@@ -152,6 +152,9 @@ const config: HardhatUserConfig = {
     runOnCompile: true,
     disambiguatePaths: false,
     only: [
+      "TldRecordFacet",
+      "DomainRecordFacet",
+      "HostRecordFacet",
       "Registry",
       "Registrar",
       "ClassicalRegistrarController",

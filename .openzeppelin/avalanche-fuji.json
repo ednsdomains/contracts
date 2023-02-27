@@ -336,37 +336,17 @@
           },
           "t_enum(Chain)11400": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
-          "t_enum(Kind)11461": {
-            "label": "enum Kind.Kind",
-            "members": [
-              "TLD",
-              "DOMAIN",
-              "HOST"
-            ],
+          "t_enum(RecordKind)11461": {
+            "label": "enum RecordKind",
+            "members": ["TLD", "DOMAIN", "HOST"],
             "numberOfBytes": "1"
           },
           "t_enum(TldClass)11475": {
-            "label": "enum TldClass.TldClass",
-            "members": [
-              "CLASSICAL",
-              "UNIVERSAL",
-              "OMNI"
-            ],
+            "label": "enum TldClass",
+            "members": ["CLASSICAL", "UNIVERSAL", "OMNI"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -382,11 +362,11 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(DomainRecord)11436_storage)": {
-            "label": "mapping(bytes32 => struct DomainRecord.DomainRecord)",
+            "label": "mapping(bytes32 => struct DomainRecord)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(HostRecord)11454_storage)": {
-            "label": "mapping(bytes32 => struct HostRecord.HostRecord)",
+            "label": "mapping(bytes32 => struct HostRecord)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -394,7 +374,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(TldRecord)11508_storage)": {
-            "label": "mapping(bytes32 => struct TldRecord.TldRecord)",
+            "label": "mapping(bytes32 => struct TldRecord)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_uint256)": {
@@ -402,11 +382,11 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_uint256,t_struct(TokenRecord)11522_storage)": {
-            "label": "mapping(uint256 => struct TokenRecord.TokenRecord)",
+            "label": "mapping(uint256 => struct TokenRecord)",
             "numberOfBytes": "32"
           },
           "t_struct(DomainRecord)11436_storage": {
-            "label": "struct DomainRecord.DomainRecord",
+            "label": "struct DomainRecord",
             "members": [
               {
                 "label": "name",
@@ -454,7 +434,7 @@
             "numberOfBytes": "192"
           },
           "t_struct(HostRecord)11454_storage": {
-            "label": "struct HostRecord.HostRecord",
+            "label": "struct HostRecord",
             "members": [
               {
                 "label": "name",
@@ -502,7 +482,7 @@
             "numberOfBytes": "64"
           },
           "t_struct(TldRecord)11508_storage": {
-            "label": "struct TldRecord.TldRecord",
+            "label": "struct TldRecord",
             "members": [
               {
                 "label": "chains",
@@ -562,11 +542,11 @@
             "numberOfBytes": "224"
           },
           "t_struct(TokenRecord)11522_storage": {
-            "label": "struct TokenRecord.TokenRecord",
+            "label": "struct TokenRecord",
             "members": [
               {
                 "label": "kind",
-                "type": "t_enum(Kind)11461",
+                "type": "t_enum(RecordKind)11461",
                 "offset": 0,
                 "slot": "0"
               },
@@ -592,7 +572,7 @@
             "numberOfBytes": "128"
           },
           "t_struct(UserRecord)11530_storage": {
-            "label": "struct UserRecord.UserRecord",
+            "label": "struct UserRecord",
             "members": [
               {
                 "label": "user",
@@ -610,7 +590,7 @@
             "numberOfBytes": "32"
           },
           "t_struct(WrapperRecord)11538_storage": {
-            "label": "struct WrapperRecord.WrapperRecord",
+            "label": "struct WrapperRecord",
             "members": [
               {
                 "label": "enable",
@@ -2152,13 +2132,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)3053": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2170,7 +2145,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)3053,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -2409,29 +2384,12 @@
           },
           "t_enum(Chain)11400": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11408": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2758,29 +2716,12 @@
           },
           "t_enum(Chain)11336": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11344": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2788,7 +2729,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)11344)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -3043,19 +2984,7 @@
           },
           "t_enum(Chain)11400": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -4636,29 +4565,12 @@
           },
           "t_enum(Chain)3717": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3725": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -4666,7 +4578,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3725)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -4885,29 +4797,12 @@
           },
           "t_enum(Chain)3465": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3473": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -4915,7 +4810,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3473)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -5660,29 +5555,12 @@
           },
           "t_enum(Chain)3722": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3730": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -5690,7 +5568,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3730)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -5909,29 +5787,12 @@
           },
           "t_enum(Chain)11376": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11384": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -5939,7 +5800,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)11384)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -6425,13 +6286,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)11399": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -6443,7 +6299,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)11399,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -6844,29 +6700,12 @@
           },
           "t_enum(Chain)3760": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3768": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -6874,7 +6713,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3768)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -7093,29 +6932,12 @@
           },
           "t_enum(Chain)11391": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11399": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -7123,7 +6945,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)11399)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -7532,29 +7354,12 @@
           },
           "t_enum(Chain)3758": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3766": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -7562,7 +7367,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3766)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -7712,13 +7517,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)11400": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -7730,7 +7530,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)11400,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -7941,29 +7741,12 @@
           },
           "t_enum(Chain)3528": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3536": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -7971,7 +7754,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3536)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -8190,29 +7973,12 @@
           },
           "t_enum(Chain)3758": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3766": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -8220,7 +7986,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3766)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -8370,13 +8136,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)6387": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -8388,7 +8149,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)6387,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -8599,29 +8360,12 @@
           },
           "t_enum(Chain)6194": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)6202": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -8629,7 +8373,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)6202)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -8779,13 +8523,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)3091": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -8797,7 +8536,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)3091,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -9044,19 +8783,7 @@
           },
           "t_enum(Chain)11498": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9254,13 +8981,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)5458": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9272,7 +8994,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)5458,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -9483,29 +9205,12 @@
           },
           "t_enum(Chain)3792": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3800": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9513,7 +9218,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)3800)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -9732,29 +9437,12 @@
           },
           "t_enum(Chain)11498": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11506": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9762,7 +9450,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)11506)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -9912,13 +9600,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)3063": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9930,7 +9613,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)3063,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -10177,19 +9860,7 @@
           },
           "t_enum(Chain)5450": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -10456,29 +10127,12 @@
           },
           "t_enum(Chain)5078": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)5086": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -10486,7 +10140,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)5086)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -10636,13 +10290,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)6109": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -10654,7 +10303,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)6109,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -10865,29 +10514,12 @@
           },
           "t_enum(Chain)6101": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)6109": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -10895,7 +10527,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)6109)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -11381,13 +11013,8 @@
             "numberOfBytes": "32"
           },
           "t_enum(CrossChainProvider)11408": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -11399,7 +11026,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_enum(CrossChainProvider)11408,t_address)": {
-            "label": "mapping(enum CrossChainProvider.CrossChainProvider => address)",
+            "label": "mapping(enum CrossChainProvider => address)",
             "numberOfBytes": "32"
           },
           "t_struct(RoleData)34_storage": {
@@ -11610,29 +11237,12 @@
           },
           "t_enum(Chain)4946": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)4954": {
-            "label": "enum CrossChainProvider.CrossChainProvider",
-            "members": [
-              "LAYERZERO",
-              "MULTICHAIN",
-              "ROUTER_PROTOCOL",
-              "NOMAD"
-            ],
+            "label": "enum CrossChainProvider",
+            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -11640,7 +11250,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_address,t_enum(CrossChainProvider)4954)": {
-            "label": "mapping(address => enum CrossChainProvider.CrossChainProvider)",
+            "label": "mapping(address => enum CrossChainProvider)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
@@ -12833,19 +12443,7 @@
           },
           "t_enum(Chain)3759": {
             "label": "enum Chain.Chain",
-            "members": [
-              "ETHEREUM",
-              "BNB",
-              "POLYGON",
-              "AVALANCHE",
-              "FANTOM",
-              "OPTIMISM",
-              "ARBITRUM",
-              "IOTEX",
-              "OKC",
-              "GNOSIS",
-              "CELO"
-            ],
+            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {

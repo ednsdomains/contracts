@@ -2,13 +2,11 @@
 
 pragma solidity ^0.8.13;
 
-import "./Kind.sol";
+import "./RecordKind.sol";
 
-library TokenRecord {
-  struct TokenRecord {
-    Kind.Kind kind;
-    bytes32 tld;
-    bytes32 domain;
-    bytes32 host;
-  }
+struct TokenRecord {
+  RecordKind kind;
+  bytes32 tld;
+  bytes32 domain;
+  bytes32 host;
 }

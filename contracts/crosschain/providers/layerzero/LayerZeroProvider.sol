@@ -14,7 +14,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
   IPortal private _portal;
   ILayerZeroEndpoint private _lzEndpoint;
 
-  mapping(Chain.Chain => uint16) private _chainIds;
+  mapping(Chain => uint16) private _chainIds;
   mapping(uint16 => bytes) public trustedRemotes;
 
   bytes public v1AdaptorParameters;
@@ -35,7 +35,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
     _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function estimateFee(Chain.Chain _dstChain, bytes calldata payload) public view returns (uint256) {
+  function estimateFee(Chain _dstChain, bytes calldata payload) public view returns (uint256) {
     uint16 _dstChainId = getChainId(_dstChain);
     (uint256 nativeFee, ) = _lzEndpoint.estimateFees(_dstChainId, address(this), payload, false, v1AdaptorParameters);
     return nativeFee;
@@ -43,7 +43,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
 
   function send_(
     address payable _from,
-    Chain.Chain _dstChain,
+    Chain _dstChain,
     bytes calldata _payload
   ) external payable {
     require(_msgSender() == address(_portal), "ONLY_PORTAL");
@@ -87,14 +87,14 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
   }
 
   function _receive(bytes calldata _payload) internal {
-    _portal.receive_(CrossChainProvider.CrossChainProvider.LAYERZERO, _payload);
+    _portal.receive_(CrossChainProvider.LAYERZERO, _payload);
   }
 
-  function getChainId(Chain.Chain chain) public view returns (uint16) {
+  function getChainId(Chain chain) public view returns (uint16) {
     return _chainIds[chain];
   }
 
-  function setChainId(Chain.Chain chain, uint16 chainId) public onlyRole(OPERATOR_ROLE) {
+  function setChainId(Chain chain, uint16 chainId) public onlyRole(OPERATOR_ROLE) {
     _chainIds[chain] = chainId;
   }
 

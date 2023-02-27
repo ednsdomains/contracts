@@ -14,7 +14,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   bytes32 public constant SENDER_ROLE = keccak256("SENDER_ROLE");
   bytes32 public constant PROVIDER_ROLE = keccak256("PROVIDER_ROLE");
 
-  mapping(CrossChainProvider.CrossChainProvider => address) private _providers;
+  mapping(CrossChainProvider => address) private _providers;
 
   function initialize() public initializer {
     __Portal_init();
@@ -35,22 +35,22 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
 
   function send_(
     address payable sender,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes calldata payload
   ) external payable onlyRole(SENDER_ROLE) {
-    if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
+    if (provider == CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       try ILayerZeroProvider(_providers[provider]).send_{ value: msg.value }(sender, dstChain, payload) {
         emit PacketSent(sender, dstChain, provider);
       } catch Error(string memory reason) {
-        emit ProviderError(CrossChainProvider.CrossChainProvider.LAYERZERO, reason);
+        emit ProviderError(CrossChainProvider.LAYERZERO, reason);
       }
     } else {
       revert("INVALID_PROVIDER");
     }
   }
 
-  function receive_(CrossChainProvider.CrossChainProvider provider, bytes memory payload) external onlyRole(PROVIDER_ROLE) {
+  function receive_(CrossChainProvider provider, bytes memory payload) external onlyRole(PROVIDER_ROLE) {
     (address target, bytes memory ctx) = abi.decode(payload, (address, bytes));
     try IReceiver(target).receive_(ctx) {
       emit PacketReceived(provider);
@@ -61,22 +61,22 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
   }
 
   function estimateFee(
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes calldata payload
   ) external view returns (uint256) {
-    if (provider == CrossChainProvider.CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
+    if (provider == CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       return ILayerZeroProvider(_providers[provider]).estimateFee(dstChain, payload);
     } else {
       revert("INVALID_PROVIDER");
     }
   }
 
-  function getProvider(CrossChainProvider.CrossChainProvider provider) external view returns (address) {
+  function getProvider(CrossChainProvider provider) external view returns (address) {
     return _providers[provider];
   }
 
-  function setProvider(CrossChainProvider.CrossChainProvider provider, address address_) external onlyRole(OPERATOR_ROLE) {
+  function setProvider(CrossChainProvider provider, address address_) external onlyRole(OPERATOR_ROLE) {
     _providers[provider] = address_;
   }
 

@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
+import "../lib/TokenRecord.sol";
 
 contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
@@ -73,10 +74,10 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
   }
 
   function ownerOf(uint256 tokenId) public view returns (address) {
-    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.kind == Kind.Kind.TLD) {
+    TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    if (_tokenRecord.kind == RecordKind.TLD) {
       return _registry.getOwner(_tokenRecord.tld);
-    } else if (_tokenRecord.kind == Kind.Kind.DOMAIN || _tokenRecord.kind == Kind.Kind.HOST) {
+    } else if (_tokenRecord.kind == RecordKind.DOMAIN || _tokenRecord.kind == RecordKind.HOST) {
       return _registry.getOwner(_tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert("INVALID_ENUM");
@@ -96,10 +97,10 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
       _balances[from] -= 1;
       _balances[to] += 1;
     }
-    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.kind == Kind.Kind.TLD) {
+    TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    if (_tokenRecord.kind == RecordKind.TLD) {
       _registry.setOwner(_tokenRecord.tld, to);
-    } else if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
+    } else if (_tokenRecord.kind == RecordKind.DOMAIN) {
       _registry.setOwner(_tokenRecord.domain, _tokenRecord.tld, to);
     } else {
       revert("INVALID_ENUM");
@@ -289,7 +290,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     address newUser,
     uint64 expiry
   ) public {
-    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     address owner = ownerOf(tokenId);
     address user = userOf(tokenId);
     uint256 uExpiry = userExpiry(tokenId);
@@ -301,9 +302,9 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
         (user == _msgSender() && uExpiry > block.timestamp && uExpiry >= expiry), // Current user transfering the usership to a new user
       "ERC4907: forbidden access"
     );
-    if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
+    if (_tokenRecord.kind == RecordKind.DOMAIN) {
       _registry.setUser(_tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
-    } else if (_tokenRecord.kind == Kind.Kind.HOST) {
+    } else if (_tokenRecord.kind == RecordKind.HOST) {
       _registry.setUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld, newUser, expiry);
     } else {
       revert("INVALID_ENUM");
@@ -312,10 +313,10 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
   }
 
   function userOf(uint256 tokenId) public view returns (address) {
-    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
+    TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    if (_tokenRecord.kind == RecordKind.DOMAIN) {
       return _registry.getUser(_tokenRecord.domain, _tokenRecord.tld);
-    } else if (_tokenRecord.kind == Kind.Kind.HOST) {
+    } else if (_tokenRecord.kind == RecordKind.HOST) {
       return _registry.getUser(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert("INVALID_ENUM");
@@ -323,10 +324,10 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
   }
 
   function userExpiry(uint256 tokenId) public view returns (uint256) {
-    TokenRecord.TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
-    if (_tokenRecord.kind == Kind.Kind.DOMAIN) {
+    TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
+    if (_tokenRecord.kind == RecordKind.DOMAIN) {
       return _registry.getUserExpiry(_tokenRecord.domain, _tokenRecord.tld);
-    } else if (_tokenRecord.kind == Kind.Kind.HOST) {
+    } else if (_tokenRecord.kind == RecordKind.HOST) {
       return _registry.getUserExpiry(_tokenRecord.host, _tokenRecord.domain, _tokenRecord.tld);
     } else {
       revert("INVALID_ENUM");

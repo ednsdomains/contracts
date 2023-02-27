@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.13;
 
-library WrapperRecord {
-  struct WrapperRecord {
-    bool enable;
-    address address_;
-  }
+struct WrapperRecord {
+  bool enable;
+  address address_;
 }

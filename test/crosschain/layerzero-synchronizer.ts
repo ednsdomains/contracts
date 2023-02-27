@@ -59,11 +59,11 @@ async function main() {
   // const fee = await AvalancheContracts.Synchronizer.estimateSyncFee(
   //   2,
   //   CrossChainProvider.LAYERZERO,
-  //   await AvalancheContracts.Registry.getTldChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
+  //   await AvalancheContracts.Registry.getChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
   //   ews,
   // );
   // console.log({ fee: ethers.utils.formatEther(fee) });
-  // console.log({ chains: await AvalancheContracts.Registry.getTldChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))) });
+  // console.log({ chains: await AvalancheContracts.Registry.getChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))) });
   // console.log("Registering domain on Avalanche...");
   // const tx1 = await AvalancheContracts.OmniRegistrarController["register(bytes,bytes,address,uint64)"](
   //   ethers.utils.toUtf8Bytes(name),
@@ -88,7 +88,7 @@ async function main() {
   const fee = await AvalancheContracts.Synchronizer.estimateSyncFee(
     0,
     CrossChainProvider.LAYERZERO,
-    await AvalancheContracts.Registry.getTldChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
+    await AvalancheContracts.Registry.getChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
     ews,
   );
   console.log({ fee: ethers.utils.formatEther(fee) });
@@ -114,11 +114,11 @@ async function main() {
   // const fee = await FantomContracts.Synchronizer.estimateSyncFee(
   //   2,
   //   CrossChainProvider.LAYERZERO,
-  //   await FantomContracts.Registry.getTldChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
+  //   await FantomContracts.Registry.getChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
   //   ews,
   // );
   // console.log({ fee: ethers.utils.formatEther(fee) });
-  // console.log({ chains: await FantomContracts.Registry.getTldChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))) });
+  // console.log({ chains: await FantomContracts.Registry.getChains(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))) });
   // if (!(await FantomContracts.Registrar.hasRole(await FantomContracts.Registrar.BRIDGE_ROLE(), FantomSigner.address))) {
   //   const tx = await FantomContracts.Registrar.grantRole(await FantomContracts.Registrar.BRIDGE_ROLE(), FantomSigner.address);
   //   await tx.wait();

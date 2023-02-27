@@ -17,17 +17,17 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
   bytes32 public constant REQUESTOR_ROLE = keccak256("REQUESTOR_ROLE");
 
-  Chain.Chain private _selfChain;
+  Chain private _selfChain;
 
   IRegistrar private _registrar;
   IPortal private _portal;
   IPublicResolver private _resolver;
 
-  mapping(Chain.Chain => address) private _remoteSynchronizers;
-  mapping(address => CrossChainProvider.CrossChainProvider) private _userDefaultProviders;
+  mapping(Chain => address) private _remoteSynchronizers;
+  mapping(address => CrossChainProvider) private _userDefaultProviders;
 
   function initialize(
-    Chain.Chain selfChain,
+    Chain selfChain,
     IRegistrar registrar_,
     IPortal portal_
   ) public initializer {
@@ -35,7 +35,7 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   }
 
   function __Synchronizer_init(
-    Chain.Chain selfChain,
+    Chain selfChain,
     IRegistrar registrar_,
     IPortal portal_
   ) internal onlyInitializing {
@@ -43,7 +43,7 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   }
 
   function __Synchronizer_init_unchained(
-    Chain.Chain selfChain,
+    Chain selfChain,
     IRegistrar registrar_,
     IPortal portal_
   ) internal onlyInitializing {
@@ -67,23 +67,23 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     return abi.encode(dstSynchronizer, ctx);
   }
 
-  function _packContext(SyncAction.SyncAction action, bytes memory ews) private pure returns (bytes memory) {
+  function _packContext(SyncAction action, bytes memory ews) private pure returns (bytes memory) {
     return abi.encode(action, ews);
   }
 
-  function _unpackContext(bytes memory ctx) private pure returns (SyncAction.SyncAction action, bytes memory ews) {
-    return abi.decode(ctx, (SyncAction.SyncAction, bytes));
+  function _unpackContext(bytes memory ctx) private pure returns (SyncAction action, bytes memory ews) {
+    return abi.decode(ctx, (SyncAction, bytes));
   }
 
   function estimateSyncFee(
-    SyncAction.SyncAction action,
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
+    SyncAction action,
+    CrossChainProvider provider,
+    Chain[] memory dstChains,
     bytes memory ews
   ) public view returns (uint256) {
     uint256 fee = 0;
     for (uint256 i = 0; i < dstChains.length; i++) {
-      Chain.Chain dstChain = dstChains[i];
+      Chain dstChain = dstChains[i];
       if (dstChain != _selfChain) {
         address dstSynchronizer = getRemoteSynchronizer(dstChain);
         bytes memory ctx = _packContext(action, ews);
@@ -96,9 +96,9 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
 
   function sync(
     address payable sender,
-    SyncAction.SyncAction action,
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
+    SyncAction action,
+    CrossChainProvider provider,
+    Chain[] memory dstChains,
     bytes memory ews
   ) external payable onlyRole(REQUESTOR_ROLE) {
     _sync(sender, action, provider, dstChains, ews);
@@ -106,14 +106,14 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
 
   function _sync(
     address payable sender,
-    SyncAction.SyncAction action,
-    CrossChainProvider.CrossChainProvider provider,
-    Chain.Chain[] memory dstChains,
+    SyncAction action,
+    CrossChainProvider provider,
+    Chain[] memory dstChains,
     bytes memory ews
   ) private {
     bytes memory ctx = _packContext(action, ews);
     for (uint256 i = 0; i < dstChains.length; i++) {
-      Chain.Chain dstChain = dstChains[i];
+      Chain dstChain = dstChains[i];
       if (dstChain != _selfChain) {
         address dstSynchronizer = getRemoteSynchronizer(dstChain);
         bytes memory payload = _packPayload(dstSynchronizer, ctx);
@@ -125,11 +125,11 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   }
 
   function receive_(bytes memory ctx) external {
-    (SyncAction.SyncAction action, bytes memory ews) = _unpackContext(ctx);
+    (SyncAction action, bytes memory ews) = _unpackContext(ctx);
     address app;
-    if (action == SyncAction.SyncAction.REGISTRAR) {
+    if (action == SyncAction.REGISTRAR) {
       app = address(_registrar);
-    } else if (action == SyncAction.SyncAction.RESOLVER) {
+    } else if (action == SyncAction.RESOLVER) {
       app = address(_resolver);
     }
 
@@ -142,19 +142,19 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     }
   }
 
-  function getRemoteSynchronizer(Chain.Chain chain) public view returns (address) {
+  function getRemoteSynchronizer(Chain chain) public view returns (address) {
     return _remoteSynchronizers[chain];
   }
 
-  function setRemoteSynchronizer(Chain.Chain chain, address target) public {
+  function setRemoteSynchronizer(Chain chain, address target) public {
     _remoteSynchronizers[chain] = target;
   }
 
-  function getUserDefaultProvider(address user) public view returns (CrossChainProvider.CrossChainProvider) {
+  function getUserDefaultProvider(address user) public view returns (CrossChainProvider) {
     return _userDefaultProviders[user];
   }
 
-  function setUserDefaultProvider(address user, CrossChainProvider.CrossChainProvider provider) public {
+  function setUserDefaultProvider(address user, CrossChainProvider provider) public {
     require(user == _msgSender(), "ONLY_SELF");
     _userDefaultProviders[user] = provider;
   }

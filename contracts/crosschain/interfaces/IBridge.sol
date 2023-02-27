@@ -12,8 +12,8 @@ interface IBridge is IReceiver {
   event Received(bytes32 indexed ref);
 
   struct AcceptedRequest {
-    Chain.Chain srcChain;
-    CrossChainProvider.CrossChainProvider provider;
+    Chain srcChain;
+    CrossChainProvider provider;
     bytes32 tld;
     bytes32 name;
     address owner;
@@ -21,8 +21,8 @@ interface IBridge is IReceiver {
   }
 
   struct BridgedRequest {
-    Chain.Chain dstChain;
-    CrossChainProvider.CrossChainProvider provider;
+    Chain dstChain;
+    CrossChainProvider provider;
     bytes32 tld;
     bytes32 name;
     address owner;
@@ -30,8 +30,8 @@ interface IBridge is IReceiver {
   }
 
   function estimateFee(
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes32 name,
     bytes32 tld
   ) external view returns (uint256);
@@ -39,8 +39,8 @@ interface IBridge is IReceiver {
   function bridge(
     uint256 nonce,
     bytes32 ref,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes32 name,
     bytes32 tld
   ) external payable;
@@ -48,8 +48,8 @@ interface IBridge is IReceiver {
   function accept(
     uint256 nonce,
     bytes32 ref,
-    Chain.Chain srcChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain srcChain,
+    CrossChainProvider provider,
     bytes memory name,
     bytes memory tld,
     address owner,
@@ -60,16 +60,16 @@ interface IBridge is IReceiver {
 
   function getBridgedRequest(bytes32 ref) external view returns (BridgedRequest memory);
 
-  function getRemoteBridge(Chain.Chain chain) external view returns (address);
+  function getRemoteBridge(Chain chain) external view returns (address);
 
-  function setRemoteBridge(Chain.Chain chain, address target) external;
+  function setRemoteBridge(Chain chain, address target) external;
 
   function getNonce() external view returns (uint256);
 
   function getRef(
     uint256 nonce,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes32 name,
     bytes32 tld,
     address owner,

@@ -5,31 +5,31 @@ import "../../lib/CrossChainProvider.sol";
 import "../../lib/Chain.sol";
 
 interface IPortal {
-  event PacketSent(address indexed sender, Chain.Chain dstChain, CrossChainProvider.CrossChainProvider provider);
-  event PacketReceived(CrossChainProvider.CrossChainProvider provider);
+  event PacketSent(address indexed sender, Chain dstChain, CrossChainProvider provider);
+  event PacketReceived(CrossChainProvider provider);
 
   event ReceiverError(bytes32 id, address indexed receiver, string resaon);
-  event ProviderError(CrossChainProvider.CrossChainProvider provider, string reason);
+  event ProviderError(CrossChainProvider provider, string reason);
 
   // EVM compatible send
   function send_(
     address payable sender,
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes calldata payload
   ) external payable;
 
-  function receive_(CrossChainProvider.CrossChainProvider provider, bytes calldata payload) external;
+  function receive_(CrossChainProvider provider, bytes calldata payload) external;
 
   function estimateFee(
-    Chain.Chain dstChain,
-    CrossChainProvider.CrossChainProvider provider,
+    Chain dstChain,
+    CrossChainProvider provider,
     bytes calldata payload
   ) external view returns (uint256);
 
-  function getProvider(CrossChainProvider.CrossChainProvider provider) external view returns (address);
+  function getProvider(CrossChainProvider provider) external view returns (address);
 
-  function setProvider(CrossChainProvider.CrossChainProvider, address address_) external;
+  function setProvider(CrossChainProvider, address address_) external;
 
   // function callback() external;
 }

@@ -2,10 +2,8 @@
 
 pragma solidity ^0.8.13;
 
-library SyncAction {
-  enum SyncAction {
-    RESOLVER,
-    REGISTRY,
-    REGISTRAR
-  }
+enum SyncAction {
+  RESOLVER,
+  REGISTRY,
+  REGISTRAR
 }

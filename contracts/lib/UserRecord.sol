@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.13;
 
-library UserRecord {
-  struct UserRecord {
-    address user;
-    uint64 expiry;
-  }
+struct UserRecord {
+  address user;
+  uint64 expiry;
 }

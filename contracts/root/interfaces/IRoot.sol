@@ -11,13 +11,13 @@ interface IRoot {
   event TldRenewed(bytes tld, uint256 expiry);
 
   function register(
-    Chain.Chain[] memory chains,
+    Chain[] memory chains,
     bytes memory tld,
     address resolver,
     uint64 expiry,
     address owner,
     bool enable,
-    TldClass.TldClass class_
+    TldClass class_
   ) external;
 
   function renew(bytes memory tld, uint64 expiry) external;

@@ -10,11 +10,11 @@ abstract contract SynchronizerApplication is ISynchronizerApplication, ContextUp
 
   function _requestSync(
     address payable sender,
-    SyncAction.SyncAction action,
-    Chain.Chain[] memory dstChains,
+    SyncAction action,
+    Chain[] memory dstChains,
     bytes memory ews
   ) internal virtual {
-    CrossChainProvider.CrossChainProvider provider = _synchronizer.getUserDefaultProvider(_msgSender());
+    CrossChainProvider provider = _synchronizer.getUserDefaultProvider(_msgSender());
     // require(msg.value >= _synchronizer.estimateSyncFee(action, provider, dstChains, ews), "INSUFFICIENT_FEE");
     try _synchronizer.sync{ value: msg.value }(sender, action, provider, dstChains, ews) {
       emit RequestSync(ews);

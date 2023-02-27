@@ -10,17 +10,17 @@ interface ILayerZeroProvider {
   event MessageDeliverFailed(bytes32 ref, string reason);
   event SetTrustedRemote(uint16 srcChainId, bytes srcAddress);
 
-  function estimateFee(Chain.Chain _dstChain, bytes memory _payload) external view returns (uint256);
+  function estimateFee(Chain _dstChain, bytes memory _payload) external view returns (uint256);
 
   function send_(
     address payable _from,
-    Chain.Chain _dstChain,
+    Chain _dstChain,
     bytes memory _payload
   ) external payable;
 
-  function getChainId(Chain.Chain chain) external returns (uint16);
+  function getChainId(Chain chain) external returns (uint16);
 
-  function setChainId(Chain.Chain chain, uint16 chainId) external;
+  function setChainId(Chain chain, uint16 chainId) external;
 
   function setTrustedRemote(uint16 _srcChainId, bytes calldata _srcAddress) external;
 
