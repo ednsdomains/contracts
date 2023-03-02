@@ -22,7 +22,7 @@ export const getSelector = (func: string): string => {
   return abiInterface.getSighash(ethers.utils.Fragment.from(func));
 };
 
-const deployFacets = async (FacetNames: string[]): Promise<Contract[]> => {
+export const deployFacets = async (FacetNames: string[]): Promise<Contract[]> => {
   const [signer] = await ethers.getSigners();
   const facets: Contract[] = [];
   for (const FacetName of FacetNames) {
@@ -34,14 +34,14 @@ const deployFacets = async (FacetNames: string[]): Promise<Contract[]> => {
   return facets;
 };
 
-const cutFacets = async (signer: SignerWithAddress, diamond: Contract, action: FacetCutAction, facets: Contract[]): Promise<void> => {
+export const cutFacets = async (signer: Signer, diamond: Contract, action: FacetCutAction, facets: Contract[]): Promise<void> => {
   const cut: { facetAddress: string; action: FacetCutAction; functionSelectors: string[] }[] = facets.map((facet) => ({
     facetAddress: facet.address,
     action,
     functionSelectors: getSelectors(facet),
   }));
 
-  const DiamondCut = await ethers.getContractAt("IDiamondCut", diamond.address, signer);
+  const DiamondCut = await ethers.getContractAt("DiamondCut", diamond.address, signer);
 
   const functionCall = ethers.utils.formatBytes32String("");
 
@@ -53,4 +53,6 @@ const cutFacets = async (signer: SignerWithAddress, diamond: Contract, action: F
   }
 };
 
-const removeFacets = async (diamond: Contract,facets: Contract[]): Promise<void> => {
+export const removeFacets = async (signer: Signer, diamond: Contract, facets: Contract[]): Promise<void> => {
+  return cutFacets(signer, diamond, FacetCutAction.REMOVE, facets);
+};

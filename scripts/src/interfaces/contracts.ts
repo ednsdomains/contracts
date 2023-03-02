@@ -1,4 +1,9 @@
 import { Bridge } from "../../../typechain/Bridge";
+import { DiamondCutFacet } from "../../../typechain/DiamondCutFacet";
+import { DiamondLoupeFacet } from "../../../typechain/DiamondLoupeFacet";
+import { TldRecordFacet } from "../../../typechain/TldRecordFacet";
+import { DomainRecordFacet } from "../../../typechain/DomainRecordFacet";
+import { HostRecordFacet } from "../../../typechain/HostRecordFacet";
 import {
   Registry,
   PublicResolver,
@@ -15,8 +20,19 @@ import {
   OmniRegistrarController,
 } from "../../../typechain";
 
+interface IRegistry {
+  Diamond?: Registry;
+  facets?: {
+    DiamondCutFacet?: DiamondCutFacet;
+    DiamondLoupeFacet?: DiamondLoupeFacet;
+    TldRecordFacet?: TldRecordFacet;
+    DomainRecordFacet?: DomainRecordFacet;
+    HostRecordFacet?: HostRecordFacet;
+  };
+}
+
 export interface IContracts {
-  Registry?: Registry;
+  Registry?: IRegistry;
   PublicResolver?: PublicResolver;
   Registrar?: Registrar;
   ClassicalRegistrarController?: ClassicalRegistrarController;

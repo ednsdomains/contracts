@@ -33,12 +33,13 @@ export interface IDeployInput {
 
 export const deployRegistry = async (input: IDeployInput): Promise<Registry> => {
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry");
-  const factory = await ethers.getContractFactory("Registry", input.signer);
-  const _contract = await upgrades.deployProxy(factory, { kind: "uups" });
-  await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "Registry", _contract, _contract.deployTransaction);
-  const contract = factory.attach(_contract.address);
-  return contract;
+
+  // const factory = await ethers.getContractFactory("Registry", input.signer);
+  // const _contract = await upgrades.deployProxy(factory, { kind: "uups" });
+  // await _contract.deployed();
+  // await _afterDeploy(await input.signer.getChainId(), "Registry", _contract, _contract.deployTransaction);
+  // const contract = factory.attach(_contract.address);
+  // return contract;
 };
 
 export const deployWrapper = async (NFT_NAME: string, NFT_SYMBOL: string, input: IDeployInput): Promise<Wrapper> => {
@@ -219,11 +220,17 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     const _contract = _.clone(ALL_CONTRACTS_DATA.find((c) => c.chainId === 0));
     if (!_contract) throw new Error("");
     _contract.chainId = chainId;
-    _contract.addresses[name] = contract.address;
+    if (name.split(".").length > 1 && name.startsWith("Registry")) {
+    } else {
+      if (_contract.addresses[name.split(".")[0]]) {
+        if (name.split(".")[0] === "Registry" && _contract.addresses["Registry"]) {
+          _contract.addresses["Registry"][name.split(".")[1]] = contract.address;
+        }
+      } else {
+      }
+    }
     ALL_CONTRACTS_DATA.push(_contract);
   }
   if (chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
   // await verifyContract(contract.address);
 };
-
-//
