@@ -8,8 +8,7 @@
     "declaration": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "forceConsistentCasingInFileNames": true
+    "emitDecoratorMetadata": true
   },
   "include": ["./scripts", "./test", "./typechain", "playground.ts"],
   "files": ["./hardhat.config.ts"]

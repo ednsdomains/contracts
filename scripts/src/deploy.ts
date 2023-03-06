@@ -43,10 +43,10 @@ export const deployRegistry = async (input: IDeployInput): Promise<Registry> => 
 };
 
 export const deployWrapper = async (NFT_NAME: string, NFT_SYMBOL: string, input: IDeployInput): Promise<Wrapper> => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "DefaultWrapper");
   const factory = await ethers.getContractFactory("Wrapper", input.signer);
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.address, NFT_NAME, NFT_SYMBOL], { kind: "uups" });
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address, NFT_NAME, NFT_SYMBOL], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "DefaultWrapper", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -54,10 +54,10 @@ export const deployWrapper = async (NFT_NAME: string, NFT_SYMBOL: string, input:
 };
 
 export const deployPublicResolver = async (input: IDeployInput): Promise<PublicResolver> => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "PublicResolver");
   const factory = await ethers.getContractFactory("PublicResolver", input.signer);
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.address], { kind: "uups", unsafeAllow: ["delegatecall"] });
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address], { kind: "uups", unsafeAllow: ["delegatecall"] });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "PublicResolver", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -65,11 +65,11 @@ export const deployPublicResolver = async (input: IDeployInput): Promise<PublicR
 };
 
 export const deployRegistrar = async (input: IDeployInput): Promise<Registrar> => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry` is not available");
   if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registrar");
   const factory = await ethers.getContractFactory("Registrar", input.signer);
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.address, input.contracts.PublicResolver.address], { kind: "uups" });
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address, input.contracts.PublicResolver.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "Registrar", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -77,11 +77,11 @@ export const deployRegistrar = async (input: IDeployInput): Promise<Registrar> =
 };
 
 export const deployRoot = async (input: IDeployInput): Promise<Root> => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Root");
   const factory = await ethers.getContractFactory("Root", input.signer);
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.address, input.contracts.Registrar.address], { kind: "uups" });
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address, input.contracts.Registrar.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "Root", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -155,12 +155,12 @@ export const deployPortal = async (input: IDeployInput): Promise<Portal> => {
 };
 
 export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry` is not available");
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
   const chain = NetworkConfig[input.chainId].chain;
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Bridge");
   const factory = await ethers.getContractFactory("Bridge", input.signer);
-  const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.address, input.contracts.Portal.address], { kind: "uups" });
+  const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.Diamond.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "Bridge", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -224,7 +224,7 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     } else {
       if (_contract.addresses[name.split(".")[0]]) {
         if (name.split(".")[0] === "Registry" && _contract.addresses["Registry"]) {
-          _contract.addresses["Registry"][name.split(".")[1]] = contract.address;
+          _contract.addresses["Registry"]["xx"] = contract.address;
         }
       } else {
       }

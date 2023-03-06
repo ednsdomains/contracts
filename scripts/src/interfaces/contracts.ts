@@ -20,7 +20,7 @@ import {
   OmniRegistrarController,
 } from "../../../typechain";
 
-interface IRegistry {
+export interface IRegistry {
   Diamond?: Registry;
   facets?: {
     DiamondCutFacet?: DiamondCutFacet;

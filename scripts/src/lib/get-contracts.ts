@@ -17,14 +17,14 @@ import {
   Wrapper,
 } from "../../../typechain";
 import { ContractName } from "../constants/contract-name";
-import { IContracts } from "../interfaces/contracts";
+import { IContracts, IRegistry } from "../interfaces/contracts";
 import { UniversalRegistrarController } from "../../../typechain/UniversalRegistrarController";
 
 export interface IGetContractsData {
   chainId: number;
   signer: Signer;
   addresses: {
-    Registry: string | null;
+    Registry: IRegistry | null;
     PublicResolver: string | null;
     Registrar: string | null;
     ClassicalRegistrarController: string | null;
@@ -37,7 +37,6 @@ export interface IGetContractsData {
     Synchronizer: string | null;
     Portal: string | null;
     LayerZeroProvider: string | null;
-    [key: string]: string | null;
   };
 }
 
@@ -46,10 +45,14 @@ export const isContractDeployed = async (chainId: number, name: ContractName): P
   return !!data?.addresses[name];
 };
 
-export const getContractAddress = async (chainId: number, name: ContractName): Promise<string | undefined> => {
-  const data = await getContractsData(chainId);
-  return data?.addresses[name] || undefined;
-};
+// export const getContractAddress = async (chainId: number, name: ContractName): Promise<string | undefined> => {
+//   const data = await getContractsData(chainId);
+//   if (name.split(".").length > 1) {
+//     return data?.addresses[name.split(".")[0]]?[name.split(".")[1]];
+//   } else {
+//     return data?.addresses[name] || undefined;
+//   }
+// };
 
 export const getContractsData = async (chainId: number): Promise<IGetContractsData | undefined> => {
   const data = await getAllContractsData();
@@ -78,7 +81,7 @@ export async function getContracts(signer: Signer): Promise<IContracts> {
   };
 }
 
-export async function getRegistry(signer: Signer): Promise<Registry | undefined> {
+export async function getRegistry(signer: Signer): Promise<IRegistry | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Registry) {
