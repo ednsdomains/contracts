@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import NetworkConfig from "./network.config";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-web3";
+import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-solhint";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
@@ -10,6 +11,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
+import "@nomicfoundation/hardhat-toolbox";
 
 dotenv.config();
 // https://hardhat.org/config/

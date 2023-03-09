@@ -1,3 +1,4 @@
+import hre from "hardhat";
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import NetworkConfig from "../../network.config";
@@ -16,7 +17,7 @@ import {
 } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction } from "ethers";
-import { getAllContractsData, getContractAddress, isContractDeployed } from "./lib/get-contracts";
+import { getAllContractsData, isContractDeployed } from "./lib/get-contracts";
 import { getBalance } from "./lib/get-balance";
 import _ from "lodash";
 import { setAllContractsData } from "./lib/set-contracts";
