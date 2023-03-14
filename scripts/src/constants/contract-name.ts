@@ -1,5 +1,4 @@
 export type ContractName =
-  | "Registry"
   | "PublicResolver"
   | "DefaultWrapper"
   | "Registrar"
@@ -11,4 +10,12 @@ export type ContractName =
   | "Portal"
   | "Bridge"
   | "Synchronizer"
-  | "LayerZeroProvider";
+  | "LayerZeroProvider"
+  | "Registry.Diamond"
+  | "Registry.Init"
+  | "Registry.DiamondCutFacet"
+  | "Registry.DiamondLoupeFacet"
+  | "Registry.AccessControlFacet"
+  | "Registry.TldRecordFacet"
+  | "Registry.DomainRecordFacet"
+  | "Registry.HostRecordFacet";

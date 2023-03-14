@@ -6,11 +6,14 @@ import { ContractName } from "./constants/contract-name";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
 import delay from "delay";
-import { Transaction } from "ethers";
+import { Contract, ContractTransaction, Transaction } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
 import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
 import { getInContractChain } from "./lib/get-in-contract-chain";
+import { FacetCutAction, cutFacets, getSelectors } from "./lib/diamond";
+
+const GAS_LIMIT = 8000000;
 
 export interface ISetupInput {
   chainId: number;
@@ -18,44 +21,145 @@ export interface ISetupInput {
   contracts: IContracts;
 }
 
+const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransaction | undefined> => {
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+  if (!input.contracts.Registry?.Init) throw new Error("`Registry.Init` is not available");
+  if (!input.contracts.Registry?.facets?.DiamondLoupeFacet) throw new Error("`Registry.DiamondLoupeFacet` is not available");
+  if (!input.contracts.Registry?.facets?.AccessControlFacet) throw new Error("`Registry.AccessControlFacet` is not available");
+  if (!input.contracts.Registry?.facets?.TldRecordFacet) throw new Error("`Registry.TldRecordFacet` is not available");
+  if (!input.contracts.Registry?.facets?.DomainRecordFacet) throw new Error("`Registry.DomainRecordFacet` is not available");
+  if (!input.contracts.Registry?.facets?.HostRecordFacet) throw new Error("`Registry.HostRecordFacet` is not available");
+
+  const _loupe = await ethers.getContractAt("DiamondLoupeFacet", input.contracts.Registry.Diamond.address);
+  const _cut = await ethers.getContractAt("DiamondCutFacet", input.contracts.Registry.Diamond.address);
+
+  try {
+    // await cutFacets(input.signer, input.contracts.Registry.Diamond, FacetCutAction.ADD, [input.contracts.Registry.facets.DiamondLoupeFacet]);
+    const tx = await _cut.diamondCut(
+      [
+        {
+          facetAddress: input.contracts.Registry.facets.DiamondLoupeFacet.address,
+          action: FacetCutAction.ADD,
+          functionSelectors: getSelectors(input.contracts.Registry.facets.DiamondLoupeFacet),
+        },
+      ],
+      ZERO_ADDRESS,
+      ethers.utils.formatBytes32String(""),
+      { gasLimit: GAS_LIMIT },
+    );
+    await tx.wait();
+  } catch {
+    // nothing
+  }
+
+  const facets = [
+    input.contracts.Registry.facets.AccessControlFacet,
+    input.contracts.Registry.facets.TldRecordFacet,
+    input.contracts.Registry.facets.DomainRecordFacet,
+    input.contracts.Registry.facets.HostRecordFacet,
+  ];
+
+  // const cut: { facetAddress: string; action: FacetCutAction; functionSelectors: string[] }[] = facets.map((facet) => ({
+  //   facetAddress: facet.address,
+  //   action: FacetCutAction.ADD,
+  //   functionSelectors: getSelectors(facet),
+  // }));
+
+  const states: { [address: string]: { add: string[]; replace: string[] } } = {};
+
+  const cut: { facetAddress: string; action: FacetCutAction; functionSelectors: string[] }[] = [];
+
+  const accessControlSelectors = getSelectors(input.contracts.Registry.facets.AccessControlFacet);
+
+  for (const facet of facets) {
+    const _selectors = getSelectors(facet);
+    for (const _selector of _selectors) {
+      if (_selector !== facet.interface.getSighash("supportsInterface(bytes4)")) {
+        if (
+          (facet.address !== input.contracts.Registry.facets.AccessControlFacet.address && !accessControlSelectors.includes(_selector)) ||
+          facet.address === input.contracts.Registry.facets.AccessControlFacet.address
+        ) {
+          const _address = await _loupe.facetAddress(_selector);
+          if (!states[facet.address]) states[facet.address] = { add: [], replace: [] };
+          if (_address === ZERO_ADDRESS) {
+            states[facet.address].add.push(_selector);
+          } else if (_address !== facet.address) {
+            states[facet.address].replace.push(_selector);
+          }
+        }
+      }
+    }
+  }
+  // console.log(JSON.stringify({ states }, null, 2));
+  for (const _address in states) {
+    if (states[_address].add.length > 0) {
+      cut.push({
+        facetAddress: _address,
+        action: FacetCutAction.ADD,
+        functionSelectors: states[_address].add,
+      });
+    }
+    if (states[_address].replace.length > 0) {
+      cut.push({
+        facetAddress: _address,
+        action: FacetCutAction.REPLACE,
+        functionSelectors: states[_address].replace,
+      });
+    }
+  }
+
+  if (cut.length) {
+    const tx = await _cut.diamondCut(cut, input.contracts.Registry.Init.address, input.contracts.Registry.Init.interface.encodeFunctionData("init"), { gasLimit: GAS_LIMIT });
+    await tx.wait();
+    return tx;
+  }
+};
+
 export const setupRegistry = async (input: ISetupInput) => {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+  if (!input.contracts.Registry?.Init) throw new Error("`Registry.Init` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   // if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
   if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
 
-  await _beforeSetup(input.signer, input.chainId, "Registry");
+  await _beforeSetup(input.signer, input.chainId, "Registry.Diamond");
 
   const txs: Transaction[] = [];
 
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+
+  //=== Diamond Cut ===//
+  const tx = await _registryDiamondCut(input);
+  if (tx) txs.push(tx);
+
   //=== Grant different Roles to different deployed contracts ==//
-  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address))) {
-    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.ROOT_ROLE(), input.contracts.Root.address);
+  if (!(await _registry.hasRole(await _registry.ROOT_ROLE(), input.contracts.Root.address))) {
+    const tx = await _registry.grantRole(await _registry.ROOT_ROLE(), input.contracts.Root.address);
     await tx.wait();
     txs.push(tx);
   }
 
-  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address))) {
-    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
+  if (!(await _registry.hasRole(await _registry.REGISTRAR_ROLE(), input.contracts.Registrar.address))) {
+    const tx = await _registry.grantRole(await _registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
     await tx.wait();
     txs.push(tx);
   }
 
-  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address))) {
-    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
+  if (!(await _registry.hasRole(await _registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address))) {
+    const tx = await _registry.grantRole(await _registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
     await tx.wait();
     txs.push(tx);
   }
 
-  if (!(await input.contracts.Registry.hasRole(await input.contracts.Registry.BRIDGE_ROLE(), input.contracts.Bridge.address))) {
-    const tx = await input.contracts.Registry.grantRole(await input.contracts.Registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
+  if (!(await _registry.hasRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address))) {
+    const tx = await _registry.grantRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
     await tx.wait();
     txs.push(tx);
   }
 
-  await _afterSetup(input.signer, input.chainId, "Registry", [...txs]);
+  await _afterSetup(input.signer, input.chainId, "Registry.Diamond", [...txs]);
 };
 
 export const setupDefaultWrapper = async (input: ISetupInput) => {
@@ -123,10 +227,11 @@ export const setupPublicResolver = async (input: ISetupInput) => {
 export const setupRoot = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
   await _beforeSetup(input.signer, input.chainId, "Root");
   const txs: Transaction[] = [];
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
   //====================//
   //== Classical TLDs ==//
   //====================//
@@ -134,13 +239,13 @@ export const setupRoot = async (input: ISetupInput) => {
   if (classical) {
     for (const tld_ of classical) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
+      const isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
         const tx = await input.contracts.Root.register([], _tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
         await tx.wait();
         txs.push(tx);
       }
-      const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
+      const isWrapped = await _registry.getWrapper(ethers.utils.keccak256(_tld_));
       if (isWrapped.address_ === ZERO_ADDRESS) {
         const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
@@ -156,7 +261,7 @@ export const setupRoot = async (input: ISetupInput) => {
   if (universal) {
     for (const tld_ of universal) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
+      const isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
         const chainIds = await getUniversalTldChainIds(tld_);
         if (chainIds) {
@@ -166,7 +271,7 @@ export const setupRoot = async (input: ISetupInput) => {
           txs.push(tx);
         }
       }
-      const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
+      const isWrapped = await _registry.getWrapper(ethers.utils.keccak256(_tld_));
       if (isWrapped.address_ === ZERO_ADDRESS) {
         const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
@@ -182,7 +287,7 @@ export const setupRoot = async (input: ISetupInput) => {
   if (omni) {
     for (const tld_ of omni) {
       const _tld_ = ethers.utils.toUtf8Bytes(tld_);
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
+      const isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
       if (!isExists) {
         const chainIds = await getOmniTldChainIds(tld_);
         if (chainIds) {
@@ -192,7 +297,7 @@ export const setupRoot = async (input: ISetupInput) => {
           txs.push(tx);
         }
       }
-      const isWrapped = await input.contracts.Registry.getWrapper(ethers.utils.keccak256(_tld_));
+      const isWrapped = await _registry.getWrapper(ethers.utils.keccak256(_tld_));
       if (isWrapped.address_ === ZERO_ADDRESS) {
         const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
         await tx.wait();
@@ -207,14 +312,15 @@ export const setupRoot = async (input: ISetupInput) => {
 export const setupClassicalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   await _beforeSetup(input.signer, input.chainId, "ClassicalRegistrarController");
   const txs: Transaction[] = [];
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
   const tlds = await getClassicalTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](_tld_);
+      const isExists = await _registry["isExists(bytes32)"](_tld_);
       if (isExists) {
         const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
         await tx.wait();
@@ -228,14 +334,15 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
 export const setupUniversalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.UniversalRegistrarController) throw new Error("`UniversalRegistrarController` is not available");
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   await _beforeSetup(input.signer, input.chainId, "UniversalRegistrarController");
   const txs: Transaction[] = [];
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
   const tlds = await getUniversalTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](_tld_);
+      const isExists = await _registry["isExists(bytes32)"](_tld_);
       if (isExists) {
         const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.UniversalRegistrarController.address, true);
         await tx.wait();
@@ -249,14 +356,15 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
 export const setupOmniRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.OmniRegistrarController) throw new Error("`OmniRegistrarController` is not available");
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   await _beforeSetup(input.signer, input.chainId, "OmniRegistrarController");
   const txs: Transaction[] = [];
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
   const tlds = await getOmniTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
-      const isExists = await input.contracts.Registry["isExists(bytes32)"](_tld_);
+      const isExists = await _registry["isExists(bytes32)"](_tld_);
       if (isExists) {
         const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.OmniRegistrarController.address, true);
         await tx.wait();

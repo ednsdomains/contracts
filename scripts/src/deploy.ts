@@ -17,7 +17,7 @@ import {
 } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction } from "ethers";
-import { getAllContractsData, isContractDeployed } from "./lib/get-contracts";
+import { getAllContractsData, getContractAddress, getContracts, isContractDeployed } from "./lib/get-contracts";
 import { getBalance } from "./lib/get-balance";
 import _ from "lodash";
 import { setAllContractsData } from "./lib/set-contracts";
@@ -32,15 +32,120 @@ export interface IDeployInput {
   contracts: IContracts;
 }
 
-export const deployRegistry = async (input: IDeployInput): Promise<Registry> => {
-  await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry");
+const _deployRegistry = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  if (!input.contracts.Registry?.facets?.DiamondCutFacet) throw new Error("`Registry.DiamondCutFacet` is not available");
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.Diamond");
+    const factory = await ethers.getContractFactory("Registry", input.signer);
+    const _contract = await factory.deploy(input.signer.address, input.contracts.Registry.facets.DiamondCutFacet.address);
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.Diamond", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  // const factory = await ethers.getContractFactory("Registry", input.signer);
-  // const _contract = await upgrades.deployProxy(factory, { kind: "uups" });
-  // await _contract.deployed();
-  // await _afterDeploy(await input.signer.getChainId(), "Registry", _contract, _contract.deployTransaction);
-  // const contract = factory.attach(_contract.address);
-  // return contract;
+const _deployRegistryInit = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.Init");
+    const factory = await ethers.getContractFactory("RegistryInit", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.Init", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _deployRegistryDiamondCutFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.DiamondCutFacet");
+    const factory = await ethers.getContractFactory("DiamondCutFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.DiamondCutFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _deployRegistryDiamondLoupeFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.DiamondLoupeFacet");
+    const factory = await ethers.getContractFactory("DiamondLoupeFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.DiamondLoupeFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _deployAccessControlFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.AccessControlFacet");
+    const factory = await ethers.getContractFactory("AccessControlFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.AccessControlFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _deployRegistryTldRecordFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.TldRecordFacet");
+    const factory = await ethers.getContractFactory("TldRecordFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.TldRecordFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _deployRegistryDomainRecordFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.DomainRecordFacet");
+    const factory = await ethers.getContractFactory("DomainRecordFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.DomainRecordFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _deployRegistryHostRecordFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.HostRecordFacet");
+    const factory = await ethers.getContractFactory("HostRecordFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.HostRecordFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const deployRegistry = async (input: IDeployInput): Promise<void> => {
+  await _deployRegistryInit(input);
+  await _deployRegistryDiamondCutFacet(input);
+  await _deployRegistryDiamondLoupeFacet(input);
+  await _deployAccessControlFacet(input);
+  await _deployRegistryTldRecordFacet(input);
+  await _deployRegistryDomainRecordFacet(input);
+  await _deployRegistryHostRecordFacet(input);
+  await _deployRegistry(input);
 };
 
 export const deployWrapper = async (NFT_NAME: string, NFT_SYMBOL: string, input: IDeployInput): Promise<Wrapper> => {
@@ -221,15 +326,7 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     const _contract = _.clone(ALL_CONTRACTS_DATA.find((c) => c.chainId === 0));
     if (!_contract) throw new Error("");
     _contract.chainId = chainId;
-    if (name.split(".").length > 1 && name.startsWith("Registry")) {
-    } else {
-      if (_contract.addresses[name.split(".")[0]]) {
-        if (name.split(".")[0] === "Registry" && _contract.addresses["Registry"]) {
-          _contract.addresses["Registry"]["xx"] = contract.address;
-        }
-      } else {
-      }
-    }
+    _contract.addresses[name] = contract.address;
     ALL_CONTRACTS_DATA.push(_contract);
   }
   if (chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);

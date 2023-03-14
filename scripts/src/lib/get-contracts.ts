@@ -22,9 +22,15 @@ import { UniversalRegistrarController } from "../../../typechain/UniversalRegist
 
 export interface IGetContractsData {
   chainId: number;
-  signer: Signer;
   addresses: {
-    Registry: IRegistry | null;
+    "Registry.Diamond": string | null;
+    "Registry.Init": string | null;
+    "Registry.DiamondCutFacet": string | null;
+    "Registry.DiamondLoupeFacet": string | null;
+    "Registry.AccessControlFacet": string | null;
+    "Registry.TldRecordFacet": string | null;
+    "Registry.DomainRecordFacet": string | null;
+    "Registry.HostRecordFacet": string | null;
     PublicResolver: string | null;
     Registrar: string | null;
     ClassicalRegistrarController: string | null;
@@ -45,14 +51,10 @@ export const isContractDeployed = async (chainId: number, name: ContractName): P
   return !!data?.addresses[name];
 };
 
-// export const getContractAddress = async (chainId: number, name: ContractName): Promise<string | undefined> => {
-//   const data = await getContractsData(chainId);
-//   if (name.split(".").length > 1) {
-//     return data?.addresses[name.split(".")[0]]?[name.split(".")[1]];
-//   } else {
-//     return data?.addresses[name] || undefined;
-//   }
-// };
+export const getContractAddress = async (chainId: number, name: ContractName): Promise<string | undefined> => {
+  const data = await getContractsData(chainId);
+  return data?.addresses[name] || undefined;
+};
 
 export const getContractsData = async (chainId: number): Promise<IGetContractsData | undefined> => {
   const data = await getAllContractsData();
@@ -84,10 +86,21 @@ export async function getContracts(signer: Signer): Promise<IContracts> {
 export async function getRegistry(signer: Signer): Promise<IRegistry | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
-  if (data?.addresses.Registry) {
-    const RegistryFactory = await ethers.getContractFactory("Registry");
-    return RegistryFactory.attach(data?.addresses.Registry);
-  }
+  return {
+    Diamond: data?.addresses["Registry.Diamond"] ? await ethers.getContractAt("Registry", data?.addresses["Registry.Diamond"]) : undefined,
+    Init: data?.addresses["Registry.Init"] ? await ethers.getContractAt("RegistryInit", data?.addresses["Registry.Init"]) : undefined,
+    facets: {
+      DiamondCutFacet: data?.addresses["Registry.DiamondCutFacet"] ? await ethers.getContractAt("DiamondCutFacet", data?.addresses["Registry.DiamondCutFacet"]) : undefined,
+      DiamondLoupeFacet: data?.addresses["Registry.DiamondLoupeFacet"] ? await ethers.getContractAt("DiamondLoupeFacet", data?.addresses["Registry.DiamondLoupeFacet"]) : undefined,
+      AccessControlFacet: data?.addresses["Registry.AccessControlFacet"]
+        ? await ethers.getContractAt("AccessControlFacet", data?.addresses["Registry.AccessControlFacet"])
+        : undefined,
+      TldRecordFacet: data?.addresses["Registry.TldRecordFacet"] ? await ethers.getContractAt("TldRecordFacet", data?.addresses["Registry.TldRecordFacet"]) : undefined,
+      DomainRecordFacet: data?.addresses["Registry.DomainRecordFacet"] ? await ethers.getContractAt("DomainRecordFacet", data?.addresses["Registry.DomainRecordFacet"]) : undefined,
+      HostRecordFacet: data?.addresses["Registry.HostRecordFacet"] ? await ethers.getContractAt("HostRecordFacet", data?.addresses["Registry.HostRecordFacet"]) : undefined,
+    },
+  };
+
   return undefined;
 }
 

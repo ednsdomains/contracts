@@ -4,6 +4,7 @@ import { DiamondLoupeFacet } from "../../../typechain/DiamondLoupeFacet";
 import { TldRecordFacet } from "../../../typechain/TldRecordFacet";
 import { DomainRecordFacet } from "../../../typechain/DomainRecordFacet";
 import { HostRecordFacet } from "../../../typechain/HostRecordFacet";
+import { RegistryInit } from "../../../typechain/RegistryInit";
 import {
   Registry,
   PublicResolver,
@@ -13,16 +14,18 @@ import {
   IERC20,
   Wrapper,
   UniversalRegistrarController,
-  BatchRegistrarController,
   Portal,
   LayerZeroProvider,
   Synchronizer,
   OmniRegistrarController,
+  AccessControlFacet,
 } from "../../../typechain";
 
 export interface IRegistry {
   Diamond?: Registry;
+  Init?: RegistryInit;
   facets?: {
+    AccessControlFacet?: AccessControlFacet;
     DiamondCutFacet?: DiamondCutFacet;
     DiamondLoupeFacet?: DiamondLoupeFacet;
     TldRecordFacet?: TldRecordFacet;

@@ -1,6 +1,7 @@
 // import { Contract, ContractFactory, ethers, Signer } from "ethers";
 import { Contract, ContractFactory, Signer } from "ethers";
 import hardhat, { ethers } from "hardhat";
+import { Diamond } from "../../../../typechain";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const GAS_LIMIT = 10000000;
@@ -34,14 +35,14 @@ export const deployFacets = async (FacetNames: string[]): Promise<Contract[]> =>
   return facets;
 };
 
-export const cutFacets = async (signer: Signer, diamond: Contract, action: FacetCutAction, facets: Contract[]): Promise<void> => {
+export const cutFacets = async (signer: Signer, diamond: Diamond, action: FacetCutAction, facets: Contract[]): Promise<void> => {
   const cut: { facetAddress: string; action: FacetCutAction; functionSelectors: string[] }[] = facets.map((facet) => ({
     facetAddress: facet.address,
     action,
     functionSelectors: getSelectors(facet),
   }));
 
-  const DiamondCut = await ethers.getContractAt("DiamondCut", diamond.address, signer);
+  const DiamondCut = await ethers.getContractAt("DiamondCutFacet", diamond.address, signer);
 
   const functionCall = ethers.utils.formatBytes32String("");
 
@@ -53,6 +54,6 @@ export const cutFacets = async (signer: Signer, diamond: Contract, action: Facet
   }
 };
 
-export const removeFacets = async (signer: Signer, diamond: Contract, facets: Contract[]): Promise<void> => {
+export const removeFacets = async (signer: Signer, diamond: Diamond, facets: Contract[]): Promise<void> => {
   return cutFacets(signer, diamond, FacetCutAction.REMOVE, facets);
 };
