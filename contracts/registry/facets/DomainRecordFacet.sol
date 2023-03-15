@@ -13,26 +13,29 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   /* ========== Modifier ==========*/
 
   modifier onlyWrapper(bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].wrapper.address_, "ONLY_OWNER_OR_WRAPPER");
+    require(_msgSender() == registryStorage().records[tld].wrapper.address_ || _isSelfExecution(), "ONLY_OWNER_OR_WRAPPER");
     _;
   }
 
   modifier onlyDomainOwner(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].owner, "ONLY_OWNER");
+    require(_msgSender() == registryStorage().records[tld].domains[name].owner || _isSelfExecution(), "ONLY_OWNER");
     _;
   }
   modifier onlyDomainOwnerOrWrapper(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].owner || _msgSender() == registryStorage().records[tld].wrapper.address_, "ONLY_OWNER_OR_WRAPPER");
+    require(
+      _msgSender() == registryStorage().records[tld].domains[name].owner || _msgSender() == registryStorage().records[tld].wrapper.address_ || _isSelfExecution(),
+      "ONLY_OWNER_OR_WRAPPER"
+    );
     _;
   }
 
   modifier onlyDomainUser(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].user.user, "ONLY_DOMAIN_USER");
+    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || _isSelfExecution(), "ONLY_DOMAIN_USER");
     _;
   }
 
   modifier onlyDomainUserOrOperator(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || isOperator(name, tld, _msgSender()), "ONLY_DOMAIN_USER_OR_OPERATOR");
+    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || isOperator(name, tld, _msgSender()) || _isSelfExecution(), "ONLY_DOMAIN_USER_OR_OPERATOR");
     _;
   }
 
@@ -42,16 +45,10 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   }
 
   /* ========== Mutative ==========*/
-  function setRecord(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    address resolver,
-    uint64 expiry
-  ) public {
+  function setRecord(bytes memory name, bytes memory tld, address owner, address resolver, uint64 expiry) public {
     require(hasRole(REGISTRAR_ROLE, _msgSender()) || hasRole(BRIDGE_ROLE, _msgSender()), "ONLY_AUTHORIZED");
     require(owner != address(0x0), "UNDEFINED_OWNER");
-    require(_TldRecordFacet.isExists(keccak256(tld)), "TLD_NOT_EXIST");
+    require(ITldRecordFacet(_self()).isExists(keccak256(tld)), "TLD_NOT_EXIST");
 
     RegistryStorage storage _ds = registryStorage();
 
@@ -81,14 +78,10 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
 
-    _HostRecordFacet.setRecord(bytes("@"), name, tld, 3600); // TODO:
+    IHostRecordFacet(_self()).setRecord(bytes("@"), name, tld, 3600); // TODO:
   }
 
-  function setResolver(
-    bytes32 name,
-    bytes32 tld,
-    address resolver_
-  ) public onlyDomainUserOrOperator(name, tld) onlyLiveDomain(name, tld) {
+  function setResolver(bytes32 name, bytes32 tld, address resolver_) public onlyDomainUserOrOperator(name, tld) onlyLiveDomain(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
 
     RegistryStorage storage _ds = registryStorage();
@@ -98,11 +91,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     emit SetDomainResolver(name, tld, resolver_);
   }
 
-  function setOwner(
-    bytes32 name,
-    bytes32 tld,
-    address newOwner
-  ) public onlyDomainOwnerOrWrapper(name, tld) {
+  function setOwner(bytes32 name, bytes32 tld, address newOwner) public onlyDomainOwnerOrWrapper(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
 
     RegistryStorage storage _ds = registryStorage();
@@ -112,12 +101,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     emit SetDomainOwner(name, tld, newOwner);
   }
 
-  function setOperator(
-    bytes32 name,
-    bytes32 tld,
-    address operator_,
-    bool approved
-  ) public onlyDomainUser(name, tld) onlyLiveDomain(name, tld) {
+  function setOperator(bytes32 name, bytes32 tld, address operator_, bool approved) public onlyDomainUser(name, tld) onlyLiveDomain(name, tld) {
     require(isExists(name, tld), "DOMAIN_NOT_EXIST");
 
     RegistryStorage storage _ds = registryStorage();
@@ -127,12 +111,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     emit SetDomainOperator(name, tld, operator_, approved);
   }
 
-  function setUser(
-    bytes32 name,
-    bytes32 tld,
-    address user,
-    uint64 expiry
-  ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
+  function setUser(bytes32 name, bytes32 tld, address user, uint64 expiry) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     RegistryStorage storage _ds = registryStorage();
 
     _ds.records[tld].domains[name].user.user = user;
@@ -147,11 +126,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     emit SetDomainUser(name, tld, user, expiry);
   }
 
-  function setExpiry(
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  ) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
+  function setExpiry(bytes32 name, bytes32 tld, uint64 expiry) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
     RegistryStorage storage _ds = registryStorage();
 
     require(expiry > _ds.records[tld].domains[name].expiry && expiry > block.timestamp, "INVALID_EXPIRY");
@@ -214,11 +189,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     return registryStorage().records[tld].domains[name].name.length > 0;
   }
 
-  function isOperator(
-    bytes32 name,
-    bytes32 tld,
-    address _operator
-  ) public view returns (bool) {
+  function isOperator(bytes32 name, bytes32 tld, address _operator) public view returns (bool) {
     return registryStorage().records[tld].domains[name].operators[getOwner(name, tld)][_operator];
   }
 

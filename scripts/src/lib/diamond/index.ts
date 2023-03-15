@@ -15,6 +15,7 @@ export enum FacetCutAction {
 export const getSelectors = (contract: Contract): string[] => {
   const signatures = Object.keys(contract.interface.functions);
   const selectors = signatures.filter((signature) => !signature.startsWith("init")).map((signature) => contract.interface.getSighash(signature));
+  // console.log({ signatures, selectors });
   return selectors;
 };
 

@@ -31,6 +31,7 @@ export interface IGetContractsData {
     "Registry.TldRecordFacet": string | null;
     "Registry.DomainRecordFacet": string | null;
     "Registry.HostRecordFacet": string | null;
+    "Registry.BaseRegistryFacet": string | null;
     PublicResolver: string | null;
     Registrar: string | null;
     ClassicalRegistrarController: string | null;
@@ -98,6 +99,7 @@ export async function getRegistry(signer: Signer): Promise<IRegistry | undefined
       TldRecordFacet: data?.addresses["Registry.TldRecordFacet"] ? await ethers.getContractAt("TldRecordFacet", data?.addresses["Registry.TldRecordFacet"]) : undefined,
       DomainRecordFacet: data?.addresses["Registry.DomainRecordFacet"] ? await ethers.getContractAt("DomainRecordFacet", data?.addresses["Registry.DomainRecordFacet"]) : undefined,
       HostRecordFacet: data?.addresses["Registry.HostRecordFacet"] ? await ethers.getContractAt("HostRecordFacet", data?.addresses["Registry.HostRecordFacet"]) : undefined,
+      BaseRegistryFacet: data?.addresses["Registry.BaseRegistryFacet"] ? await ethers.getContractAt("BaseRegistryFacet", data?.addresses["Registry.BaseRegistryFacet"]) : undefined,
     },
   };
 

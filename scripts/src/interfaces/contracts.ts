@@ -19,6 +19,7 @@ import {
   Synchronizer,
   OmniRegistrarController,
   AccessControlFacet,
+  BaseRegistryFacet,
 } from "../../../typechain";
 
 export interface IRegistry {
@@ -31,6 +32,7 @@ export interface IRegistry {
     TldRecordFacet?: TldRecordFacet;
     DomainRecordFacet?: DomainRecordFacet;
     HostRecordFacet?: HostRecordFacet;
+    BaseRegistryFacet?: BaseRegistryFacet;
   };
 }
 

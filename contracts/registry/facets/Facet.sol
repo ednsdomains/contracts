@@ -20,9 +20,13 @@ abstract contract Facet is RegistryStorageFacet, AccessControl {
   bytes32 public constant WRAPPER_ROLE = keccak256("WRAPPER_ROLE");
   bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
-  ITldRecordFacet internal _TldRecordFacet = ITldRecordFacet(address(this));
-  IDomainRecordFacet internal _DomainRecordFacet = IDomainRecordFacet(address(this));
-  IHostRecordFacet internal _HostRecordFacet = IHostRecordFacet(address(this));
+  // ITldRecordFacet internal _TldRecordFacet = ITldRecordFacet(address(this));
+  // IDomainRecordFacet internal _DomainRecordFacet = IDomainRecordFacet(address(this));
+  // IHostRecordFacet internal _HostRecordFacet = IHostRecordFacet(address(this));
+
+  function _self() internal view returns (address) {
+    return address(this);
+  }
 
   function _isSelfExecution() internal view returns (bool) {
     return _msgSender() == address(this);

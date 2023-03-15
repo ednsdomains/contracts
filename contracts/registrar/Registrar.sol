@@ -24,15 +24,15 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
   IPublicResolver private _resolver;
 
   function initialize(IRegistry registry_, IPublicResolver resolver_) public initializer {
-    __BaseRegistrar_init(registry_, resolver_);
+    __Registrar_init(registry_, resolver_);
   }
 
-  function __BaseRegistrar_init(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
-    __BaseRegistrar_init_unchained(registry_, resolver_);
+  function __Registrar_init(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
+    __Registrar_init_unchained(registry_, resolver_);
     __AccessControl_init();
   }
 
-  function __BaseRegistrar_init_unchained(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
+  function __Registrar_init_unchained(IRegistry registry_, IPublicResolver resolver_) internal onlyInitializing {
     _registry = registry_;
     _resolver = resolver_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -69,22 +69,12 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     return controllers[controller][tld];
   }
 
-  function setControllerApproval(
-    bytes32 tld,
-    address controller,
-    bool approved
-  ) external onlyRole(ROOT_ROLE) {
+  function setControllerApproval(bytes32 tld, address controller, bool approved) external onlyRole(ROOT_ROLE) {
     controllers[controller][tld] = approved;
     emit SetController(tld, controller, approved);
   }
 
-  function register(
-    address sender,
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) external payable onlyControllerOrBridge((keccak256(tld))) {
+  function register(address sender, bytes memory name, bytes memory tld, address owner, uint64 expiry) external payable onlyControllerOrBridge((keccak256(tld))) {
     _register(name, tld, owner, expiry);
     if (_msgSender() != address(this)) {
       bytes32 _tld = keccak256(tld);
@@ -99,12 +89,7 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     }
   }
 
-  function _register(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) private {
+  function _register(bytes memory name, bytes memory tld, address owner, uint64 expiry) private {
     require(valid(name), "INVALID_DOMAIN_NAME");
     require(isAvailable(name, tld), "DOMAIN_NOT_AVAILABLE");
     require(expiry + _registry.getGracePeriod() > block.timestamp + _registry.getGracePeriod(), "DURATION_TOO_SHORT");
@@ -112,12 +97,7 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     emit DomainRegistered(name, tld, owner, expiry);
   }
 
-  function renew(
-    address sender,
-    bytes memory name,
-    bytes memory tld,
-    uint64 expiry
-  ) external payable onlyControllerOrBridge(keccak256(tld)) {
+  function renew(address sender, bytes memory name, bytes memory tld, uint64 expiry) external payable onlyControllerOrBridge(keccak256(tld)) {
     _renew(name, tld, expiry);
     if (_msgSender() != address(this)) {
       bytes32 _tld = keccak256(tld);
@@ -127,11 +107,7 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     }
   }
 
-  function _renew(
-    bytes memory name,
-    bytes memory tld,
-    uint64 expiry
-  ) private {
+  function _renew(bytes memory name, bytes memory tld, uint64 expiry) private {
     bytes32 _domain = keccak256(name);
     bytes32 _tld = keccak256(tld);
     uint64 expiry_ = _registry.getExpiry(_domain, _tld);

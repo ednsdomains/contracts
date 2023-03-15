@@ -18,4 +18,5 @@ export type ContractName =
   | "Registry.AccessControlFacet"
   | "Registry.TldRecordFacet"
   | "Registry.DomainRecordFacet"
-  | "Registry.HostRecordFacet";
+  | "Registry.HostRecordFacet"
+  | "Registry.BaseRegistryFacet";

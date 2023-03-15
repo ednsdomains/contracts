@@ -7,6 +7,8 @@ import { getBalance } from "./lib/get-balance";
 import NetworkConfig from "../../network.config";
 import { verifyContract } from "./lib/verify-contract";
 import { Contract } from "ethers";
+import { getAllContractsData, getContracts } from "./lib/get-contracts";
+import { setAllContractsData } from "./lib/set-contracts";
 
 export interface IUpgradeInput {
   chainId: number;
@@ -14,12 +16,119 @@ export interface IUpgradeInput {
   contracts: IContracts;
 }
 
+const _upgradeRegistryInit = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.Init");
+    const factory = await ethers.getContractFactory("RegistryInit", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.Init", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryDiamondCutFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.DiamondCutFacet");
+    const factory = await ethers.getContractFactory("DiamondCutFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.DiamondCutFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryDiamondLoupeFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.DiamondLoupeFacet");
+    const factory = await ethers.getContractFactory("DiamondLoupeFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.DiamondLoupeFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryAccessControlFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.AccessControlFacet");
+    const factory = await ethers.getContractFactory("AccessControlFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.AccessControlFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryTldRecordFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.TldRecordFacet");
+    const factory = await ethers.getContractFactory("TldRecordFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.TldRecordFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryDomainRecordFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.DomainRecordFacet");
+    const factory = await ethers.getContractFactory("DomainRecordFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.DomainRecordFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryHostRecordFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.HostRecordFacet");
+    const factory = await ethers.getContractFactory("HostRecordFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.HostRecordFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const _upgradeRegistryBaseRegistryFacet = async (input: IUpgradeInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeUpgrade(input.signer, await input.signer.getChainId(), "Registry.BaseRegistryFacet");
+    const factory = await ethers.getContractFactory("BaseRegistryFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterUpgrade(input.signer, input.chainId, "Registry.BaseRegistryFacet", _contract, true);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export async function upgradeRegistry(input: IUpgradeInput): Promise<void> {
-  if (!input.contracts.Registry) throw new Error("`Registry` is not available");
-  const factory = await ethers.getContractFactory("Registry", input.signer);
-  await _beforeUpgrade(input.signer, input.chainId, "Registry");
-  await upgrades.upgradeProxy(input.contracts.Registry, factory);
-  await _afterUpgrade(input.signer, input.chainId, "Registry", input.contracts.Registry);
+  await _upgradeRegistryInit(input);
+  await _upgradeRegistryDiamondCutFacet(input);
+  await _upgradeRegistryDiamondLoupeFacet(input);
+  await _upgradeRegistryAccessControlFacet(input);
+  await _upgradeRegistryTldRecordFacet(input);
+  await _upgradeRegistryDomainRecordFacet(input);
+  await _upgradeRegistryHostRecordFacet(input);
+  await _upgradeRegistryBaseRegistryFacet(input);
 }
 
 export async function upgradeWrapper(input: IUpgradeInput): Promise<void> {
@@ -121,8 +230,16 @@ const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: 
   await delay(3000);
 };
 
-const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName, contract: Contract) => {
+const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName, contract: Contract, update?: boolean) => {
   console.log(`Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+  if (update) {
+    const ALL_CONTRACTS_DATA = await getAllContractsData();
+    const index = ALL_CONTRACTS_DATA.findIndex((c) => c.chainId === chainId);
+    if (index !== -1) {
+      ALL_CONTRACTS_DATA[index].addresses[name] = contract.address;
+      if (chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
+    }
+  }
 };

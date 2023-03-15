@@ -190,6 +190,61 @@
       "address": "0xf73514F486AD232aD34Da29F3a314277F17fE640",
       "txHash": "0x942166ebaa2e7fc081cdce4013641c6603fc834947f6081a943f084865922501",
       "kind": "uups"
+    },
+    {
+      "address": "0xB8733D10C5C274C23dA425cFc4c0E831727C08d2",
+      "txHash": "0x146e38c31ec752158b19b771271a0ab1028fb53c9a66fec94bcac772e067b160",
+      "kind": "uups"
+    },
+    {
+      "address": "0x44E03aEFE8217445433F2593B62Afd970aBC395C",
+      "txHash": "0xd39993e01a6cbd5593c3cc82fffef6e2b56f4bfd7ca99255622f0e4b4cc4594d",
+      "kind": "uups"
+    },
+    {
+      "address": "0xEFD5ddD8531F5b96c3c29e682C6C471224Eb86ED",
+      "txHash": "0x80083aa0f1d1aa0f3109e522f1da8a1a35ac6e1aa2a5d7b3d56c56ca2f0230de",
+      "kind": "uups"
+    },
+    {
+      "address": "0xD02afA0Db86CDE459Fd0aAE6de3Dd62a70582C87",
+      "txHash": "0x8f2fce334918f96b41ee07e0eaa20439a7b2c19c5956e2025b070bfdad5040b9",
+      "kind": "uups"
+    },
+    {
+      "address": "0x2ffbd22Ca04291EeDD34F76f7CFCbecCCA4fCBBB",
+      "txHash": "0x6c189ab00aae455f7bbb2596eb035987ea4500905528fda6ed10f9384d9917f6",
+      "kind": "uups"
+    },
+    {
+      "address": "0xf841015c42679528c0A6cE9a52e0898810fF4832",
+      "txHash": "0x270a1bbffd45c7bb9cba12b3683157d05dff812e4917d33ca21018e997f2fe26",
+      "kind": "uups"
+    },
+    {
+      "address": "0x1491828F30Eb971F7f09722EB14d7AED8Ae0c417",
+      "txHash": "0xce84103048e59ac17a73f0e8742879481dbd5ae1c0c60b184529ba19f8c95f4c",
+      "kind": "uups"
+    },
+    {
+      "address": "0xF976776e656acbe1557E1Ef2C7F0EfE72e2Bd552",
+      "txHash": "0x2df45d3f961ebf0f151922555ab386b41f030407e0946ca41e003485b158be1f",
+      "kind": "uups"
+    },
+    {
+      "address": "0x72c1231a115015f1C54d3D8EbFa54Da4999E1cD8",
+      "txHash": "0x4cab27a320a2e97da6acbb487e1ab6d4a01f01ae9c19133c65276ec26216813e",
+      "kind": "uups"
+    },
+    {
+      "address": "0xA11379D74f72c150A85eE2064553A08532b2e3AE",
+      "txHash": "0x9baa75019cddfefaa1381f4f44829c8c7b9043951db2f666590c95348eec7d49",
+      "kind": "uups"
+    },
+    {
+      "address": "0xB6fe2AB16C33705b8C58a49Ae6c71A9766a25AB7",
+      "txHash": "0x115f7088577d883df61261a7b6cb66729d15db2c4ea99f2feaaba1007814c6ab",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -336,17 +391,37 @@
           },
           "t_enum(Chain)11400": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(RecordKind)11461": {
             "label": "enum RecordKind",
-            "members": ["TLD", "DOMAIN", "HOST"],
+            "members": [
+              "TLD",
+              "DOMAIN",
+              "HOST"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(TldClass)11475": {
             "label": "enum TldClass",
-            "members": ["CLASSICAL", "UNIVERSAL", "OMNI"],
+            "members": [
+              "CLASSICAL",
+              "UNIVERSAL",
+              "OMNI"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2133,7 +2208,12 @@
           },
           "t_enum(CrossChainProvider)3053": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2384,12 +2464,29 @@
           },
           "t_enum(Chain)11400": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11408": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2716,12 +2813,29 @@
           },
           "t_enum(Chain)11336": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11344": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -2984,7 +3098,19 @@
           },
           "t_enum(Chain)11400": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -4565,12 +4691,29 @@
           },
           "t_enum(Chain)3717": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3725": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -4797,12 +4940,29 @@
           },
           "t_enum(Chain)3465": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3473": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -5555,12 +5715,29 @@
           },
           "t_enum(Chain)3722": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3730": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -5787,12 +5964,29 @@
           },
           "t_enum(Chain)11376": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)11384": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -6287,7 +6481,12 @@
           },
           "t_enum(CrossChainProvider)11384": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -6700,12 +6899,29 @@
           },
           "t_enum(Chain)3760": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3768": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -6932,12 +7148,29 @@
           },
           "t_enum(Chain)3757": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)3765": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -7622,7 +7855,12 @@
           },
           "t_enum(CrossChainProvider)11408": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -7845,12 +8083,29 @@
           },
           "t_enum(Chain)4946": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_enum(CrossChainProvider)4954": {
             "label": "enum CrossChainProvider",
-            "members": ["LAYERZERO", "MULTICHAIN", "ROUTER_PROTOCOL", "NOMAD"],
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9051,7 +9306,19 @@
           },
           "t_enum(Chain)3759": {
             "label": "enum Chain.Chain",
-            "members": ["ETHEREUM", "BNB", "POLYGON", "AVALANCHE", "FANTOM", "OPTIMISM", "ARBITRUM", "IOTEX", "OKC", "GNOSIS", "CELO"],
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -9431,6 +9698,909 @@
           "t_uint256": {
             "label": "uint256",
             "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "39fe2ed8217562e4e68800a5388f87603b6db5503c303c21065a8a4804d951b0": {
+      "address": "0x2dC7A9c4f0A16aC8Be3ee5c4651103b9D80482EC",
+      "txHash": "0x766da727c856a2257e0a2739a4ad7f869d50f5e62631c3588a6db5784b267a12",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_synchronizer",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_contract(ISynchronizer)5790",
+            "contract": "SynchronizerApplication",
+            "src": "contracts\\crosschain\\SynchronizerApplication.sol:9"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_registry",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_contract(IRegistry)11431",
+            "contract": "BaseResolver",
+            "src": "contracts\\resolver\\BaseResolver.sol:18"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "BaseResolver",
+            "src": "contracts\\resolver\\BaseResolver.sol:102"
+          },
+          {
+            "label": "_addresses",
+            "offset": 0,
+            "slot": "303",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_address))",
+            "contract": "AddressResolver",
+            "src": "contracts\\resolver\\profile\\AddressResolver.sol:8"
+          },
+          {
+            "label": "_reverseAddresses",
+            "offset": 0,
+            "slot": "304",
+            "type": "t_mapping(t_address,t_bytes_storage)",
+            "contract": "AddressResolver",
+            "src": "contracts\\resolver\\profile\\AddressResolver.sol:9"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "305",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "AddressResolver",
+            "src": "contracts\\resolver\\profile\\AddressResolver.sol:80"
+          },
+          {
+            "label": "_multiCoinAddresses",
+            "offset": 0,
+            "slot": "355",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage)))",
+            "contract": "MultiCoinAddressResolver",
+            "src": "contracts\\resolver\\profile\\MultiCoinAddressResolver.sol:8"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "356",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "MultiCoinAddressResolver",
+            "src": "contracts\\resolver\\profile\\MultiCoinAddressResolver.sol:51"
+          },
+          {
+            "label": "_nfts",
+            "offset": 0,
+            "slot": "406",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)13123_storage)))",
+            "contract": "NFTResolver",
+            "src": "contracts\\resolver\\profile\\NFTResolver.sol:8"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "407",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "NFTResolver",
+            "src": "contracts\\resolver\\profile\\NFTResolver.sol:49"
+          },
+          {
+            "label": "_texts",
+            "offset": 0,
+            "slot": "457",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_string_storage))",
+            "contract": "TextResolver",
+            "src": "contracts\\resolver\\profile\\TextResolver.sol:8"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "458",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "TextResolver",
+            "src": "contracts\\resolver\\profile\\TextResolver.sol:44"
+          },
+          {
+            "label": "_typedTexts",
+            "offset": 0,
+            "slot": "508",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_bytes32,t_string_storage)))",
+            "contract": "TypedTextResolver",
+            "src": "contracts\\resolver\\profile\\TypedTextResolver.sol:8"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "509",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "TypedTextResolver",
+            "src": "contracts\\resolver\\profile\\TypedTextResolver.sol:47"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "559",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "PublicResolver",
+            "src": "contracts\\resolver\\PublicResolver.sol:32"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IRegistry)11431": {
+            "label": "contract IRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISynchronizer)5790": {
+            "label": "contract ISynchronizer",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bytes_storage)": {
+            "label": "mapping(address => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_address))": {
+            "label": "mapping(address => mapping(bytes32 => address))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_bytes32,t_string_storage)))": {
+            "label": "mapping(address => mapping(bytes32 => mapping(bytes32 => string)))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage)))": {
+            "label": "mapping(address => mapping(bytes32 => mapping(uint256 => bytes)))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)13123_storage)))": {
+            "label": "mapping(address => mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT)))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_string_storage))": {
+            "label": "mapping(address => mapping(bytes32 => string))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_address)": {
+            "label": "mapping(bytes32 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_bytes32,t_string_storage))": {
+            "label": "mapping(bytes32 => mapping(bytes32 => string))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage))": {
+            "label": "mapping(bytes32 => mapping(uint256 => bytes))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)13123_storage))": {
+            "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_string_storage)": {
+            "label": "mapping(bytes32 => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes_storage)": {
+            "label": "mapping(uint256 => bytes)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(NFT)13123_storage)": {
+            "label": "mapping(uint256 => struct INFTResolver.NFT)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(NFT)13123_storage": {
+            "label": "struct INFTResolver.NFT",
+            "members": [
+              {
+                "label": "contract_",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)34_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "61e7bed358a990a4e1e63c6ded453e845224a4a96561522a2853557875f46cd9": {
+      "address": "0x99d8EB4A3167F57922920a573975D0b89Fc4531D",
+      "txHash": "0x4d823f2cf37e9f277f44ede0152c76c34badebe8bba0efbe919acb5f6c8366af",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_synchronizer",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_contract(ISynchronizer)5790",
+            "contract": "SynchronizerApplication",
+            "src": "contracts\\crosschain\\SynchronizerApplication.sol:9"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "controllers",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_bool))",
+            "contract": "Registrar",
+            "src": "contracts\\registrar\\Registrar.sol:21"
+          },
+          {
+            "label": "_registry",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_contract(IRegistry)11431",
+            "contract": "Registrar",
+            "src": "contracts\\registrar\\Registrar.sol:23"
+          },
+          {
+            "label": "_resolver",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_contract(IPublicResolver)11968",
+            "contract": "Registrar",
+            "src": "contracts\\registrar\\Registrar.sol:24"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "Registrar",
+            "src": "contracts\\registrar\\Registrar.sol:168"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IPublicResolver)11968": {
+            "label": "contract IPublicResolver",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistry)11431": {
+            "label": "contract IRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISynchronizer)5790": {
+            "label": "contract ISynchronizer",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_bool))": {
+            "label": "mapping(address => mapping(bytes32 => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)34_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "d955ef2eb1e2a4d3ff98b6cf48145809edac6139481f7ee13711e38c0f68be4e": {
+      "address": "0x0373d205360562Ab4D8deC42e0B99080b943CFdA",
+      "txHash": "0x70921f105dbccc01a9ba0225a292a21bac99e55efca5514e8feaaf66e4694b34",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bool",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:259"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "301",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "302",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:80"
+          },
+          {
+            "label": "_selfChain",
+            "offset": 0,
+            "slot": "351",
+            "type": "t_enum(Chain)7065",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:18"
+          },
+          {
+            "label": "_registry",
+            "offset": 1,
+            "slot": "351",
+            "type": "t_contract(IRegistry)11431",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:20"
+          },
+          {
+            "label": "_portal",
+            "offset": 0,
+            "slot": "352",
+            "type": "t_contract(IPortal)5684",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:21"
+          },
+          {
+            "label": "_acceptedRequests",
+            "offset": 0,
+            "slot": "353",
+            "type": "t_mapping(t_bytes32,t_struct(AcceptedRequest)5465_storage)",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:23"
+          },
+          {
+            "label": "_bridgedRequests",
+            "offset": 0,
+            "slot": "354",
+            "type": "t_mapping(t_bytes32,t_struct(BridgedRequest)5480_storage)",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:24"
+          },
+          {
+            "label": "_receivedRequest",
+            "offset": 0,
+            "slot": "355",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:25"
+          },
+          {
+            "label": "_remoteBridges",
+            "offset": 0,
+            "slot": "356",
+            "type": "t_mapping(t_enum(Chain)7065,t_address)",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:27"
+          },
+          {
+            "label": "_nonces",
+            "offset": 0,
+            "slot": "357",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "358",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "Bridge",
+            "src": "contracts\\crosschain\\Bridge.sol:204"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IPortal)5684": {
+            "label": "contract IPortal",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistry)11431": {
+            "label": "contract IRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Chain)7065": {
+            "label": "enum Chain",
+            "members": [
+              "ETHEREUM",
+              "BNB",
+              "POLYGON",
+              "AVALANCHE",
+              "FANTOM",
+              "OPTIMISM",
+              "ARBITRUM",
+              "IOTEX",
+              "OKC",
+              "GNOSIS",
+              "CELO"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(CrossChainProvider)7072": {
+            "label": "enum CrossChainProvider",
+            "members": [
+              "LAYERZERO",
+              "MULTICHAIN",
+              "ROUTER_PROTOCOL",
+              "NOMAD"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(AcceptedRequest)5465_storage)": {
+            "label": "mapping(bytes32 => struct IBridge.AcceptedRequest)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(BridgedRequest)5480_storage)": {
+            "label": "mapping(bytes32 => struct IBridge.BridgedRequest)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)34_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(Chain)7065,t_address)": {
+            "label": "mapping(enum Chain => address)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AcceptedRequest)5465_storage": {
+            "label": "struct IBridge.AcceptedRequest",
+            "members": [
+              {
+                "label": "srcChain",
+                "type": "t_enum(Chain)7065",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "provider",
+                "type": "t_enum(CrossChainProvider)7072",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "tld",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "name",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "expiry",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(BridgedRequest)5480_storage": {
+            "label": "struct IBridge.BridgedRequest",
+            "members": [
+              {
+                "label": "dstChain",
+                "type": "t_enum(Chain)7065",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "provider",
+                "type": "t_enum(CrossChainProvider)7072",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "tld",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "name",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "expiry",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(RoleData)34_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
           },
           "t_uint8": {
             "label": "uint8",

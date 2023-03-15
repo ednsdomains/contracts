@@ -20,13 +20,30 @@ async function main() {
   const AvalancheFeeData = await AvalancheProvider.getFeeData();
   const AvalancheSigner = _signer.connect(AvalancheProvider);
   const AvalancheContracts = await getContracts(AvalancheSigner);
-  if (!AvalancheContracts.Bridge || !AvalancheContracts.UniversalRegistrarController || !AvalancheContracts.Registry) throw new Error();
+  if (!AvalancheContracts.Bridge || !AvalancheContracts.UniversalRegistrarController || !AvalancheContracts.Registry?.Diamond || !AvalancheContracts.PublicResolver)
+    throw new Error();
+  const _registry = await ethers.getContractAt("IRegistry", AvalancheContracts.Registry.Diamond.address);
 
   // ===== Polygon Mumbai ===== //
-  const PolygonProvider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com/");
-  const PolygonSigner = _signer.connect(PolygonProvider);
-  const PolygonContracts = await getContracts(PolygonSigner);
-  if (!PolygonContracts.Bridge || !PolygonContracts.UniversalRegistrarController) throw new Error();
+  // const PolygonProvider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com/");
+  // const PolygonSigner = _signer.connect(PolygonProvider);
+  // const PolygonContracts = await getContracts(PolygonSigner);
+  // if (!PolygonContracts.Bridge || !PolygonContracts.UniversalRegistrarController) throw new Error();
+
+  // if (!(await _registry.hasRole(await _registry.REGISTRAR_ROLE(), _signer.address))) {
+  //   const tx = await _registry.grantRole(await _registry.REGISTRAR_ROLE(), _signer.address);
+  //   await tx.wait();
+  // }
+
+  // const tx1 = await _registry["setRecord(bytes,bytes,address,address,uint64)"](
+  //   ethers.utils.toUtf8Bytes(name),
+  //   ethers.utils.toUtf8Bytes(tld),
+  //   _signer.address,
+  //   AvalancheContracts.PublicResolver.address,
+  //   expiry,
+  // );
+  // await tx1.wait();
+  // console.log("tx1+", tx1.hash);
 
   // Register Domain in Avalanche
   console.log("Registering domain in Avalanche...");
@@ -62,8 +79,8 @@ async function main() {
     CrossChainProvider.LAYERZERO,
     _name_,
     _tld_,
-    await AvalancheContracts.Registry["getOwner(bytes32,bytes32)"](_name_, _tld_),
-    await AvalancheContracts.Registry["getExpiry(bytes32,bytes32)"](_name_, _tld_),
+    await _registry["getOwner(bytes32,bytes32)"](_name_, _tld_), // await AvalancheContracts.Registry.Diamond["getOwner(bytes32,bytes32)"](_name_, _tld_),
+    await _registry["getExpiry(bytes32,bytes32)"](_name_, _tld_), // await AvalancheContracts.Registry.Diamond["getExpiry(bytes32,bytes32)"](_name_, _tld_),
   );
 
   const tx2 = await AvalancheContracts.Bridge.bridge(nonce, ref, InContractChain.POLYGON, CrossChainProvider.LAYERZERO, _name_, _tld_, {

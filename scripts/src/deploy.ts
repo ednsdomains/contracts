@@ -46,7 +46,7 @@ const _deployRegistry = async (input: IDeployInput): Promise<void> => {
   }
 };
 
-const _deployRegistryInit = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryInit = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.Init");
@@ -59,7 +59,7 @@ const _deployRegistryInit = async (input: IDeployInput): Promise<void> => {
   }
 };
 
-const _deployRegistryDiamondCutFacet = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryDiamondCutFacet = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.DiamondCutFacet");
@@ -72,7 +72,7 @@ const _deployRegistryDiamondCutFacet = async (input: IDeployInput): Promise<void
   }
 };
 
-const _deployRegistryDiamondLoupeFacet = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryDiamondLoupeFacet = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.DiamondLoupeFacet");
@@ -85,7 +85,7 @@ const _deployRegistryDiamondLoupeFacet = async (input: IDeployInput): Promise<vo
   }
 };
 
-const _deployAccessControlFacet = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryAccessControlFacet = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.AccessControlFacet");
@@ -98,7 +98,7 @@ const _deployAccessControlFacet = async (input: IDeployInput): Promise<void> => 
   }
 };
 
-const _deployRegistryTldRecordFacet = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryTldRecordFacet = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.TldRecordFacet");
@@ -111,7 +111,7 @@ const _deployRegistryTldRecordFacet = async (input: IDeployInput): Promise<void>
   }
 };
 
-const _deployRegistryDomainRecordFacet = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryDomainRecordFacet = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.DomainRecordFacet");
@@ -124,7 +124,7 @@ const _deployRegistryDomainRecordFacet = async (input: IDeployInput): Promise<vo
   }
 };
 
-const _deployRegistryHostRecordFacet = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryHostRecordFacet = async (input: IDeployInput): Promise<void> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.HostRecordFacet");
@@ -137,14 +137,28 @@ const _deployRegistryHostRecordFacet = async (input: IDeployInput): Promise<void
   }
 };
 
+export const _deployRegistryBaseRegistryFacet = async (input: IDeployInput): Promise<void> => {
+  input.contracts = await getContracts(input.signer);
+  try {
+    await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.BaseRegistryFacet");
+    const factory = await ethers.getContractFactory("BaseRegistryFacet", input.signer);
+    const _contract = await factory.deploy();
+    await _contract.deployed();
+    await _afterDeploy(await input.signer.getChainId(), "Registry.BaseRegistryFacet", _contract, _contract.deployTransaction);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const deployRegistry = async (input: IDeployInput): Promise<void> => {
   await _deployRegistryInit(input);
   await _deployRegistryDiamondCutFacet(input);
   await _deployRegistryDiamondLoupeFacet(input);
-  await _deployAccessControlFacet(input);
+  await _deployRegistryAccessControlFacet(input);
   await _deployRegistryTldRecordFacet(input);
   await _deployRegistryDomainRecordFacet(input);
   await _deployRegistryHostRecordFacet(input);
+  await _deployRegistryBaseRegistryFacet(input);
   await _deployRegistry(input);
 };
 

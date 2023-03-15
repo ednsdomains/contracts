@@ -9,26 +9,21 @@ import "../../wrapper/interfaces/IWrapper.sol";
 contract TldRecordFacet is ITldRecordFacet, Facet {
   /* ========== Modier ==========*/
   modifier onlyTldOwner(bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].owner, "ONLY_TLD_OWNER");
+    require(_msgSender() == registryStorage().records[tld].owner || _isSelfExecution(), "ONLY_TLD_OWNER");
     _;
   }
 
   modifier onlyTldOwnerOrWrapper(bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].owner || _msgSender() == registryStorage().records[tld].wrapper.address_, "ONLY_TLD_OWNER_OR_WRAPPER");
+    require(
+      _msgSender() == registryStorage().records[tld].owner || _msgSender() == registryStorage().records[tld].wrapper.address_ || _isSelfExecution(),
+      "ONLY_TLD_OWNER_OR_WRAPPER"
+    );
     _;
   }
 
   /* ========== Mutative ==========*/
 
-  function setRecord(
-    Chain[] memory chains,
-    bytes memory tld,
-    address owner,
-    address resolver,
-    uint64 expiry,
-    bool enable,
-    TldClass class_
-  ) public onlyRole(ROOT_ROLE) {
+  function setRecord(Chain[] memory chains, bytes memory tld, address owner, address resolver, uint64 expiry, bool enable, TldClass class_) public onlyRole(ROOT_ROLE) {
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
 
@@ -84,11 +79,7 @@ contract TldRecordFacet is ITldRecordFacet, Facet {
     emit SetTldEnable(tld, enable);
   }
 
-  function _setWrapper(
-    bytes32 tld,
-    bool enable,
-    address wrapper
-  ) internal {
+  function _setWrapper(bytes32 tld, bool enable, address wrapper) internal {
     RegistryStorage storage _ds = registryStorage();
     WrapperRecord storage _wrapper = _ds.records[tld].wrapper;
     _wrapper.enable = enable;
@@ -96,11 +87,7 @@ contract TldRecordFacet is ITldRecordFacet, Facet {
     emit SetTldWrapper(tld, wrapper, enable);
   }
 
-  function setWrapper(
-    bytes32 tld,
-    bool enable,
-    address wrapper
-  ) public onlyTldOwner(tld) {
+  function setWrapper(bytes32 tld, bool enable, address wrapper) public onlyTldOwner(tld) {
     _setWrapper(tld, enable, wrapper);
   }
 

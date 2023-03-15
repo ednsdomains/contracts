@@ -12,6 +12,7 @@ import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
 import { getInContractChain } from "./lib/get-in-contract-chain";
 import { FacetCutAction, cutFacets, getSelectors } from "./lib/diamond";
+import { BaseRegistryFacet } from "../../typechain/BaseRegistryFacet";
 
 const GAS_LIMIT = 8000000;
 
@@ -29,6 +30,7 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
   if (!input.contracts.Registry?.facets?.TldRecordFacet) throw new Error("`Registry.TldRecordFacet` is not available");
   if (!input.contracts.Registry?.facets?.DomainRecordFacet) throw new Error("`Registry.DomainRecordFacet` is not available");
   if (!input.contracts.Registry?.facets?.HostRecordFacet) throw new Error("`Registry.HostRecordFacet` is not available");
+  if (!input.contracts.Registry?.facets?.BaseRegistryFacet) throw new Error("`Registry.BaseRegistryFacet` is not available");
 
   const _loupe = await ethers.getContractAt("DiamondLoupeFacet", input.contracts.Registry.Diamond.address);
   const _cut = await ethers.getContractAt("DiamondCutFacet", input.contracts.Registry.Diamond.address);
@@ -57,6 +59,7 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
     input.contracts.Registry.facets.TldRecordFacet,
     input.contracts.Registry.facets.DomainRecordFacet,
     input.contracts.Registry.facets.HostRecordFacet,
+    input.contracts.Registry.facets.BaseRegistryFacet,
   ];
 
   // const cut: { facetAddress: string; action: FacetCutAction; functionSelectors: string[] }[] = facets.map((facet) => ({

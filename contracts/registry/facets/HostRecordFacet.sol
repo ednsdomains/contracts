@@ -13,17 +13,20 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
   /* ========== Modifier ==========*/
 
   modifier onlyWrapper(bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].wrapper.address_, "ONLY_OWNER_OR_WRAPPER");
+    require(_msgSender() == registryStorage().records[tld].wrapper.address_ || _isSelfExecution(), "ONLY_OWNER_OR_WRAPPER");
     _;
   }
 
   modifier onlyDomainUserOrOperator(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || _DomainRecordFacet.isOperator(name, tld, _msgSender()), "ONLY_DOMAIN_USER_OR_OPERATOR");
+    require(
+      _msgSender() == registryStorage().records[tld].domains[name].user.user || IDomainRecordFacet(_self()).isOperator(name, tld, _msgSender()) || _isSelfExecution(),
+      "ONLY_DOMAIN_USER_OR_OPERATOR"
+    );
     _;
   }
 
   modifier onlyLiveDomain(bytes32 name, bytes32 tld) {
-    require(_DomainRecordFacet.isLive(name, tld), "DOMAIN_EXPIRED");
+    require(IDomainRecordFacet(_self()).isLive(name, tld), "DOMAIN_EXPIRED");
     _;
   }
 
@@ -32,7 +35,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     bytes32 name,
     bytes32 tld
   ) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].hosts[host].user.user, "ONLY_HOST_USER");
+    require(_msgSender() == registryStorage().records[tld].domains[name].hosts[host].user.user || _isSelfExecution(), "ONLY_HOST_USER");
     _;
   }
 
@@ -41,18 +44,16 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     bytes32 name,
     bytes32 tld
   ) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || isOperator(host, name, tld, _msgSender()), "ONLY_HOST_USER_OR_OPERATOR");
+    require(
+      _msgSender() == registryStorage().records[tld].domains[name].user.user || isOperator(host, name, tld, _msgSender()) || _isSelfExecution(),
+      "ONLY_HOST_USER_OR_OPERATOR"
+    );
     _;
   }
 
   /* ========== Mutative ==========*/
 
-  function _setRecord(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    uint16 ttl
-  ) private {
+  function _setRecord(bytes memory host, bytes memory name, bytes memory tld, uint16 ttl) private {
     bytes32 host_ = keccak256(host);
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
@@ -66,8 +67,8 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     _record.ttl = ttl;
 
     UserRecord storage _user = _ds.records[tld_].domains[name_].hosts[host_].user;
-    _user.user = _DomainRecordFacet.getOwner(name_, tld_);
-    _user.expiry = _DomainRecordFacet.getExpiry(name_, tld_);
+    _user.user = IDomainRecordFacet(_self()).getOwner(name_, tld_);
+    _user.expiry = IDomainRecordFacet(_self()).getExpiry(name_, tld_);
 
     emit NewHost(host, name, tld);
 
@@ -87,32 +88,20 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     _setRecord(host, name, tld, ttl);
   }
 
-  function setOperator(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld,
-    address operator_,
-    bool approved
-  ) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {
+  function setOperator(bytes32 host, bytes32 name, bytes32 tld, address operator_, bool approved) public onlyHostUser(host, name, tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXIST");
     RegistryStorage storage _ds = registryStorage();
     _ds.records[tld].domains[name].hosts[host].operators[getUser(host, name, tld)][operator_] = approved;
     emit SetHostOperator(host, name, tld, operator_, approved);
   }
 
-  function setUser(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld,
-    address newUser,
-    uint64 expiry
-  ) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
+  function setUser(bytes32 host, bytes32 name, bytes32 tld, address newUser, uint64 expiry) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXISTS");
     require(newUser != address(0), "NULL_USER");
 
     RegistryStorage storage _ds = registryStorage();
 
-    address owner = _DomainRecordFacet.getOwner(name, tld);
+    address owner = IDomainRecordFacet(_self()).getOwner(name, tld);
     address currUser = getUser(host, name, tld);
 
     if (owner == currUser && currUser != newUser) {
@@ -124,9 +113,9 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     }
 
     if (expiry == 0) {
-      _ds.records[tld].domains[name].hosts[host].user.expiry = _DomainRecordFacet.getExpiry(name, tld);
+      _ds.records[tld].domains[name].hosts[host].user.expiry = IDomainRecordFacet(_self()).getExpiry(name, tld);
     } else {
-      require(expiry <= _DomainRecordFacet.getExpiry(name, tld), "DOMAIN_OVERFLOW");
+      require(expiry <= IDomainRecordFacet(_self()).getExpiry(name, tld), "DOMAIN_OVERFLOW");
       _ds.records[tld].domains[name].hosts[host].user.expiry = expiry;
     }
 
@@ -136,26 +125,18 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   /* ⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️ */
   /* ⚠️⚠️⚠️⚠️⚠️❗❗❗❗❗🔞🔞🔞 START OF DESCTRUCTIVE 🔞🔞🔞❗❗❗❗❗⚠️⚠️⚠️⚠️⚠️ */
-  function unsetRecord(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) public onlyLiveDomain(name, tld) {
+  function unsetRecord(bytes32 host, bytes32 name, bytes32 tld) public onlyLiveDomain(name, tld) {
     require(
-      _msgSender() == _DomainRecordFacet.getUser(name, tld) &&
+      _msgSender() == IDomainRecordFacet(_self()).getUser(name, tld) &&
         _msgSender() == getUser(host, name, tld) &&
-        _DomainRecordFacet.getUserExpiry(name, tld) > block.timestamp &&
+        IDomainRecordFacet(_self()).getUserExpiry(name, tld) > block.timestamp &&
         getUserExpiry(host, name, tld) > block.timestamp,
       "ONLY_USERS"
     );
     _remove(host, name, tld);
   }
 
-  function _remove(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) internal {
+  function _remove(bytes32 host, bytes32 name, bytes32 tld) internal {
     RegistryStorage storage _ds = registryStorage();
 
     delete _ds.records[tld].domains[name].hosts[host];
@@ -172,54 +153,29 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   /* ========== Query - General ==========*/
 
-  function getUser(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) public view returns (address) {
+  function getUser(bytes32 host, bytes32 name, bytes32 tld) public view returns (address) {
     return registryStorage().records[tld].domains[name].hosts[host].user.user;
   }
 
-  function getUserExpiry(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) public view returns (uint64) {
+  function getUserExpiry(bytes32 host, bytes32 name, bytes32 tld) public view returns (uint64) {
     return registryStorage().records[tld].domains[name].hosts[host].user.expiry;
   }
 
-  function getTtl(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) public view returns (uint16) {
+  function getTtl(bytes32 host, bytes32 name, bytes32 tld) public view returns (uint16) {
     return registryStorage().records[tld].domains[name].hosts[host].ttl;
   }
 
   /* ========== Query - Boolean ==========*/
-  function isExists(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld
-  ) public view returns (bool) {
+  function isExists(bytes32 host, bytes32 name, bytes32 tld) public view returns (bool) {
     return registryStorage().records[tld].domains[name].hosts[host].name.length > 0;
   }
 
-  function isOperator(
-    bytes32 host,
-    bytes32 name,
-    bytes32 tld,
-    address _operator
-  ) public view returns (bool) {
+  function isOperator(bytes32 host, bytes32 name, bytes32 tld, address _operator) public view returns (bool) {
     return registryStorage().records[tld].domains[name].hosts[host].operators[getUser(host, name, tld)][_operator];
   }
 
   /* ========== Utils ==========*/
-  function getTokenId(
-    bytes memory host,
-    bytes memory name_,
-    bytes memory tld
-  ) public pure virtual returns (uint256) {
+  function getTokenId(bytes memory host, bytes memory name_, bytes memory tld) public pure virtual returns (uint256) {
     return uint256(keccak256(_join(host, name_, tld)));
   }
 
