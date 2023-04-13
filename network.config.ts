@@ -9,6 +9,8 @@ export enum Network {
   BNB_CHAIN_TESTNET = 97,
   POLYGON = 137,
   POLYGON_MUMBAI = 80001,
+  POLYGON_ZKEVM = 1101,
+  POLYGON_ZKEVM_TESTNET = 1442,
   AVALANCHE = 43114,
   AVALANCHE_FUJI = 43113,
   FANTOM = 250,
@@ -47,6 +49,8 @@ export enum Network {
   CELO_ALFAJORES = 44787,
   // TELOS_EVM = 40,
   // TELOS_EVM_TESTNET = 41
+  ZKSYNC_ERA_TESTNET = 280,
+  ZKSYNC_ERA_MAINNET = 324,
 }
 
 export const Mainnets = [
