@@ -44,6 +44,10 @@ provider.getFeeData = async () => {
   };
 };
 
+// const provider = new hardhat.ethers.providers.JsonRpcProvider(
+//   "https://rpc.ankr.com/eth_goerli"
+// );
+
 let signer = new AwsKmsSigner({
   region: "ap-southeast-1",
   keyId: process.env.KMS_SIGNER_KEY_ARN!,
@@ -57,14 +61,14 @@ async function main() {
     hardhat.ethers.utils.formatEther(await signer.getBalance())
   );
 
-  const EDNS_REGISTRY_ADDRESS = "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12";
-  const PUBLIC_RESOLVER_ADDRESS = "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144";
+  // const EDNS_REGISTRY_ADDRESS = "0x7c5DbFE487D01BC0C75704dBfD334198E6AB2D12";
+  // const PUBLIC_RESOLVER_ADDRESS = "0x3c2DAab0AF88B0c5505ccB585e04FB33d7C80144";
   const BASE_REGISTRAR_IMPLEMENTATION_ADDRESS =
     "0x53a0018f919bde9C254bda697966C5f448ffDDcB";
-  const EDNS_REGISTRAR_CONTROLLER_ADDRESS =
-    "0x8C856f71d71e8CF4AD9A44cDC426b09e315c6A6a";
-  const REVERSE_REGISTRAR_ADDRESS =
-    "0xD986F9083F006D0E2d08c9F22247b4a0a213146D";
+  // const EDNS_REGISTRAR_CONTROLLER_ADDRESS =
+  //   "0xb977101Fba674a61c2a999CA36438FCB28E69e3b";
+  // const REVERSE_REGISTRAR_ADDRESS =
+  //   "0xD986F9083F006D0E2d08c9F22247b4a0a213146D";
 
   const EDNSRegistry = await hardhat.ethers.getContractFactory(
     "EDNSRegistry",
@@ -87,19 +91,24 @@ async function main() {
     signer
   );
 
-  const _registry = await upgrades.upgradeProxy(
-    EDNS_REGISTRY_ADDRESS,
-    EDNSRegistry
-  );
-  await _registry.deployed();
-  console.log(`EDNS Registry upgraded`);
+  // const _registry = await upgrades.upgradeProxy(
+  //   EDNS_REGISTRY_ADDRESS,
+  //   EDNSRegistry
+  // );
+  // await _registry.deployed();
+  // console.log(`EDNS Registry upgraded`);
 
-  const _resolver = await upgrades.upgradeProxy(
-    PUBLIC_RESOLVER_ADDRESS,
-    PublicResolver
-  );
-  await _resolver.deployed();
-  console.log("Public Resolver upgraded");
+  // const _resolver = await upgrades.upgradeProxy(
+  //   PUBLIC_RESOLVER_ADDRESS,
+  //   PublicResolver
+  // );
+  // await _resolver.deployed();
+  // console.log("Public Resolver upgraded");
+
+  // await upgrades.forceImport(
+  //   BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
+  //   BaseRegistrarImplementation
+  // );
 
   const _baseRegistrar = await upgrades.upgradeProxy(
     BASE_REGISTRAR_IMPLEMENTATION_ADDRESS,
@@ -108,19 +117,24 @@ async function main() {
   await _baseRegistrar.deployed();
   console.log("Base Registrar upgraded");
 
-  const _registrarController = await upgrades.upgradeProxy(
-    EDNS_REGISTRAR_CONTROLLER_ADDRESS,
-    EDNSRegistrarController
-  );
-  await _registrarController.deployed();
-  console.log("EDNS Registry Controller upgraded");
+  // await upgrades.forceImport(
+  //   EDNS_REGISTRAR_CONTROLLER_ADDRESS,
+  //   EDNSRegistrarController
+  // );
 
-  const _reverseRegistrar = await upgrades.upgradeProxy(
-    REVERSE_REGISTRAR_ADDRESS,
-    ReverseRegistrar
-  );
-  await _reverseRegistrar.deployed();
-  console.log("Reverse Registry upgraded");
+  // const _registrarController = await upgrades.upgradeProxy(
+  //   EDNS_REGISTRAR_CONTROLLER_ADDRESS,
+  //   EDNSRegistrarController
+  // );
+  // await _registrarController.deployed();
+  // console.log("EDNS Registry Controller upgraded");
+
+  //   const _reverseRegistrar = await upgrades.upgradeProxy(
+  //     REVERSE_REGISTRAR_ADDRESS,
+  //     ReverseRegistrar
+  //   );
+  //   await _reverseRegistrar.deployed();
+  //   console.log("Reverse Registry upgraded");
 }
 
 main().catch((error) => {

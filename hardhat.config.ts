@@ -24,22 +24,22 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: {compilers: [
+  solidity: {
+    compilers: [
       {
         version: "0.8.2",
       },
       {
         version: "0.8.10",
       },
-    ]},
+    ],
+  },
   etherscan: {
     apiKey: "",
   },
   networks: {
     matic: {
-      url:
-        `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}` ||
-        "",
+      url: `https://polygon-rpc.com`,
     },
     maticmum: {
       url:

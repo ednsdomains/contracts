@@ -162,7 +162,7 @@ contract EDNSRegistrarController is AccessControlEnumerableUpgradeable {
         require(tldAvailable(tld), "TLD not available");
 
         bytes32 baseNode = tlds[bytes(tld)];
-        bytes32 label = keccak256(bytes(abi.encodePacked(name, tld)));
+        bytes32 label = keccak256(bytes(abi.encodePacked(name, baseNode)));
         uint256 tokenId = uint256(label);
         uint256 expires = base.renew(tokenId, baseNode, duration);
         emit NameRenewed(name, bytes(tld), label, expires);

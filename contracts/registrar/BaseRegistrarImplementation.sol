@@ -240,11 +240,11 @@ contract BaseRegistrarImplementation is ERC721Upgradeable, BaseRegistrar {
         uint256 id,
         bytes32 node,
         uint256 duration
-    ) external override live(node) onlyController returns (uint256) {
-        require(expiries[id] + GRACE_PERIOD >= block.timestamp); // Name must be registered here or in grace period
+    ) external override onlyController returns (uint256) {
         require(
-            expiries[id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD
-        ); // Prevent future overflow
+            expiries[id] + GRACE_PERIOD <= block.timestamp,
+            "DOMAIN_EXPIRED"
+        ); // Name must be registered here or in grace period
 
         expiries[id] += duration;
         emit NameRenewed(id, expiries[id]);
