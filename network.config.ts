@@ -581,6 +581,7 @@ const config: INetworkConfig = {
 
   [Network.OKC_TESTNET]: {
     chainId: Network.OKC_TESTNET,
+    chain: InContractChain.OKC,
     name: "OKC Testnet",
     symbol: "OKT",
     url: `https://exchaintestrpc.okex.org`,
@@ -593,6 +594,7 @@ const config: INetworkConfig = {
   },
   [Network.OKC]: {
     chainId: Network.OKC,
+    chain: InContractChain.OKC,
     name: "OKC Mainnet",
     symbol: "OKT",
     url: `https://oKc-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
@@ -637,7 +639,7 @@ const config: INetworkConfig = {
     chainId: Network.GNOSIS,
     name: "Gnosis Chain",
     symbol: "XDAI",
-    url: `https://rpc.gnosischain.com`,
+    url: `https://rpc.gnosis.gateway.fm`,
     slip44: {
       coinId: 700,
     },

@@ -6,5 +6,13 @@ export function getProvider(chainId: number) {
     chainId: NetworkConfig[chainId].chainId,
     name: NetworkConfig[chainId].name,
   });
+  if (chainId === 10200) {
+    provider.getFeeData = async () => ({
+      lastBaseFeePerGas: ethers.utils.parseUnits("7", "gwei"),
+      maxFeePerGas: ethers.utils.parseUnits("7", "gwei"),
+      maxPriorityFeePerGas: ethers.utils.parseUnits("7", "gwei"),
+      gasPrice: ethers.utils.parseUnits("7", "gwei"),
+    });
+  }
   return provider;
 }

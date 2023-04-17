@@ -122,7 +122,7 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    enabled: true,
+    enabled: !!process.env.REPORT_GAS,
     currency: "USD",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY || undefined,
     showTimeSpent: true,
@@ -150,7 +150,7 @@ const config: HardhatUserConfig = {
   },
   contractSizer: {
     alphaSort: false,
-    runOnCompile: true,
+    runOnCompile: !!process.env.CONTRACT_SIZER,
     disambiguatePaths: false,
     only: [
       "TldRecordFacet",

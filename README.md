@@ -37,7 +37,7 @@ npx hardhat compile
 ## Deploy
 
 ```bash
-export NETWORK_NAME = ""
+export NETWORK_NAME=""
 npx hardhat run ./scripts/A01_Deploy_Registry.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A02_Deploy_DefaultWrapper.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A03_Deploy_PublicResolver.ts --network $NETWORK_NAME
@@ -45,6 +45,10 @@ npx hardhat run ./scripts/A04_Deploy_Registrar.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A05_Deploy_Root.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A06_Deploy_TokenMock.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A07_Deploy_ClassicalRegistrarController.ts --network $NETWORK_NAME
-npx hardhat run ./scripts/A08_Deploy_Portal.ts --network $NETWORK_NAME
-npx hardhat run ./scripts/A09_Deploy_Bridge.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A08_Deploy_UniversalRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A09_Deploy_OmniRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A10_Deploy_Portal.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A11_Deploy_Bridge.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A12_Deploy_Synchronizer.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A13_Deploy_LayerZeroProvider.ts --network $NETWORK_NAME
 ```
