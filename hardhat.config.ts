@@ -48,10 +48,10 @@ const config: HardhatUserConfig = {
       chainId: 4002,
     },
     // Optimism
-    optimisim: {
+    optimism: {
       chainId: 10,
     },
-    optimisim_goerli: {
+    optimism_goerli: {
       chainId: 420,
     },
     // Polygon
