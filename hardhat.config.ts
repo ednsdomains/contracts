@@ -80,6 +80,7 @@ const config: HardhatUserConfig = {
     },
     gnosis_chiado: {
       chainId: 10200,
+      gasPrice: 1000000000,
     },
     iotex: {
       chainId: 4689,
@@ -146,7 +147,24 @@ const config: HardhatUserConfig = {
       ftm: process.env.FTMSCAN_API_KEY || "",
       ftmTestnet: process.env.FTMSCAN_API_KEY || "",
     },
-    customChains: [],
+    customChains: [
+      {
+        network: "chiado",
+        chainId: 10200,
+        urls: {
+          apiURL: "https://blockscout.com/gnosis/chiado/api",
+          browserURL: "https://blockscout.com/gnosis/chiado",
+        },
+      },
+      {
+        network: "gnosis",
+        chainId: 100,
+        urls: {
+          apiURL: "https://api.gnosisscan.io/api",
+          browserURL: "https://gnosisscan.io/",
+        },
+      },
+    ],
   },
   contractSizer: {
     alphaSort: false,
