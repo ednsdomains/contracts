@@ -50,7 +50,7 @@ export enum Network {
   // TELOS_EVM = 40,
   // TELOS_EVM_TESTNET = 41
   ZKSYNC_ERA_TESTNET = 280,
-  ZKSYNC_ERA_MAINNET = 324,
+  ZKSYNC_ERA = 324,
 }
 
 export const Mainnets = [
@@ -64,7 +64,6 @@ export const Mainnets = [
   Network.GNOSIS,
   Network.CELO,
   Network.OKC,
-  Network.IOTEX,
 ];
 
 export const Testnets = [
@@ -78,7 +77,6 @@ export const Testnets = [
   Network.GNOSIS_CHIADO,
   Network.CELO_ALFAJORES,
   Network.OKC_TESTNET,
-  Network.IOTEX_TESTNET,
 ];
 
 export interface INetworkConfig {
@@ -88,7 +86,17 @@ export interface INetworkConfig {
     name: string;
     symbol: string;
     url: string;
-    routerProtocol?: {};
+    routerProtocol?: {
+      v1: {
+        chainId: number;
+        handler: {
+          generic: string;
+        };
+        fee: {
+          token: { symbol: string; address: string }[];
+        };
+      };
+    };
     multichain?: {
       v6?: {
         chainId: number;
@@ -147,6 +155,26 @@ const config: INetworkConfig = {
       chainId: 1,
       endpoint: {
         address: "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
+      },
+    },
+    routerProtocol: {
+      v1: {
+        chainId: 7,
+        handler: {
+          generic: "0x621F0549102262148f6a7D289D8330adf7CbC09F",
+        },
+        fee: {
+          token: [
+            {
+              symbol: "WETH",
+              address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            },
+            {
+              symbol: "ROUTE",
+              address: "0x16ECCfDbb4eE1A85A33f3A9B21175Cd7Ae753dB4",
+            },
+          ],
+        },
       },
     },
     multichain: {
@@ -720,6 +748,54 @@ const config: INetworkConfig = {
       chainId: 10125,
       endpoint: {
         address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+      },
+    },
+  },
+  [Network.ZKSYNC_ERA]: {
+    chainId: Network.ZKSYNC_ERA,
+    name: "zkSync Era Mainnet",
+    symbol: "ETH",
+    url: `https://mainnet.era.zksync.io	`,
+    layerzero: {
+      chainId: 165,
+      endpoint: {
+        address: "0x9b896c0e23220469C7AE69cb4BbAE391eAa4C8da",
+      },
+    },
+  },
+  [Network.ZKSYNC_ERA_TESTNET]: {
+    chainId: Network.ZKSYNC_ERA_TESTNET,
+    name: "zkSync Era Testnet",
+    symbol: "ETH",
+    url: `https://testnet.era.zksync.dev	`,
+    layerzero: {
+      chainId: 10165,
+      endpoint: {
+        address: "0x093D2CF57f764f09C3c2Ac58a42A2601B8C79281",
+      },
+    },
+  },
+  [Network.POLYGON_ZKEVM]: {
+    chainId: Network.POLYGON_ZKEVM,
+    name: "Polygon zkEVM",
+    symbol: "ETH",
+    url: `https://zkevm-rpc.com`,
+    layerzero: {
+      chainId: 158,
+      endpoint: {
+        address: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
+      },
+    },
+  },
+  [Network.POLYGON_ZKEVM_TESTNET]: {
+    chainId: Network.POLYGON_ZKEVM_TESTNET,
+    name: "Polygon zkEVM Testnet",
+    symbol: "ETH",
+    url: `https://rpc.public.zkevm-test.net	`,
+    layerzero: {
+      chainId: 10158,
+      endpoint: {
+        address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
       },
     },
   },
