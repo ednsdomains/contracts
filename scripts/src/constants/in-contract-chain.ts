@@ -10,4 +10,9 @@ export enum InContractChain {
   OKC,
   GNOSIS,
   CELO,
+  HARMONY,
+  MOONBEAM,
+  MOONRIVER,
+  ZKSYNC,
+  POLYGON_ZKEVM,
 }

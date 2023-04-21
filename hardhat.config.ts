@@ -121,6 +121,33 @@ const config: HardhatUserConfig = {
     evmos_testmet: {
       chainId: 9000,
     },
+    zksync_era: {
+      chainId: 1280,
+    },
+    zksync_era_testnet: {
+      chainId: 324,
+    },
+    polygon_zkevm: {
+      chainId: 1101,
+    },
+    polygon_zkevm_testnet: {
+      chainId: 1442,
+    },
+    harmony: {
+      chainId: 1666600000,
+    },
+    harmony_testnet: {
+      chainId: 1666700000,
+    },
+    moonbeam: {
+      chainId: 1284,
+    },
+    moonriver: {
+      chainId: 1285,
+    },
+    moonbase_alphanet: {
+      chainId: 1287,
+    },
   },
   gasReporter: {
     enabled: !!process.env.REPORT_GAS,

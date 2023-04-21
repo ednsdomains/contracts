@@ -12,5 +12,10 @@ enum Chain {
   IOTEX,
   OKC,
   GNOSIS,
-  CELO
+  CELO,
+  HARMONY,
+  MOONBEAM,
+  MOONRIVER,
+  ZKSYNC,
+  POLYGON_ZKEVM
 }

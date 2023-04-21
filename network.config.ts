@@ -32,7 +32,10 @@ export enum Network {
   GNOSIS = 100,
   GNOSIS_CHIADO = 10200,
   MOONBEAM = 1284,
+  MOONBASE_ALPHA = 1287,
   MOONRIVER = 1285,
+  HARMONY = 1666600000,
+  HARMONEY_TESTNET = 1666700000,
   // ASTR = 492,
   // METIS = 1088,
   // CRONOS = 25,
@@ -64,6 +67,11 @@ export const Mainnets = [
   Network.GNOSIS,
   Network.CELO,
   Network.OKC,
+  Network.ZKSYNC_ERA,
+  Network.POLYGON_ZKEVM,
+  Network.MOONBEAM,
+  Network.MOONRIVER,
+  Network.HARMONY,
 ];
 
 export const Testnets = [
@@ -77,6 +85,10 @@ export const Testnets = [
   Network.GNOSIS_CHIADO,
   Network.CELO_ALFAJORES,
   Network.OKC_TESTNET,
+  Network.ZKSYNC_ERA_TESTNET,
+  Network.POLYGON_ZKEVM_TESTNET,
+  Network.MOONBASE_ALPHA,
+  Network.HARMONEY_TESTNET,
 ];
 
 export interface INetworkConfig {
@@ -664,6 +676,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.GNOSIS]: {
+    chain: InContractChain.GNOSIS,
     chainId: Network.GNOSIS,
     name: "Gnosis Chain",
     symbol: "XDAI",
@@ -687,6 +700,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.GNOSIS_CHIADO]: {
+    chain: InContractChain.GNOSIS,
     chainId: Network.GNOSIS_CHIADO,
     name: "Gnosis Chiado",
     symbol: "XDAI",
@@ -702,19 +716,40 @@ const config: INetworkConfig = {
     },
   },
   [Network.MOONBEAM]: {
+    chain: InContractChain.MOONBEAM,
     chainId: Network.MOONBEAM,
     name: "Moonbeam",
     symbol: "GLMR",
-    url: `https://rpc.api.moonbeam.network`,
+    url: `https://moonbeam.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1284,
     },
+    layerzero: {
+      chainId: 126,
+      endpoint: {
+        address: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
+      },
+    },
+  },
+  [Network.MOONBASE_ALPHA]: {
+    chain: InContractChain.MOONBEAM,
+    chainId: Network.MOONBASE_ALPHA,
+    name: "Moonbase Alphanet",
+    symbol: "DEV",
+    url: `https://moonbase-alpha.public.blastapi.io`,
+    layerzero: {
+      chainId: 10126,
+      endpoint: {
+        address: "0xb23b28012ee92E8dE39DEb57Af31722223034747",
+      },
+    },
   },
   [Network.MOONRIVER]: {
+    chain: InContractChain.MOONRIVER,
     chainId: Network.MOONRIVER,
     name: "Moonriver",
     symbol: "MOVR",
-    url: `https://rpc.api.moonriver.moonbeam.network`,
+    url: `https://moonriver.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1285,
     },
@@ -726,8 +761,15 @@ const config: INetworkConfig = {
         },
       },
     },
+    layerzero: {
+      chainId: 167,
+      endpoint: {
+        address: "0x7004396C99D5690da76A7C59057C5f3A53e01704",
+      },
+    },
   },
   [Network.CELO]: {
+    chain: InContractChain.CELO,
     chainId: Network.CELO,
     name: "Celo Mainnet",
     symbol: "CELO",
@@ -740,6 +782,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.CELO_ALFAJORES]: {
+    chain: InContractChain.CELO,
     chainId: Network.CELO_ALFAJORES,
     name: "Celo Alfajores Testnet",
     symbol: "CELO",
@@ -752,6 +795,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.ZKSYNC_ERA]: {
+    chain: InContractChain.ZKSYNC,
     chainId: Network.ZKSYNC_ERA,
     name: "zkSync Era Mainnet",
     symbol: "ETH",
@@ -764,6 +808,8 @@ const config: INetworkConfig = {
     },
   },
   [Network.ZKSYNC_ERA_TESTNET]: {
+    chain: InContractChain.ZKSYNC,
+
     chainId: Network.ZKSYNC_ERA_TESTNET,
     name: "zkSync Era Testnet",
     symbol: "ETH",
@@ -776,6 +822,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.POLYGON_ZKEVM]: {
+    chain: InContractChain.POLYGON_ZKEVM,
     chainId: Network.POLYGON_ZKEVM,
     name: "Polygon zkEVM",
     symbol: "ETH",
@@ -788,6 +835,7 @@ const config: INetworkConfig = {
     },
   },
   [Network.POLYGON_ZKEVM_TESTNET]: {
+    chain: InContractChain.POLYGON_ZKEVM,
     chainId: Network.POLYGON_ZKEVM_TESTNET,
     name: "Polygon zkEVM Testnet",
     symbol: "ETH",
@@ -796,6 +844,32 @@ const config: INetworkConfig = {
       chainId: 10158,
       endpoint: {
         address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
+      },
+    },
+  },
+  [Network.HARMONY]: {
+    chain: InContractChain.HARMONY,
+    chainId: Network.HARMONY,
+    name: "Harmony One",
+    symbol: "ONE",
+    url: `https://one.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    layerzero: {
+      chainId: 116,
+      endpoint: {
+        address: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
+      },
+    },
+  },
+  [Network.HARMONEY_TESTNET]: {
+    chain: InContractChain.HARMONY,
+    chainId: Network.HARMONEY_TESTNET,
+    name: "Harmony One Testnet",
+    symbol: "ONE",
+    url: `https://api.s0.b.hmny.io`,
+    layerzero: {
+      chainId: 10133,
+      endpoint: {
+        address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
       },
     },
   },

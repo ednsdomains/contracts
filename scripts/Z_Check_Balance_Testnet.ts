@@ -15,6 +15,7 @@ async function main() {
     }
   }
   const result = await Promise.all(data);
+  console.log(`Account: ${_signer.address}`);
   console.table(result);
 }
 
