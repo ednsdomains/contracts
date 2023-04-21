@@ -70,7 +70,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     _user.user = IDomainRecordFacet(_self()).getOwner(name_, tld_);
     _user.expiry = IDomainRecordFacet(_self()).getExpiry(name_, tld_);
 
-    emit NewHost(host, name, tld);
+    emit NewHost(host, name, tld, ttl);
 
     TokenRecord storage _tokenRecord = _ds.tokenRecords[getTokenId(host, name, tld)];
     _tokenRecord.kind = RecordKind.HOST;
