@@ -14,6 +14,7 @@ import {
   UniversalRegistrarController,
   Synchronizer,
   OmniRegistrarController,
+  RegistryInit,
 } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction } from "ethers";
@@ -32,7 +33,7 @@ export interface IDeployInput {
   contracts: IContracts;
 }
 
-const _deployRegistry = async (input: IDeployInput): Promise<void> => {
+const _deployRegistry = async (input: IDeployInput): Promise<Registry | undefined> => {
   input.contracts = await getContracts(input.signer);
   if (!input.contracts.Registry?.facets?.DiamondCutFacet) throw new Error("`Registry.DiamondCutFacet` is not available");
   try {
@@ -41,12 +42,13 @@ const _deployRegistry = async (input: IDeployInput): Promise<void> => {
     const _contract = await factory.deploy(input.signer.address, input.contracts.Registry.facets.DiamondCutFacet.address);
     await _contract.deployed();
     await _afterDeploy(await input.signer.getChainId(), "Registry.Diamond", _contract, _contract.deployTransaction);
+    return _contract;
   } catch (err) {
     console.error(err);
   }
 };
 
-export const _deployRegistryInit = async (input: IDeployInput): Promise<void> => {
+export const _deployRegistryInit = async (input: IDeployInput): Promise<RegistryInit | undefined> => {
   input.contracts = await getContracts(input.signer);
   try {
     await _beforeDeploy(input.signer, await input.signer.getChainId(), "Registry.Init");
@@ -54,6 +56,7 @@ export const _deployRegistryInit = async (input: IDeployInput): Promise<void> =>
     const _contract = await factory.deploy();
     await _contract.deployed();
     await _afterDeploy(await input.signer.getChainId(), "Registry.Init", _contract, _contract.deployTransaction);
+    return _contract;
   } catch (err) {
     console.error(err);
   }

@@ -7,32 +7,29 @@ import "./interfaces/ITextResolver.sol";
 abstract contract TextResolver is ITextResolver, BaseResolver {
   mapping(address => mapping(bytes32 => string)) internal _texts;
 
-  function _setText(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    string memory text
-  ) internal {
+  function _setText(bytes memory host, bytes memory name, bytes memory tld, string memory text) internal {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _texts[_getUser(host, name, tld)][fqdn] = text;
     emit SetText(host, name, tld, text);
   }
 
-  function setText(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    string memory text
-  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  function setText(bytes memory host, bytes memory name, bytes memory tld, string memory text) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
     _setText(host, name, tld, text);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("setText(bytes,bytes,bytes,string)", host, name, tld, text));
+    _afterExec(keccak256(tld), abi.encodeWithSignature("setText(bytes,bytes,bytes,string)", host, name, tld, text));
   }
 
-  function getText(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) public view onlyLive(name, tld) returns (string memory) {
+  function _unsetText(bytes memory host, bytes memory name, bytes memory tld) internal {
+    bytes32 fqdn = _getFqdn(host, name, tld);
+    delete _texts[_getUser(host, name, tld)][fqdn];
+    emit UnsetText(host, name, tld);
+  }
+
+  function unsetText(bytes memory host, bytes memory name, bytes memory tld) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+    _unsetText(host, name, tld);
+    _afterExec(keccak256(tld), abi.encodeWithSignature("unsetText(bytes,bytes,bytes)", host, name, tld));
+  }
+
+  function getText(bytes memory host, bytes memory name, bytes memory tld) public view onlyLive(host, name, tld) returns (string memory) {
     bytes32 fqdn = _getFqdn(host, name, tld);
     return _texts[_getUser(host, name, tld)][fqdn];
   }

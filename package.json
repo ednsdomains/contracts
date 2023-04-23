@@ -56,6 +56,7 @@
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.19",
     "surya": "^0.4.6",
+    "table": "^6.8.1",
     "ts-node": "^10.5.0",
     "typechain": "^5.2.0",
     "typeorm": "^0.3.11",

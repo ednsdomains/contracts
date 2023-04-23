@@ -133,10 +133,10 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
         getUserExpiry(host, name, tld) > block.timestamp,
       "ONLY_USERS"
     );
-    _remove(host, name, tld);
+    _unsetRecord(host, name, tld);
   }
 
-  function _remove(bytes32 host, bytes32 name, bytes32 tld) internal {
+  function _unsetRecord(bytes32 host, bytes32 name, bytes32 tld) internal {
     RegistryStorage storage _ds = registryStorage();
 
     delete _ds.records[tld].domains[name].hosts[host];

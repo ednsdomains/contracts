@@ -26,8 +26,12 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     _;
   }
 
-  modifier onlyLive(bytes memory name, bytes memory tld) {
-    require(_isLive(name, tld), "DOMAIN_EXPIRED");
+  modifier onlyLive(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld
+  ) {
+    require(_isLive(host, name, tld), "DOMAIN_EXPIRED");
     _;
   }
 
@@ -44,11 +48,7 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     _grantRole(ADMIN_ROLE, _msgSender());
   }
 
-  function _isAuthorised(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) internal view returns (bool) {
+  function _isAuthorised(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
     bytes32 host_ = keccak256(host);
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
@@ -58,25 +58,18 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     return isAuthorizedUser || isSelfAuthorized;
   }
 
-  function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
+  function _isLive(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
+    bytes32 host_ = keccak256(host);
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    return _registry.isLive(domain_, tld_);
+    return _registry.isLive(domain_, tld_) && _registry.isExists(host_, domain_, tld_);
   }
 
-  function _getUser(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) internal view returns (address) {
+  function _getUser(bytes memory host, bytes memory name, bytes memory tld) internal view returns (address) {
     return _registry.getUser(keccak256(host), keccak256(name), keccak256(tld));
   }
 
-  function _getFqdn(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) internal pure returns (bytes32) {
+  function _getFqdn(bytes memory host, bytes memory name, bytes memory tld) internal pure returns (bytes32) {
     bytes32 fqdn;
     if (keccak256(bytes(host)) == AT) {
       fqdn = keccak256(_join(name, tld));
@@ -87,7 +80,7 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     return fqdn;
   }
 
-  function _afterSet(bytes32 tld, bytes memory ews) internal {
+  function _afterExec(bytes32 tld, bytes memory ews) internal {
     if (_msgSender() != address(this)) {
       if (_registry.getClass(tld) == TldClass.OMNI && _registry.getChains(tld).length > 0) {
         _requestSync(payable(_msgSender()), SyncAction.RESOLVER, _registry.getChains(tld), ews);

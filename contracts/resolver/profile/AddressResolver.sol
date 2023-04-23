@@ -8,32 +8,29 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
   mapping(address => mapping(bytes32 => address)) internal _addresses;
   mapping(address => bytes) internal _reverseAddresses;
 
-  function _setAddress(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) internal {
+  function _setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) internal {
     bytes32 fqdn = _getFqdn(host, name, tld);
     _addresses[_getUser(host, name, tld)][fqdn] = address_;
     emit SetAddress(host, name, tld, address_);
   }
 
-  function setAddress(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  function setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
     _setAddress(host, name, tld, address_);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
+    _afterExec(keccak256(tld), abi.encodeWithSignature("setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
-  function getAddress(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) public view onlyLive(name, tld) returns (address) {
+  function _unsetAddress(bytes memory host, bytes memory name, bytes memory tld) internal {
+    bytes32 fqdn = _getFqdn(host, name, tld);
+    delete _addresses[_getUser(host, name, tld)][fqdn];
+    emit UnsetAddress(host, name, tld);
+  }
+
+  function unsetAddress(bytes memory host, bytes memory name, bytes memory tld) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+    _unsetAddress(host, name, tld);
+    _afterExec(keccak256(tld), abi.encodeWithSignature("unsetAddress(bytes,bytes,bytes)", host, name, tld));
+  }
+
+  function getAddress(bytes memory host, bytes memory name, bytes memory tld) public view onlyLive(host, name, tld) returns (address) {
     if (keccak256(bytes(host)) == AT) {
       return _addresses[_getUser(host, name, tld)][keccak256(_join(name, tld))];
     } else {
@@ -42,12 +39,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     }
   }
 
-  function _setReverseAddress(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) internal {
+  function _setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) internal {
     bytes memory fqdn;
     if (keccak256(bytes(host)) == AT) {
       fqdn = _join(name, tld);
@@ -56,17 +48,22 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
       fqdn = _join(host, name, tld);
     }
     _reverseAddresses[address_] = fqdn;
-    emit SetAddress(host, name, tld, address_);
+    emit SetReverseAddress(host, name, tld, address_);
   }
 
-  function setReverseAddress(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld,
-    address address_
-  ) public payable onlyLive(name, tld) onlyAuthorised(host, name, tld) {
+  function setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
     _setReverseAddress(host, name, tld, address_);
-    _afterSet(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
+    _afterExec(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
+  }
+
+  function _unsetReverseAddress(address address_) internal {
+    delete _reverseAddresses[address_];
+    emit UnsetReverseAddress(address_);
+  }
+
+  function unsetReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+    _unsetReverseAddress(address_);
+    _afterExec(keccak256(tld), abi.encodeWithSignature("unsetReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
   function getReverseAddress(address address_) public view returns (string memory) {
