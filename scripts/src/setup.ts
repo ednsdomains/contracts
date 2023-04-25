@@ -13,6 +13,7 @@ import { ZERO_ADDRESS } from "../../network.config";
 import { getInContractChain } from "./lib/get-in-contract-chain";
 import { FacetCutAction, cutFacets, getSelectors } from "./lib/diamond";
 import { BaseRegistryFacet } from "../../typechain/BaseRegistryFacet";
+import { Registrar } from "../../typechain/Registrar";
 
 const GAS_LIMIT = 8000000;
 
@@ -183,7 +184,7 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
     txs.push(tx);
   }
 
-  // const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.gdn");
+  // const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.gdn/metadata");
   // await tx3.wait();
   // txs.push(tx3);
 
@@ -358,6 +359,7 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
 
 export const setupOmniRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.OmniRegistrarController) throw new Error("`OmniRegistrarController` is not available");
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   await _beforeSetup(input.signer, input.chainId, "OmniRegistrarController");
@@ -369,9 +371,12 @@ export const setupOmniRegistrarController = async (input: ISetupInput) => {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
       const isExists = await _registry["isExists(bytes32)"](_tld_);
       if (isExists) {
-        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.OmniRegistrarController.address, true);
-        await tx.wait();
-        txs.push(tx);
+        const isControllerApproved = await input.contracts.Registrar.isControllerApproved(_tld_, input.contracts.OmniRegistrarController.address);
+        if (!isControllerApproved) {
+          const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.OmniRegistrarController.address, true);
+          await tx.wait();
+          txs.push(tx);
+        }
       }
     }
   }
@@ -544,6 +549,7 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 };
 
 const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+  console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);
   if (balance.eq(0)) {
     throw new Error(`Signer account ${signer.address} has [0] balance`);
@@ -551,6 +557,7 @@ const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: Co
     console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
   }
   console.log(`Setup procedure initiated, contract [${name}] will be setup on [${NetworkConfig[chainId].name}] in 3 seconds...`);
+  console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
   await delay(3000);
 };
 

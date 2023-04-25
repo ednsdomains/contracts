@@ -11,5 +11,7 @@ interface ISynchronizerApplication {
 
   function receiveSync(bytes memory ews) external; // Incoming sync action
 
+  function getSynchronizer() external view returns (address);
+
   function setSynchronizer(ISynchronizer synchronizer_) external;
 }

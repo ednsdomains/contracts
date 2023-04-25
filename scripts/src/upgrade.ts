@@ -220,6 +220,7 @@ export async function upgradeLayerZeroProvider(input: IUpgradeInput): Promise<vo
 }
 
 const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+  console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);
   if (balance.eq(0)) {
     throw new Error(`Signer account ${signer.address} has [0] balance`);
@@ -227,6 +228,7 @@ const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: 
     console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
   }
   console.log(`Upgrade procedure initiated, contract [${name}] will be upgrade on [${NetworkConfig[chainId].name}] in 3 seconds...`);
+  console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
   await delay(3000);
 };
 

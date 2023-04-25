@@ -8,10 +8,8 @@ interface IHostRecordFacet {
   /* ========== Event ==========*/
 
   event NewHost(bytes host, bytes name, bytes tld, uint16 ttl);
-
   event SetHostOperator(bytes32 host, bytes32 name, bytes32 tld, address operator, bool approved);
   event SetHostUser(bytes32 host, bytes32 name, bytes32 tld, address newUser, uint64 expiry);
-
   event RemoveHost(bytes32 host, bytes32 name, bytes32 tld);
 
   /* ========== Mutative ==========*/

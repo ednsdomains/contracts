@@ -321,13 +321,13 @@ const _beforeDeploy = async (signer: SignerWithAddress, chainId: number, name: C
   // Check is the contract already deployed on to the chain
   const isDeployed = await isContractDeployed(chainId, name);
   if (isDeployed) throw new Error(`${name} is already deployed - [${await getContractAddress(chainId, name)})}]`);
-
+  console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   // Check is the signer account has enough balance
   const balance = await getBalance(signer);
   if (balance.eq(0)) throw new Error(`Signer account ${signer.address} has [0] balance`);
-
   // Announce ready for the deployment
   console.log(`Deployment initiated, contract [${name}] will be deploy on [${NetworkConfig[chainId].name}] in 3 seconds...`);
+  console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
   await delay(3000);
 };
 

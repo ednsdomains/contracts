@@ -5,10 +5,6 @@
       "names": ["ether", "ethereum"]
     },
     {
-      "chainId": 5,
-      "names": ["_ether"]
-    },
-    {
       "chainId": 10,
       "names": ["op", "optimism"]
     },
@@ -31,10 +27,6 @@
     {
       "chainId": 69,
       "names": ["op", "optimism"]
-    },
-    {
-      "chainId": 97,
-      "names": ["_bnb"]
     },
     {
       "chainId": 100,
@@ -85,10 +77,6 @@
       "names": ["moonriver"]
     },
     {
-      "chainId": 4002,
-      "names": ["_ftm"]
-    },
-    {
       "chainId": 4689,
       "names": ["iotx", "iotex"]
     },
@@ -113,10 +101,6 @@
       "names": ["celo"]
     },
     {
-      "chainId": 43113,
-      "names": ["_avax"]
-    },
-    {
       "chainId": 43114,
       "names": ["avax", "avalanche"]
     },
@@ -125,17 +109,13 @@
       "names": ["celo"]
     },
     {
-      "chainId": 80001,
-      "names": ["_matic"]
-    },
-    {
       "chainId": 421611,
       "names": ["arb", "arbitrum"]
     }
   ],
   "universal": [
     {
-      "chainIds": [5, 97, 80001, 43113],
+      "chainIds": [5, 97, 80001, 43113, 4002, 420, 421613, 10200, 44787, 65, 280, 1442, 1287, 1666700000],
       "names": ["_universal"]
     },
     {
@@ -153,16 +133,8 @@
   ],
   "omni": [
     {
-      "chainIds": [97, 43113, 80001],
+      "chainIds": [5, 97, 80001, 43113, 4002, 420, 421613, 10200, 44787, 65, 280, 1442, 1287, 1666700000],
       "names": ["_omni"]
-    },
-    {
-      "chainIds": [43113, 80001],
-      "names": ["_omni2"]
-    },
-    {
-      "chainIds": [43113, 4002],
-      "names": ["_omni4"]
     }
   ]
 }

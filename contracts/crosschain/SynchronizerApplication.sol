@@ -8,12 +8,7 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 abstract contract SynchronizerApplication is ISynchronizerApplication, ContextUpgradeable {
   ISynchronizer internal _synchronizer;
 
-  function _requestSync(
-    address payable sender,
-    SyncAction action,
-    Chain[] memory dstChains,
-    bytes memory ews
-  ) internal virtual {
+  function _requestSync(address payable sender, SyncAction action, Chain[] memory dstChains, bytes memory ews) internal virtual {
     CrossChainProvider provider = _synchronizer.getUserDefaultProvider(_msgSender());
     // require(msg.value >= _synchronizer.estimateSyncFee(action, provider, dstChains, ews), "INSUFFICIENT_FEE");
     try _synchronizer.sync{ value: msg.value }(sender, action, provider, dstChains, ews) {
@@ -27,6 +22,10 @@ abstract contract SynchronizerApplication is ISynchronizerApplication, ContextUp
     require(_msgSender() == address(_synchronizer), "ONLY_SYNCHRONIZER");
     (bool success, ) = address(this).call(ews);
     emit ExecuteSync(success, ews);
+  }
+
+  function getSynchronizer() public view returns (address) {
+    return address(_synchronizer);
   }
 
   function _setSynchronizer(ISynchronizer synchronizer_) internal {
