@@ -5,7 +5,6 @@ import { ContractName } from "./constants/contract-name";
 import { IContracts } from "./interfaces/contracts";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig from "../../network.config";
-import { verifyContract } from "./lib/verify-contract";
 import { Contract } from "ethers";
 import { getAllContractsData, getContracts } from "./lib/get-contracts";
 import { setAllContractsData } from "./lib/set-contracts";
@@ -233,7 +232,7 @@ const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: 
 };
 
 const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName, contract: Contract, update?: boolean) => {
-  console.log(`Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
+  console.log(`✅ Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
   if (update) {

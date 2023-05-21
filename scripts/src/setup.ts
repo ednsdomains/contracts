@@ -6,14 +6,12 @@ import { ContractName } from "./constants/contract-name";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
 import delay from "delay";
-import { Contract, ContractTransaction, Transaction } from "ethers";
+import { ContractTransaction, Transaction } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
 import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
 import { getInContractChain } from "./lib/get-in-contract-chain";
-import { FacetCutAction, cutFacets, getSelectors } from "./lib/diamond";
-import { BaseRegistryFacet } from "../../typechain/BaseRegistryFacet";
-import { Registrar } from "../../typechain/Registrar";
+import { FacetCutAction, getSelectors } from "./lib/diamond";
 
 const GAS_LIMIT = 8000000;
 
@@ -94,7 +92,6 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
       }
     }
   }
-  // console.log(JSON.stringify({ states }, null, 2));
   for (const _address in states) {
     if (states[_address].add.length > 0) {
       cut.push({
@@ -123,7 +120,6 @@ export const setupRegistry = async (input: ISetupInput) => {
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   if (!input.contracts.Registry?.Init) throw new Error("`Registry.Init` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
-  // if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
   if (!input.contracts.Bridge) throw new Error("`Bridge` is not available");
@@ -563,10 +559,15 @@ const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: Co
 
 const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName, txs: Transaction[]) => {
   console.log(`Contract [${name}] has been setup on [${NetworkConfig[chainId].name}]`);
-  console.log(`With the following transaction hash(s): `);
-  for (const tx of txs) {
-    console.log(`- ${tx.hash}`);
+  if (txs.length) {
+    console.log(`✅ With the following transaction hash(s): `);
+    for (const tx of txs) {
+      console.log(`- ${tx.hash}`);
+    }
+  } else {
+    console.log(`❌ No transaction has been send out `);
   }
+
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
 };
