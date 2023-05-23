@@ -6,7 +6,7 @@
     },
     {
       "chainId": 5,
-      "names": ["_ether", "_ethereum"]
+      "names": ["_ether", "_ethereum","test1","test2","test3","meta","ass","404","music","sandbox","abc"]
     },
     {
       "chainId": 10,
@@ -26,7 +26,7 @@
     },
     {
       "chainId": 65,
-      "names": ["_okc", "_okt", "_okex"]
+      "names": ["_okc", "_okt", "_okex","okc"]
     },
     {
       "chainId": 66,
@@ -82,7 +82,7 @@
     },
     {
       "chainId": 4690,
-      "names": ["_iotx", "_iotex"]
+      "names": ["_iotx", "_iotex","iotex","iotex1"]
     },
     {
       "chainId": 9000,

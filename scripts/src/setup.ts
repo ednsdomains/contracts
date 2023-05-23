@@ -20,7 +20,13 @@ export interface ISetupInput {
   signer: SignerWithAddress;
   contracts: IContracts;
 }
+export interface IInsertTld{
+  chainId: number;
+  signer: SignerWithAddress;
+  contracts: IContracts;
+  tld:string
 
+}
 const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransaction | undefined> => {
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   if (!input.contracts.Registry?.Init) throw new Error("`Registry.Init` is not available");
@@ -571,3 +577,39 @@ const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: Con
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
 };
+
+export const insertTld = async (input: IInsertTld) => {
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+  if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+
+  await _beforeSetup(input.signer, input.chainId, "Root");
+  const txs: Transaction[] = [];
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+  const _tld_ = ethers.utils.toUtf8Bytes(input.tld);
+  let isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
+  if (!isExists) {
+    const tx = await input.contracts.Root.register([], _tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
+    await tx.wait();
+    txs.push(tx);
+  }
+  const isWrapped = await _registry.getWrapper(ethers.utils.keccak256(_tld_));
+  if (isWrapped.address_ === ZERO_ADDRESS) {
+    const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+  isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
+  if(isExists){
+    const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+    await tx.wait();
+    txs.push(tx);
+  }else{
+    console.log("TLD Not exist")
+  }
+}
+
