@@ -2,7 +2,7 @@
   {
     "chainId": 0,
     "addresses": {
-      "Registry.Init": "0xF2B33EdC3e307F517B4fdbF89fd232E65acFB624"
+      "Registry.Init": "0xcA3c3A8072C6C9600CCcfce2933bb72372663500"
     }
   },
   {
@@ -300,6 +300,32 @@
       "Bridge": "0xDbCE8EF3e4bB42C7984a92Dc72cb70fe1d1d4555",
       "Synchronizer": "0xBaC438DA4aecB2bFDc046bAC50ba5e1fb0Dd5317",
       "LayerZeroProvider": "0x3042D63c7f27850191BF87a88f3f81CFbC2b3D4e"
+    }
+  },
+  {
+    "chainId": 137,
+    "addresses": {
+      "Registry.Init": "0xcA3c3A8072C6C9600CCcfce2933bb72372663500",
+      "Registry.DiamondCutFacet": "0x2B6dF7CC97B652D6A957c6a3F4aBF3A962D56698",
+      "Registry.DiamondLoupeFacet": "0xf0E518b1911db0D6281dC286f447D26b400272F1",
+      "Registry.AccessControlFacet": "0x04C88F5cf1Be38998bA7B6143AF3A5ADC91Bc6de",
+      "Registry.TldRecordFacet": "0x17A1b19e1ccA708fcAAE1a0C128ce4d79b5Ed9f3",
+      "Registry.DomainRecordFacet": "0xFDEC5CC1b5a7b3FEE228838f76334F52e6d9f1Ee",
+      "Registry.HostRecordFacet": "0x2cc4d38a5820a680AcD58D0B90a35781E85964A8",
+      "Registry.BaseRegistryFacet": "0x9E960190A5cF6f7b51F02d6E565f198329c6CA2D",
+      "Registry.Diamond": "0x4495d9352d97EEDc3D0142E76731703A8DEC86F1",
+      "DefaultWrapper": "0x0A1714fC4bd7EbE9B7e390049D42B3A3367E82c1",
+      "PublicResolver": "0x4Fd114c8d5680070efFEC3401DB6c08692F6E627",
+      "Registrar": "0x51bb39FCF88ffc1a40713a536bf675582c4f0e48",
+      "Root": "0xaC5DD5389f3E15C5Fb7fA0a21E41033B8aE1D888",
+      "Token": "0x12aD784ACC6b6aC43247cCB5c8780457103c2869",
+      "ClassicalRegistrarController": "0xE7De75C2cDB92EdE865169F813021df639B222F5",
+      "UniversalRegistrarController": "0x7bAA96739f3251Bf4F4D56AFfa142B069877C85e",
+      "OmniRegistrarController": "0x28a2E2E7B2DF9dDAfE96981a2e985c70025c7246",
+      "Portal": "0x21E3DEC7202b4E4c6492cb215d27301065d3c9db",
+      "Bridge": "0xC04C3f710b1F738b2Ba22CF6D0E8Cb68252eD5eF",
+      "Synchronizer": "0xcF3781911fC5D4fa0e091C1AC9BbC998999DA559",
+      "LayerZeroProvider": "0xfB0f20f18507bAB150f6c57e0Bdbd6c6331Eb824"
     }
   }
 ]

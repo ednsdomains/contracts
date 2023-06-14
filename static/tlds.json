@@ -6,7 +6,7 @@
     },
     {
       "chainId": 5,
-      "names": ["_ether", "_ethereum","test1","test2","test3","meta","ass","404","music","sandbox","abc"]
+      "names": ["_ether", "_ethereum", "test1", "test2", "test3", "meta", "ass", "404", "music", "sandbox", "abc"]
     },
     {
       "chainId": 10,
@@ -26,7 +26,7 @@
     },
     {
       "chainId": 65,
-      "names": ["_okc", "_okt", "_okex","okc"]
+      "names": ["_okc", "_okt", "_okex", "okc"]
     },
     {
       "chainId": 66,
@@ -47,10 +47,6 @@
     {
       "chainId": 111,
       "names": ["_velas"]
-    },
-    {
-      "chainId": 137,
-      "names": ["matic", "polygon"]
     },
     {
       "chainId": 80001,
@@ -82,7 +78,7 @@
     },
     {
       "chainId": 4690,
-      "names": ["_iotx", "_iotex","iotex","iotex1"]
+      "names": ["_iotx", "_iotex", "iotex", "iotex1"]
     },
     {
       "chainId": 9000,
@@ -104,7 +100,6 @@
       "chainId": 42220,
       "names": ["celo"]
     },
-
     {
       "chainId": 44787,
       "names": ["_celo"]
@@ -152,12 +147,12 @@
       "names": ["layer2"]
     },
     {
-      "chainIds": [1, 10, 56, 137, 250, 42161, 43114],
+      "chainIds": [1, 10, 56, 66, 100, 137, 250, 324, 1101, 1284, 1285, 42161, 42220, 43114, 1666600000],
       "names": ["layerzero", "lz"]
     },
     {
-      "chainIds": [1, 10, 56, 137, 250, 42161, 43114],
-      "names": ["meta", "web3"]
+      "chainIds": [1, 10, 56, 66, 100, 137, 250, 324, 1101, 1284, 1285, 42161, 42220, 43114, 1666600000],
+      "names": ["meta", "web3", "music", "ass", "404", "sandbox", "gamefi"]
     }
   ],
   "omni": [

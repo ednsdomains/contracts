@@ -20,12 +20,11 @@ export interface ISetupInput {
   signer: SignerWithAddress;
   contracts: IContracts;
 }
-export interface IInsertTld{
+export interface IInsertTld {
   chainId: number;
   signer: SignerWithAddress;
   contracts: IContracts;
-  tld:string
-
+  tld: string;
 }
 const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransaction | undefined> => {
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
@@ -136,36 +135,41 @@ export const setupRegistry = async (input: ISetupInput) => {
 
   const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
 
-  //=== Diamond Cut ===//
-  const tx = await _registryDiamondCut(input);
-  if (tx) txs.push(tx);
+  try {
+    //=== Diamond Cut ===//
+    const tx = await _registryDiamondCut(input);
+    if (tx) txs.push(tx);
 
-  //=== Grant different Roles to different deployed contracts ==//
-  if (!(await _registry.hasRole(await _registry.ROOT_ROLE(), input.contracts.Root.address))) {
-    const tx = await _registry.grantRole(await _registry.ROOT_ROLE(), input.contracts.Root.address);
-    await tx.wait();
-    txs.push(tx);
+    //=== Grant different Roles to different deployed contracts ==//
+    if (!(await _registry.hasRole(await _registry.ROOT_ROLE(), input.contracts.Root.address))) {
+      const tx = await _registry.grantRole(await _registry.ROOT_ROLE(), input.contracts.Root.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if (!(await _registry.hasRole(await _registry.REGISTRAR_ROLE(), input.contracts.Registrar.address))) {
+      const tx = await _registry.grantRole(await _registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if (!(await _registry.hasRole(await _registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address))) {
+      const tx = await _registry.grantRole(await _registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if (!(await _registry.hasRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address))) {
+      const tx = await _registry.grantRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    await _afterSetup(input.signer, input.chainId, "Registry.Diamond", [...txs]);
+  } catch (error) {
+    await _afterSetup(input.signer, input.chainId, "Registry.Diamond", [...txs]);
+    throw error;
   }
-
-  if (!(await _registry.hasRole(await _registry.REGISTRAR_ROLE(), input.contracts.Registrar.address))) {
-    const tx = await _registry.grantRole(await _registry.REGISTRAR_ROLE(), input.contracts.Registrar.address);
-    await tx.wait();
-    txs.push(tx);
-  }
-
-  if (!(await _registry.hasRole(await _registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address))) {
-    const tx = await _registry.grantRole(await _registry.WRAPPER_ROLE(), input.contracts.DefaultWrapper.address);
-    await tx.wait();
-    txs.push(tx);
-  }
-
-  if (!(await _registry.hasRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address))) {
-    const tx = await _registry.grantRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
-    await tx.wait();
-    txs.push(tx);
-  }
-
-  await _afterSetup(input.signer, input.chainId, "Registry.Diamond", [...txs]);
 };
 
 export const setupDefaultWrapper = async (input: ISetupInput) => {
@@ -563,9 +567,10 @@ const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: Co
   await delay(3000);
 };
 
-const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName, txs: Transaction[]) => {
+const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName, txs: Transaction[], hasError?: boolean) => {
   console.log(`Contract [${name}] has been setup on [${NetworkConfig[chainId].name}]`);
   if (txs.length) {
+    if (hasError) console.log(`⚠️ Error occurred while setting up [${name}] on [${NetworkConfig[chainId].name}]`);
     console.log(`✅ With the following transaction hash(s): `);
     for (const tx of txs) {
       console.log(`- ${tx.hash}`);
@@ -604,12 +609,11 @@ export const insertTld = async (input: IInsertTld) => {
     txs.push(tx);
   }
   isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
-  if(isExists){
+  if (isExists) {
     const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
     await tx.wait();
     txs.push(tx);
-  }else{
-    console.log("TLD Not exist")
+  } else {
+    console.log("TLD Not exist");
   }
-}
-
+};
