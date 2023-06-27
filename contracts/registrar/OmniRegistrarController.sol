@@ -30,7 +30,7 @@ contract OmniRegistrarController is IOmniRegistrarController, BaseRegistrarContr
   }
 
   function isAvailable(bytes memory name, bytes memory tld) public view returns (bool) {
-    _registrar.isAvailable(name, tld);
+    return _registrar.isAvailable(name, tld);
   }
 
   function register(
