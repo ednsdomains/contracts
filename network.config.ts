@@ -799,7 +799,7 @@ const config: INetworkConfig = {
     chainId: Network.ZKSYNC_ERA,
     name: "zkSync Era Mainnet",
     symbol: "ETH",
-    url: `https://mainnet.era.zksync.io	`,
+    url: `https://mainnet.era.zksync.io`,
     layerzero: {
       chainId: 165,
       endpoint: {
@@ -809,11 +809,10 @@ const config: INetworkConfig = {
   },
   [Network.ZKSYNC_ERA_TESTNET]: {
     chain: InContractChain.ZKSYNC,
-
     chainId: Network.ZKSYNC_ERA_TESTNET,
     name: "zkSync Era Testnet",
     symbol: "ETH",
-    url: `https://testnet.era.zksync.dev	`,
+    url: `https://testnet.era.zksync.dev`,
     layerzero: {
       chainId: 10165,
       endpoint: {

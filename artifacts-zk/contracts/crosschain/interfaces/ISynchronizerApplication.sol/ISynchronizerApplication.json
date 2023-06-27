@@ -1,0 +1,102 @@
+{
+  "_format": "hh-zksolc-artifact-1",
+  "contractName": "ISynchronizerApplication",
+  "sourceName": "contracts/crosschain/interfaces/ISynchronizerApplication.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "ews",
+          "type": "bytes"
+        }
+      ],
+      "name": "ExecuteSync",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "ews",
+          "type": "bytes"
+        }
+      ],
+      "name": "RequestSync",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "ews",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "reason",
+          "type": "bytes"
+        }
+      ],
+      "name": "SyncError",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "getSynchronizer",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "ews",
+          "type": "bytes"
+        }
+      ],
+      "name": "receiveSync",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract ISynchronizer",
+          "name": "synchronizer_",
+          "type": "address"
+        }
+      ],
+      "name": "setSynchronizer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "factoryDeps": {}
+}

@@ -1,7 +1,7 @@
 import hre from "hardhat";
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import NetworkConfig from "../../network.config";
+import NetworkConfig, { Mainnets, Testnets, ZERO_ADDRESS } from "../../network.config";
 import {
   PublicResolver,
   Registry,
@@ -220,13 +220,13 @@ export const deployTokenMock = async (input: IDeployInput): Promise<TokenMock> =
 };
 
 export const deployClassicalRegistrarController = async (input: IDeployInput): Promise<ClassicalRegistrarController> => {
-  if (!input.contracts.Token) throw new Error("`Token` is not available");
+  if (Testnets.includes(input.chainId) && !input.contracts.Token) throw new Error("`Token` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "ClassicalRegistrarController");
   const factory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
   const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token.address, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
+  const _contract = await upgrades.deployProxy(factory, [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
     kind: "uups",
   });
   await _contract.deployed();
@@ -238,13 +238,17 @@ export const deployClassicalRegistrarController = async (input: IDeployInput): P
 export const deployUniversalRegistrarController = async (input: IDeployInput): Promise<UniversalRegistrarController> => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
-  if (!input.contracts.Token) throw new Error("`Token` is not available");
+  if (Testnets.includes(input.chainId) && !input.contracts.Token) throw new Error("`Token` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "UniversalRegistrarController");
   const factory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
   const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token.address, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
-    kind: "uups",
-  });
+  const _contract = await upgrades.deployProxy(
+    factory,
+    [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID],
+    {
+      kind: "uups",
+    },
+  );
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "UniversalRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -254,13 +258,17 @@ export const deployUniversalRegistrarController = async (input: IDeployInput): P
 export const deployOmniRegistrarController = async (input: IDeployInput): Promise<OmniRegistrarController> => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
-  if (!input.contracts.Token) throw new Error("`Token` is not available");
+  if (Testnets.includes(input.chainId) && !input.contracts.Token) throw new Error("`Token` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "OmniRegistrarController");
   const factory = await ethers.getContractFactory("OmniRegistrarController", input.signer);
   const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
-  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token.address, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
-    kind: "uups",
-  });
+  const _contract = await upgrades.deployProxy(
+    factory,
+    [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID],
+    {
+      kind: "uups",
+    },
+  );
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "OmniRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);

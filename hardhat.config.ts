@@ -11,11 +11,25 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
+import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
+import "@matterlabs/hardhat-zksync-upgradable";
 
 dotenv.config();
 // https://hardhat.org/config/
 // https://hardhat.org/guides/compile-contracts/
 const config: HardhatUserConfig = {
+  defaultNetwork: "goerli",
+  zksolc: {
+    version: "1.3.10",
+    compilerSource: "binary",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   solidity: {
     version: process.env.SOLIDITY_VERSION || "0.8.17",
     settings: {
@@ -122,10 +136,13 @@ const config: HardhatUserConfig = {
       chainId: 9000,
     },
     zksync_era: {
-      chainId: 1280,
+      chainId: 324,
+      zksync: true,
     },
     zksync_era_testnet: {
-      chainId: 324,
+      chainId: 280,
+      ethNetwork: "goerli",
+      zksync: true,
     },
     polygon_zkevm: {
       chainId: 1101,
