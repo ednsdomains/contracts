@@ -3,6 +3,7 @@ import {
   deployBridge,
   deployClassicalRegistrarController,
   deployLayerZeroProvider,
+  deployMigrationManager,
   deployOmniRegistrarController,
   deployPortal,
   deployPublicResolver,
@@ -15,7 +16,7 @@ import {
 } from "./src/deploy";
 import { getContracts } from "./src/lib/get-contracts";
 import { deploySynchronizer } from "./src/deploy";
-import { Testnets } from "../network.config";
+import { Mainnets, Network, Testnets } from "../network.config";
 import NetworkConfig from "../network.config";
 
 async function main() {
@@ -50,6 +51,10 @@ async function main() {
   contracts = await getContracts(signer);
   if (NetworkConfig[chainId].layerzero) {
     await deployLayerZeroProvider({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
+  }
+  if (chainId === Network.POLYGON || chainId === Network.GOERLI) {
+    await deployMigrationManager({ signer, chainId, contracts });
     contracts = await getContracts(signer);
   }
 }

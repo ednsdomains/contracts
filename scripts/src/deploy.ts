@@ -15,6 +15,7 @@ import {
   Synchronizer,
   OmniRegistrarController,
   RegistryInit,
+  MigrationManager,
 } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction } from "ethers";
@@ -226,9 +227,13 @@ export const deployClassicalRegistrarController = async (input: IDeployInput): P
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "ClassicalRegistrarController");
   const factory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
   const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
-  const _contract = await upgrades.deployProxy(factory, [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID], {
-    kind: "uups",
-  });
+  const _contract = await upgrades.deployProxy(
+    factory,
+    [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID],
+    {
+      kind: "uups",
+    },
+  );
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "ClassicalRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
@@ -321,6 +326,17 @@ export const deployLayerZeroProvider = async (input: IDeployInput): Promise<Laye
   const _contract = await upgrades.deployProxy(factory, [lzEndpoint.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(await input.signer.getChainId(), "LayerZeroProvider", _contract, _contract.deployTransaction);
+  const contract = factory.attach(_contract.address);
+  return contract;
+};
+
+export const deployMigrationManager = async (input: IDeployInput): Promise<MigrationManager> => {
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+  await _beforeDeploy(input.signer, await input.signer.getChainId(), "MigrationManager");
+  const factory = await ethers.getContractFactory("MigrationManager", input.signer);
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Registrar.address], { kind: "uups" });
+  await _contract.deployed();
+  await _afterDeploy(await input.signer.getChainId(), "MigrationManager", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };

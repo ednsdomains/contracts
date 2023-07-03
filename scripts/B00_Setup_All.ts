@@ -5,6 +5,7 @@ import {
   setupClassicalRegistrarController,
   setupDefaultWrapper,
   setupLayerZeroProvider,
+  setupMigrationManager,
   setupOmniRegistrarController,
   setupPortal,
   setupPublicResolver,
@@ -31,6 +32,7 @@ async function main() {
   await setupSynchronizer({ signer, chainId, contracts });
   await setupPortal({ signer, chainId, contracts });
   await setupLayerZeroProvider({ signer, chainId, contracts });
+  await setupMigrationManager({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

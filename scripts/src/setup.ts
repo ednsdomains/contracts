@@ -554,6 +554,37 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
   await _afterSetup(input.signer, input.chainId, "LayerZeroProvider", [...txs]);
 };
 
+export const setupMigrationManager = async (input: ISetupInput) => {
+  if (!input.contracts.MigrationManager) throw new Error("`MigrationManager` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+  if (!input.contracts.Root) throw new Error("`Root` is not available");
+
+  await _beforeSetup(input.signer, input.chainId, "MigrationManager");
+  const txs: Transaction[] = [];
+
+  const isOperator = await input.contracts.MigrationManager.hasRole(await input.contracts.MigrationManager.OPERATOR_ROLE(), input.signer.address);
+  if (!isOperator) {
+    const tx = await input.contracts.MigrationManager.grantRole(await input.contracts.MigrationManager.OPERATOR_ROLE(), input.signer.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  const tlds = await getUniversalTlds(input.chainId);
+  if (tlds && tlds.length) {
+    for (const tld_ of tlds) {
+      const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
+      const isControllerApproved = await input.contracts.Registrar.isControllerApproved(_tld_, input.contracts.MigrationManager.address);
+      if (!isControllerApproved) {
+        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.MigrationManager.address, true);
+        await tx.wait();
+        txs.push(tx);
+      }
+    }
+  }
+
+  await _afterSetup(input.signer, input.chainId, "MigrationManager", [...txs]);
+};
+
 const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
   console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);
@@ -581,39 +612,4 @@ const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: Con
 
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
-};
-
-export const insertTld = async (input: IInsertTld) => {
-  if (!input.contracts.Root) throw new Error("`Root` is not available");
-  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
-  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
-  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
-  if (!input.contracts.Root) throw new Error("`Root` is not available");
-  if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
-  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
-
-  await _beforeSetup(input.signer, input.chainId, "Root");
-  const txs: Transaction[] = [];
-  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
-  const _tld_ = ethers.utils.toUtf8Bytes(input.tld);
-  let isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
-  if (!isExists) {
-    const tx = await input.contracts.Root.register([], _tld_, input.contracts.PublicResolver.address, 2147483647, input.contracts.Root.address, true, 0); // 2147483647 => Year 2038 problem && 0 === TldClass.CLASSICAL
-    await tx.wait();
-    txs.push(tx);
-  }
-  const isWrapped = await _registry.getWrapper(ethers.utils.keccak256(_tld_));
-  if (isWrapped.address_ === ZERO_ADDRESS) {
-    const tx = await input.contracts.Root.setWrapper(ethers.utils.keccak256(_tld_), true, input.contracts.DefaultWrapper.address);
-    await tx.wait();
-    txs.push(tx);
-  }
-  isExists = await _registry["isExists(bytes32)"](ethers.utils.keccak256(_tld_));
-  if (isExists) {
-    const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-    await tx.wait();
-    txs.push(tx);
-  } else {
-    console.log("TLD Not exist");
-  }
 };

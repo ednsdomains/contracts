@@ -4,6 +4,7 @@ import {
   upgradeBridge,
   upgradeClassicalRegistrarController,
   upgradeLayerZeroProvider,
+  upgradeMigrationManager,
   upgradeOmniRegistrarController,
   upgradePortal,
   upgradePublicResolver,
@@ -31,6 +32,7 @@ async function main() {
   await upgradeBridge({ signer, chainId, contracts });
   await upgradeSynchronizer({ signer, chainId, contracts });
   await upgradeLayerZeroProvider({ signer, chainId, contracts });
+  await upgradeMigrationManager({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

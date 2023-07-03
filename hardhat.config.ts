@@ -230,6 +230,7 @@ const config: HardhatUserConfig = {
       "Portal",
       "Synchronizer",
       "LayerZeroProvider",
+      "MigrationManager",
     ],
   },
 };

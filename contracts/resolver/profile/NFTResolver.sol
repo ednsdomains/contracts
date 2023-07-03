@@ -36,7 +36,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     emit UnsetNFT(host, name, tld, chainId);
   }
 
-  function getNFT(bytes memory host, bytes memory name, bytes memory tld, uint256 chainId) public view returns (NFT memory) {
+  function getNFT(bytes memory host, bytes memory name, bytes memory tld, uint256 chainId) public view onlyLive(host, name, tld) returns (NFT memory) {
     bytes32 fqdn = _getFqdn(host, name, tld);
     return _nfts[_getUser(host, name, tld)][fqdn][chainId];
   }

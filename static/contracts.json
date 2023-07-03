@@ -106,7 +106,8 @@
       "Portal": "0xDe3Cdf1ffDB19c412C02D2167635411403171536",
       "Bridge": "0x2F6bdd7a92493A232c10b4e1402112036058eafF",
       "Synchronizer": "0x5544229Fe0693248566b58ce36628F7070083457",
-      "LayerZeroProvider": "0x3e7a0e8a666791bF16d5EA75e43d0A0d18816473"
+      "LayerZeroProvider": "0x3e7a0e8a666791bF16d5EA75e43d0A0d18816473",
+      "MigrationManager": "0x3E56F456e27A44140a77Af8545dA57a3A28cB872"
     }
   },
   {

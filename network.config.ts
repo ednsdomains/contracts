@@ -57,7 +57,7 @@ export enum Network {
 }
 
 export const Mainnets = [
-  Network.ETHEREUM,
+  // Network.ETHEREUM,
   Network.BNB_CHAIN,
   Network.POLYGON,
   Network.AVALANCHE,
@@ -67,7 +67,7 @@ export const Mainnets = [
   Network.GNOSIS,
   Network.CELO,
   Network.OKC,
-  Network.ZKSYNC_ERA,
+  // Network.ZKSYNC_ERA,
   Network.POLYGON_ZKEVM,
   Network.MOONBEAM,
   Network.MOONRIVER,
@@ -80,13 +80,13 @@ export const Testnets = [
   Network.POLYGON_MUMBAI,
   Network.AVALANCHE_FUJI,
   Network.FANTOM_TESTNET,
-  Network.OPTIMISM_GOERLI,
-  Network.ARBITRUM_GOERLI,
+  // Network.OPTIMISM_GOERLI,
+  // Network.ARBITRUM_GOERLI,
   Network.GNOSIS_CHIADO,
   Network.CELO_ALFAJORES,
   Network.OKC_TESTNET,
-  Network.ZKSYNC_ERA_TESTNET,
-  Network.POLYGON_ZKEVM_TESTNET,
+  // Network.ZKSYNC_ERA_TESTNET,
+  // Network.POLYGON_ZKEVM_TESTNET,
   Network.MOONBASE_ALPHA,
   Network.HARMONEY_TESTNET,
 ];
@@ -618,7 +618,6 @@ const config: INetworkConfig = {
       coinId: 304,
     },
   },
-
   [Network.OKC_TESTNET]: {
     chainId: Network.OKC_TESTNET,
     chain: InContractChain.OKC,

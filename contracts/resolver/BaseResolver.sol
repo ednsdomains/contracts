@@ -31,6 +31,7 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     bytes memory name,
     bytes memory tld
   ) {
+    require(_isExists(host, name, tld), "DOMAIN_NOT_EXISTS");
     require(_isLive(host, name, tld), "DOMAIN_EXPIRED");
     _;
   }
@@ -62,7 +63,14 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     bytes32 host_ = keccak256(host);
     bytes32 domain_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    return _registry.isLive(domain_, tld_) && _registry.isExists(host_, domain_, tld_);
+    return _registry.isLive(domain_, tld_);
+  }
+
+  function _isExists(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
+    bytes32 host_ = keccak256(host);
+    bytes32 domain_ = keccak256(name);
+    bytes32 tld_ = keccak256(tld);
+    return _registry.isExists(host_, domain_, tld_);
   }
 
   function _getUser(bytes memory host, bytes memory name, bytes memory tld) internal view returns (address) {

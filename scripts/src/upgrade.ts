@@ -218,6 +218,14 @@ export async function upgradeLayerZeroProvider(input: IUpgradeInput): Promise<vo
   await _afterUpgrade(input.signer, input.chainId, "LayerZeroProvider", input.contracts.LayerZeroProvider);
 }
 
+export async function upgradeMigrationManager(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.MigrationManager) throw new Error("`MigrationManager` is not available");
+  const factory = await ethers.getContractFactory("MigrationManager", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "MigrationManager");
+  await upgrades.upgradeProxy(input.contracts.MigrationManager, factory);
+  await _afterUpgrade(input.signer, input.chainId, "MigrationManager", input.contracts.MigrationManager);
+}
+
 const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
   console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);

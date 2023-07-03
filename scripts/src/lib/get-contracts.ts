@@ -7,6 +7,7 @@ import {
   ClassicalRegistrarController,
   ERC20,
   LayerZeroProvider,
+  MigrationManager,
   OmniRegistrarController,
   Portal,
   PublicResolver,
@@ -44,6 +45,7 @@ export interface IGetContractsData {
     Synchronizer: string | null;
     Portal: string | null;
     LayerZeroProvider: string | null;
+    MigrationManager: string | null;
   };
 }
 
@@ -81,6 +83,7 @@ export async function getContracts(signer: Signer): Promise<IContracts> {
     Portal: await getPortal(signer),
     Synchronizer: await getSynchronizer(signer),
     LayerZeroProvider: await getLayerZeroProvider(signer),
+    MigrationManager: await getMigrationManager(signer),
   };
 }
 
@@ -102,8 +105,6 @@ export async function getRegistry(signer: Signer): Promise<IRegistry | undefined
       BaseRegistryFacet: data?.addresses["Registry.BaseRegistryFacet"] ? await ethers.getContractAt("BaseRegistryFacet", data?.addresses["Registry.BaseRegistryFacet"]) : undefined,
     },
   };
-
-  return undefined;
 }
 
 export async function getDefaultWrapper(signer: Signer): Promise<Wrapper | undefined> {
@@ -222,6 +223,16 @@ export async function getLayerZeroProvider(signer: Signer): Promise<LayerZeroPro
   if (data?.addresses.LayerZeroProvider) {
     const factory = await ethers.getContractFactory("LayerZeroProvider");
     return factory.attach(data.addresses.LayerZeroProvider);
+  }
+  return undefined;
+}
+
+export async function getMigrationManager(signer: Signer): Promise<MigrationManager | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.MigrationManager) {
+    const factory = await ethers.getContractFactory("MigrationManager");
+    return factory.attach(data.addresses.MigrationManager);
   }
   return undefined;
 }

@@ -20,6 +20,7 @@ import {
   OmniRegistrarController,
   AccessControlFacet,
   BaseRegistryFacet,
+  MigrationManager,
 } from "../../../typechain";
 
 export interface IRegistry {
@@ -50,4 +51,5 @@ export interface IContracts {
   Bridge?: Bridge;
   Synchronizer?: Synchronizer;
   LayerZeroProvider?: LayerZeroProvider;
+  MigrationManager?: MigrationManager;
 }
