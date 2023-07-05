@@ -4813,7 +4813,7 @@
             "label": "_token",
             "offset": 0,
             "slot": "301",
-            "type": "t_contract(IERC20Upgradeable)1518",
+            "type": "t_contract(IERC20Upgradeable)1283",
             "contract": "BaseRegistrarController",
             "src": "contracts/registrar/BaseRegistrarController.sol:20"
           },
@@ -4821,7 +4821,7 @@
             "label": "_registrar",
             "offset": 0,
             "slot": "302",
-            "type": "t_contract(IRegistrar)13462",
+            "type": "t_contract(IRegistrar)4370",
             "contract": "BaseRegistrarController",
             "src": "contracts/registrar/BaseRegistrarController.sol:21"
           },
@@ -4829,7 +4829,7 @@
             "label": "_root",
             "offset": 0,
             "slot": "303",
-            "type": "t_contract(IRoot)20319",
+            "type": "t_contract(IRoot)4489",
             "contract": "BaseRegistrarController",
             "src": "contracts/registrar/BaseRegistrarController.sol:22"
           },
@@ -4854,8 +4854,8 @@
             "offset": 0,
             "slot": "355",
             "type": "t_array(t_uint256)50_storage",
-            "contract": "ClassicalRegistrarController",
-            "src": "contracts/registrar/ClassicalRegistrarController.sol:80"
+            "contract": "UniversalRegistrarController",
+            "src": "contracts/registrar/UniversalRegistrarController.sol:74"
           }
         ],
         "types": {
@@ -4879,15 +4879,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IERC20Upgradeable)1518": {
+          "t_contract(IERC20Upgradeable)1283": {
             "label": "contract IERC20Upgradeable",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistrar)13462": {
+          "t_contract(IRegistrar)4370": {
             "label": "contract IRegistrar",
             "numberOfBytes": "20"
           },
-          "t_contract(IRoot)20319": {
+          "t_contract(IRoot)4489": {
             "label": "contract IRoot",
             "numberOfBytes": "20"
           },
