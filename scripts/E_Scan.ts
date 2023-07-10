@@ -14,7 +14,6 @@ async function main() {
   // const names = ["Registry"];
 
   const names = [
-    "Registry",
     "PublicResolver",
     "Registrar",
     "ClassicalRegistrarController",

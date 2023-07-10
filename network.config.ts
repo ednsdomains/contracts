@@ -1,4 +1,7 @@
 import { InContractChain } from "./scripts/src/constants/in-contract-chain";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 

@@ -586,9 +586,9 @@
   {
     "chainId": 100,
     "addresses": {
-      "Registry.Init": "0x1817D0d36F57C281DD6C63a1807A1ef4d87a246e",
+      "Registry.Init": "0xac0404A5401C4C04821C87cD015F0c1feE91b33e",
       "Registry.BaseRegistryFacet": "0x1817D0d36F57C281DD6C63a1807A1ef4d87a246e",
-      "Registry.DiamondCutFacet": "0xcA3c3A8072C6C9600CCcfce2933bb72372663500",
+      "Registry.DiamondCutFacet": "0xBD20090E7B7f9cC1Bf1D84841DcFfaf0B5f07016",
       "Registry.DiamondLoupeFacet": "0x2B6dF7CC97B652D6A957c6a3F4aBF3A962D56698",
       "Registry.AccessControlFacet": "0xf0E518b1911db0D6281dC286f447D26b400272F1",
       "Registry.TldRecordFacet": "0x04C88F5cf1Be38998bA7B6143AF3A5ADC91Bc6de",

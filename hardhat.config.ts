@@ -188,8 +188,9 @@ const config: HardhatUserConfig = {
       arbitrumOne: process.env.ARBISCAN_API_KEY || "",
       arbitrumGoerli: process.env.ARBISCAN_API_KEY || "",
       gnosis: process.env.GNOSISSCAN_API_KEY || "",
-      ftm: process.env.FTMSCAN_API_KEY || "",
-      ftmTestnet: process.env.FTMSCAN_API_KEY || "",
+      // ftm: process.env.FTMSCAN_API_KEY || "",
+      // ftmTestnet: process.env.FTMSCAN_API_KEY || "",
+      moonbeam: process.env.MOONSCAN_API_KEY || "",
     },
     customChains: [
       {

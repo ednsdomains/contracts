@@ -9,9 +9,11 @@ async function main() {
   if (data) {
     for (const contract in data.addresses) {
       try {
+        // @ts-ignore
         if (data.addresses[contract]) {
           console.log(`Verifying ${contract}...`);
           await hre.run("verify:verify", {
+            // @ts-ignore
             address: data.addresses[contract],
           });
           await delay(1000);
