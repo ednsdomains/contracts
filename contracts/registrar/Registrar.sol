@@ -54,7 +54,7 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
   }
 
   function isAvailable(bytes memory name, bytes memory tld) public view virtual returns (bool) {
-    return getExpiry(name, tld) + _registry.getGracePeriod() < block.timestamp;
+    return isAvailable(tld) && getExpiry(name, tld) + _registry.getGracePeriod() < block.timestamp;
   }
 
   function isExists(bytes memory name, bytes memory tld) public view virtual returns (bool) {

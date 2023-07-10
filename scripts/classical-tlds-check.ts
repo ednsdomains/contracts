@@ -6,12 +6,13 @@ async function main() {
   const registrar = await getRegistrar(signer);
   const cc = await getRegistry(signer);
   const registry = IRegistry__factory.connect(cc?.Diamond!.address!, signer);
+  const TLD = "op";
   if (registrar && registry) {
     const grace_period = await registry.getGracePeriod();
     console.log({ grace_period });
-    const expiry = await registrar.getExpiry(ethers.utils.toUtf8Bytes("hello-world"), ethers.utils.toUtf8Bytes("gnosis"));
+    const expiry = await registrar.getExpiry(ethers.utils.toUtf8Bytes("hello-world"), ethers.utils.toUtf8Bytes(TLD));
     console.log({ expiry });
-    const isAvailable = await registrar!["isAvailable(bytes,bytes)"](ethers.utils.toUtf8Bytes("hello-world"), ethers.utils.toUtf8Bytes("gnosis"));
+    const isAvailable = await registrar!["isAvailable(bytes,bytes)"](ethers.utils.toUtf8Bytes("hello-world"), ethers.utils.toUtf8Bytes(TLD));
     console.log({ isAvailable });
   }
 }
