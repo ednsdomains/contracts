@@ -14,6 +14,7 @@ import "solidity-coverage";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-upgradable";
+import { ethers } from "ethers";
 
 dotenv.config();
 // https://hardhat.org/config/
@@ -71,6 +72,7 @@ const config: HardhatUserConfig = {
     // Polygon
     polygon: {
       chainId: 137,
+      gasPrice: ethers.utils.parseUnits("200", "gwei").toNumber(),
     },
     polygon_mumbai: {
       chainId: 80001,
