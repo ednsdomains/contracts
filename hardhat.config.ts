@@ -34,9 +34,9 @@ const config: HardhatUserConfig = {
       },
     ],
   },
-  etherscan: {
-    apiKey: "",
-  },
+  // etherscan: {
+  //   apiKey: "",
+  // },
   networks: {
     matic: {
       url: `https://polygon-rpc.com`,
@@ -68,9 +68,9 @@ const config: HardhatUserConfig = {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
-  // etherscan: {
-  //   apiKey: process.env.ETHERSCAN_API_KEY,
-  // },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
 };
 
 export default config;
