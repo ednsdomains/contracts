@@ -58,7 +58,7 @@ async function main() {
   );
 
   const baseRegistrar = BaseRegistrarImplementation__factory.connect(
-    "0x53a0018f919bde9C254bda697966C5f448ffDDcB",
+    "0xafFDDAd389bEe8a2AcBa0367dFAE5609B93c7F9b",
     signer
   );
 
