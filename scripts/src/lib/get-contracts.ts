@@ -2,24 +2,20 @@ import fs from "fs";
 import path from "path";
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
-import {
-  Bridge,
-  ClassicalRegistrarController,
-  ERC20,
-  LayerZeroProvider,
-  MigrationManager,
-  OmniRegistrarController,
-  Portal,
-  PublicResolver,
-  Registrar,
-  Registry,
-  Root,
-  Synchronizer,
-  Wrapper,
-} from "../../../typechain";
 import { ContractName } from "../constants/contract-name";
 import { IContracts, IRegistry } from "../interfaces/contracts";
 import { UniversalRegistrarController } from "../../../typechain/UniversalRegistrarController";
+import { PublicResolver, Root } from "../../../typechain";
+import { Bridge } from "../../../typechain/Bridge";
+import { ClassicalRegistrarController } from "../../../typechain/ClassicalRegistrarController";
+import { ERC20 } from "../../../typechain/ERC20";
+import { LayerZeroProvider } from "../../../typechain/LayerZeroProvider";
+import { MigrationManager } from "../../../typechain/MigrationManager";
+import { OmniRegistrarController } from "../../../typechain/OmniRegistrarController";
+import { Portal } from "../../../typechain/Portal";
+import { Registrar } from "../../../typechain/Registrar";
+import { Synchronizer } from "../../../typechain/Synchronizer";
+import { Wrapper } from "../../../typechain/Wrapper";
 
 export interface IGetContractsData {
   chainId: number;

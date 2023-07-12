@@ -31,8 +31,8 @@ async function main() {
   await setupBridge({ signer, chainId, contracts });
   await setupSynchronizer({ signer, chainId, contracts });
   await setupPortal({ signer, chainId, contracts });
-  await setupLayerZeroProvider({ signer, chainId, contracts });
-  await setupMigrationManager({ signer, chainId, contracts });
+  if (contracts.LayerZeroProvider) await setupLayerZeroProvider({ signer, chainId, contracts });
+  if (contracts.MigrationManager) await setupMigrationManager({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

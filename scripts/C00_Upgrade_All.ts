@@ -31,8 +31,8 @@ async function main() {
   await upgradePortal({ signer, chainId, contracts });
   await upgradeBridge({ signer, chainId, contracts });
   await upgradeSynchronizer({ signer, chainId, contracts });
-  await upgradeLayerZeroProvider({ signer, chainId, contracts });
-  await upgradeMigrationManager({ signer, chainId, contracts });
+  if (contracts.LayerZeroProvider) await upgradeLayerZeroProvider({ signer, chainId, contracts });
+  if (contracts.MigrationManager) await upgradeMigrationManager({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

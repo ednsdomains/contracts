@@ -19,6 +19,7 @@ import { ethers } from "ethers";
 dotenv.config();
 // https://hardhat.org/config/
 // https://hardhat.org/guides/compile-contracts/
+
 const config: HardhatUserConfig = {
   defaultNetwork: "goerli",
   zksolc: {

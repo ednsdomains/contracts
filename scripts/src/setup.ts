@@ -4,7 +4,7 @@ import { IContracts } from "./interfaces/contracts";
 import { getClassicalTlds, getOmniTldChainIds, getOmniTlds, getUniversalTldChainIds, getUniversalTlds } from "./lib/get-tlds";
 import { ContractName } from "./constants/contract-name";
 import { getBalance } from "./lib/get-balance";
-import NetworkConfig, { Testnets, Mainnets } from "../../network.config";
+import NetworkConfig, { Testnets, Mainnets, Network } from "../../network.config";
 import delay from "delay";
 import { ContractTransaction, Transaction } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
@@ -12,6 +12,9 @@ import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
 import { getInContractChain } from "./lib/get-in-contract-chain";
 import { FacetCutAction, getSelectors } from "./lib/diamond";
+import { ILegacyBaseRegistrar__factory } from "../../typechain";
+import { getProvider } from "./lib/get-provider";
+import { AwsKmsSigner } from "./lib/kms-signer";
 
 const GAS_LIMIT = 8000000;
 
@@ -569,9 +572,9 @@ export const setupMigrationManager = async (input: ISetupInput) => {
     txs.push(tx);
   }
 
-  const tlds = await getUniversalTlds(input.chainId);
-  if (tlds && tlds.length) {
-    for (const tld_ of tlds) {
+  const classical = await getClassicalTlds(input.chainId);
+  if (classical && classical.length) {
+    for (const tld_ of classical) {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
       const isControllerApproved = await input.contracts.Registrar.isControllerApproved(_tld_, input.contracts.MigrationManager.address);
       if (!isControllerApproved) {
@@ -579,6 +582,36 @@ export const setupMigrationManager = async (input: ISetupInput) => {
         await tx.wait();
         txs.push(tx);
       }
+    }
+  }
+
+  const universal = await getUniversalTlds(input.chainId);
+  if (universal && universal.length) {
+    for (const tld_ of universal) {
+      const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
+      const isControllerApproved = await input.contracts.Registrar.isControllerApproved(_tld_, input.contracts.MigrationManager.address);
+      if (!isControllerApproved) {
+        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.MigrationManager.address, true);
+        await tx.wait();
+        txs.push(tx);
+      }
+    }
+  }
+
+  if (process.env.KMS_SIGNER_KEY_ARN) {
+    let LEGACY_BASE_REGISTRAR: string | undefined;
+    if (input.chainId === Network.GOERLI) LEGACY_BASE_REGISTRAR = "0xafFDDAd389bEe8a2AcBa0367dFAE5609B93c7F9b";
+    if (input.chainId === Network.POLYGON) LEGACY_BASE_REGISTRAR = "0x53a0018f919bde9C254bda697966C5f448ffDDcB";
+    if (input.chainId === Network.IOTEX_TESTNET) LEGACY_BASE_REGISTRAR = "0x0d33ECCcc3629B33a9CeE62108Ef39deD736d4E0";
+    if (input.chainId === Network.IOTEX) LEGACY_BASE_REGISTRAR = "0x2A84bF602cD8CF7637d8F247Dd5Dd0ed10525EBA";
+    if (LEGACY_BASE_REGISTRAR) {
+      const provider = getProvider(input.chainId);
+      await provider.ready;
+      const legacy_signer = new AwsKmsSigner({ region: "ap-southeast-1", keyId: process.env.KMS_SIGNER_KEY_ARN }, provider);
+      const legacy_base_registrar = ILegacyBaseRegistrar__factory.connect(LEGACY_BASE_REGISTRAR, legacy_signer);
+      const tx = await legacy_base_registrar.addController(input.contracts.MigrationManager.address);
+      await tx.wait();
+      txs.push(tx);
     }
   }
 

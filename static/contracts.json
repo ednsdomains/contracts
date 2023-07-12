@@ -1,9 +1,7 @@
 [
   {
     "chainId": 0,
-    "addresses": {
-      "Registry.Init": "0x1817D0d36F57C281DD6C63a1807A1ef4d87a246e"
-    }
+    "addresses": {}
   },
   {
     "chainId": 43113,
@@ -107,7 +105,7 @@
       "Bridge": "0x2F6bdd7a92493A232c10b4e1402112036058eafF",
       "Synchronizer": "0x5544229Fe0693248566b58ce36628F7070083457",
       "LayerZeroProvider": "0x3e7a0e8a666791bF16d5EA75e43d0A0d18816473",
-      "MigrationManager": "0x3E56F456e27A44140a77Af8545dA57a3A28cB872"
+      "MigrationManager": "0xf912EdD13998EA01c006502737DdA4994a0aD04c"
     }
   },
   {
@@ -151,14 +149,14 @@
   {
     "chainId": 4690,
     "addresses": {
-      "Registry.Init": "0x29F96Ec483a106e600d5e789AAD88b7265521134",
-      "Registry.DiamondCutFacet": "0x02B9E903C682139458Daef1a08f6BB92d7a48a9B",
-      "Registry.DiamondLoupeFacet": "0x0A1CaE4B150C42153A78DeFf3E83158080895633",
-      "Registry.AccessControlFacet": "0xF694D02F7265384fe049EB8565f76460dc48A5cF",
-      "Registry.TldRecordFacet": "0xA6b4930d2F9c0676B99A30c5396311Af8d050Bb0",
-      "Registry.DomainRecordFacet": "0xa58A8a491d685535bD1f462502d83ca7EFAf4286",
-      "Registry.HostRecordFacet": "0x843eeaD7CAD30bD33ECFf739e5ad85Ad03aE2627",
-      "Registry.BaseRegistryFacet": "0x2B47648353A6cf0933bB7466A4AdfB5E5683c9e4",
+      "Registry.Init": "0x7F16aE553e240D391f23788102642909cA76b85c",
+      "Registry.DiamondCutFacet": "0x9A00b8E6A2Ef6205020e065de058927dc6826dd6",
+      "Registry.DiamondLoupeFacet": "0x3E30877A443B0EbC09c773F732AE036c0274E7F2",
+      "Registry.AccessControlFacet": "0x2d260B5d7C355A5a47F60BD6b7992370Cab253Eb",
+      "Registry.TldRecordFacet": "0x3944147EAf1D28D3296671e06c5FF142524De651",
+      "Registry.DomainRecordFacet": "0xa9a8bb3d88870Be004D9ECa3E6Ff989B4e673f8e",
+      "Registry.HostRecordFacet": "0xF59D4Bf03A2Edc79563638FaE34dCE2Bc4EEb973",
+      "Registry.BaseRegistryFacet": "0x1F8cC1DCEE8E3d78776062018c5164107B021022",
       "Registry.Diamond": "0x7197e1001b8bFCA77e75A1a37dC99C9a96D97F5e",
       "DefaultWrapper": "0x3eC9c84A26C75cF031e32508F9EF5ebaD4C6acEF",
       "PublicResolver": "0x704894387CDCc9068367D49b9133d29083a0bfbC",
@@ -170,7 +168,8 @@
       "OmniRegistrarController": "0xb848963623E78196b66601f07fD2bB8bDe51D871",
       "Portal": "0x65cB40A225dB695B8e96aE9165CBfF67493B637A",
       "Bridge": "0xB51457f684F1638a95981Df380595815e0ab81d4",
-      "Synchronizer": "0x42Ffe9E01975Fd576c861142C7799DD5635c46e2"
+      "Synchronizer": "0x42Ffe9E01975Fd576c861142C7799DD5635c46e2",
+      "MigrationManager": "0x2F6bdd7a92493A232c10b4e1402112036058eafF"
     }
   },
   {

@@ -6,7 +6,7 @@
     },
     {
       "chainId": 5,
-      "names": ["_ether", "_ethereum", "test1", "test2", "test3", "meta", "ass", "404", "music", "sandbox", "abc"]
+      "names": ["_ether", "_ethereum"]
     },
     {
       "chainId": 10,
@@ -74,7 +74,7 @@
     },
     {
       "chainId": 4689,
-      "names": ["iotx", "iotex"]
+      "names": ["iotex"]
     },
     {
       "chainId": 4690,
@@ -140,7 +140,7 @@
   "universal": [
     {
       "chainIds": [5, 97, 80001, 43113, 4002, 420, 421613, 10200, 44787, 65, 280, 1442, 1287, 1666700000],
-      "names": ["_universal"]
+      "names": ["_universal", "meta", "web3", "music", "ass", "404", "sandbox", "gamefi", "test1", "test2", "test3"]
     },
     {
       "chainIds": [10, 137, 42161],

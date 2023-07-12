@@ -7,9 +7,11 @@ import "../registrar/interfaces/IRegistrar.sol";
 import "./interfaces/ILegacyBaseRegistrar.sol";
 
 contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
-  IRegistrar _baseRegistrar;
+  IRegistrar _registrar;
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+
+  event Migrated(address owwner, string name, string tld, uint256 oldTokenId);
 
   function initialize(IRegistrar registrar_) public initializer {
     __MigrationManager_init(registrar_);
@@ -21,7 +23,7 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
   }
 
   function __MigrationManager_init_unchained(IRegistrar registrar_) internal onlyInitializing {
-    _baseRegistrar = registrar_;
+    _registrar = registrar_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
     _grantRole(OPERATOR_ROLE, _msgSender());
@@ -37,9 +39,19 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
     bytes32 ZERO;
     uint256 tokenId = uint256(keccak256(abi.encodePacked(name, keccak256(abi.encodePacked(ZERO, keccak256(bytes(tld)))))));
     require(tokenId == genesisTokenId, "TOKEN_ID_MISMATCH");
+    require(_legacy.nameExpires(tokenId) > block.timestamp, "DOMAIN_EXPIRED");
     require(_legacy.ownerOf(genesisTokenId) == _msgSender(), "ONLY_OWNER");
-    _baseRegistrar.register(_msgSender(), bytes(name), bytes(tld), _msgSender(), uint64(_legacy.nameExpiry(tokenId)));
-    _legacy.deregister(tokenId);
+    try _registrar.register(_msgSender(), bytes(name), bytes(tld), _msgSender(), uint64(_legacy.nameExpires(tokenId))) {
+      //
+    } catch Error(string memory reason) {
+      revert(reason);
+    }
+    try _legacy.deregister(tokenId) {
+      //
+    } catch Error(string memory reason) {
+      revert(reason);
+    }
+    emit Migrated(_msgSender(), name, tld, genesisTokenId);
   }
 
   function managed_migrate(
@@ -52,8 +64,17 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
     bytes32 ZERO;
     uint256 tokenId = uint256(keccak256(abi.encodePacked(name, keccak256(abi.encodePacked(ZERO, keccak256(bytes(tld)))))));
     require(tokenId == genesisTokenId, "TOKEN_ID_MISMATCH");
-    _baseRegistrar.register(_msgSender(), bytes(name), bytes(tld), _msgSender(), uint64(_legacy.nameExpiry(tokenId)));
-    _legacy.deregister(tokenId);
+    try _registrar.register(_msgSender(), bytes(name), bytes(tld), _legacy.ownerOf(genesisTokenId), uint64(_legacy.nameExpires(tokenId))) {
+      //
+    } catch Error(string memory reason) {
+      revert(reason);
+    }
+    try _legacy.deregister(tokenId) {
+      //
+    } catch Error(string memory reason) {
+      revert(reason);
+    }
+    emit Migrated(_msgSender(), name, tld, genesisTokenId);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}

@@ -75,6 +75,7 @@ export const Mainnets = [
   Network.MOONBEAM,
   Network.MOONRIVER,
   Network.HARMONY,
+  Network.IOTEX,
 ];
 
 export const Testnets = [
@@ -92,6 +93,7 @@ export const Testnets = [
   // Network.POLYGON_ZKEVM_TESTNET,
   Network.MOONBASE_ALPHA,
   Network.HARMONEY_TESTNET,
+  Network.IOTEX_TESTNET,
 ];
 
 export interface INetworkConfig {

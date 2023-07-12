@@ -51,6 +51,7 @@ npx hardhat run ./scripts/A10_Deploy_Portal.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A11_Deploy_Bridge.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A12_Deploy_Synchronizer.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/A13_Deploy_LayerZeroProvider.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/A14_Deploy_MigrationManager.ts --network $NETWORK_NAME
 ```
 
 ## Setup
@@ -69,6 +70,7 @@ npx hardhat run ./scripts/B09_Setup_Portal.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B10_Setup_Bridge.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B11_Setup_Synchronizer.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B12_Setup_LayerZeroProvider.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B13_Setup_MigrationManager.ts --network $NETWORK_NAME
 ```
 
 ## Upgrade
@@ -87,4 +89,30 @@ npx hardhat run ./scripts/C09_Upgrade_Portal.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/C10_Upgrade_Bridge.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/C11_Upgrade_Synchronizer.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/C12_Upgrade_LayerZeroProvider.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/C13_Upgrade_MigrationManager.ts --network $NETWORK_NAME
+```
+
+## Note
+
+### Updated Tlds
+
+```bash
+export NETWORK_NAME=""
+npx hardhat run ./scripts/B05_Setup_Root.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B06_Setup_ClassicalRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B07_Setup_UniversalRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B08_Setup_OmniRegistrarController.ts --network $NETWORK_NAME
+```
+
+### Added New Chain(s)
+
+```bash
+export NETWORK_NAME=""
+npx hardhat run ./scripts/B05_Setup_Root.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B06_Setup_ClassicalRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B07_Setup_UniversalRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B08_Setup_OmniRegistrarController.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B10_Setup_Bridge.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B11_Setup_Synchronizer.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B12_Setup_LayerZeroProvider.ts --network $NETWORK_NAME
 ```
