@@ -600,7 +600,8 @@ const config: INetworkConfig = {
     chain: InContractChain.IOTEX,
     name: "IoTeX Mainnet",
     symbol: "IOTX",
-    url: `https://iotex-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
+    // url: `https://iotex-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
+    url: "https://babel-api.mainnet.iotex.io",
     slip44: {
       coinId: 304,
     },
