@@ -2,13 +2,18 @@ import * as dotenv from "dotenv";
 import NetworkConfig from "./network.config";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-web3";
-import "@nomicfoundation/hardhat-toolbox";
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-solhint";
+import "@nomiclabs/hardhat-etherscan";
+import "@openzeppelin/hardhat-upgrades";
+import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
-import "@openzeppelin/hardhat-upgrades";
-
+import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
+import "@matterlabs/hardhat-zksync-upgradable";
 import { ethers } from "ethers";
 
 dotenv.config();
@@ -17,16 +22,16 @@ dotenv.config();
 
 const config: HardhatUserConfig = {
   defaultNetwork: "goerli",
-  // zksolc: {
-  //   version: "1.3.10",
-  //   compilerSource: "binary",
-  //   settings: {
-  //     optimizer: {
-  //       enabled: true,
-  //       runs: 200,
-  //     },
-  //   },
-  // },
+  zksolc: {
+    version: "1.3.10",
+    compilerSource: "binary",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   solidity: {
     version: process.env.SOLIDITY_VERSION || "0.8.17",
     settings: {
@@ -68,7 +73,7 @@ const config: HardhatUserConfig = {
     // Polygon
     polygon: {
       chainId: 137,
-      gasPrice: Number(ethers.parseUnits("200", "gwei")),
+      gasPrice: ethers.utils.parseUnits("200", "gwei").toNumber(),
     },
     polygon_mumbai: {
       chainId: 80001,
@@ -135,12 +140,12 @@ const config: HardhatUserConfig = {
     },
     zksync_era: {
       chainId: 324,
-      // zksync: true,
+      zksync: true,
     },
     zksync_era_testnet: {
       chainId: 280,
-      // ethNetwork: "goerli",
-      // zksync: true,
+      ethNetwork: "goerli",
+      zksync: true,
     },
     polygon_zkevm: {
       chainId: 1101,
