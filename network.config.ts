@@ -280,7 +280,9 @@ const config: INetworkConfig = {
     chain: InContractChain.BNB,
     name: "BNB Chain Testnet",
     symbol: "tBNB",
-    url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/testnet/`,
+    url: "https://bsc-testnet.publicnode.com",
+    // url: "https://endpoints.omniatech.io/v1/bsc/testnet/public",
+    // url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/testnet/`,
     slip44: {
       coinId: 714,
     },
