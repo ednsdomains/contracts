@@ -161,6 +161,12 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   }
 
   /* ========== Query - General ==========*/
+
+  function getName(bytes32 name, bytes32 tld) external view returns (bytes memory) {
+    RegistryStorage storage _ds = registryStorage();
+    return _ds.records[tld].domains[name].name;
+  }
+
   function getOwner(bytes32 name, bytes32 tld) public view returns (address) {
     require(isExists(name, tld), "DOMAIN_NOT_FOUND");
     return registryStorage().records[tld].domains[name].owner;

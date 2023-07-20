@@ -19,49 +19,23 @@ interface IDomainRecordFacet {
   event RemoveDomain(bytes32 name, bytes32 tld);
 
   /* ========== Mutative ==========*/
-  function setRecord(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    address resolver,
-    uint64 expiry
-  ) external;
+  function setRecord(bytes memory name, bytes memory tld, address owner, address resolver, uint64 expiry) external;
 
-  function setResolver(
-    bytes32 name,
-    bytes32 tld,
-    address resolver
-  ) external;
+  function setResolver(bytes32 name, bytes32 tld, address resolver) external;
 
-  function setOwner(
-    bytes32 name,
-    bytes32 tld,
-    address newOwner
-  ) external;
+  function setOwner(bytes32 name, bytes32 tld, address newOwner) external;
 
-  function setOperator(
-    bytes32 name,
-    bytes32 tld,
-    address operator,
-    bool approved
-  ) external;
+  function setOperator(bytes32 name, bytes32 tld, address operator, bool approved) external;
 
-  function setUser(
-    bytes32 name,
-    bytes32 tld,
-    address user,
-    uint64 expiry
-  ) external;
+  function setUser(bytes32 name, bytes32 tld, address user, uint64 expiry) external;
 
-  function setExpiry(
-    bytes32 name,
-    bytes32 tld,
-    uint64 expiry
-  ) external;
+  function setExpiry(bytes32 name, bytes32 tld, uint64 expiry) external;
 
   function bridge(bytes32 name, bytes32 tld) external;
 
   /* ========== Query - Genereal ==========*/
+
+  function getName(bytes32 name, bytes32 tld) external view returns (bytes memory);
 
   function getOwner(bytes32 name, bytes32 tld) external view returns (address);
 
@@ -77,11 +51,7 @@ interface IDomainRecordFacet {
 
   function isExists(bytes32 name, bytes32 tld) external view returns (bool);
 
-  function isOperator(
-    bytes32 name,
-    bytes32 tld,
-    address _operator
-  ) external view returns (bool);
+  function isOperator(bytes32 name, bytes32 tld, address _operator) external view returns (bool);
 
   function isLive(bytes32 name, bytes32 tld) external view returns (bool);
 

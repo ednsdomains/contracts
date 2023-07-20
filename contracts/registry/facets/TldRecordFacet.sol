@@ -118,6 +118,11 @@ contract TldRecordFacet is ITldRecordFacet, Facet {
 
   /* ========== Query - General ==========*/
 
+  function getName(bytes32 tld) external view returns (bytes memory) {
+    RegistryStorage storage _ds = registryStorage();
+    return _ds.records[tld].name;
+  }
+
   function getOwner(bytes32 tld) public view returns (address) {
     require(isExists(tld), "TLD_NOT_FOUND");
     return registryStorage().records[tld].owner;

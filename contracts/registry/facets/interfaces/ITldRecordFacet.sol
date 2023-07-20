@@ -16,15 +16,7 @@ interface ITldRecordFacet {
   event RemoveTld(bytes32 tld);
 
   /* ========== Mutative ==========*/
-  function setRecord(
-    Chain[] memory chains,
-    bytes memory tld,
-    address owner,
-    address resolver,
-    uint64 expiry,
-    bool enable,
-    TldClass class_
-  ) external;
+  function setRecord(Chain[] memory chains, bytes memory tld, address owner, address resolver, uint64 expiry, bool enable, TldClass class_) external;
 
   function setResolver(bytes32 tld, address resolver) external;
 
@@ -32,15 +24,14 @@ interface ITldRecordFacet {
 
   function setEnable(bytes32 tld, bool enable) external;
 
-  function setWrapper(
-    bytes32 tld,
-    bool enable_,
-    address wrapper
-  ) external;
+  function setWrapper(bytes32 tld, bool enable_, address wrapper) external;
 
   function setExpiry(bytes32 tld, uint64 expiry) external;
 
   /* ========== Query - Genereal ==========*/
+
+  function getName(bytes32 tld) external view returns (bytes memory);
+
   function getOwner(bytes32 tld) external view returns (address);
 
   function getResolver(bytes32 tld) external view returns (address);

@@ -153,6 +153,11 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   /* ========== Query - General ==========*/
 
+  function getName(bytes32 host, bytes32 name, bytes32 tld) external view returns (bytes memory) {
+    RegistryStorage storage _ds = registryStorage();
+    return _ds.records[tld].domains[name].hosts[host].name;
+  }
+
   function getUser(bytes32 host, bytes32 name, bytes32 tld) public view returns (address) {
     return registryStorage().records[tld].domains[name].hosts[host].user.user;
   }

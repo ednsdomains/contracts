@@ -23,6 +23,8 @@ interface IHostRecordFacet {
 
   /* ========== Query - Genereal ==========*/
 
+  function getName(bytes32 host, bytes32 name, bytes32 tld) external view returns (bytes memory);
+
   function getUser(bytes32 host, bytes32 name, bytes32 tld) external view returns (address);
 
   function getUserExpiry(bytes32 host, bytes32 name, bytes32 tld) external view returns (uint64);
