@@ -49,10 +49,12 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
     return _registry.getExpiry(keccak256(name), keccak256(tld));
   }
 
+  // Is avaliable to register a domain, not is available to register a TLD
   function isAvailable(bytes memory tld) public view virtual returns (bool) {
     return isExists(keccak256(tld)) && _registry.isEnable(keccak256(tld));
   }
 
+  // Is avaliable to register a domain
   function isAvailable(bytes memory name, bytes memory tld) public view virtual returns (bool) {
     return isAvailable(tld) && getExpiry(name, tld) + _registry.getGracePeriod() < block.timestamp;
   }

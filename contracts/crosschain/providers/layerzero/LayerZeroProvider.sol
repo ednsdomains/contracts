@@ -41,21 +41,13 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
     return nativeFee;
   }
 
-  function send_(
-    address payable _from,
-    Chain _dstChain,
-    bytes calldata _payload
-  ) external payable {
+  function send_(address payable _from, Chain _dstChain, bytes calldata _payload) external payable {
     require(_msgSender() == address(_portal), "ONLY_PORTAL");
     uint16 _dstChainId = getChainId(_dstChain);
     _send(_from, _dstChainId, _payload);
   }
 
-  function _send(
-    address payable _sender,
-    uint16 _dstChainId,
-    bytes calldata _payload
-  ) internal {
+  function _send(address payable _sender, uint16 _dstChainId, bytes calldata _payload) internal {
     bytes memory trustedRemote = trustedRemotes[_dstChainId];
     require(trustedRemote.length != 0, "UNTRUST_REMOTE");
     _lzEndpoint.send{ value: msg.value }(_dstChainId, trustedRemote, _payload, _sender, _sender, v1AdaptorParameters);
@@ -63,12 +55,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
     emit MessageSent(_sender, _dstChainId, _payload, nonce);
   }
 
-  function lzReceive(
-    uint16 _srcChainId,
-    bytes calldata _srcAddress,
-    uint64 _nonce,
-    bytes calldata _payload
-  ) public {
+  function lzReceive(uint16 _srcChainId, bytes calldata _srcAddress, uint64 _nonce, bytes calldata _payload) public {
     require(_msgSender() == address(_lzEndpoint), "INVALID_ENDPOINT");
     bytes memory trustedRemote = trustedRemotes[_srcChainId];
     require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "IINVALID_SOURCE");
@@ -111,6 +98,14 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
   function setV1AdaptorParameters(uint256 dstGasLimit) external onlyRole(OPERATOR_ROLE) {
     uint16 version = 1;
     v1AdaptorParameters = abi.encodePacked(version, dstGasLimit);
+  }
+
+  function setEndpoint(address lzEndpoint_) external onlyRole(OPERATOR_ROLE) {
+    _lzEndpoint = ILayerZeroEndpoint(lzEndpoint_);
+  }
+
+  function getEndpoint() external view returns (address) {
+    return address(_lzEndpoint);
   }
 
   /* ========== UUPS ==========*/

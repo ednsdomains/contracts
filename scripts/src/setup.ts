@@ -515,6 +515,14 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 
   const txs: Transaction[] = [];
 
+  const endpointAddress = await input.contracts.LayerZeroProvider.getEndpoint();
+
+  if (endpointAddress !== NetworkConfig[input.chainId].layerzero?.endpoint.address) {
+    const tx = await input.contracts.LayerZeroProvider.setEndpoint(NetworkConfig[input.chainId].layerzero!.endpoint.address);
+    await tx.wait();
+    txs.push();
+  }
+
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
     const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);

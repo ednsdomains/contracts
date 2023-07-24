@@ -12,11 +12,7 @@ interface ILayerZeroProvider {
 
   function estimateFee(Chain _dstChain, bytes memory _payload) external view returns (uint256);
 
-  function send_(
-    address payable _from,
-    Chain _dstChain,
-    bytes memory _payload
-  ) external payable;
+  function send_(address payable _from, Chain _dstChain, bytes memory _payload) external payable;
 
   function getChainId(Chain chain) external returns (uint16);
 
@@ -28,12 +24,11 @@ interface ILayerZeroProvider {
 
   function setV1AdaptorParameters(uint256 dstGasLimit) external;
 
-  function lzReceive(
-    uint16 _srcChainId,
-    bytes calldata _srcAddress,
-    uint64 _nonce,
-    bytes calldata _payload
-  ) external;
+  function lzReceive(uint16 _srcChainId, bytes calldata _srcAddress, uint64 _nonce, bytes calldata _payload) external;
 
   function receive_(bytes calldata _payload) external;
+
+  function setEndpoint(address lzEndpoint_) external;
+
+  function getEndpoint() external view returns (address);
 }

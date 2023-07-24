@@ -223,7 +223,7 @@ const config: INetworkConfig = {
     layerzero: {
       chainId: 10121,
       endpoint: {
-        address: "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA",
+        address: "0xbfD2135BFfbb0B5378b56643c2Df8a87552Bfa23",
       },
     },
     multichain: {
@@ -248,7 +248,8 @@ const config: INetworkConfig = {
     chain: InContractChain.BNB,
     name: "BNB Chain",
     symbol: "BNB",
-    url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: "https://bsc-dataseed1.binance.org",
+    // url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 714,
     },
@@ -538,7 +539,8 @@ const config: INetworkConfig = {
     chain: InContractChain.FANTOM,
     name: "Fantom",
     symbol: "FTM",
-    url: `https://ftm.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: "https://rpcapi.fantom.network",
+    // url: `https://ftm.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1007,
     },
@@ -858,7 +860,8 @@ const config: INetworkConfig = {
     chainId: Network.HARMONY,
     name: "Harmony One",
     symbol: "ONE",
-    url: `https://one.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: "https://api.s0.t.hmny.io",
+    // url: `https://one.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     layerzero: {
       chainId: 116,
       endpoint: {
