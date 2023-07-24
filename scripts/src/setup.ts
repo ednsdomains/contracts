@@ -326,6 +326,7 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.ClassicalRegistrarController) throw new Error("`ClassicalRegistrarController` is not available");
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   await _beforeSetup(input.signer, input.chainId, "ClassicalRegistrarController");
   const txs: Transaction[] = [];
   const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
@@ -335,9 +336,12 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
       const isExists = await _registry["isExists(bytes32)"](_tld_);
       if (isExists) {
-        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
-        await tx.wait();
-        txs.push(tx);
+        const isControllerApproved = await input.contracts.Registrar.isControllerApproved(_tld_, input.contracts.ClassicalRegistrarController.address);
+        if (!isControllerApproved) {
+          const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.ClassicalRegistrarController.address, true);
+          await tx.wait();
+          txs.push(tx);
+        }
       }
     }
   }
@@ -348,6 +352,7 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.UniversalRegistrarController) throw new Error("`UniversalRegistrarController` is not available");
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   await _beforeSetup(input.signer, input.chainId, "UniversalRegistrarController");
   const txs: Transaction[] = [];
   const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
@@ -357,9 +362,12 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
       const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld_));
       const isExists = await _registry["isExists(bytes32)"](_tld_);
       if (isExists) {
-        const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.UniversalRegistrarController.address, true);
-        await tx.wait();
-        txs.push(tx);
+        const isControllerApproved = await input.contracts.Registrar.isControllerApproved(_tld_, input.contracts.UniversalRegistrarController.address);
+        if (!isControllerApproved) {
+          const tx = await input.contracts.Root.setControllerApproval(_tld_, input.contracts.UniversalRegistrarController.address, true);
+          await tx.wait();
+          txs.push(tx);
+        }
       }
     }
   }
@@ -442,7 +450,7 @@ export const setupBridge = async (input: ISetupInput) => {
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
     const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
-    if (NetworkConfig[network].chain && NetworkConfig[network].layerzero) {
+    if (NetworkConfig[network].chain !== undefined && NetworkConfig[network].layerzero) {
       if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
         const data = await getContractsData(NetworkConfig[network].chainId);
         if (data && data.addresses.Bridge) {
@@ -488,7 +496,7 @@ export const setupSynchronizer = async (input: ISetupInput) => {
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
     const isTargetTestnet = !!Testnets.find((i) => i === NetworkConfig[network].chainId);
-    if (NetworkConfig[network].chain && NetworkConfig[network].layerzero) {
+    if (NetworkConfig[network].chain !== undefined && NetworkConfig[network].layerzero) {
       if ((isCurrMainnet && isTargetMainnet) || (isCurrTestnet && isTargetTestnet)) {
         const data = await getContractsData(NetworkConfig[network].chainId);
         if (data && data.addresses.Synchronizer) {
@@ -515,13 +523,13 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 
   const txs: Transaction[] = [];
 
-  const endpointAddress = await input.contracts.LayerZeroProvider.getEndpoint();
+  // const endpointAddress = await input.contracts.LayerZeroProvider.getEndpoint();
 
-  if (endpointAddress !== NetworkConfig[input.chainId].layerzero?.endpoint.address) {
-    const tx = await input.contracts.LayerZeroProvider.setEndpoint(NetworkConfig[input.chainId].layerzero!.endpoint.address);
-    await tx.wait();
-    txs.push();
-  }
+  // if (NetworkConfig[input.chainId].layerzero && endpointAddress !== NetworkConfig[input.chainId].layerzero?.endpoint.address) {
+  //   const tx = await input.contracts.LayerZeroProvider.setEndpoint(NetworkConfig[input.chainId].layerzero.endpoint.address);
+  //   await tx.wait();
+  //   txs.push();
+  // }
 
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
@@ -531,7 +539,7 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
       const data = await getContractsData(NetworkConfig[network].chainId);
       const _remoteChain = NetworkConfig[network].chain;
 
-      if (_remoteChain) {
+      if (_remoteChain !== undefined) {
         const _onchainRemoteChainId = await input.contracts.LayerZeroProvider.getChainId(_remoteChain);
         const _remoteLzChainId = NetworkConfig[network].layerzero?.chainId;
 
@@ -544,6 +552,7 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
         if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
           const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);
           const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
+          console.log(_remoteLzChainId, _remoteAndLocalAddr);
           if (!isTrustedRemote) {
             const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
             await tx.wait();

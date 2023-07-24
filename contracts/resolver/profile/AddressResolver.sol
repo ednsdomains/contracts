@@ -47,11 +47,15 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
       require(valid(bytes(host)), "INVALID_HOST");
       fqdn = _join(host, name, tld);
     }
+    if (_reverseAddresses[address_].length > 0) {
+      _unsetReverseAddress(address_);
+    }
     _reverseAddresses[address_] = fqdn;
     emit SetReverseAddress(host, name, tld, address_);
   }
 
   function setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+    require(_msgSender() == address_, "ADDRESS_VALUE_MUST_BE_SENDER");
     _setReverseAddress(host, name, tld, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }

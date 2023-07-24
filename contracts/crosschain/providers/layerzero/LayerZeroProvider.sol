@@ -58,7 +58,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
   function lzReceive(uint16 _srcChainId, bytes calldata _srcAddress, uint64 _nonce, bytes calldata _payload) public {
     require(_msgSender() == address(_lzEndpoint), "INVALID_ENDPOINT");
     bytes memory trustedRemote = trustedRemotes[_srcChainId];
-    require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "IINVALID_SOURCE");
+    require(_srcAddress.length == trustedRemote.length && keccak256(_srcAddress) == keccak256(trustedRemote), "INVALID_SOURCE");
     bytes32 ref = keccak256(abi.encodePacked(_nonce, _payload));
     emit MessageReceived(_srcChainId, _srcAddress, ref, _payload, _nonce);
     try this.receive_(_payload) {
