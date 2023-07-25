@@ -108,6 +108,10 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
     return address(_lzEndpoint);
   }
 
+  function forceResume(uint16 _srcChainId, bytes calldata _srcAddress) external onlyRole(OPERATOR_ROLE){
+    _lzEndpoint.forceResumeReceive(_srcChainId, _srcAddress);
+  }
+
   /* ========== UUPS ==========*/
   function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
 

@@ -87,18 +87,24 @@ export async function getRegistry(signer: Signer): Promise<IRegistry | undefined
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   return {
-    Diamond: data?.addresses["Registry.Diamond"] ? await ethers.getContractAt("Registry", data?.addresses["Registry.Diamond"]) : undefined,
-    Init: data?.addresses["Registry.Init"] ? await ethers.getContractAt("RegistryInit", data?.addresses["Registry.Init"]) : undefined,
+    Diamond: data?.addresses["Registry.Diamond"] ? await ethers.getContractAt("Registry", data?.addresses["Registry.Diamond"], signer) : undefined,
+    Init: data?.addresses["Registry.Init"] ? await ethers.getContractAt("RegistryInit", data?.addresses["Registry.Init"], signer) : undefined,
     facets: {
-      DiamondCutFacet: data?.addresses["Registry.DiamondCutFacet"] ? await ethers.getContractAt("DiamondCutFacet", data?.addresses["Registry.DiamondCutFacet"]) : undefined,
-      DiamondLoupeFacet: data?.addresses["Registry.DiamondLoupeFacet"] ? await ethers.getContractAt("DiamondLoupeFacet", data?.addresses["Registry.DiamondLoupeFacet"]) : undefined,
+      DiamondCutFacet: data?.addresses["Registry.DiamondCutFacet"] ? await ethers.getContractAt("DiamondCutFacet", data?.addresses["Registry.DiamondCutFacet"], signer) : undefined,
+      DiamondLoupeFacet: data?.addresses["Registry.DiamondLoupeFacet"]
+        ? await ethers.getContractAt("DiamondLoupeFacet", data?.addresses["Registry.DiamondLoupeFacet"], signer)
+        : undefined,
       AccessControlFacet: data?.addresses["Registry.AccessControlFacet"]
         ? await ethers.getContractAt("AccessControlFacet", data?.addresses["Registry.AccessControlFacet"])
         : undefined,
-      TldRecordFacet: data?.addresses["Registry.TldRecordFacet"] ? await ethers.getContractAt("TldRecordFacet", data?.addresses["Registry.TldRecordFacet"]) : undefined,
-      DomainRecordFacet: data?.addresses["Registry.DomainRecordFacet"] ? await ethers.getContractAt("DomainRecordFacet", data?.addresses["Registry.DomainRecordFacet"]) : undefined,
-      HostRecordFacet: data?.addresses["Registry.HostRecordFacet"] ? await ethers.getContractAt("HostRecordFacet", data?.addresses["Registry.HostRecordFacet"]) : undefined,
-      BaseRegistryFacet: data?.addresses["Registry.BaseRegistryFacet"] ? await ethers.getContractAt("BaseRegistryFacet", data?.addresses["Registry.BaseRegistryFacet"]) : undefined,
+      TldRecordFacet: data?.addresses["Registry.TldRecordFacet"] ? await ethers.getContractAt("TldRecordFacet", data?.addresses["Registry.TldRecordFacet"], signer) : undefined,
+      DomainRecordFacet: data?.addresses["Registry.DomainRecordFacet"]
+        ? await ethers.getContractAt("DomainRecordFacet", data?.addresses["Registry.DomainRecordFacet"], signer)
+        : undefined,
+      HostRecordFacet: data?.addresses["Registry.HostRecordFacet"] ? await ethers.getContractAt("HostRecordFacet", data?.addresses["Registry.HostRecordFacet"], signer) : undefined,
+      BaseRegistryFacet: data?.addresses["Registry.BaseRegistryFacet"]
+        ? await ethers.getContractAt("BaseRegistryFacet", data?.addresses["Registry.BaseRegistryFacet"], signer)
+        : undefined,
     },
   };
 }
@@ -107,7 +113,7 @@ export async function getDefaultWrapper(signer: Signer): Promise<Wrapper | undef
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.DefaultWrapper) {
-    const WrapperFactory = await ethers.getContractFactory("Wrapper");
+    const WrapperFactory = await ethers.getContractFactory("Wrapper", signer);
     return WrapperFactory.attach(data?.addresses.DefaultWrapper);
   }
   return undefined;
@@ -117,7 +123,7 @@ export async function getPublicResolver(signer: Signer): Promise<PublicResolver 
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.PublicResolver) {
-    const PublicResolverFactory = await ethers.getContractFactory("PublicResolver");
+    const PublicResolverFactory = await ethers.getContractFactory("PublicResolver", signer);
     return PublicResolverFactory.attach(data?.addresses.PublicResolver);
   }
   return undefined;
@@ -127,7 +133,7 @@ export async function getRegistrar(signer: Signer): Promise<Registrar | undefine
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Registrar) {
-    const RegistrarFactory = await ethers.getContractFactory("Registrar");
+    const RegistrarFactory = await ethers.getContractFactory("Registrar", signer);
     return RegistrarFactory.attach(data?.addresses.Registrar);
   }
   return undefined;
@@ -137,7 +143,7 @@ export async function getClassicalRegistrarController(signer: Signer): Promise<C
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.ClassicalRegistrarController) {
-    const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController");
+    const ClassicalRegistrarControllerFactory = await ethers.getContractFactory("ClassicalRegistrarController", signer);
     return ClassicalRegistrarControllerFactory.attach(data?.addresses.ClassicalRegistrarController);
   }
   return undefined;
@@ -147,7 +153,7 @@ export async function getUniversalRegistrarController(signer: Signer): Promise<U
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.UniversalRegistrarController) {
-    const factory = await ethers.getContractFactory("UniversalRegistrarController");
+    const factory = await ethers.getContractFactory("UniversalRegistrarController", signer);
     return factory.attach(data.addresses.UniversalRegistrarController);
   }
   return undefined;
@@ -157,7 +163,7 @@ export async function getOmniRegistrarController(signer: Signer): Promise<OmniRe
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.OmniRegistrarController) {
-    const factory = await ethers.getContractFactory("OmniRegistrarController");
+    const factory = await ethers.getContractFactory("OmniRegistrarController", signer);
     return factory.attach(data.addresses.OmniRegistrarController);
   }
   return undefined;
@@ -167,7 +173,7 @@ export async function getRoot(signer: Signer): Promise<Root | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Root) {
-    const RootFactory = await ethers.getContractFactory("Root");
+    const RootFactory = await ethers.getContractFactory("Root", signer);
     return RootFactory.attach(data.addresses.Root);
   }
   return undefined;
@@ -177,7 +183,7 @@ export async function getToken(signer: Signer): Promise<ERC20 | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Token) {
-    const TokenFactory = await ethers.getContractFactory("ERC20");
+    const TokenFactory = await ethers.getContractFactory("ERC20", signer);
     return TokenFactory.attach(data.addresses.Token);
   }
   return undefined;
@@ -187,7 +193,7 @@ export async function getPortal(signer: Signer): Promise<Portal | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Portal) {
-    const PortalFactory = await ethers.getContractFactory("Portal");
+    const PortalFactory = await ethers.getContractFactory("Portal", signer);
     return PortalFactory.attach(data.addresses.Portal);
   }
   return undefined;
@@ -197,7 +203,7 @@ export async function getBridge(signer: Signer): Promise<Bridge | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Bridge) {
-    const factory = await ethers.getContractFactory("Bridge");
+    const factory = await ethers.getContractFactory("Bridge", signer);
     return factory.attach(data.addresses.Bridge);
   }
   return undefined;
@@ -207,7 +213,7 @@ export async function getSynchronizer(signer: Signer): Promise<Synchronizer | un
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Synchronizer) {
-    const factory = await ethers.getContractFactory("Synchronizer");
+    const factory = await ethers.getContractFactory("Synchronizer", signer);
     return factory.attach(data.addresses.Synchronizer);
   }
   return undefined;
@@ -217,7 +223,7 @@ export async function getLayerZeroProvider(signer: Signer): Promise<LayerZeroPro
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.LayerZeroProvider) {
-    const factory = await ethers.getContractFactory("LayerZeroProvider");
+    const factory = await ethers.getContractFactory("LayerZeroProvider", signer);
     return factory.attach(data.addresses.LayerZeroProvider);
   }
   return undefined;
@@ -227,7 +233,7 @@ export async function getMigrationManager(signer: Signer): Promise<MigrationMana
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.MigrationManager) {
-    const factory = await ethers.getContractFactory("MigrationManager");
+    const factory = await ethers.getContractFactory("MigrationManager", signer);
     return factory.attach(data.addresses.MigrationManager);
   }
   return undefined;

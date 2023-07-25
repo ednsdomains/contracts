@@ -31,4 +31,6 @@ interface ILayerZeroProvider {
   function setEndpoint(address lzEndpoint_) external;
 
   function getEndpoint() external view returns (address);
+
+  function forceResume(uint16 _srcChainId, bytes calldata _srcAddress) external;
 }

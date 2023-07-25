@@ -12,7 +12,7 @@ import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
 import { getInContractChain } from "./lib/get-in-contract-chain";
 import { FacetCutAction, getSelectors } from "./lib/diamond";
-import { ILegacyBaseRegistrar__factory } from "../../typechain";
+import { ILayerZeroEndpoint__factory, ILegacyBaseRegistrar__factory } from "../../typechain";
 import { getProvider } from "./lib/get-provider";
 import { AwsKmsSigner } from "./lib/kms-signer";
 
@@ -552,11 +552,32 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
         if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
           const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);
           const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
-          console.log(_remoteLzChainId, _remoteAndLocalAddr);
-          if (!isTrustedRemote) {
-            const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
-            await tx.wait();
-            txs.push(tx);
+          if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
+            const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);
+            if (NetworkConfig[network].layerzero?.endpoint) {
+              try {
+                const Endpoint = ILayerZeroEndpoint__factory.connect(NetworkConfig[await input.signer.getChainId()].layerzero!.endpoint.address, input.signer);
+                const hasStoredPayload_1 = await Endpoint.hasStoredPayload(_remoteLzChainId, _remoteAndLocalAddr);
+                if (hasStoredPayload_1) {
+                  const tx = await input.contracts.LayerZeroProvider.forceResume(_remoteLzChainId, _remoteAndLocalAddr);
+                  await tx.wait();
+                  txs.push(tx);
+                }
+                const hasStoredPayload_2 = await Endpoint.hasStoredPayload(_onchainRemoteChainId, _remoteAndLocalAddr);
+                if (hasStoredPayload_2) {
+                  const tx = await input.contracts.LayerZeroProvider.forceResume(_onchainRemoteChainId, _remoteAndLocalAddr);
+                  await tx.wait();
+                  txs.push(tx);
+                }
+              } catch {
+                //
+              }
+            }
+            if (!isTrustedRemote) {
+              const tx = await input.contracts.LayerZeroProvider.setTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
+              await tx.wait();
+              txs.push(tx);
+            }
           }
         }
       }

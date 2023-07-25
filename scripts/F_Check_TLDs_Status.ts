@@ -16,18 +16,20 @@ async function getStatus(signer: Wallet, network: Network) {
 
     const exec = async (type: string, tld: string) => {
       try {
-        const isExist = await registrar["isExists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld)));
-        const isAvailable = await registrar["isAvailable(bytes)"](ethers.utils.toUtf8Bytes(tld));
-        const isDomainAvailable = await registrar["isAvailable(bytes,bytes)"](ethers.utils.toUtf8Bytes(uuidv4()), ethers.utils.toUtf8Bytes(tld));
+        const [isTldExist, isTldAvailable, isDomainAvailable] = await Promise.all([
+          registrar["isExists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
+          registrar["isAvailable(bytes)"](ethers.utils.toUtf8Bytes(tld)),
+          registrar["isAvailable(bytes,bytes)"](ethers.utils.toUtf8Bytes(uuidv4()), ethers.utils.toUtf8Bytes(tld)),
+        ]);
         let _getName = "❌";
         try {
           await registry["getName(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld)));
           _getName = "✅";
         } catch {
-          _getName = "❌";
+          _getName = "⚠️";
         }
-        const exist = isExist ? "✅" : "❌";
-        const available = isAvailable ? "✅" : "❌";
+        const exist = isTldExist ? "✅" : "❌";
+        const available = isTldAvailable ? "✅" : "❌";
         const query = isDomainAvailable ? "✅" : "❌";
         return {
           chain: NetworkConfig[network].name,
@@ -39,7 +41,7 @@ async function getStatus(signer: Wallet, network: Network) {
           tld,
         };
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         return {
           chain: NetworkConfig[network].name,
           type,
