@@ -38,7 +38,7 @@ export enum Network {
   MOONBASE_ALPHA = 1287,
   MOONRIVER = 1285,
   HARMONY = 1666600000,
-  HARMONEY_TESTNET = 1666700000,
+  HARMONY_TESTNET = 1666700000,
   // ASTR = 492,
   // METIS = 1088,
   // CRONOS = 25,
@@ -92,7 +92,7 @@ export const Testnets = [
   // Network.ZKSYNC_ERA_TESTNET,
   // Network.POLYGON_ZKEVM_TESTNET,
   Network.MOONBASE_ALPHA,
-  Network.HARMONEY_TESTNET,
+  Network.HARMONY_TESTNET,
   Network.IOTEX_TESTNET,
 ];
 
@@ -869,9 +869,9 @@ const config: INetworkConfig = {
       },
     },
   },
-  [Network.HARMONEY_TESTNET]: {
+  [Network.HARMONY_TESTNET]: {
     chain: InContractChain.HARMONY,
-    chainId: Network.HARMONEY_TESTNET,
+    chainId: Network.HARMONY_TESTNET,
     name: "Harmony One Testnet",
     symbol: "ONE",
     url: `https://api.s0.b.hmny.io`,

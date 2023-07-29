@@ -13,7 +13,7 @@ export const getInContractChain = async (chainId: number): Promise<InContractCha
   if (chainId === Network.OKC || chainId === Network.OKC_TESTNET) return InContractChain.OKC;
   if (chainId === Network.GNOSIS || chainId === Network.GNOSIS_CHIADO) return InContractChain.GNOSIS;
   if (chainId === Network.CELO || chainId === Network.CELO_ALFAJORES) return InContractChain.CELO;
-  if (chainId === Network.HARMONY || chainId === Network.HARMONEY_TESTNET) return InContractChain.HARMONY;
+  if (chainId === Network.HARMONY || chainId === Network.HARMONY_TESTNET) return InContractChain.HARMONY;
   if (chainId === Network.POLYGON_ZKEVM || chainId === Network.POLYGON_ZKEVM_TESTNET) return InContractChain.POLYGON_ZKEVM;
   if (chainId === Network.MOONBEAM || chainId === Network.MOONBASE_ALPHA) return InContractChain.MOONBEAM;
   if (chainId === Network.MOONRIVER) return InContractChain.MOONRIVER;

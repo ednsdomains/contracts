@@ -6,7 +6,7 @@ async function main() {
   const registrar = await getRegistrar(signer);
   const cc = await getRegistry(signer);
   const registry = IRegistry__factory.connect(cc?.Diamond!.address!, signer);
-  const TLD = "op";
+  const TLD = "_universal";
   if (registrar && registry) {
     const grace_period = await registry.getGracePeriod();
     console.log({ grace_period });

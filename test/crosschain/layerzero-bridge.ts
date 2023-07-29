@@ -18,8 +18,10 @@ async function main() {
 
   console.log({ name, tld });
 
-  const FROM = Network.GOERLI;
-  const TO = Network.CELO_ALFAJORES;
+  const FROM = Network.HARMONY_TESTNET;
+  const TO = Network.FANTOM_TESTNET;
+
+  console.log(`Bridge test from [${NetworkConfig[FROM].name}] to [${NetworkConfig[TO].name}]`);
 
   const From_Provider = new ethers.providers.JsonRpcProvider(NetworkConfig[FROM].url);
   const To_Provider = new ethers.providers.JsonRpcProvider(NetworkConfig[TO].url);
@@ -35,20 +37,24 @@ async function main() {
   if (!From_Contracts.Bridge || !From_Contracts.UniversalRegistrarController || !From_Contracts.Registry?.Diamond || !From_Contracts.PublicResolver) {
     throw new Error();
   }
-  const From_Registry = await ethers.getContractAt("IRegistry", From_Contracts.Registry.Diamond.address);
+  const From_Registry = await ethers.getContractAt("IRegistry", From_Contracts.Registry.Diamond.address, From_Signer);
+
+  const _name_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(name));
+  const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld));
 
   // Register Domain
   console.log("Registering domain...");
+
   const tx1 = await From_Contracts.UniversalRegistrarController["register(bytes,bytes,address,uint64)"](
     ethers.utils.toUtf8Bytes(name),
     ethers.utils.toUtf8Bytes(tld),
     From_Signer.address,
     expiry,
-    {
-      type: 2,
-      maxFeePerGas: From_FeeData.maxFeePerGas || undefined,
-      maxPriorityFeePerGas: From_FeeData.maxPriorityFeePerGas || undefined,
-    },
+    // {
+    //   type: 2,
+    //   maxFeePerGas: From_FeeData.maxFeePerGas || undefined,
+    //   maxPriorityFeePerGas: From_FeeData.maxPriorityFeePerGas || undefined,
+    // },
   );
   await tx1.wait();
   console.log("tx1+", tx1.hash);
@@ -56,8 +62,6 @@ async function main() {
   await delay(2000);
 
   console.log(`Sending bridge request...`);
-  const _name_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(name));
-  const _tld_ = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld));
 
   const fee = await From_Contracts.Bridge.estimateFee(NetworkConfig[TO].chain!, CrossChainProvider.LAYERZERO, _name_, _tld_);
   console.log({ fee: ethers.utils.formatEther(fee) });
