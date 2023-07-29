@@ -181,16 +181,32 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
   await _beforeSetup(input.signer, input.chainId, "DefaultWrapper");
   const txs: Transaction[] = [];
 
-  if ((await input.contracts.DefaultWrapper.name()) !== "Test Domains") {
-    const tx = await input.contracts.DefaultWrapper.setName("Test Domains");
-    await tx.wait();
-    txs.push(tx);
+  if (Mainnets.includes(input.chainId)) {
+    if ((await input.contracts.DefaultWrapper.name()) !== "EDNS Domains") {
+      const tx = await input.contracts.DefaultWrapper.setName("EDNS Domains");
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if ((await input.contracts.DefaultWrapper.symbol()) !== "EDNS") {
+      const tx = await input.contracts.DefaultWrapper.setSymbol("EDNS");
+      await tx.wait();
+      txs.push(tx);
+    }
   }
 
-  if ((await input.contracts.DefaultWrapper.symbol()) !== "TDNS") {
-    const tx = await input.contracts.DefaultWrapper.setSymbol("TDNS");
-    await tx.wait();
-    txs.push(tx);
+  if (Testnets.includes(input.chainId)) {
+    if ((await input.contracts.DefaultWrapper.name()) !== "Test Domains") {
+      const tx = await input.contracts.DefaultWrapper.setName("Test Domains");
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if ((await input.contracts.DefaultWrapper.symbol()) !== "TDNS") {
+      const tx = await input.contracts.DefaultWrapper.setSymbol("TDNS");
+      await tx.wait();
+      txs.push(tx);
+    }
   }
 
   // const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.gdn/metadata");
@@ -551,6 +567,17 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 
         if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
           const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);
+          if (NetworkConfig[network].layerzero?.endpoint) {
+            try {
+              const Endpoint = ILayerZeroEndpoint__factory.connect(NetworkConfig[await input.signer.getChainId()].layerzero!.endpoint.address, input.signer);
+              const hasStoredPayload_1 = await Endpoint.hasStoredPayload(_remoteLzChainId, _remoteAndLocalAddr);
+              const hasStoredPayload_2 = await Endpoint.hasStoredPayload(_onchainRemoteChainId, _remoteAndLocalAddr);
+              console.log({ hasStoredPayload_1, hasStoredPayload_2 });
+            } catch {
+              //
+            }
+          }
+
           const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
           if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
             const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);

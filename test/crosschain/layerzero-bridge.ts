@@ -12,14 +12,20 @@ import delay from "delay";
 async function main() {
   if (!process.env.PRIVATE_KEY) throw new Error("Private key is missing");
 
-  const name = `hello-world-${luxon.DateTime.now().toSeconds().toFixed(0)}`;
-  const tld = "_universal";
+  const name = `testing-${luxon.DateTime.now().toSeconds().toFixed(0)}`;
+  const tld = "web3";
   const expiry = luxon.DateTime.now().plus({ day: 1 }).toSeconds().toFixed(0);
 
   console.log({ name, tld });
 
-  const FROM = Network.HARMONY_TESTNET;
-  const TO = Network.FANTOM_TESTNET;
+  // =================================== //
+  // =================================== //
+  // =================================== //
+  const FROM = Network.BNB_CHAIN;
+  const TO = Network.AVALANCHE;
+  // =================================== //
+  // =================================== //
+  // =================================== //
 
   console.log(`Bridge test from [${NetworkConfig[FROM].name}] to [${NetworkConfig[TO].name}]`);
 
@@ -32,7 +38,7 @@ async function main() {
   const From_Contracts = await getContracts(From_Signer);
   const To_Contracts = await getContracts(To_Signer);
 
-  const From_FeeData = await From_Signer.getFeeData();
+  // const From_FeeData = await From_Signer.getFeeData();
 
   if (!From_Contracts.Bridge || !From_Contracts.UniversalRegistrarController || !From_Contracts.Registry?.Diamond || !From_Contracts.PublicResolver) {
     throw new Error();
@@ -94,16 +100,18 @@ async function main() {
     expiry,
   });
 
-  const layerzeroScanClient = LayerZeroScan.createClient("testnet");
+  const layerzeroScanClient = LayerZeroScan.createClient("mainnet");
 
   let status: LayerZeroScan.MessageStatus | undefined;
 
   do {
     const b_tx = await layerzeroScanClient.getMessagesBySrcTxHash(tx2.hash);
     console.log(`Checking tx status from LayerZero...`);
+    console.log({ b_tx });
     b_tx.messages.forEach((m) => {
-      status = m.status;
+      if (m.status) status = m.status;
     });
+    console.log({ status });
     if (status !== LayerZeroScan.MessageStatus.DELIVERED) await delay(10000);
   } while (status !== LayerZeroScan.MessageStatus.DELIVERED);
 

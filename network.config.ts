@@ -254,7 +254,7 @@ const config: INetworkConfig = {
       coinId: 714,
     },
     layerzero: {
-      chainId: 2,
+      chainId: 102,
       endpoint: {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
@@ -320,7 +320,7 @@ const config: INetworkConfig = {
       coinId: 9005,
     },
     layerzero: {
-      chainId: 6,
+      chainId: 106,
       endpoint: {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
@@ -376,7 +376,7 @@ const config: INetworkConfig = {
       coinId: 966,
     },
     layerzero: {
-      chainId: 9,
+      chainId: 109,
       endpoint: {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
@@ -432,7 +432,7 @@ const config: INetworkConfig = {
       coinId: 9001,
     },
     layerzero: {
-      chainId: 10,
+      chainId: 110,
       endpoint: {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
@@ -488,7 +488,7 @@ const config: INetworkConfig = {
       coinId: 614,
     },
     layerzero: {
-      chainId: 11,
+      chainId: 111,
       endpoint: {
         address: "0x3c2269811836af69497E5F486A85D7316753cf62",
       },
@@ -545,7 +545,7 @@ const config: INetworkConfig = {
       coinId: 1007,
     },
     layerzero: {
-      chainId: 12,
+      chainId: 112,
       endpoint: {
         address: "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
       },
@@ -729,7 +729,8 @@ const config: INetworkConfig = {
     chainId: Network.MOONBEAM,
     name: "Moonbeam",
     symbol: "GLMR",
-    url: `https://moonbeam.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: "https://rpc.api.moonbeam.network",
+    // url: `https://moonbeam.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1284,
     },
@@ -758,7 +759,8 @@ const config: INetworkConfig = {
     chainId: Network.MOONRIVER,
     name: "Moonriver",
     symbol: "MOVR",
-    url: `https://moonriver.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: "https://rpc.api.moonriver.moonbeam.network",
+    // url: `https://moonriver.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1285,
     },
