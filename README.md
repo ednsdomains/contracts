@@ -112,7 +112,8 @@ npx hardhat run ./scripts/B05_Setup_Root.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B06_Setup_ClassicalRegistrarController.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B07_Setup_UniversalRegistrarController.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B08_Setup_OmniRegistrarController.ts --network $NETWORK_NAME
-npx hardhat run ./scripts/B10_Setup_Bridge.ts --network $NETWORK_NAME
-npx hardhat run ./scripts/B11_Setup_Synchronizer.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B09_Setup_Bridge.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B10_Setup_Synchronizer.ts --network $NETWORK_NAME
+npx hardhat run ./scripts/B11_Setup_Portal.ts --network $NETWORK_NAME
 npx hardhat run ./scripts/B12_Setup_LayerZeroProvider.ts --network $NETWORK_NAME
 ```

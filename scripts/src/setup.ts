@@ -176,7 +176,9 @@ export const setupRegistry = async (input: ISetupInput) => {
 };
 
 export const setupDefaultWrapper = async (input: ISetupInput) => {
-  if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
+  if (!input.contracts.DefaultWrapper) {
+    throw new Error("`DefaultWrapper` is not available");
+  }
 
   await _beforeSetup(input.signer, input.chainId, "DefaultWrapper");
   const txs: Transaction[] = [];
@@ -209,16 +211,22 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
     }
   }
 
-  // const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://resolver.gdn/metadata");
-  // await tx3.wait();
-  // txs.push(tx3);
+  if ((await input.contracts.DefaultWrapper.tokenURI(0)) !== "https://api.resolver.gdn/metadata/0/payload.json") {
+  }
+  const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://api.resolver.gdn/metadata");
+  await tx3.wait();
+  txs.push(tx3);
 
   await _afterSetup(input.signer, input.chainId, "DefaultWrapper", [...txs]);
 };
 
 export const setupRegistrar = async (input: ISetupInput) => {
-  if (!input.contracts.Root) throw new Error("`Root` is not available");
-  if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
+  if (!input.contracts.Root) {
+    throw new Error("`Root` is not available");
+  }
+  if (!input.contracts.Registrar) {
+    throw new Error("`Registrar` is not available");
+  }
 
   await _beforeSetup(input.signer, input.chainId, "Registrar");
   const txs: Transaction[] = [];
@@ -539,13 +547,13 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 
   const txs: Transaction[] = [];
 
-  // const endpointAddress = await input.contracts.LayerZeroProvider.getEndpoint();
+  const endpointAddress = await input.contracts.LayerZeroProvider.getEndpoint();
 
-  // if (NetworkConfig[input.chainId].layerzero && endpointAddress !== NetworkConfig[input.chainId].layerzero?.endpoint.address) {
-  //   const tx = await input.contracts.LayerZeroProvider.setEndpoint(NetworkConfig[input.chainId].layerzero.endpoint.address);
-  //   await tx.wait();
-  //   txs.push();
-  // }
+  if (NetworkConfig[input.chainId].layerzero && endpointAddress !== NetworkConfig[input.chainId].layerzero?.endpoint.address) {
+    const tx = await input.contracts.LayerZeroProvider.setEndpoint(NetworkConfig[input.chainId].layerzero!.endpoint.address);
+    await tx.wait();
+    txs.push();
+  }
 
   for (const network in NetworkConfig) {
     const isTargetMainnet = !!Mainnets.find((i) => i === NetworkConfig[network].chainId);
@@ -567,16 +575,6 @@ export const setupLayerZeroProvider = async (input: ISetupInput) => {
 
         if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {
           const _remoteAndLocalAddr = ethers.utils.solidityPack(["address", "address"], [data.addresses.LayerZeroProvider, input.contracts.LayerZeroProvider.address]);
-          if (NetworkConfig[network].layerzero?.endpoint) {
-            try {
-              const Endpoint = ILayerZeroEndpoint__factory.connect(NetworkConfig[await input.signer.getChainId()].layerzero!.endpoint.address, input.signer);
-              const hasStoredPayload_1 = await Endpoint.hasStoredPayload(_remoteLzChainId, _remoteAndLocalAddr);
-              const hasStoredPayload_2 = await Endpoint.hasStoredPayload(_onchainRemoteChainId, _remoteAndLocalAddr);
-              console.log({ hasStoredPayload_1, hasStoredPayload_2 });
-            } catch {
-              //
-            }
-          }
 
           const isTrustedRemote = await input.contracts.LayerZeroProvider.isTrustedRemote(_remoteLzChainId, _remoteAndLocalAddr);
           if (data && data.addresses.LayerZeroProvider && _remoteLzChainId) {

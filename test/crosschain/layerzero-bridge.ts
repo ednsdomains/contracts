@@ -8,6 +8,7 @@ dotenv.config();
 
 import NetworkConfig, { Network } from "../../network.config";
 import delay from "delay";
+import { getProvider } from "../../scripts/src/lib/get-provider";
 
 async function main() {
   if (!process.env.PRIVATE_KEY) throw new Error("Private key is missing");
@@ -21,7 +22,7 @@ async function main() {
   // =================================== //
   // =================================== //
   // =================================== //
-  const FROM = Network.BNB_CHAIN;
+  const FROM = Network.MOONBEAM;
   const TO = Network.AVALANCHE;
   // =================================== //
   // =================================== //
@@ -29,8 +30,8 @@ async function main() {
 
   console.log(`Bridge test from [${NetworkConfig[FROM].name}] to [${NetworkConfig[TO].name}]`);
 
-  const From_Provider = new ethers.providers.JsonRpcProvider(NetworkConfig[FROM].url);
-  const To_Provider = new ethers.providers.JsonRpcProvider(NetworkConfig[TO].url);
+  const From_Provider = getProvider(FROM);
+  const To_Provider = getProvider(TO);
 
   const From_Signer = new ethers.Wallet(process.env.PRIVATE_KEY, From_Provider);
   const To_Signer = new ethers.Wallet(process.env.PRIVATE_KEY, To_Provider);
@@ -71,7 +72,9 @@ async function main() {
 
   const fee = await From_Contracts.Bridge.estimateFee(NetworkConfig[TO].chain!, CrossChainProvider.LAYERZERO, _name_, _tld_);
   console.log({ fee: ethers.utils.formatEther(fee) });
-  if ((await To_Signer.getBalance()).lt(fee)) throw new Error("Insufficient funds");
+  if ((await From_Signer.getBalance()).lt(fee)) {
+    throw new Error("Insufficient funds");
+  }
 
   const nonce = await From_Contracts.Bridge.getNonce();
 
@@ -107,11 +110,11 @@ async function main() {
   do {
     const b_tx = await layerzeroScanClient.getMessagesBySrcTxHash(tx2.hash);
     console.log(`Checking tx status from LayerZero...`);
-    console.log({ b_tx });
+    // console.log({ b_tx });
     b_tx.messages.forEach((m) => {
       if (m.status) status = m.status;
     });
-    console.log({ status });
+    // console.log({ status });
     if (status !== LayerZeroScan.MessageStatus.DELIVERED) await delay(10000);
   } while (status !== LayerZeroScan.MessageStatus.DELIVERED);
 
