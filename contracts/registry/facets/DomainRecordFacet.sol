@@ -78,7 +78,9 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     _tokenRecord.tld = keccak256(tld);
     _tokenRecord.domain = keccak256(name);
 
-    IHostRecordFacet(_self()).setRecord(bytes("@"), name, tld, 3600); // TODO:
+    if (!IHostRecordFacet(_self()).isExists(keccak256("@"), keccak256(name), keccak256(tld))) {
+      IHostRecordFacet(_self()).setRecord(bytes("@"), name, tld, 3600); // TODO:
+    }
   }
 
   function setResolver(bytes32 name, bytes32 tld, address resolver_) public onlyDomainUserOrOperator(name, tld) onlyLiveDomain(name, tld) {

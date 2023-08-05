@@ -58,11 +58,16 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
     address genesisContractAddress, // The `BaseRegistrarImplementation` contract address from Genesis
     uint256 genesisTokenId,
     string memory name,
-    string memory tld
+    string memory tld,
+    uint64 expiry
   ) public onlyRole(OPERATOR_ROLE) {
     ILegacyBaseRegistrar _legacy = ILegacyBaseRegistrar(genesisContractAddress);
     bytes32 ZERO;
     uint256 tokenId = uint256(keccak256(abi.encodePacked(name, keccak256(abi.encodePacked(ZERO, keccak256(bytes(tld)))))));
+
+    if (expiry == 0) {
+      expiry = uint64(_legacy.nameExpires(tokenId));
+    }
     require(tokenId == genesisTokenId, "TOKEN_ID_MISMATCH");
     try _registrar.register(_msgSender(), bytes(name), bytes(tld), _legacy.ownerOf(genesisTokenId), uint64(_legacy.nameExpires(tokenId))) {
       //
