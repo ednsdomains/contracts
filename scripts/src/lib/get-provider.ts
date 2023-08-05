@@ -2,7 +2,22 @@ import axios from "axios";
 import { ethers } from "hardhat";
 import NetworkConfig from "../../../network.config";
 
-interface GasStationResponse {
+export interface IOwlracleResponse {
+  timestamp: string;
+  lastBlock: number;
+  avgTime: number;
+  avgTx: number;
+  avgGas: number;
+  speeds: {
+    acceptance: number;
+    maxFeePerGas: number;
+    maxPriorityFeePerGas: number;
+    baseFee: number;
+    estimatedFee: number;
+  }[];
+}
+
+interface IPolygonGasStationResponse {
   safeLow: {
     maxPriorityFee: number;
     maxFee: number;
@@ -25,6 +40,18 @@ export function getProvider(chainId: number) {
     chainId: NetworkConfig[chainId].chainId,
     name: NetworkConfig[chainId].name,
   });
+  if (chainId === 250) {
+    provider.getFeeData = async () => {
+      const gasPrice = await provider.getGasPrice();
+      const response = await axios.get<IOwlracleResponse>(`https://api.owlracle.info/v4/fantom/gas?apikey=${process.env.OWLRACLE_API_KEY}`);
+      return {
+        maxFeePerGas: ethers.utils.parseUnits(Math.ceil(response.data.speeds[1].maxFeePerGas) + "", "gwei"),
+        maxPriorityFeePerGas: ethers.utils.parseUnits(Math.ceil(response.data.speeds[1].maxPriorityFeePerGas) + "", "gwei"),
+        gasPrice,
+        lastBaseFeePerGas: ethers.utils.parseUnits(Math.ceil(response.data.speeds[1].baseFee) + "", "gwei"),
+      };
+    };
+  }
   if (chainId === 10200) {
     provider.getFeeData = async () => ({
       lastBaseFeePerGas: ethers.utils.parseUnits("7", "gwei"),
@@ -36,7 +63,7 @@ export function getProvider(chainId: number) {
   if (chainId === 137) {
     provider.getFeeData = async () => {
       const gasPrice = await provider.getGasPrice();
-      const response = await axios.get<GasStationResponse>("https://gasstation.polygon.technology/v2");
+      const response = await axios.get<IPolygonGasStationResponse>("https://gasstation.polygon.technology/v2");
       return {
         maxFeePerGas: ethers.utils.parseUnits(Math.ceil(response.data.fast.maxFee) + "", "gwei"),
         maxPriorityFeePerGas: ethers.utils.parseUnits(Math.ceil(response.data.fast.maxPriorityFee) + "", "gwei"),
