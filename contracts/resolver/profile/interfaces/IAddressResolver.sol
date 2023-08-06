@@ -5,7 +5,7 @@ interface IAddressResolver {
   event SetAddress(bytes host, bytes name, bytes tld, address address_);
   event UnsetAddress(bytes host, bytes name, bytes tld);
   event SetReverseAddress(bytes host, bytes name, bytes tld, address address_);
-  event UnsetReverseAddress(address address_);
+  event UnsetReverseAddress(bytes host, bytes name, bytes tld, address address_);
 
   function setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) external payable;
 

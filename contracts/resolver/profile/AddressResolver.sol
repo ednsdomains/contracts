@@ -48,7 +48,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
       fqdn = _join(host, name, tld);
     }
     if (_reverseAddresses[address_].length > 0) {
-      _unsetReverseAddress(address_);
+      _unsetReverseAddress(host, name, tld, address_);
     }
     _reverseAddresses[address_] = fqdn;
     emit SetReverseAddress(host, name, tld, address_);
@@ -60,13 +60,13 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     _afterExec(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 
-  function _unsetReverseAddress(address address_) internal {
+  function _unsetReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) internal {
     delete _reverseAddresses[address_];
-    emit UnsetReverseAddress(address_);
+    emit UnsetReverseAddress(host, name, tld, address_);
   }
 
   function unsetReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
-    _unsetReverseAddress(address_);
+    _unsetReverseAddress(host, name, tld, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("unsetReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
 

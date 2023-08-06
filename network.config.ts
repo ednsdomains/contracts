@@ -539,8 +539,8 @@ const config: INetworkConfig = {
     chain: InContractChain.FANTOM,
     name: "Fantom",
     symbol: "FTM",
-    // url: "https://rpcapi.fantom.network",
-    url: `https://ftm.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: "https://rpcapi.fantom.network",
+    // url: `https://ftm.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 1007,
     },
