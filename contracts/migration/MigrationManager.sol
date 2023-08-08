@@ -59,6 +59,7 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
     uint256 genesisTokenId,
     string memory name,
     string memory tld,
+    address owner,
     uint64 expiry
   ) public onlyRole(OPERATOR_ROLE) {
     ILegacyBaseRegistrar _legacy = ILegacyBaseRegistrar(genesisContractAddress);
@@ -68,17 +69,21 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
     if (expiry == 0) {
       expiry = uint64(_legacy.nameExpires(tokenId));
     }
+
     require(tokenId == genesisTokenId, "TOKEN_ID_MISMATCH");
-    try _registrar.register(_msgSender(), bytes(name), bytes(tld), _legacy.ownerOf(genesisTokenId), uint64(_legacy.nameExpires(tokenId))) {
+    try _registrar.register(_msgSender(), bytes(name), bytes(tld), owner, uint64(expiry)) {
       //
     } catch Error(string memory reason) {
       revert(reason);
     }
-    try _legacy.deregister(tokenId) {
-      //
-    } catch Error(string memory reason) {
-      revert(reason);
+    if (_legacy.nameExpires(tokenId) > 0) {
+      try _legacy.deregister(tokenId) {
+        //
+      } catch Error(string memory reason) {
+        revert(reason);
+      }
     }
+
     emit Migrated(_msgSender(), name, tld, genesisTokenId);
   }
 
