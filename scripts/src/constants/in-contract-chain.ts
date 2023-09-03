@@ -15,4 +15,6 @@ export enum InContractChain {
   MOONRIVER,
   ZKSYNC,
   POLYGON_ZKEVM,
+  LINEA,
+  BASE
 }

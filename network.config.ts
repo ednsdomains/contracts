@@ -57,6 +57,10 @@ export enum Network {
   // TELOS_EVM_TESTNET = 41
   ZKSYNC_ERA_TESTNET = 280,
   ZKSYNC_ERA = 324,
+  LINEA = 59144,
+  LINEA_GOERLI = 59140,
+  BASE = 8453,
+  BASE_GOERLI = 84531,
 }
 
 export const Mainnets = [
@@ -881,6 +885,58 @@ const config: INetworkConfig = {
       chainId: 10133,
       endpoint: {
         address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+      },
+    },
+  },
+  [Network.LINEA]: {
+    chain: InContractChain.LINEA,
+    chainId: Network.LINEA,
+    name: "Linea",
+    symbol: "ETH",
+    url: `https://rpc.linea.build`,
+    layerzero: {
+      chainId: 183,
+      endpoint: {
+        address: "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
+      },
+    },
+  },
+  [Network.LINEA_GOERLI]: {
+    chain: InContractChain.LINEA,
+    chainId: Network.LINEA_GOERLI,
+    name: "Linea Testnet",
+    symbol: "ETH",
+    url: `https://rpc.goerli.linea.build`,
+    layerzero: {
+      chainId: 10157,
+      endpoint: {
+        address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
+      },
+    },
+  },
+  [Network.BASE]: {
+    chain: InContractChain.BASE,
+    chainId: Network.BASE,
+    name: "BASE",
+    symbol: "ETH",
+    url: ``,
+    layerzero: {
+      chainId: 184,
+      endpoint: {
+        address: "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
+      },
+    },
+  },
+  [Network.BASE_GOERLI]: {
+    chain: InContractChain.BASE,
+    chainId: Network.BASE_GOERLI,
+    name: "Base Goerli Testnet",
+    symbol: "ETH",
+    url: ``,
+    layerzero: {
+      chainId: 10160,
+      endpoint: {
+        address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
       },
     },
   },
