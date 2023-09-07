@@ -125,7 +125,7 @@ export async function upgradeRegistry(input: IUpgradeInput): Promise<void> {
   // await _upgradeRegistryDiamondLoupeFacet(input);
   // await _upgradeRegistryAccessControlFacet(input);
   // await _upgradeRegistryTldRecordFacet(input);
-  // await _upgradeRegistryDomainRecordFacet(input);
+  await _upgradeRegistryDomainRecordFacet(input);
   await _upgradeRegistryHostRecordFacet(input);
   await _upgradeRegistryBaseRegistryFacet(input);
 }

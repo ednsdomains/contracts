@@ -17,8 +17,9 @@ async function getStatus(signer: Wallet, network: Network) {
 
     const exec = async (type: string, tld: string) => {
       try {
-        const [isTldExist, isTldAvailable, isDomainAvailable, nftName, nftSymbol, nftUri] = await Promise.all([
-          registrar["isExists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
+        const [isTldExist, isTldEnabled, isTldAvailable, isDomainAvailable, nftName, nftSymbol, nftUri] = await Promise.all([
+          registry["isExists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
+          registry.isEnable(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
           registrar["isAvailable(bytes)"](ethers.utils.toUtf8Bytes(tld)),
           registrar["isAvailable(bytes,bytes)"](ethers.utils.toUtf8Bytes(uuidv4()), ethers.utils.toUtf8Bytes(tld)),
           wrapper["name"](),
@@ -33,20 +34,26 @@ async function getStatus(signer: Wallet, network: Network) {
           _getName = "⚠️";
         }
         const exist = isTldExist ? "✅" : "❌";
+        const enable = isTldEnabled ? "✅" : "❌";
         const available = isTldAvailable ? "✅" : "❌";
         const query = isDomainAvailable ? "✅" : "❌";
         return {
           chain: NetworkConfig[network].name,
           type,
           exist,
+          enable,
           available,
           query,
           getName: _getName,
           tld,
-          nftName, nftSymbol, nftUri,
+          nftName,
+          nftSymbol,
+          nftUri,
         };
       } catch (err) {
-        // console.error(err);
+        console.error(err);
+        const x = await signer.provider.getCode(data.addresses["Registry.Diamond"]!);
+        console.log({ x });
         return {
           chain: NetworkConfig[network].name,
           type,
@@ -83,14 +90,14 @@ async function main() {
   ]);
   console.table(_.flatten(testnets));
 
-  const mainnets = await Promise.all([
-    ...Mainnets.map((network) => {
-      const provider = new ethers.providers.JsonRpcProvider(NetworkConfig[network].url);
-      const signer = _signer.connect(provider);
-      return getStatus(signer, network);
-    }),
-  ]);
-  console.table(_.flatten(mainnets));
+  // const mainnets = await Promise.all([
+  //   ...Mainnets.map((network) => {
+  //     const provider = new ethers.providers.JsonRpcProvider(NetworkConfig[network].url);
+  //     const signer = _signer.connect(provider);
+  //     return getStatus(signer, network);
+  //   }),
+  // ]);
+  // console.table(_.flatten(mainnets));
 }
 
 main();

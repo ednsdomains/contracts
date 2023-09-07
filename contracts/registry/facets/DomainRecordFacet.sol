@@ -8,6 +8,7 @@ import "./Facet.sol";
 import "../../wrapper/interfaces/IWrapper.sol";
 import "../../lib/TldClass.sol";
 import "../../lib/RecordKind.sol";
+import  "../../lib/Timestamp.sol";
 
 contract DomainRecordFacet is IDomainRecordFacet, Facet {
   /* ========== Modifier ==========*/
@@ -30,12 +31,12 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   }
 
   modifier onlyDomainUser(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || _isSelfExecution(), "ONLY_DOMAIN_USER");
+    require(_msgSender() == getUser(name, tld) || _isSelfExecution(), "ONLY_DOMAIN_USER");
     _;
   }
 
   modifier onlyDomainUserOrOperator(bytes32 name, bytes32 tld) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].user.user || isOperator(name, tld, _msgSender()) || _isSelfExecution(), "ONLY_DOMAIN_USER_OR_OPERATOR");
+    require(_msgSender() == getUser(name, tld) || isOperator(name, tld, _msgSender()) || _isSelfExecution(), "ONLY_DOMAIN_USER_OR_OPERATOR");
     _;
   }
 
@@ -49,6 +50,11 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     require(hasRole(REGISTRAR_ROLE, _msgSender()) || hasRole(BRIDGE_ROLE, _msgSender()), "ONLY_AUTHORIZED");
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(ITldRecordFacet(_self()).isExists(keccak256(tld)), "TLD_NOT_EXIST");
+
+    if (Timestamp.isMillisecond(expiry)) {
+      expiry = Timestamp.toSecond(expiry);
+    }
+    require(expiry > block.timestamp && Timestamp.isSecond(expiry), "INVALID_EXPIRY");
 
     RegistryStorage storage _ds = registryStorage();
 
@@ -70,7 +76,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     _record.owner = owner;
     _record.resolver = resolver;
     _record.expiry = expiry;
-    _record.user = UserRecord({ user: address(0), expiry: expiry });
+    _record.user = UserRecord({ user: address(0), expiry: uint64(0) });
     emit NewDomain(name, tld, owner, expiry);
 
     TokenRecord storage _tokenRecord = _ds.tokenRecords[id];
@@ -118,18 +124,25 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
 
     _ds.records[tld].domains[name].user.user = user;
 
-    if (expiry == 0) {
-      _ds.records[tld].domains[name].user.expiry = getExpiry(name, tld);
-    } else {
+    if (expiry > uint64(0)) {
+      if (Timestamp.isMillisecond(expiry)) {
+        expiry = Timestamp.toSecond(expiry);
+      }
+      require(expiry > block.timestamp && Timestamp.isSecond(expiry), "INVALID_EXPIRY");
       require(expiry <= getExpiry(name, tld), "EXPIRY_OVERFLOW");
-      _ds.records[tld].domains[name].user.expiry = expiry;
     }
+    _ds.records[tld].domains[name].user.expiry = expiry;
 
     emit SetDomainUser(name, tld, user, expiry);
   }
 
   function setExpiry(bytes32 name, bytes32 tld, uint64 expiry) public onlyRole(REGISTRAR_ROLE) onlyLiveDomain(name, tld) {
     RegistryStorage storage _ds = registryStorage();
+
+    if (Timestamp.isMillisecond(expiry)) {
+      expiry = Timestamp.toSecond(expiry);
+    }
+    require(expiry > block.timestamp && Timestamp.isSecond(expiry), "INVALID_EXPIRY");
 
     require(expiry > _ds.records[tld].domains[name].expiry && expiry > block.timestamp, "INVALID_EXPIRY");
 
@@ -180,7 +193,12 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   }
 
   function getExpiry(bytes32 name, bytes32 tld) public view returns (uint64) {
-    return registryStorage().records[tld].domains[name].expiry;
+    uint64 expiry = registryStorage().records[tld].domains[name].expiry;
+    if (Timestamp.isMillisecond(expiry)) {
+      return Timestamp.toSecond(expiry);
+    } else {
+      return expiry;
+    }
   }
 
   function getUser(bytes32 name, bytes32 tld) public view returns (address) {
@@ -192,7 +210,15 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   }
 
   function getUserExpiry(bytes32 name, bytes32 tld) public view returns (uint64) {
-    return registryStorage().records[tld].domains[name].user.expiry;
+    uint64 expiry = registryStorage().records[tld].domains[name].user.expiry;
+    if (expiry == uint64(0)) {
+      return getExpiry(name, tld);
+    }
+    if (Timestamp.isMillisecond(expiry)) {
+      return Timestamp.toSecond(expiry);
+    } else {
+      return expiry;
+    }
   }
 
   /* ========== Query - Boolean ==========*/

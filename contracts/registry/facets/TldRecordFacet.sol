@@ -5,6 +5,7 @@ import "./interfaces/ITldRecordFacet.sol";
 import "./Facet.sol";
 import "../../lib/TldClass.sol";
 import "../../wrapper/interfaces/IWrapper.sol";
+import "../../lib/Timestamp.sol";
 
 contract TldRecordFacet is ITldRecordFacet, Facet {
   /* ========== Modier ==========*/
@@ -26,6 +27,11 @@ contract TldRecordFacet is ITldRecordFacet, Facet {
   function setRecord(Chain[] memory chains, bytes memory tld, address owner, address resolver, uint64 expiry, bool enable, TldClass class_) public onlyRole(ROOT_ROLE) {
     require(owner != address(0x0), "UNDEFINED_OWNER");
     require(resolver != address(0x0), "UNDEFINED_RESOLVER");
+
+    if (Timestamp.isMillisecond(expiry)) {
+      expiry = Timestamp.toSecond(expiry);
+    }
+    require(expiry > block.timestamp && Timestamp.isSecond(expiry), "INVALID_EXPIRY");
 
     RegistryStorage storage _ds = registryStorage();
 
@@ -94,7 +100,10 @@ contract TldRecordFacet is ITldRecordFacet, Facet {
   function setExpiry(bytes32 tld, uint64 expiry) public onlyRole(ROOT_ROLE) {
     RegistryStorage storage _ds = registryStorage();
 
-    require(expiry > _ds.records[tld].expiry && expiry > block.timestamp, "INVALID_EXPIRY");
+    if (Timestamp.isMillisecond(expiry)) {
+      expiry = Timestamp.toSecond(expiry);
+    }
+    require(expiry > _ds.records[tld].expiry && expiry > block.timestamp && Timestamp.isSecond(expiry), "INVALID_EXPIRY");
 
     _ds.records[tld].expiry = expiry;
 
@@ -134,7 +143,12 @@ contract TldRecordFacet is ITldRecordFacet, Facet {
   }
 
   function getExpiry(bytes32 tld) public view returns (uint64) {
-    return registryStorage().records[tld].expiry;
+    uint64 expiry = registryStorage().records[tld].expiry;
+    if (Timestamp.isMillisecond(expiry)) {
+      return Timestamp.toSecond(expiry);
+    } else {
+      return expiry;
+    }
   }
 
   function getClass(bytes32 tld) public view returns (TldClass) {

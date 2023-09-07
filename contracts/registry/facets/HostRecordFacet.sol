@@ -8,6 +8,7 @@ import "./Facet.sol";
 import "../../wrapper/interfaces/IWrapper.sol";
 import "../../lib/TldClass.sol";
 import "../../lib/RecordKind.sol";
+import "../../lib/Timestamp.sol";
 
 contract HostRecordFacet is IHostRecordFacet, Facet {
   /* ========== Modifier ==========*/
@@ -19,10 +20,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   modifier onlyDomainUserOrOperator(bytes32 name, bytes32 tld) {
     require(
-      _msgSender() == registryStorage().records[tld].domains[name].user.user ||
-        IDomainRecordFacet(_self()).isOperator(name, tld, _msgSender()) ||
-        _isSelfExecution() ||
-        isPublicResolver(),
+      _msgSender() == IDomainRecordFacet(_self()).getUser(name, tld) || IDomainRecordFacet(_self()).isOperator(name, tld, _msgSender()) || _isSelfExecution() || isPublicResolver(),
       "ONLY_DOMAIN_USER_OR_OPERATOR"
     );
     _;
@@ -38,7 +36,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     bytes32 name,
     bytes32 tld
   ) {
-    require(_msgSender() == registryStorage().records[tld].domains[name].hosts[host].user.user || _isSelfExecution(), "ONLY_HOST_USER");
+    require(_msgSender() == getUser(host, name, tld) || _isSelfExecution(), "ONLY_HOST_USER");
     _;
   }
 
@@ -47,10 +45,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     bytes32 name,
     bytes32 tld
   ) {
-    require(
-      _msgSender() == registryStorage().records[tld].domains[name].user.user || isOperator(host, name, tld, _msgSender()) || _isSelfExecution(),
-      "ONLY_HOST_USER_OR_OPERATOR"
-    );
+    require(_msgSender() == getUser(host, name, tld) || isOperator(host, name, tld, _msgSender()) || _isSelfExecution(), "ONLY_HOST_USER_OR_OPERATOR");
     _;
   }
 
@@ -65,13 +60,17 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
     RegistryStorage storage _ds = registryStorage();
 
+    if (ttl == 0) {
+      ttl = 3600;
+    }
+
     HostRecord storage _record = _ds.records[tld_].domains[name_].hosts[host_];
     _record.name = host;
     _record.ttl = ttl;
 
     UserRecord storage _user = _ds.records[tld_].domains[name_].hosts[host_].user;
     _user.user = address(0);
-    _user.expiry = IDomainRecordFacet(_self()).getExpiry(name_, tld_);
+    _user.expiry = uint64(0);
 
     emit NewHost(host, name, tld, ttl);
 
@@ -100,7 +99,6 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   function setUser(bytes32 host, bytes32 name, bytes32 tld, address newUser, uint64 expiry) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
     require(isExists(host, name, tld), "HOST_NOT_EXISTS");
-    require(newUser != address(0), "NULL_USER");
 
     RegistryStorage storage _ds = registryStorage();
 
@@ -115,10 +113,12 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
       }
     }
 
-    if (expiry == 0) {
-      _ds.records[tld].domains[name].hosts[host].user.expiry = IDomainRecordFacet(_self()).getExpiry(name, tld);
-    } else {
-      require(expiry <= IDomainRecordFacet(_self()).getExpiry(name, tld), "DOMAIN_OVERFLOW");
+    if (expiry > uint64(0)) {
+      if (Timestamp.isMillisecond(expiry)) {
+        expiry = Timestamp.toSecond(expiry);
+      }
+      require(expiry > block.timestamp && Timestamp.isSecond(expiry), "INVALID_EXPIRY");
+      require(expiry <= IDomainRecordFacet(_self()).getExpiry(name, tld), "EXPIRY_OVERFLOW");
       _ds.records[tld].domains[name].hosts[host].user.expiry = expiry;
     }
 
@@ -169,7 +169,15 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
   }
 
   function getUserExpiry(bytes32 host, bytes32 name, bytes32 tld) public view returns (uint64) {
-    return registryStorage().records[tld].domains[name].hosts[host].user.expiry;
+    uint64 expiry = registryStorage().records[tld].domains[name].hosts[host].user.expiry;
+    if (expiry == uint64(0)) {
+      return IDomainRecordFacet(_self()).getUserExpiry(name, tld);
+    }
+    if (Timestamp.isMillisecond(expiry)) {
+      return Timestamp.toSecond(expiry);
+    } else {
+      return expiry;
+    }
   }
 
   function getTtl(bytes32 host, bytes32 name, bytes32 tld) public view returns (uint16) {

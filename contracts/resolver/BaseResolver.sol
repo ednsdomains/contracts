@@ -98,7 +98,7 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
   function _beforeExec(bytes memory host, bytes memory name, bytes memory tld) internal {
     bool isHostExist = _isExists(host, name, tld);
     if (!isHostExist) {
-      _registry.setRecord(host, name, tld, 3600); // TOD
+      _registry.setRecord(host, name, tld, 3600);
     }
   }
 
