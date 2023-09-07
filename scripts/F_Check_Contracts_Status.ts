@@ -6,20 +6,24 @@ import { getRegistrar, getContractsData } from "./src/lib/get-contracts";
 import { getClassicalTlds, getUniversalTlds } from "./src/lib/get-tlds";
 import { v4 as uuidv4 } from "uuid";
 import { IRegistry__factory } from "../typechain/factories/IRegistry__factory";
-import { Registrar__factory } from "../typechain";
+import { Registrar__factory, Wrapper__factory } from "../typechain";
 
 async function getStatus(signer: Wallet, network: Network) {
   const data = await getContractsData(network);
-  if (data?.addresses.Registrar && data?.addresses["Registry.Diamond"]) {
+  if (data?.addresses.Registrar && data?.addresses["Registry.Diamond"] && data.addresses["DefaultWrapper"]) {
     const registrar = Registrar__factory.connect(data.addresses.Registrar, signer);
     const registry = IRegistry__factory.connect(data.addresses["Registry.Diamond"], signer);
+    const wrapper = Wrapper__factory.connect(data.addresses["DefaultWrapper"], signer);
 
     const exec = async (type: string, tld: string) => {
       try {
-        const [isTldExist, isTldAvailable, isDomainAvailable] = await Promise.all([
+        const [isTldExist, isTldAvailable, isDomainAvailable, nftName, nftSymbol, nftUri] = await Promise.all([
           registrar["isExists(bytes32)"](ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tld))),
           registrar["isAvailable(bytes)"](ethers.utils.toUtf8Bytes(tld)),
           registrar["isAvailable(bytes,bytes)"](ethers.utils.toUtf8Bytes(uuidv4()), ethers.utils.toUtf8Bytes(tld)),
+          wrapper["name"](),
+          wrapper["symbol"](),
+          wrapper["tokenURI"](0),
         ]);
         let _getName = "❌";
         try {
@@ -39,6 +43,7 @@ async function getStatus(signer: Wallet, network: Network) {
           query,
           getName: _getName,
           tld,
+          nftName, nftSymbol, nftUri,
         };
       } catch (err) {
         // console.error(err);

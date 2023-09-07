@@ -15,6 +15,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     address contract_,
     uint256 tokenId
   ) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+    _beforeExec(host, name, tld);
     _setNFT(host, name, tld, chainId, contract_, tokenId);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setNFT(bytes,bytes,bytes,uint256,address,uint256)", host, name, tld, chainId, contract_, tokenId));
   }

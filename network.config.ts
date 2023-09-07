@@ -252,7 +252,7 @@ const config: INetworkConfig = {
     chain: InContractChain.BNB,
     name: "BNB Chain",
     symbol: "BNB",
-    url: "https://bsc-dataseed1.binance.org",
+    url: "https://binance.llamarpc.com	",
     // url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 714,
@@ -919,7 +919,7 @@ const config: INetworkConfig = {
     chainId: Network.BASE,
     name: "BASE",
     symbol: "ETH",
-    url: ``,
+    url: `https://mainnet.base.org`,
     layerzero: {
       chainId: 184,
       endpoint: {
@@ -932,7 +932,7 @@ const config: INetworkConfig = {
     chainId: Network.BASE_GOERLI,
     name: "Base Goerli Testnet",
     symbol: "ETH",
-    url: ``,
+    url: `https://goerli.base.org`,
     layerzero: {
       chainId: 10160,
       endpoint: {

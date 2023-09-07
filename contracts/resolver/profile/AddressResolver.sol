@@ -15,6 +15,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
   }
 
   function setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+    _beforeExec(host, name, tld);
     _setAddress(host, name, tld, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }
@@ -56,6 +57,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
 
   function setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
     require(_msgSender() == address_, "ADDRESS_VALUE_MUST_BE_SENDER");
+    _beforeExec(host, name, tld);
     _setReverseAddress(host, name, tld, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }

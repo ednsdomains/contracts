@@ -67,7 +67,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     _record.ttl = ttl;
 
     UserRecord storage _user = _ds.records[tld_].domains[name_].hosts[host_].user;
-    _user.user = IDomainRecordFacet(_self()).getOwner(name_, tld_);
+    _user.user = address(0);
     _user.expiry = IDomainRecordFacet(_self()).getExpiry(name_, tld_);
 
     emit NewHost(host, name, tld, ttl);
@@ -138,7 +138,6 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   function _unsetRecord(bytes32 host, bytes32 name, bytes32 tld) internal {
     RegistryStorage storage _ds = registryStorage();
-
     delete _ds.records[tld].domains[name].hosts[host];
     delete _ds.tokenRecords[getTokenId(_ds.records[tld].domains[name].hosts[host].name, _ds.records[tld].domains[name].name, _ds.records[tld].name)];
     if (_ds.records[tld].wrapper.enable) {
@@ -159,7 +158,11 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
   }
 
   function getUser(bytes32 host, bytes32 name, bytes32 tld) public view returns (address) {
-    return registryStorage().records[tld].domains[name].hosts[host].user.user;
+    address user = registryStorage().records[tld].domains[name].hosts[host].user.user;
+    if(user == address(0)){
+      return IDomainRecordFacet(_self()).getUser(name, tld);
+    }
+    return user;
   }
 
   function getUserExpiry(bytes32 host, bytes32 name, bytes32 tld) public view returns (uint64) {

@@ -6,7 +6,7 @@ import { ContractName } from "./constants/contract-name";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig, { Testnets, Mainnets, Network } from "../../network.config";
 import delay from "delay";
-import { ContractTransaction, Transaction } from "ethers";
+import { ContractTransaction, Transaction, Wallet } from "ethers";
 import { CrossChainProvider } from "./constants/cross-chain-provider";
 import { getContractsData } from "./lib/get-contracts";
 import { ZERO_ADDRESS } from "../../network.config";
@@ -20,7 +20,7 @@ const GAS_LIMIT = 8000000;
 
 export interface ISetupInput {
   chainId: number;
-  signer: SignerWithAddress;
+  signer: SignerWithAddress | Wallet;
   contracts: IContracts;
 }
 export interface IInsertTld {
@@ -39,8 +39,8 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
   if (!input.contracts.Registry?.facets?.HostRecordFacet) throw new Error("`Registry.HostRecordFacet` is not available");
   if (!input.contracts.Registry?.facets?.BaseRegistryFacet) throw new Error("`Registry.BaseRegistryFacet` is not available");
 
-  const _loupe = await ethers.getContractAt("DiamondLoupeFacet", input.contracts.Registry.Diamond.address);
-  const _cut = await ethers.getContractAt("DiamondCutFacet", input.contracts.Registry.Diamond.address);
+  const _loupe = await ethers.getContractAt("DiamondLoupeFacet", input.contracts.Registry.Diamond.address, input.signer);
+  const _cut = await ethers.getContractAt("DiamondCutFacet", input.contracts.Registry.Diamond.address, input.signer);
 
   try {
     // await cutFacets(input.signer, input.contracts.Registry.Diamond, FacetCutAction.ADD, [input.contracts.Registry.facets.DiamondLoupeFacet]);
@@ -89,12 +89,16 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
           (facet.address !== input.contracts.Registry.facets.AccessControlFacet.address && !accessControlSelectors.includes(_selector)) ||
           facet.address === input.contracts.Registry.facets.AccessControlFacet.address
         ) {
-          const _address = await _loupe.facetAddress(_selector);
-          if (!states[facet.address]) states[facet.address] = { add: [], replace: [] };
-          if (_address === ZERO_ADDRESS) {
-            states[facet.address].add.push(_selector);
-          } else if (_address !== facet.address) {
-            states[facet.address].replace.push(_selector);
+          try {
+            const _address = await _loupe.facetAddress(_selector);
+            if (!states[facet.address]) states[facet.address] = { add: [], replace: [] };
+            if (_address === ZERO_ADDRESS) {
+              states[facet.address].add.push(_selector);
+            } else if (_address !== facet.address) {
+              states[facet.address].replace.push(_selector);
+            }
+          } catch (e) {
+            console.error(e);
           }
         }
       }
@@ -136,7 +140,7 @@ export const setupRegistry = async (input: ISetupInput) => {
 
   const txs: Transaction[] = [];
 
-  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address, input.signer);
 
   try {
     //=== Diamond Cut ===//
@@ -212,10 +216,10 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
   }
 
   if ((await input.contracts.DefaultWrapper.tokenURI(0)) !== "https://api.resolver.gdn/metadata/0/payload.json") {
+    const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://api.resolver.gdn/metadata");
+    await tx3.wait();
+    txs.push(tx3);
   }
-  const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://api.resolver.gdn/metadata");
-  await tx3.wait();
-  txs.push(tx3);
 
   await _afterSetup(input.signer, input.chainId, "DefaultWrapper", [...txs]);
 };
@@ -268,7 +272,7 @@ export const setupRoot = async (input: ISetupInput) => {
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
   await _beforeSetup(input.signer, input.chainId, "Root");
   const txs: Transaction[] = [];
-  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address, input.signer);
   //====================//
   //== Classical TLDs ==//
   //====================//
@@ -353,7 +357,7 @@ export const setupClassicalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   await _beforeSetup(input.signer, input.chainId, "ClassicalRegistrarController");
   const txs: Transaction[] = [];
-  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address, input.signer);
   const tlds = await getClassicalTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
@@ -379,7 +383,7 @@ export const setupUniversalRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   await _beforeSetup(input.signer, input.chainId, "UniversalRegistrarController");
   const txs: Transaction[] = [];
-  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address, input.signer);
   const tlds = await getUniversalTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
@@ -405,7 +409,7 @@ export const setupOmniRegistrarController = async (input: ISetupInput) => {
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   await _beforeSetup(input.signer, input.chainId, "OmniRegistrarController");
   const txs: Transaction[] = [];
-  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address);
+  const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address, input.signer);
   const tlds = await getOmniTlds(input.chainId);
   if (tlds && tlds.length) {
     for (const tld_ of tlds) {
@@ -681,7 +685,7 @@ export const setupMigrationManager = async (input: ISetupInput) => {
   await _afterSetup(input.signer, input.chainId, "MigrationManager", [...txs]);
 };
 
-const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+const _beforeSetup = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName) => {
   console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);
   if (balance.eq(0)) {
@@ -694,7 +698,7 @@ const _beforeSetup = async (signer: SignerWithAddress, chainId: number, name: Co
   await delay(3000);
 };
 
-const _afterSetup = async (signer: SignerWithAddress, chainId: number, name: ContractName, txs: Transaction[], hasError?: boolean) => {
+const _afterSetup = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName, txs: Transaction[], hasError?: boolean) => {
   console.log(`Contract [${name}] has been setup on [${NetworkConfig[chainId].name}]`);
   if (txs.length) {
     if (hasError) console.log(`⚠️ Error occurred while setting up [${name}] on [${NetworkConfig[chainId].name}]`);

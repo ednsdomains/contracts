@@ -9,10 +9,8 @@ async function main() {
     return { name: NetworkConfig[network].name, symbol: NetworkConfig[network].symbol, balance: ethers.utils.formatEther(balance) };
   };
   const data = [];
-  for (const network in NetworkConfig) {
-    if (Mainnets.find((t) => t === NetworkConfig[network].chainId) && NetworkConfig[network] && NetworkConfig[network].url) {
-      data.push(getContent(NetworkConfig[network].chainId));
-    }
+  for (const chainId of Mainnets) {
+    data.push(getContent(NetworkConfig[chainId].chainId));
   }
   const result = await Promise.all(data);
   console.log(`Account: ${_signer.address}`);

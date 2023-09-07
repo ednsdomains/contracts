@@ -53,10 +53,18 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     bytes32 host_ = keccak256(host);
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    bool isAuthorizedUser = (_registry.getUser(host_, name_, tld_) == _msgSender() || _registry.isOperator(host_, name_, tld_, _msgSender())) &&
-      _registry.getUserExpiry(host_, name_, tld_) >= block.timestamp;
     bool isSelfAuthorized = _msgSender() == address(this);
-    return isAuthorizedUser || isSelfAuthorized;
+    if (isSelfAuthorized) {
+      return true;
+    }
+    bool isHostExist = _registry.isExists(host_, name_, tld_);
+    if (isHostExist) {
+      return
+        (_registry.getUser(host_, name_, tld_) == _msgSender() || _registry.isOperator(host_, name_, tld_, _msgSender())) &&
+        _registry.getUserExpiry(host_, name_, tld_) >= block.timestamp;
+    } else {
+      return _registry.getOwner(name_, tld_) == _msgSender();
+    }
   }
 
   function _isLive(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
@@ -86,6 +94,13 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
       fqdn = keccak256(_join(host, name, tld));
     }
     return fqdn;
+  }
+
+  function _beforeExec(bytes memory host, bytes memory name, bytes memory tld) internal {
+    bool isHostExist = _isExists(host, name, tld);
+    if (!isHostExist) {
+      _registry.setRecord(host, name, tld, 3600); // TOD
+    }
   }
 
   function _afterExec(bytes32 tld, bytes memory ews) internal {

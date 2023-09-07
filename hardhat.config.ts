@@ -168,6 +168,18 @@ const config: HardhatUserConfig = {
     moonbase_alphanet: {
       chainId: 1287,
     },
+    linea: {
+      chainId: 59144,
+    },
+    linea_goerli: {
+      chainId: 59140,
+    },
+    base: {
+      chainId: 8453,
+    },
+    base_goerli: {
+      chainId: 84531,
+    },
   },
   gasReporter: {
     enabled: !!process.env.REPORT_GAS,
@@ -191,8 +203,8 @@ const config: HardhatUserConfig = {
       arbitrumOne: process.env.ARBISCAN_API_KEY || "",
       arbitrumGoerli: process.env.ARBISCAN_API_KEY || "",
       gnosis: process.env.GNOSISSCAN_API_KEY || "",
-      // ftm: process.env.FTMSCAN_API_KEY || "",
-      // ftmTestnet: process.env.FTMSCAN_API_KEY || "",
+      ftm: process.env.FTMSCAN_API_KEY || "",
+      ftmTestnet: process.env.FTMSCAN_API_KEY || "",
       moonbeam: process.env.MOONSCAN_API_KEY || "",
     },
     customChains: [

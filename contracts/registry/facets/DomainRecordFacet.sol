@@ -70,7 +70,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     _record.owner = owner;
     _record.resolver = resolver;
     _record.expiry = expiry;
-    _record.user = UserRecord({ user: owner, expiry: expiry });
+    _record.user = UserRecord({ user: address(0), expiry: expiry });
     emit NewDomain(name, tld, owner, expiry);
 
     TokenRecord storage _tokenRecord = _ds.tokenRecords[id];
@@ -184,7 +184,11 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
   }
 
   function getUser(bytes32 name, bytes32 tld) public view returns (address) {
-    return registryStorage().records[tld].domains[name].user.user;
+    address user = registryStorage().records[tld].domains[name].user.user;
+    if (user == address(0)) {
+      return getOwner(name, tld);
+    }
+    return user;
   }
 
   function getUserExpiry(bytes32 name, bytes32 tld) public view returns (uint64) {

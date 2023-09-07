@@ -5,13 +5,13 @@ import { ContractName } from "./constants/contract-name";
 import { IContracts } from "./interfaces/contracts";
 import { getBalance } from "./lib/get-balance";
 import NetworkConfig from "../../network.config";
-import { Contract } from "ethers";
+import { Contract, Wallet } from "ethers";
 import { getAllContractsData, getContracts } from "./lib/get-contracts";
 import { setAllContractsData } from "./lib/set-contracts";
 
 export interface IUpgradeInput {
   chainId: number;
-  signer: SignerWithAddress;
+  signer: SignerWithAddress | Wallet;
   contracts: IContracts;
 }
 
@@ -142,6 +142,7 @@ export async function upgradePublicResolver(input: IUpgradeInput): Promise<void>
   if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   const factory = await ethers.getContractFactory("PublicResolver", input.signer);
   await _beforeUpgrade(input.signer, input.chainId, "PublicResolver");
+  // await upgrades.forceImport(input.contracts.PublicResolver.address, factory);
   await upgrades.upgradeProxy(input.contracts.PublicResolver, factory);
   await _afterUpgrade(input.signer, input.chainId, "PublicResolver", input.contracts.PublicResolver);
 }
@@ -226,7 +227,7 @@ export async function upgradeMigrationManager(input: IUpgradeInput): Promise<voi
   await _afterUpgrade(input.signer, input.chainId, "MigrationManager", input.contracts.MigrationManager);
 }
 
-const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
+const _beforeUpgrade = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName) => {
   console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);
   if (balance.eq(0)) {
@@ -239,7 +240,7 @@ const _beforeUpgrade = async (signer: SignerWithAddress, chainId: number, name: 
   await delay(3000);
 };
 
-const _afterUpgrade = async (signer: SignerWithAddress, chainId: number, name: ContractName, contract: Contract, update?: boolean) => {
+const _afterUpgrade = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName, contract: Contract, update?: boolean) => {
   console.log(`✅ Contract [${name}] has been upgrade on [${NetworkConfig[chainId].name}]`);
   const balance = await getBalance(signer);
   console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
