@@ -11,4 +11,5 @@ struct AppStorage {
   bytes32 WRAPPER_ROLE;
   bytes32 BRIDGE_ROLE;
   address defaultWrapper;
+  address publicResolver;
 }

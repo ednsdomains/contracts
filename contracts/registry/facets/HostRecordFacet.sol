@@ -19,7 +19,10 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   modifier onlyDomainUserOrOperator(bytes32 name, bytes32 tld) {
     require(
-      _msgSender() == registryStorage().records[tld].domains[name].user.user || IDomainRecordFacet(_self()).isOperator(name, tld, _msgSender()) || _isSelfExecution(),
+      _msgSender() == registryStorage().records[tld].domains[name].user.user ||
+        IDomainRecordFacet(_self()).isOperator(name, tld, _msgSender()) ||
+        _isSelfExecution() ||
+        isPublicResolver(),
       "ONLY_DOMAIN_USER_OR_OPERATOR"
     );
     _;
@@ -159,7 +162,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   function getUser(bytes32 host, bytes32 name, bytes32 tld) public view returns (address) {
     address user = registryStorage().records[tld].domains[name].hosts[host].user.user;
-    if(user == address(0)){
+    if (user == address(0)) {
       return IDomainRecordFacet(_self()).getUser(name, tld);
     }
     return user;

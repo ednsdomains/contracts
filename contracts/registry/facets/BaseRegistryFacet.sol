@@ -13,9 +13,25 @@ contract BaseRegistryFacet is IBaseRegistryFacet, Facet {
     return GRACE_PERIOD;
   }
 
+  function getDefaultWrapper() external view returns (address) {
+    RegistryStorage storage _ds = registryStorage();
+    return _ds.defaultWrapper;
+  }
+
+  function getPublicResolver() external view returns (address) {
+    RegistryStorage storage _ds = registryStorage();
+    return _ds.publicResolver;
+  }
+
   function setDefaultWrapper(address defaultWrapper) external onlyRole(OPERATOR_ROLE) {
     RegistryStorage storage _ds = registryStorage();
     _ds.defaultWrapper = defaultWrapper;
     emit SetDefaultWrapper(defaultWrapper);
+  }
+
+  function setPublicResolver(address publicResolver) external onlyRole(OPERATOR_ROLE) {
+    RegistryStorage storage _ds = registryStorage();
+    _ds.publicResolver = publicResolver;
+    emit SetPublicResolver(publicResolver);
   }
 }

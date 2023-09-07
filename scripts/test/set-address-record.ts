@@ -1,5 +1,5 @@
-import { getContracts } from "./src/lib/get-contracts";
-import { getProvider } from "./src/lib/get-provider";
+import { getContracts } from "../src/lib/get-contracts";
+import { getProvider } from "../src/lib/get-provider";
 import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
 dotenv.config();

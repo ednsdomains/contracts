@@ -2,13 +2,13 @@ import { ethers } from "hardhat";
 import { getProvider } from "./src/lib/get-provider";
 import { AwsKmsSigner } from "./src/lib/kms-signer";
 
-const NONCE = 218797;
+const NONCE = 189;
 
 async function main() {
-  const [__signer] = await ethers.getSigners();
-  const provider = getProvider(await __signer.getChainId());
-  await provider.ready;
-  const signer = new AwsKmsSigner({ region: "ap-southeast-1", keyId: process.env.KMS_SIGNER_KEY_ARN! }, provider);
+  const [signer] = await ethers.getSigners();
+  // const provider = getProvider(await __signer.getChainId());
+  // await provider.ready;
+  // const signer = new AwsKmsSigner({ region: "ap-southeast-1", keyId: process.env.KMS_SIGNER_KEY_ARN! }, provider);
   const tx = await signer.sendTransaction({
     from: await signer.getAddress(),
     to: await signer.getAddress(),

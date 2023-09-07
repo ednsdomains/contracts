@@ -131,6 +131,7 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
 export const setupRegistry = async (input: ISetupInput) => {
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
   if (!input.contracts.Registry?.Init) throw new Error("`Registry.Init` is not available");
+  if (!input.contracts.PublicResolver) throw new Error("`PublicResolver` is not available");
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
@@ -168,6 +169,24 @@ export const setupRegistry = async (input: ISetupInput) => {
 
     if (!(await _registry.hasRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address))) {
       const tx = await _registry.grantRole(await _registry.BRIDGE_ROLE(), input.contracts.Bridge.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if (!(await _registry.hasRole(await _registry.OPERATOR_ROLE(), input.signer.address))) {
+      const tx = await _registry.grantRole(await _registry.OPERATOR_ROLE(), input.signer.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if ((await _registry.getDefaultWrapper()) !== input.contracts.DefaultWrapper.address) {
+      const tx = await _registry.setDefaultWrapper(input.contracts.DefaultWrapper.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+
+    if ((await _registry.getPublicResolver()) !== input.contracts.PublicResolver.address) {
+      const tx = await _registry.setPublicResolver(input.contracts.PublicResolver.address);
       await tx.wait();
       txs.push(tx);
     }

@@ -124,10 +124,10 @@ export async function upgradeRegistry(input: IUpgradeInput): Promise<void> {
   // await _upgradeRegistryDiamondCutFacet(input);
   // await _upgradeRegistryDiamondLoupeFacet(input);
   // await _upgradeRegistryAccessControlFacet(input);
-  await _upgradeRegistryTldRecordFacet(input);
-  await _upgradeRegistryDomainRecordFacet(input);
+  // await _upgradeRegistryTldRecordFacet(input);
+  // await _upgradeRegistryDomainRecordFacet(input);
   await _upgradeRegistryHostRecordFacet(input);
-  // await _upgradeRegistryBaseRegistryFacet(input);
+  await _upgradeRegistryBaseRegistryFacet(input);
 }
 
 export async function upgradeWrapper(input: IUpgradeInput): Promise<void> {

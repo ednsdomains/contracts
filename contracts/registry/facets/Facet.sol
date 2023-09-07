@@ -32,6 +32,11 @@ abstract contract Facet is RegistryStorageFacet, AccessControl {
     return _msgSender() == address(this);
   }
 
+  function isPublicResolver() internal view returns (bool) {
+    RegistryStorage storage _ds = registryStorage();
+    return _msgSender() == _ds.publicResolver;
+  }
+
   function _join(bytes memory host, bytes memory name, bytes memory tld) internal pure returns (bytes memory) {
     return abi.encodePacked(host, DOT, name, DOT, tld);
   }
