@@ -8419,7 +8419,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
             "retypedFrom": "bool"
           },
           {
@@ -8428,7 +8428,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
           },
           {
             "label": "__gap",
@@ -8436,15 +8436,15 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
           },
           {
             "label": "_synchronizer",
             "offset": 0,
             "slot": "51",
-            "type": "t_contract(ISynchronizer)4279",
+            "type": "t_contract(ISynchronizer)6010",
             "contract": "SynchronizerApplication",
-            "src": "contracts\\crosschain\\SynchronizerApplication.sol:9"
+            "src": "contracts/crosschain/SynchronizerApplication.sol:9"
           },
           {
             "label": "__gap",
@@ -8452,7 +8452,7 @@
             "slot": "52",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -8460,7 +8460,7 @@
             "slot": "102",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:62"
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:62"
           },
           {
             "label": "__gap",
@@ -8468,7 +8468,7 @@
             "slot": "103",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
           },
           {
             "label": "__gap",
@@ -8476,7 +8476,7 @@
             "slot": "152",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:169"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
           },
           {
             "label": "__gap",
@@ -8484,15 +8484,15 @@
             "slot": "202",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:111"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:111"
           },
           {
             "label": "_registry",
             "offset": 0,
             "slot": "252",
-            "type": "t_contract(IRegistry)6488",
+            "type": "t_contract(IRegistry)12555",
             "contract": "BaseResolver",
-            "src": "contracts\\resolver\\BaseResolver.sol:18"
+            "src": "contracts/resolver/BaseResolver.sol:18"
           },
           {
             "label": "__gap",
@@ -8500,7 +8500,7 @@
             "slot": "253",
             "type": "t_array(t_uint256)50_storage",
             "contract": "BaseResolver",
-            "src": "contracts\\resolver\\BaseResolver.sol:117"
+            "src": "contracts/resolver/BaseResolver.sol:117"
           },
           {
             "label": "_addresses",
@@ -8508,7 +8508,7 @@
             "slot": "303",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_address))",
             "contract": "AddressResolver",
-            "src": "contracts\\resolver\\profile\\AddressResolver.sol:8"
+            "src": "contracts/resolver/profile/AddressResolver.sol:8"
           },
           {
             "label": "_reverseAddresses",
@@ -8516,7 +8516,7 @@
             "slot": "304",
             "type": "t_mapping(t_address,t_bytes_storage)",
             "contract": "AddressResolver",
-            "src": "contracts\\resolver\\profile\\AddressResolver.sol:9"
+            "src": "contracts/resolver/profile/AddressResolver.sol:9"
           },
           {
             "label": "__gap",
@@ -8524,7 +8524,7 @@
             "slot": "305",
             "type": "t_array(t_uint256)50_storage",
             "contract": "AddressResolver",
-            "src": "contracts\\resolver\\profile\\AddressResolver.sol:83"
+            "src": "contracts/resolver/profile/AddressResolver.sol:83"
           },
           {
             "label": "_multiCoinAddresses",
@@ -8532,7 +8532,7 @@
             "slot": "355",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_bytes_storage)))",
             "contract": "MultiCoinAddressResolver",
-            "src": "contracts\\resolver\\profile\\MultiCoinAddressResolver.sol:8"
+            "src": "contracts/resolver/profile/MultiCoinAddressResolver.sol:8"
           },
           {
             "label": "__gap",
@@ -8540,15 +8540,15 @@
             "slot": "356",
             "type": "t_array(t_uint256)50_storage",
             "contract": "MultiCoinAddressResolver",
-            "src": "contracts\\resolver\\profile\\MultiCoinAddressResolver.sol:53"
+            "src": "contracts/resolver/profile/MultiCoinAddressResolver.sol:53"
           },
           {
             "label": "_nfts",
             "offset": 0,
             "slot": "406",
-            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)8891_storage)))",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14998_storage)))",
             "contract": "NFTResolver",
-            "src": "contracts\\resolver\\profile\\NFTResolver.sol:8"
+            "src": "contracts/resolver/profile/NFTResolver.sol:8"
           },
           {
             "label": "__gap",
@@ -8556,7 +8556,7 @@
             "slot": "407",
             "type": "t_array(t_uint256)50_storage",
             "contract": "NFTResolver",
-            "src": "contracts\\resolver\\profile\\NFTResolver.sol:49"
+            "src": "contracts/resolver/profile/NFTResolver.sol:49"
           },
           {
             "label": "_texts",
@@ -8564,7 +8564,7 @@
             "slot": "457",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_string_storage))",
             "contract": "TextResolver",
-            "src": "contracts\\resolver\\profile\\TextResolver.sol:8"
+            "src": "contracts/resolver/profile/TextResolver.sol:8"
           },
           {
             "label": "__gap",
@@ -8572,7 +8572,7 @@
             "slot": "458",
             "type": "t_array(t_uint256)50_storage",
             "contract": "TextResolver",
-            "src": "contracts\\resolver\\profile\\TextResolver.sol:42"
+            "src": "contracts/resolver/profile/TextResolver.sol:42"
           },
           {
             "label": "_typedTexts",
@@ -8580,7 +8580,7 @@
             "slot": "508",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_bytes32,t_string_storage)))",
             "contract": "TypedTextResolver",
-            "src": "contracts\\resolver\\profile\\TypedTextResolver.sol:8"
+            "src": "contracts/resolver/profile/TypedTextResolver.sol:8"
           },
           {
             "label": "__gap",
@@ -8588,7 +8588,7 @@
             "slot": "509",
             "type": "t_array(t_uint256)50_storage",
             "contract": "TypedTextResolver",
-            "src": "contracts\\resolver\\profile\\TypedTextResolver.sol:42"
+            "src": "contracts/resolver/profile/TypedTextResolver.sol:42"
           },
           {
             "label": "__gap",
@@ -8596,7 +8596,7 @@
             "slot": "559",
             "type": "t_array(t_uint256)50_storage",
             "contract": "PublicResolver",
-            "src": "contracts\\resolver\\PublicResolver.sol:32"
+            "src": "contracts/resolver/PublicResolver.sol:32"
           }
         ],
         "types": {
@@ -8624,11 +8624,11 @@
             "label": "bytes",
             "numberOfBytes": "32"
           },
-          "t_contract(IRegistry)6488": {
+          "t_contract(IRegistry)12555": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
-          "t_contract(ISynchronizer)4279": {
+          "t_contract(ISynchronizer)6010": {
             "label": "contract ISynchronizer",
             "numberOfBytes": "20"
           },
@@ -8652,7 +8652,7 @@
             "label": "mapping(address => mapping(bytes32 => mapping(uint256 => bytes)))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)8891_storage)))": {
+          "t_mapping(t_address,t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14998_storage)))": {
             "label": "mapping(address => mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT)))",
             "numberOfBytes": "32"
           },
@@ -8672,7 +8672,7 @@
             "label": "mapping(bytes32 => mapping(uint256 => bytes))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)8891_storage))": {
+          "t_mapping(t_bytes32,t_mapping(t_uint256,t_struct(NFT)14998_storage))": {
             "label": "mapping(bytes32 => mapping(uint256 => struct INFTResolver.NFT))",
             "numberOfBytes": "32"
           },
@@ -8688,7 +8688,7 @@
             "label": "mapping(uint256 => bytes)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(NFT)8891_storage)": {
+          "t_mapping(t_uint256,t_struct(NFT)14998_storage)": {
             "label": "mapping(uint256 => struct INFTResolver.NFT)",
             "numberOfBytes": "32"
           },
@@ -8696,7 +8696,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(NFT)8891_storage": {
+          "t_struct(NFT)14998_storage": {
             "label": "struct INFTResolver.NFT",
             "members": [
               {
