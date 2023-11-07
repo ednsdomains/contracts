@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const HOST = "web";
-const NAME = `testtesttesttesttesttest`;
+const NAME = `token2049`;
 const TLD = "meta";
 const EXPIRY = luxon.DateTime.now().plus({ day: 1 }).toSeconds().toFixed(0);
 
@@ -21,19 +21,19 @@ async function main() {
 
   const registry = await ethers.getContractAt("IRegistry", contracts.Registry!.Diamond!.address, signer);
 
-  // const isTldEnabled = await registry.isEnable(ethers.utils.solidityKeccak256(["string"], [TLD]));
-  // const isTldExists = await contracts.Registrar!["isExists(bytes32)"](ethers.utils.solidityKeccak256(["string"], [TLD]));
+  const isTldEnabled = await registry.isEnable(ethers.utils.solidityKeccak256(["string"], [TLD]));
+  const isTldExists = await contracts.Registrar!["isExists(bytes32)"](ethers.utils.solidityKeccak256(["string"], [TLD]));
 
-  // console.log({ isTldEnabled, isTldExists });
+  console.log({ isTldEnabled, isTldExists });
 
-  // const tx1 = await contracts.UniversalRegistrarController!["register(bytes,bytes,address,uint64)"](
-  //   ethers.utils.toUtf8Bytes(NAME),
-  //   ethers.utils.toUtf8Bytes(TLD),
-  //   signer.address,
-  //   EXPIRY,
-  // );
-  // await tx1.wait();
-  // console.log("tx1+", tx1.hash);
+  const tx1 = await contracts.UniversalRegistrarController!["register(bytes,bytes,address,uint64)"](
+    ethers.utils.toUtf8Bytes(NAME),
+    ethers.utils.toUtf8Bytes(TLD),
+    signer.address,
+    EXPIRY,
+  );
+  await tx1.wait();
+  console.log("tx1+", tx1.hash);
 
   // const isDomainExists = await registry["isExists(bytes32,bytes32)"](ethers.utils.solidityKeccak256(["string"], [NAME]), ethers.utils.solidityKeccak256(["string"], [TLD]));
 
@@ -73,15 +73,15 @@ async function main() {
   // await tx2.wait();
   // console.log({ tx2 });
 
-  const tx3 = await contracts.PublicResolver!.setTypedText(
-    ethers.utils.toUtf8Bytes(HOST),
-    ethers.utils.toUtf8Bytes(NAME),
-    ethers.utils.toUtf8Bytes(TLD),
-    ethers.utils.toUtf8Bytes("cname"),
-    "app.devnet.local",
-  );
-  await tx3.wait();
-  console.log({ tx3 });
+  // const tx3 = await contracts.PublicResolver!.setTypedText(
+  //   ethers.utils.toUtf8Bytes(HOST),
+  //   ethers.utils.toUtf8Bytes(NAME),
+  //   ethers.utils.toUtf8Bytes(TLD),
+  //   ethers.utils.toUtf8Bytes("cname"),
+  //   "app.devnet.local",
+  // );
+  // await tx3.wait();
+  // console.log({ tx3 });
 }
 
 main();

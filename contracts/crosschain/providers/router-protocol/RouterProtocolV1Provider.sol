@@ -1,5 +1,5 @@
-// // SPDX-License-Identifier: GPL-3.0
-// pragma solidity ^0.8.13;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
 
 // import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -13,7 +13,7 @@
 //   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 //   bytes32 public constant TERMINATOR_ROLE = keccak256("TERMINATOR_ROLE");
 
-//   function initialize(address _handler) public initializer {
+//   function initialize(address _handler) public initializer onlyRole(ADMIN_ROLE) {
 //     __RouterProtocolV1Provider_init(_handler);
 //   }
 

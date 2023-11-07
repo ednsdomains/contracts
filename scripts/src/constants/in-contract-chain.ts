@@ -16,5 +16,7 @@ export enum InContractChain {
   ZKSYNC,
   POLYGON_ZKEVM,
   LINEA,
-  BASE
+  BASE,
+  SCROLL,
+  CORE_DAO,
 }

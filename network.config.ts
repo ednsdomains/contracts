@@ -61,6 +61,10 @@ export enum Network {
   LINEA_GOERLI = 59140,
   BASE = 8453,
   BASE_GOERLI = 84531,
+  SCROLL = 534352,
+  SCROLL_SEPOLIA = 534351,
+  CORE_DAO = 1116,
+  CORE_DAO_TESTNET = 1115,
 }
 
 export const Mainnets = [
@@ -937,6 +941,58 @@ const config: INetworkConfig = {
       chainId: 10160,
       endpoint: {
         address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
+      },
+    },
+  },
+  [Network.SCROLL_SEPOLIA]: {
+    chain: InContractChain.SCROLL,
+    chainId: Network.SCROLL_SEPOLIA,
+    name: "Scroll Sepolia Testnet",
+    symbol: "ETH",
+    url: `https://sepolia-rpc.scroll.io`,
+    layerzero: {
+      chainId: 10214,
+      endpoint: {
+        address: "0x6098e96a28E02f27B1e6BD381f870F1C8Bd169d3",
+      },
+    },
+  },
+  [Network.SCROLL]: {
+    chain: InContractChain.SCROLL,
+    chainId: Network.SCROLL,
+    name: "Scroll",
+    symbol: "ETH",
+    url: `https://rpc.scroll.io`,
+    layerzero: {
+      chainId: 214,
+      endpoint: {
+        address: "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
+      },
+    },
+  },
+  [Network.CORE_DAO]: {
+    chain: InContractChain.CORE_DAO,
+    chainId: Network.CORE_DAO,
+    name: "Core Chain MainNet",
+    symbol: "CORE",
+    url: `https://rpc.coredao.org/`,
+    layerzero: {
+      chainId: 153,
+      endpoint: {
+        address: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
+      },
+    },
+  },
+  [Network.CORE_DAO_TESTNET]: {
+    chain: InContractChain.CORE_DAO,
+    chainId: Network.CORE_DAO_TESTNET,
+    name: "Core Chain TestNet",
+    symbol: "CORE",
+    url: `https://rpc.test.btcs.network/`,
+    layerzero: {
+      chainId: 10153,
+      endpoint: {
+        address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
       },
     },
   },

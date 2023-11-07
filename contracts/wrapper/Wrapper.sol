@@ -34,30 +34,18 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
 
   /* ========== Initializer ==========*/
 
-  function initialize(
-    IRegistry registry_,
-    string memory name_,
-    string memory symbol_
-  ) public initializer {
+  function initialize(IRegistry registry_, string memory name_, string memory symbol_) public initializer onlyRole(ADMIN_ROLE) {
     __Wrapper_init(registry_, name_, symbol_);
   }
 
-  function __Wrapper_init(
-    IRegistry registry_,
-    string memory name_,
-    string memory symbol_
-  ) internal onlyInitializing {
+  function __Wrapper_init(IRegistry registry_, string memory name_, string memory symbol_) internal onlyInitializing {
     __Wrapper_init_unchained(registry_, name_, symbol_);
     __Ownable_init();
     __AccessControl_init();
     __ERC165_init();
   }
 
-  function __Wrapper_init_unchained(
-    IRegistry registry_,
-    string memory name_,
-    string memory symbol_
-  ) internal onlyInitializing {
+  function __Wrapper_init_unchained(IRegistry registry_, string memory name_, string memory symbol_) internal onlyInitializing {
     _registry = registry_;
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(ADMIN_ROLE, _msgSender());
@@ -84,11 +72,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     }
   }
 
-  function _transfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal {
+  function _transfer(address from, address to, uint256 tokenId) internal {
     require(ownerOf(tokenId) == from, "ERC721: transfer from incorrect owner");
     require(to != address(0), "ERC721: transfer to the zero address");
     _beforeTokenTransfer(from, to, tokenId, 1);
@@ -109,31 +93,17 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     _afterTokenTransfer(from, to, tokenId, 1);
   }
 
-  function _safeTransfer(
-    address from,
-    address to,
-    uint256 tokenId,
-    bytes memory data
-  ) internal virtual {
+  function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal virtual {
     _transfer(from, to, tokenId);
     require(_checkOnERC721Received(from, to, tokenId, data), "ERC721: transfer to non ERC721Receiver implementer");
   }
 
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId,
-    bytes memory _data
-  ) public {
+  function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public {
     require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
     _safeTransfer(from, to, tokenId, _data);
   }
 
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId
-  ) public {
+  function safeTransferFrom(address from, address to, uint256 tokenId) public {
     safeTransferFrom(from, to, tokenId, "");
   }
 
@@ -142,11 +112,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     return (spender == owner || isApprovedForAll(owner, spender) || getApproved(tokenId) == spender);
   }
 
-  function transferFrom(
-    address from,
-    address to,
-    uint256 tokenId
-  ) public {
+  function transferFrom(address from, address to, uint256 tokenId) public {
     //solhint-disable-next-line max-line-length
     require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
     _transfer(from, to, tokenId);
@@ -168,11 +134,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     return ownerOf(tokenId);
   }
 
-  function _setApprovalForAll(
-    address owner,
-    address operator,
-    bool approved
-  ) internal virtual {
+  function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
     require(owner != operator, "ERC721: approve to caller");
     _operatorApprovals[owner][operator] = approved;
     emit ApprovalForAll(owner, operator, approved);
@@ -210,12 +172,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     _burn(tokenId);
   }
 
-  function _checkOnERC721Received(
-    address from,
-    address to,
-    uint256 tokenId,
-    bytes memory data
-  ) private returns (bool) {
+  function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory data) private returns (bool) {
     if (to.code.length > 0) {
       try IERC721ReceiverUpgradeable(to).onERC721Received(_msgSender(), from, tokenId, data) returns (bytes4 retval) {
         return retval == IERC721ReceiverUpgradeable.onERC721Received.selector;
@@ -234,19 +191,9 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
     }
   }
 
-  function _afterTokenTransfer(
-    address from,
-    address to,
-    uint256 firstTokenId,
-    uint256 batchSize
-  ) internal {}
+  function _afterTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) internal {}
 
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256, /* firstTokenId */
-    uint256 batchSize
-  ) internal {
+  function _beforeTokenTransfer(address from, address to, uint256 /* firstTokenId */, uint256 batchSize) internal {
     if (batchSize > 1) {
       if (from != address(0)) {
         _balances[from] -= batchSize;
@@ -285,11 +232,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
 
   /* ========== ERC-4907 ==========*/
 
-  function setUser(
-    uint256 tokenId,
-    address newUser,
-    uint64 expiry
-  ) public {
+  function setUser(uint256 tokenId, address newUser, uint64 expiry) public {
     TokenRecord memory _tokenRecord = _registry.getTokenRecord(tokenId);
     address owner = ownerOf(tokenId);
     address user = userOf(tokenId);

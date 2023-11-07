@@ -7,12 +7,7 @@ import "./BaseRegistrarController.sol";
 contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegistrarController {
   using SafeERC20Upgradeable for IERC20Upgradeable;
 
-  function initialize(
-    IERC20Upgradeable token_,
-    IRegistrar registrar_,
-    IRoot root_,
-    uint256 coinId
-  ) public initializer {
+  function initialize(IERC20Upgradeable token_, IRegistrar registrar_, IRoot root_, uint256 coinId) public initializer onlyRole(ADMIN_ROLE) {
     __BaseRegistrarController_init(token_, registrar_, root_, coinId);
     __ClassicalRegistrarController_init();
   }
@@ -31,23 +26,11 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     return _registrar.isAvailable(name, tld);
   }
 
-  function register(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) public payable onlyRole(OPERATOR_ROLE) {
+  function register(bytes memory name, bytes memory tld, address owner, uint64 expiry) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.register(_msgSender(), name, tld, owner, expiry);
   }
 
-  function register(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry,
-    uint256 price,
-    bytes calldata signature
-  ) public payable {
+  function register(bytes memory name, bytes memory tld, address owner, uint64 expiry, uint256 price, bytes calldata signature) public payable {
     revert("FORBIDDEN");
     // require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     // require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");
@@ -55,21 +38,11 @@ contract ClassicalRegistrarController is IClassicalRegistrarController, BaseRegi
     // _token.safeTransferFrom(_msgSender(), address(_root), price);
   }
 
-  function renew(
-    bytes memory name,
-    bytes memory tld,
-    uint64 expiry
-  ) public payable onlyRole(OPERATOR_ROLE) {
+  function renew(bytes memory name, bytes memory tld, uint64 expiry) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.renew(_msgSender(), name, tld, expiry);
   }
 
-  function renew(
-    bytes memory name,
-    bytes memory tld,
-    uint64 expiry,
-    uint256 price,
-    bytes calldata signature
-  ) public payable {
+  function renew(bytes memory name, bytes memory tld, uint64 expiry, uint256 price, bytes calldata signature) public payable {
     revert("FORBIDDEN");
     // require(_verify(keccak256(abi.encodePacked(name, tld, expiry, price)), signature, _root.getAuthorizer()), "INVALID_SIGNATURE");
     // require(_token.allowance(_msgSender(), address(this)) >= price, "INSUFFICIENT_BALANCE");

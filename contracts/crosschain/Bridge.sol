@@ -32,7 +32,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     Chain selfChain,
     IRegistry registry_,
     IPortal portal_
-  ) public initializer {
+  ) public initializer onlyRole(ADMIN_ROLE){
     __Bridge_init(selfChain, registry_, portal_);
   }
 

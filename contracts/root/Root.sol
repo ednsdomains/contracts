@@ -20,7 +20,7 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
-  function initialize(IRegistry registry_, IRegistrar registrar) public initializer {
+  function initialize(IRegistry registry_, IRegistrar registrar) public initializer onlyRole(ADMIN_ROLE) {
     __Root_init(registry_, registrar);
   }
 
@@ -36,15 +36,7 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
     _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function register(
-    Chain[] memory chains,
-    bytes memory tld,
-    address resolver,
-    uint64 expiry,
-    address owner,
-    bool enable,
-    TldClass class_
-  ) public onlyRole(ADMIN_ROLE) {
+  function register(Chain[] memory chains, bytes memory tld, address resolver, uint64 expiry, address owner, bool enable, TldClass class_) public onlyRole(ADMIN_ROLE) {
     if (class_ == TldClass.CLASSICAL) {
       require(chains.length == 0, "INVALID_CHAINS");
     } else {
@@ -75,19 +67,11 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
     _registry.setResolver(keccak256(tld), resolver_);
   }
 
-  function setControllerApproval(
-    bytes32 tld,
-    address controller,
-    bool approved
-  ) public onlyRole(ADMIN_ROLE) {
+  function setControllerApproval(bytes32 tld, address controller, bool approved) public onlyRole(ADMIN_ROLE) {
     _registrar.setControllerApproval(tld, controller, approved);
   }
 
-  function setWrapper(
-    bytes32 tld,
-    bool enable,
-    address address_
-  ) public onlyRole(ADMIN_ROLE) {
+  function setWrapper(bytes32 tld, bool enable, address address_) public onlyRole(ADMIN_ROLE) {
     _registry.setWrapper(tld, enable, address_);
   }
 

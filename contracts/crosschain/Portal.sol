@@ -16,7 +16,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
 
   mapping(CrossChainProvider => address) private _providers;
 
-  function initialize() public initializer {
+  function initialize() public initializer onlyRole(ADMIN_ROLE) {
     __Portal_init();
   }
 
@@ -33,12 +33,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function send_(
-    address payable sender,
-    Chain dstChain,
-    CrossChainProvider provider,
-    bytes calldata payload
-  ) external payable onlyRole(SENDER_ROLE) {
+  function send_(address payable sender, Chain dstChain, CrossChainProvider provider, bytes calldata payload) external payable onlyRole(SENDER_ROLE) {
     if (provider == CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       try ILayerZeroProvider(_providers[provider]).send_{ value: msg.value }(sender, dstChain, payload) {
         emit PacketSent(sender, dstChain, provider);
@@ -60,11 +55,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
     }
   }
 
-  function estimateFee(
-    Chain dstChain,
-    CrossChainProvider provider,
-    bytes calldata payload
-  ) external view returns (uint256) {
+  function estimateFee(Chain dstChain, CrossChainProvider provider, bytes calldata payload) external view returns (uint256) {
     if (provider == CrossChainProvider.LAYERZERO && _providers[provider] != address(0)) {
       return ILayerZeroProvider(_providers[provider]).estimateFee(dstChain, payload);
     } else {

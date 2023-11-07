@@ -26,27 +26,15 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   mapping(Chain => address) private _remoteSynchronizers;
   mapping(address => CrossChainProvider) private _userDefaultProviders;
 
-  function initialize(
-    Chain selfChain,
-    IRegistrar registrar_,
-    IPortal portal_
-  ) public initializer {
+  function initialize(Chain selfChain, IRegistrar registrar_, IPortal portal_) public initializer onlyRole(ADMIN_ROLE) {
     __Synchronizer_init(selfChain, registrar_, portal_);
   }
 
-  function __Synchronizer_init(
-    Chain selfChain,
-    IRegistrar registrar_,
-    IPortal portal_
-  ) internal onlyInitializing {
+  function __Synchronizer_init(Chain selfChain, IRegistrar registrar_, IPortal portal_) internal onlyInitializing {
     __Synchronizer_init_unchained(selfChain, registrar_, portal_);
   }
 
-  function __Synchronizer_init_unchained(
-    Chain selfChain,
-    IRegistrar registrar_,
-    IPortal portal_
-  ) internal onlyInitializing {
+  function __Synchronizer_init_unchained(Chain selfChain, IRegistrar registrar_, IPortal portal_) internal onlyInitializing {
     _registrar = registrar_;
     _portal = portal_;
     _selfChain = selfChain;
@@ -75,12 +63,7 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     return abi.decode(ctx, (SyncAction, bytes));
   }
 
-  function estimateSyncFee(
-    SyncAction action,
-    CrossChainProvider provider,
-    Chain[] memory dstChains,
-    bytes memory ews
-  ) public view returns (uint256) {
+  function estimateSyncFee(SyncAction action, CrossChainProvider provider, Chain[] memory dstChains, bytes memory ews) public view returns (uint256) {
     uint256 fee = 0;
     for (uint256 i = 0; i < dstChains.length; i++) {
       Chain dstChain = dstChains[i];
@@ -94,23 +77,11 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
     return fee;
   }
 
-  function sync(
-    address payable sender,
-    SyncAction action,
-    CrossChainProvider provider,
-    Chain[] memory dstChains,
-    bytes memory ews
-  ) external payable onlyRole(REQUESTOR_ROLE) {
+  function sync(address payable sender, SyncAction action, CrossChainProvider provider, Chain[] memory dstChains, bytes memory ews) external payable onlyRole(REQUESTOR_ROLE) {
     _sync(sender, action, provider, dstChains, ews);
   }
 
-  function _sync(
-    address payable sender,
-    SyncAction action,
-    CrossChainProvider provider,
-    Chain[] memory dstChains,
-    bytes memory ews
-  ) private {
+  function _sync(address payable sender, SyncAction action, CrossChainProvider provider, Chain[] memory dstChains, bytes memory ews) private {
     bytes memory ctx = _packContext(action, ews);
     for (uint256 i = 0; i < dstChains.length; i++) {
       Chain dstChain = dstChains[i];

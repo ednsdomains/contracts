@@ -19,7 +19,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
 
   bytes public v1AdaptorParameters;
 
-  function initialize(address lzEndpoint_, IPortal portal) public initializer {
+  function initialize(address lzEndpoint_, IPortal portal) public initializer onlyRole(ADMIN_ROLE) {
     __LayerZeroProvider_init(lzEndpoint_, portal);
   }
 
@@ -108,7 +108,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
     return address(_lzEndpoint);
   }
 
-  function forceResume(uint16 _srcChainId, bytes calldata _srcAddress) external onlyRole(OPERATOR_ROLE){
+  function forceResume(uint16 _srcChainId, bytes calldata _srcAddress) external onlyRole(OPERATOR_ROLE) {
     _lzEndpoint.forceResumeReceive(_srcChainId, _srcAddress);
   }
 

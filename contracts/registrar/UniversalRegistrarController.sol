@@ -9,12 +9,7 @@ import "../root/interfaces/IRoot.sol";
 contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegistrarController {
   using SafeERC20Upgradeable for IERC20Upgradeable;
 
-  function initialize(
-    IERC20Upgradeable token_,
-    IRegistrar registrar_,
-    IRoot root_,
-    uint256 coinId
-  ) public initializer {
+  function initialize(IERC20Upgradeable token_, IRegistrar registrar_, IRoot root_, uint256 coinId) public initializer onlyRole(ADMIN_ROLE) {
     __BaseRegistrarController_init(token_, registrar_, root_, coinId);
     __UniversalRegistrarController_init();
   }
@@ -33,41 +28,19 @@ contract UniversalRegistrarController is IUniversalRegistrarController, BaseRegi
     return _registrar.isAvailable(name, tld);
   }
 
-  function register(
-    bytes memory name,
-    bytes memory tld,
-    address owner,
-    uint64 expiry
-  ) public payable onlyRole(OPERATOR_ROLE) {
+  function register(bytes memory name, bytes memory tld, address owner, uint64 expiry) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.register(_msgSender(), name, tld, owner, expiry);
   }
 
-  function register(
-    bytes memory,
-    bytes memory,
-    address,
-    uint64,
-    uint256,
-    bytes calldata
-  ) public payable {
+  function register(bytes memory, bytes memory, address, uint64, uint256, bytes calldata) public payable {
     revert("FORBIDDEN");
   }
 
-  function renew(
-    bytes memory name,
-    bytes memory tld,
-    uint64 expiry
-  ) public payable onlyRole(OPERATOR_ROLE) {
+  function renew(bytes memory name, bytes memory tld, uint64 expiry) public payable onlyRole(OPERATOR_ROLE) {
     _registrar.renew(_msgSender(), name, tld, expiry);
   }
 
-  function renew(
-    bytes memory,
-    bytes memory,
-    uint64,
-    uint256,
-    bytes calldata
-  ) public payable {
+  function renew(bytes memory, bytes memory, uint64, uint256, bytes calldata) public payable {
     revert("FORBIDDEN");
   }
 

@@ -18,7 +18,7 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
 
   mapping(uint256 => Order) private _orders;
 
-  function initialize(IERC20 token_) public initializer {
+  function initialize(IERC20 token_) public initializer onlyRole(ADMIN_ROLE) {
     __Rental_init(token_);
   }
 
@@ -30,12 +30,7 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
     _token = token_;
   }
 
-  function list(
-    address wrapper,
-    uint256 tokenId,
-    uint64 expiry,
-    uint256 amount
-  ) public whenNotPaused {
+  function list(address wrapper, uint256 tokenId, uint64 expiry, uint256 amount) public whenNotPaused {
     require(IWrapper(wrapper).supportsInterface(type(IWrapper).interfaceId), ""); // TODO:
     require(expiry + MINIMUM_RENTAL_PERIOD >= block.timestamp, ""); // TODO:
     require(block.timestamp + MINIMUM_RENTAL_PERIOD >= IWrapper(wrapper).userExpiry(tokenId), ""); // TODO
@@ -54,11 +49,7 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
     emit Unlisted(tokenId);
   }
 
-  function rent(
-    address wrapper,
-    uint256 tokenId,
-    address newUser
-  ) public whenNotPaused {
+  function rent(address wrapper, uint256 tokenId, address newUser) public whenNotPaused {
     require(IWrapper(wrapper).supportsInterface(type(IWrapper).interfaceId), ""); // TODO:
     require(IWrapper(wrapper).userOf(tokenId) == _orders[tokenId].creator && IWrapper(wrapper).userExpiry(tokenId) > block.timestamp + MINIMUM_RENTAL_PERIOD, ""); // TODO:
     require(_token.balanceOf(_msgSender()) >= _orders[tokenId].amount && _token.allowance(_msgSender(), address(this)) >= _orders[tokenId].amount, "INSUFFICIENT_FUND");
