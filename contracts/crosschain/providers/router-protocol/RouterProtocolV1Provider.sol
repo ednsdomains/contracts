@@ -13,7 +13,7 @@ pragma solidity ^0.8.13;
 //   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 //   bytes32 public constant TERMINATOR_ROLE = keccak256("TERMINATOR_ROLE");
 
-//   function initialize(address _handler) public initializer onlyRole(ADMIN_ROLE) {
+//   function initialize(address _handler) public initializer {
 //     __RouterProtocolV1Provider_init(_handler);
 //   }
 

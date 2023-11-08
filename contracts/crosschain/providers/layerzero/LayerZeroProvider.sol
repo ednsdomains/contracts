@@ -19,7 +19,7 @@ contract LayerZeroProvider is ILayerZeroProvider, UUPSUpgradeable, AccessControl
 
   bytes public v1AdaptorParameters;
 
-  function initialize(address lzEndpoint_, IPortal portal) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(address lzEndpoint_, IPortal portal) public initializer {
     __LayerZeroProvider_init(lzEndpoint_, portal);
   }
 

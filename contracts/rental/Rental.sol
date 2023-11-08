@@ -18,7 +18,7 @@ contract Rental is IRental, AccessControlUpgradeable, UUPSUpgradeable, PausableU
 
   mapping(uint256 => Order) private _orders;
 
-  function initialize(IERC20 token_) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IERC20 token_) public initializer {
     __Rental_init(token_);
   }
 

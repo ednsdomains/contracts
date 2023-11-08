@@ -27,6 +27,7 @@ import delay from "delay";
 import { LayerZeroProvider } from "../../typechain/LayerZeroProvider";
 import { Bridge } from "../../typechain/Bridge";
 import { IContracts } from "./interfaces/contracts";
+import { InContractChain } from "./constants/in-contract-chain";
 
 export interface IDeployInput {
   chainId: number;
@@ -226,7 +227,7 @@ export const deployClassicalRegistrarController = async (input: IDeployInput): P
   if (!input.contracts.Root) throw new Error("`Root` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "ClassicalRegistrarController");
   const factory = await ethers.getContractFactory("ClassicalRegistrarController", input.signer);
-  const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
+  const COIN_ID = NetworkConfig[await input.signer.getChainId()]?.slip44?.coinId || 0;
   const _contract = await upgrades.deployProxy(
     factory,
     [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID],
@@ -246,7 +247,7 @@ export const deployUniversalRegistrarController = async (input: IDeployInput): P
   if (Testnets.includes(input.chainId) && !input.contracts.Token) throw new Error("`Token` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "UniversalRegistrarController");
   const factory = await ethers.getContractFactory("UniversalRegistrarController", input.signer);
-  const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
+  const COIN_ID = NetworkConfig[await input.signer.getChainId()]?.slip44?.coinId || 0;
   const _contract = await upgrades.deployProxy(
     factory,
     [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID],
@@ -266,7 +267,7 @@ export const deployOmniRegistrarController = async (input: IDeployInput): Promis
   if (Testnets.includes(input.chainId) && !input.contracts.Token) throw new Error("`Token` is not available");
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "OmniRegistrarController");
   const factory = await ethers.getContractFactory("OmniRegistrarController", input.signer);
-  const COIN_ID = NetworkConfig[await input.signer.getChainId()].slip44?.coinId || 0;
+  const COIN_ID = NetworkConfig[await input.signer.getChainId()]?.slip44?.coinId || 0;
   const _contract = await upgrades.deployProxy(
     factory,
     [Testnets.includes(input.chainId) ? input.contracts.Token!.address : ZERO_ADDRESS, input.contracts.Registrar.address, input.contracts.Root.address, COIN_ID],
@@ -293,7 +294,7 @@ export const deployPortal = async (input: IDeployInput): Promise<Portal> => {
 export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
   if (!input.contracts.Registry?.Diamond) throw new Error("`Registry` is not available");
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
-  const chain = NetworkConfig[input.chainId].chain;
+  const chain = NetworkConfig[input.chainId]?.chain || InContractChain.ETHEREUM;
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Bridge");
   const factory = await ethers.getContractFactory("Bridge", input.signer);
   const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.Diamond.address, input.contracts.Portal.address], { kind: "uups" });
@@ -306,7 +307,7 @@ export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
 export const deploySynchronizer = async (input: IDeployInput): Promise<Synchronizer> => {
   if (!input.contracts.Registrar) throw new Error("`Registrar` is not available");
   if (!input.contracts.Portal) throw new Error("`Portal` is not available");
-  const chain = NetworkConfig[input.chainId].chain;
+  const chain = NetworkConfig[input.chainId]?.chain || InContractChain.ETHEREUM;
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Synchronizer");
   const factory = await ethers.getContractFactory("Synchronizer", input.signer);
   const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registrar.address, input.contracts.Portal.address], { kind: "uups" });
@@ -342,23 +343,27 @@ export const deployMigrationManager = async (input: IDeployInput): Promise<Migra
 };
 
 const _beforeDeploy = async (signer: SignerWithAddress, chainId: number, name: ContractName) => {
-  // Check is the contract already deployed on to the chain
-  const isDeployed = await isContractDeployed(chainId, name);
-  if (isDeployed) throw new Error(`${name} is already deployed - [${await getContractAddress(chainId, name)})}]`);
-  console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
-  // Check is the signer account has enough balance
-  const balance = await getBalance(signer);
-  if (balance.eq(0)) throw new Error(`Signer account ${signer.address} has [0] balance`);
-  // Announce ready for the deployment
-  console.log(`Deployment initiated, contract [${name}] will be deploy on [${NetworkConfig[chainId].name}] in 3 seconds...`);
-  console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
-  await delay(3000);
+  if (chainId !== 31337) {
+    // Check is the contract already deployed on to the chain
+    const isDeployed = await isContractDeployed(chainId, name);
+    if (isDeployed) throw new Error(`${name} is already deployed - [${await getContractAddress(chainId, name)})}]`);
+    console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
+    // Check is the signer account has enough balance
+    const balance = await getBalance(signer);
+    if (balance.eq(0)) throw new Error(`Signer account ${signer.address} has [0] balance`);
+    // Announce ready for the deployment
+    console.log(`Deployment initiated, contract [${name}] will be deploy on [${NetworkConfig[chainId]?.name || "Local"}] in 3 seconds...`);
+    console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
+    await delay(3000);
+  }
 };
 
 const _afterDeploy = async (chainId: number, name: ContractName, contract: Contract, tx: Transaction) => {
-  console.log(`Contract [${name}] has been deployed on [${NetworkConfig[chainId].name}]`);
-  console.log(`Address - [${contract.address}]`);
-  console.log(`Transaction Hash - [${tx.hash}]`);
+  if (chainId !== 31337) {
+    console.log(`Contract [${name}] has been deployed on [${NetworkConfig[chainId]?.name || "Local"}]`);
+    console.log(`Address - [${contract.address}]`);
+    console.log(`Transaction Hash - [${tx.hash}]`);
+  }
   const ALL_CONTRACTS_DATA = await getAllContractsData();
   const index = ALL_CONTRACTS_DATA.findIndex((c) => c.chainId === chainId);
   if (index !== -1) {
@@ -371,5 +376,4 @@ const _afterDeploy = async (chainId: number, name: ContractName, contract: Contr
     ALL_CONTRACTS_DATA.push(_contract);
   }
   if (chainId !== 0) await setAllContractsData(ALL_CONTRACTS_DATA);
-  // await verifyContract(contract.address);
 };

@@ -23,7 +23,7 @@ contract Registrar is IRegistrar, SynchronizerApplication, AccessControlUpgradea
   IRegistry private _registry;
   IPublicResolver private _resolver;
 
-  function initialize(IRegistry registry_, IPublicResolver resolver_) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IRegistry registry_, IPublicResolver resolver_) public initializer {
     __Registrar_init(registry_, resolver_);
   }
 

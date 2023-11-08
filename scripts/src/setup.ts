@@ -220,7 +220,7 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
     }
   }
 
-  if (Testnets.includes(input.chainId)) {
+  if (Testnets.includes(input.chainId) || input.chainId === 31337) {
     if ((await input.contracts.DefaultWrapper.name()) !== "Test Domains") {
       const tx = await input.contracts.DefaultWrapper.setName("Test Domains");
       await tx.wait();
@@ -705,30 +705,34 @@ export const setupMigrationManager = async (input: ISetupInput) => {
 };
 
 const _beforeSetup = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName) => {
-  console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
-  const balance = await getBalance(signer);
-  if (balance.eq(0)) {
-    throw new Error(`Signer account ${signer.address} has [0] balance`);
-  } else {
-    console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+  if (chainId !== 31337) {
+    console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
+    const balance = await getBalance(signer);
+    if (balance.eq(0)) {
+      throw new Error(`Signer account ${signer.address} has [0] balance`);
+    } else {
+      console.log(`Signer account has ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId]?.symbol}`);
+    }
+    console.log(`Setup procedure initiated, contract [${name}] will be setup on [${NetworkConfig[chainId]?.name || "Local"}] in 3 seconds...`);
+    console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
+    await delay(3000);
   }
-  console.log(`Setup procedure initiated, contract [${name}] will be setup on [${NetworkConfig[chainId].name}] in 3 seconds...`);
-  console.log("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️\n");
-  await delay(3000);
 };
 
 const _afterSetup = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName, txs: Transaction[], hasError?: boolean) => {
-  console.log(`Contract [${name}] has been setup on [${NetworkConfig[chainId].name}]`);
-  if (txs.length) {
-    if (hasError) console.log(`⚠️ Error occurred while setting up [${name}] on [${NetworkConfig[chainId].name}]`);
-    console.log(`✅ With the following transaction hash(s): `);
-    for (const tx of txs) {
-      console.log(`- ${tx.hash}`);
+  if (chainId !== 31337) {
+    console.log(`Contract [${name}] has been setup on [${NetworkConfig[chainId]?.name || "Local"}]`);
+    if (txs.length) {
+      if (hasError) console.log(`⚠️ Error occurred while setting up [${name}] on [${NetworkConfig[chainId]?.name || "Local"}]`);
+      console.log(`✅ With the following transaction hash(s): `);
+      for (const tx of txs) {
+        console.log(`- ${tx.hash}`);
+      }
+    } else {
+      console.log(`❌ No transaction has been send out `);
     }
-  } else {
-    console.log(`❌ No transaction has been send out `);
-  }
 
-  const balance = await getBalance(signer);
-  console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId].symbol}`);
+    const balance = await getBalance(signer);
+    console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId]?.symbol}`);
+  }
 };

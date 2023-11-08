@@ -34,7 +34,7 @@ contract Wrapper is IWrapper, ERC2981Upgradeable, AccessControlUpgradeable, Owna
 
   /* ========== Initializer ==========*/
 
-  function initialize(IRegistry registry_, string memory name_, string memory symbol_) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IRegistry registry_, string memory name_, string memory symbol_) public initializer {
     __Wrapper_init(registry_, name_, symbol_);
   }
 

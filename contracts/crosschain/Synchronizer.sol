@@ -26,7 +26,7 @@ contract Synchronizer is ISynchronizer, IReceiver, UUPSUpgradeable, AccessContro
   mapping(Chain => address) private _remoteSynchronizers;
   mapping(address => CrossChainProvider) private _userDefaultProviders;
 
-  function initialize(Chain selfChain, IRegistrar registrar_, IPortal portal_) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(Chain selfChain, IRegistrar registrar_, IPortal portal_) public initializer {
     __Synchronizer_init(selfChain, registrar_, portal_);
   }
 

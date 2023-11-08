@@ -12,7 +12,7 @@ import "./profile/TextResolver.sol";
 import "./profile/TypedTextResolver.sol";
 
 contract PublicResolver is IPublicResolver, AddressResolver, MultiCoinAddressResolver, NFTResolver, TextResolver, TypedTextResolver {
-  function initialize(IRegistry registry_) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IRegistry registry_) public initializer {
     __PublicResolver_init(registry_);
   }
 

@@ -13,7 +13,7 @@ contract MigrationManager is ContextUpgradeable, AccessControlUpgradeable, UUPSU
 
   event Migrated(address owwner, string name, string tld, uint256 oldTokenId);
 
-  function initialize(IRegistrar registrar_) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IRegistrar registrar_) public initializer {
     __MigrationManager_init(registrar_);
   }
 

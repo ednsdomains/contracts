@@ -2,6 +2,7 @@ import _ from "lodash";
 import TLDs from "../../../static/tlds.json";
 
 export const getClassicalTlds = async (chainId: number): Promise<string[] | undefined> => {
+  if (chainId === 31337) chainId = 5;
   return _.flatten(TLDs.classical.filter((i) => i.chainId === chainId).map((i) => i.names));
 };
 

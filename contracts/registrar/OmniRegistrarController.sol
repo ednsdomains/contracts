@@ -9,7 +9,7 @@ import "../root/interfaces/IRoot.sol";
 contract OmniRegistrarController is IOmniRegistrarController, BaseRegistrarController {
   using SafeERC20Upgradeable for IERC20Upgradeable;
 
-  function initialize(IERC20Upgradeable token_, IRegistrar registrar_, IRoot root_, uint256 coinId) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IERC20Upgradeable token_, IRegistrar registrar_, IRoot root_, uint256 coinId) public initializer {
     __BaseRegistrarController_init(token_, registrar_, root_, coinId);
     __OmniRegistrarController_init();
   }

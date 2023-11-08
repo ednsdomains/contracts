@@ -20,7 +20,7 @@ contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
-  function initialize(IRegistry registry_, IRegistrar registrar) public initializer onlyRole(ADMIN_ROLE) {
+  function initialize(IRegistry registry_, IRegistrar registrar) public initializer {
     __Root_init(registry_, registrar);
   }
 

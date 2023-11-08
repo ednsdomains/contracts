@@ -16,7 +16,7 @@ contract Portal is IPortal, UUPSUpgradeable, AccessControlUpgradeable {
 
   mapping(CrossChainProvider => address) private _providers;
 
-  function initialize() public initializer onlyRole(ADMIN_ROLE) {
+  function initialize() public initializer {
     __Portal_init();
   }
 

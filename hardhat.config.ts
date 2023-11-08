@@ -21,7 +21,7 @@ dotenv.config();
 // https://hardhat.org/guides/compile-contracts/
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "goerli",
+  // defaultNetwork: "goerli",
   zksolc: {
     version: "1.3.10",
     compilerSource: "binary",

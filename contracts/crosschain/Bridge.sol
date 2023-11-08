@@ -28,28 +28,16 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
 
   mapping(address => uint256) private _nonces;
 
-  function initialize(
-    Chain selfChain,
-    IRegistry registry_,
-    IPortal portal_
-  ) public initializer onlyRole(ADMIN_ROLE){
+  function initialize(Chain selfChain, IRegistry registry_, IPortal portal_) public initializer {
     __Bridge_init(selfChain, registry_, portal_);
   }
 
-  function __Bridge_init(
-    Chain selfChain,
-    IRegistry registry_,
-    IPortal portal_
-  ) internal onlyInitializing {
+  function __Bridge_init(Chain selfChain, IRegistry registry_, IPortal portal_) internal onlyInitializing {
     __Bridge_init_unchained(selfChain, registry_, portal_);
     __ReentrancyGuard_init_unchained();
   }
 
-  function __Bridge_init_unchained(
-    Chain selfChain,
-    IRegistry registry_,
-    IPortal portal_
-  ) internal onlyInitializing {
+  function __Bridge_init_unchained(Chain selfChain, IRegistry registry_, IPortal portal_) internal onlyInitializing {
     _registry = registry_;
     _portal = portal_;
     _selfChain = selfChain;
@@ -76,24 +64,11 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     emit Received(ref);
   }
 
-  function getRef(
-    uint256 nonce,
-    Chain dstChain,
-    CrossChainProvider provider,
-    bytes32 name,
-    bytes32 tld,
-    address owner,
-    uint64 expiry
-  ) public pure returns (bytes32) {
+  function getRef(uint256 nonce, Chain dstChain, CrossChainProvider provider, bytes32 name, bytes32 tld, address owner, uint64 expiry) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(nonce, dstChain, provider, name, tld, owner, expiry));
   }
 
-  function estimateFee(
-    Chain dstChain,
-    CrossChainProvider provider,
-    bytes32 name,
-    bytes32 tld
-  ) external view returns (uint256) {
+  function estimateFee(Chain dstChain, CrossChainProvider provider, bytes32 name, bytes32 tld) external view returns (uint256) {
     uint256 nonce = _nonces[_msgSender()];
     bytes32 ref = getRef(nonce, dstChain, provider, name, tld, _registry.getOwner(name, tld), _registry.getExpiry(name, tld));
     address dstBridge = getRemoteBridge(dstChain);
@@ -104,14 +79,7 @@ contract Bridge is IBridge, UUPSUpgradeable, PausableUpgradeable, AccessControlU
     return _portal.estimateFee(dstChain, provider, payload);
   }
 
-  function bridge(
-    uint256 nonce,
-    bytes32 ref,
-    Chain dstChain,
-    CrossChainProvider provider,
-    bytes32 name,
-    bytes32 tld
-  ) external payable whenNotPaused nonReentrant {
+  function bridge(uint256 nonce, bytes32 ref, Chain dstChain, CrossChainProvider provider, bytes32 name, bytes32 tld) external payable whenNotPaused nonReentrant {
     require(_selfChain != dstChain, "SELF_CHAIN");
 
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
