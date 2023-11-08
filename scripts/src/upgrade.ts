@@ -134,6 +134,7 @@ export async function upgradeWrapper(input: IUpgradeInput): Promise<void> {
   if (!input.contracts.DefaultWrapper) throw new Error("`DefaultWrapper` is not available");
   const factory = await ethers.getContractFactory("Wrapper", input.signer);
   await _beforeUpgrade(input.signer, input.chainId, "DefaultWrapper");
+  // await upgrades.forceImport(input.contracts.DefaultWrapper.address, factory);
   await upgrades.upgradeProxy(input.contracts.DefaultWrapper, factory);
   await _afterUpgrade(input.signer, input.chainId, "DefaultWrapper", input.contracts.DefaultWrapper);
 }
