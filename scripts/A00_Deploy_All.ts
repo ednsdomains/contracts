@@ -22,7 +22,6 @@ import NetworkConfig from "../network.config";
 async function main() {
   const [signer] = await ethers.getSigners();
   const chainId = await signer.getChainId();
-  // const [Classical_Tlds, Universal_Tlds, Omni_Tlds] = await Promise.all([getClassicalTlds(chainId), getUniversalTlds(chainId), getOmniTlds(chainId)]);
   let contracts = await getContracts(signer);
   await deployRegistry({ signer, chainId, contracts });
   contracts = await getContracts(signer);

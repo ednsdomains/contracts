@@ -18,7 +18,7 @@ import {
   MigrationManager,
 } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
-import { Contract, Transaction } from "ethers";
+import { Contract, Transaction, Wallet } from "ethers";
 import { getAllContractsData, getContractAddress, getContracts, isContractDeployed } from "./lib/get-contracts";
 import { getBalance } from "./lib/get-balance";
 import _ from "lodash";
@@ -43,7 +43,7 @@ const _deployRegistry = async (input: IDeployInput): Promise<Registry | undefine
     const factory = await ethers.getContractFactory("Registry", input.signer);
     const _contract = await factory.deploy(input.signer.address, input.contracts.Registry.facets.DiamondCutFacet.address);
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.Diamond", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.Diamond", _contract, _contract.deployTransaction);
     return _contract;
   } catch (err) {
     console.error(err);
@@ -57,7 +57,7 @@ export const _deployRegistryInit = async (input: IDeployInput): Promise<Registry
     const factory = await ethers.getContractFactory("RegistryInit", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.Init", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.Init", _contract, _contract.deployTransaction);
     return _contract;
   } catch (err) {
     console.error(err);
@@ -71,7 +71,7 @@ export const _deployRegistryDiamondCutFacet = async (input: IDeployInput): Promi
     const factory = await ethers.getContractFactory("DiamondCutFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.DiamondCutFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.DiamondCutFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -84,7 +84,7 @@ export const _deployRegistryDiamondLoupeFacet = async (input: IDeployInput): Pro
     const factory = await ethers.getContractFactory("DiamondLoupeFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.DiamondLoupeFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.DiamondLoupeFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -97,7 +97,7 @@ export const _deployRegistryAccessControlFacet = async (input: IDeployInput): Pr
     const factory = await ethers.getContractFactory("AccessControlFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.AccessControlFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.AccessControlFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -110,7 +110,7 @@ export const _deployRegistryTldRecordFacet = async (input: IDeployInput): Promis
     const factory = await ethers.getContractFactory("TldRecordFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.TldRecordFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.TldRecordFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -123,7 +123,7 @@ export const _deployRegistryDomainRecordFacet = async (input: IDeployInput): Pro
     const factory = await ethers.getContractFactory("DomainRecordFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.DomainRecordFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.DomainRecordFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -136,7 +136,7 @@ export const _deployRegistryHostRecordFacet = async (input: IDeployInput): Promi
     const factory = await ethers.getContractFactory("HostRecordFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.HostRecordFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.HostRecordFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -149,7 +149,7 @@ export const _deployRegistryBaseRegistryFacet = async (input: IDeployInput): Pro
     const factory = await ethers.getContractFactory("BaseRegistryFacet", input.signer);
     const _contract = await factory.deploy();
     await _contract.deployed();
-    await _afterDeploy(await input.signer.getChainId(), "Registry.BaseRegistryFacet", _contract, _contract.deployTransaction);
+    await _afterDeploy(input.signer, input.chainId, "Registry.BaseRegistryFacet", _contract, _contract.deployTransaction);
   } catch (err) {
     console.error(err);
   }
@@ -173,7 +173,7 @@ export const deployWrapper = async (NFT_NAME: string, NFT_SYMBOL: string, input:
   const factory = await ethers.getContractFactory("Wrapper", input.signer);
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address, NFT_NAME, NFT_SYMBOL], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "DefaultWrapper", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "DefaultWrapper", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -184,7 +184,7 @@ export const deployPublicResolver = async (input: IDeployInput): Promise<PublicR
   const factory = await ethers.getContractFactory("PublicResolver", input.signer);
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address], { kind: "uups", unsafeAllow: ["delegatecall"] });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "PublicResolver", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "PublicResolver", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -196,7 +196,7 @@ export const deployRegistrar = async (input: IDeployInput): Promise<Registrar> =
   const factory = await ethers.getContractFactory("Registrar", input.signer);
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address, input.contracts.PublicResolver.address], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "Registrar", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "Registrar", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -208,7 +208,7 @@ export const deployRoot = async (input: IDeployInput): Promise<Root> => {
   const factory = await ethers.getContractFactory("Root", input.signer);
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registry.Diamond.address, input.contracts.Registrar.address], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "Root", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "Root", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -217,7 +217,7 @@ export const deployTokenMock = async (input: IDeployInput): Promise<TokenMock> =
   await _beforeDeploy(input.signer, await input.signer.getChainId(), "Token");
   const factory = await ethers.getContractFactory("TokenMock", input.signer);
   const contract = await factory.deploy();
-  await _afterDeploy(await input.signer.getChainId(), "Token", contract, contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "Token", contract, contract.deployTransaction);
   return contract;
 };
 
@@ -236,7 +236,7 @@ export const deployClassicalRegistrarController = async (input: IDeployInput): P
     },
   );
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "ClassicalRegistrarController", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "ClassicalRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -256,7 +256,7 @@ export const deployUniversalRegistrarController = async (input: IDeployInput): P
     },
   );
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "UniversalRegistrarController", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "UniversalRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -276,7 +276,7 @@ export const deployOmniRegistrarController = async (input: IDeployInput): Promis
     },
   );
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "OmniRegistrarController", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "OmniRegistrarController", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -286,7 +286,7 @@ export const deployPortal = async (input: IDeployInput): Promise<Portal> => {
   const factory = await ethers.getContractFactory("Portal", input.signer);
   const _contract = await upgrades.deployProxy(factory, { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "Portal", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "Portal", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -299,7 +299,7 @@ export const deployBridge = async (input: IDeployInput): Promise<Bridge> => {
   const factory = await ethers.getContractFactory("Bridge", input.signer);
   const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registry.Diamond.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "Bridge", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "Bridge", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -312,7 +312,7 @@ export const deploySynchronizer = async (input: IDeployInput): Promise<Synchroni
   const factory = await ethers.getContractFactory("Synchronizer", input.signer);
   const _contract = await upgrades.deployProxy(factory, [chain, input.contracts.Registrar.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "Synchronizer", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "Synchronizer", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -326,7 +326,7 @@ export const deployLayerZeroProvider = async (input: IDeployInput): Promise<Laye
   if (!ethers.utils.isAddress(lzEndpoint.address)) throw new Error("LayerZero endpoint is invalid");
   const _contract = await upgrades.deployProxy(factory, [lzEndpoint.address, input.contracts.Portal.address], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "LayerZeroProvider", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "LayerZeroProvider", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -337,7 +337,7 @@ export const deployMigrationManager = async (input: IDeployInput): Promise<Migra
   const factory = await ethers.getContractFactory("MigrationManager", input.signer);
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registrar.address], { kind: "uups" });
   await _contract.deployed();
-  await _afterDeploy(await input.signer.getChainId(), "MigrationManager", _contract, _contract.deployTransaction);
+  await _afterDeploy(input.signer, input.chainId, "MigrationManager", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };
@@ -358,11 +358,13 @@ const _beforeDeploy = async (signer: SignerWithAddress, chainId: number, name: C
   }
 };
 
-const _afterDeploy = async (chainId: number, name: ContractName, contract: Contract, tx: Transaction) => {
+const _afterDeploy = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName, contract: Contract, tx: Transaction) => {
   if (chainId !== 31337) {
     console.log(`Contract [${name}] has been deployed on [${NetworkConfig[chainId]?.name || "Local"}]`);
     console.log(`Address - [${contract.address}]`);
     console.log(`Transaction Hash - [${tx.hash}]`);
+    const balance = await getBalance(signer);
+    console.log(`Signer account remaining balance ${ethers.utils.formatEther(balance)} ${NetworkConfig[chainId]?.symbol}`);
   }
   const ALL_CONTRACTS_DATA = await getAllContractsData();
   const index = ALL_CONTRACTS_DATA.findIndex((c) => c.chainId === chainId);

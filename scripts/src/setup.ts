@@ -144,9 +144,19 @@ export const setupRegistry = async (input: ISetupInput) => {
   const _registry = await ethers.getContractAt("IRegistry", input.contracts.Registry.Diamond.address, input.signer);
 
   try {
-    //=== Diamond Cut ===//
-    const tx = await _registryDiamondCut(input);
-    if (tx) txs.push(tx);
+    let retried = 0;
+    let success = false;
+    do {
+      try {
+        //=== Diamond Cut ===//
+        const tx = await _registryDiamondCut(input);
+        if (tx) txs.push(tx);
+        success = true;
+      } catch {
+        retried++;
+        success = false;
+      }
+    } while (!success && retried < 3);
 
     //=== Grant different Roles to different deployed contracts ==//
     if (!(await _registry.hasRole(await _registry.ROOT_ROLE(), input.contracts.Root.address))) {
@@ -234,10 +244,19 @@ export const setupDefaultWrapper = async (input: ISetupInput) => {
     }
   }
 
-  if ((await input.contracts.DefaultWrapper.tokenURI(0)) !== "https://api.resolver.gdn/metadata/0/payload.json") {
-    const tx3 = await input.contracts.DefaultWrapper.setBaseURI("https://api.resolver.gdn/metadata");
-    await tx3.wait();
-    txs.push(tx3);
+  if (Testnets.includes(input.chainId)) {
+    if ((await input.contracts.DefaultWrapper.tokenURI(0)) !== "https://static.resolver.gdn/testnet/metadata/0/payload.json") {
+      const tx = await input.contracts.DefaultWrapper.setBaseURI("https://static.resolver.gdn/testnet/metadata");
+      await tx.wait();
+      txs.push(tx);
+    }
+  }
+  if (Mainnets.includes(input.chainId)) {
+    if ((await input.contracts.DefaultWrapper.tokenURI(0)) !== "https://static.resolver.gdn/metadata/0/payload.json") {
+      const tx = await input.contracts.DefaultWrapper.setBaseURI("https://static.resolver.gdn/metadata");
+      await tx.wait();
+      txs.push(tx);
+    }
   }
 
   await _afterSetup(input.signer, input.chainId, "DefaultWrapper", [...txs]);

@@ -179,6 +179,19 @@ const config: HardhatUserConfig = {
     },
     base_goerli: {
       chainId: 84531,
+      gasPrice: 1000000000,
+    },
+    scroll: {
+      chainId: 534352,
+    },
+    scroll_sepolia: {
+      chainId: 534351,
+    },
+    coredao: {
+      chainId: 1116,
+    },
+    coredao_testnet: {
+      chainId: 1115,
     },
   },
   gasReporter: {

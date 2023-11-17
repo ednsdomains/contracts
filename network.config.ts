@@ -61,6 +61,7 @@ export enum Network {
   LINEA_GOERLI = 59140,
   BASE = 8453,
   BASE_GOERLI = 84531,
+  BASE_SEPOLIA = 84532,
   SCROLL = 534352,
   SCROLL_SEPOLIA = 534351,
   CORE_DAO = 1116,
@@ -102,6 +103,10 @@ export const Testnets = [
   Network.MOONBASE_ALPHA,
   Network.HARMONY_TESTNET,
   Network.IOTEX_TESTNET,
+  Network.LINEA_GOERLI,
+  Network.BASE_GOERLI,
+  Network.SCROLL_SEPOLIA,
+  Network.CORE_DAO_TESTNET,
 ];
 
 export interface INetworkConfig {
@@ -256,8 +261,7 @@ const config: INetworkConfig = {
     chain: InContractChain.BNB,
     name: "BNB Chain",
     symbol: "BNB",
-    url: "https://binance.llamarpc.com	",
-    // url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    url: `https://bsc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
       coinId: 714,
     },
@@ -908,7 +912,7 @@ const config: INetworkConfig = {
   [Network.LINEA_GOERLI]: {
     chain: InContractChain.LINEA,
     chainId: Network.LINEA_GOERLI,
-    name: "Linea Testnet",
+    name: "Linea Goerli Testnet",
     symbol: "ETH",
     url: `https://rpc.goerli.linea.build`,
     layerzero: {
@@ -931,12 +935,25 @@ const config: INetworkConfig = {
       },
     },
   },
+  [Network.BASE_SEPOLIA]: {
+    chain: InContractChain.BASE,
+    chainId: Network.BASE_SEPOLIA,
+    name: "Base Sepolia Testnet",
+    symbol: "ETH",
+    url: `https://sepolia.base.org	`,
+    layerzero: {
+      chainId: 10160,
+      endpoint: {
+        address: "0x6aB5Ae6822647046626e83ee6dB8187151E1d5ab",
+      },
+    },
+  },
   [Network.BASE_GOERLI]: {
     chain: InContractChain.BASE,
     chainId: Network.BASE_GOERLI,
     name: "Base Goerli Testnet",
     symbol: "ETH",
-    url: `https://goerli.base.org`,
+    url: `https://base-goerli.publicnode.com`,
     layerzero: {
       chainId: 10160,
       endpoint: {
@@ -987,7 +1004,7 @@ const config: INetworkConfig = {
     chain: InContractChain.CORE_DAO,
     chainId: Network.CORE_DAO_TESTNET,
     name: "Core Chain TestNet",
-    symbol: "CORE",
+    symbol: "tCORE",
     url: `https://rpc.test.btcs.network/`,
     layerzero: {
       chainId: 10153,

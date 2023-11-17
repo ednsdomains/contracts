@@ -19,6 +19,9 @@ export const getInContractChain = async (chainId: number): Promise<InContractCha
   if (chainId === Network.MOONRIVER) return InContractChain.MOONRIVER;
   if (chainId === Network.ZKSYNC_ERA || chainId === Network.ZKSYNC_ERA_TESTNET) return InContractChain.ZKSYNC;
   if (chainId === Network.MOONBEAM || chainId === Network.MOONBASE_ALPHA) return InContractChain.MOONBEAM;
-
+  if (chainId === Network.LINEA || chainId === Network.LINEA_GOERLI) return InContractChain.LINEA;
+  if (chainId === Network.BASE || chainId === Network.BASE_GOERLI) return InContractChain.BASE;
+  if (chainId === Network.SCROLL || chainId === Network.SCROLL_SEPOLIA) return InContractChain.SCROLL;
+  if (chainId === Network.CORE_DAO || chainId === Network.CORE_DAO_TESTNET) return InContractChain.CORE_DAO;
   throw new Error(`Unsupported chain: ${chainId}`);
 };
