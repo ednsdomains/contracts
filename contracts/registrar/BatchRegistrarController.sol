@@ -5,13 +5,7 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "./interfaces/IBaseRegistrarController.sol";
 
 contract BatchRegistrarController is ContextUpgradeable {
-  function register(
-    IBaseRegistrarController controller,
-    bytes[] memory names,
-    bytes[] memory tlds,
-    address owner,
-    uint64[] memory expiry
-  ) public {
+  function register(IBaseRegistrarController controller, bytes[] memory names, bytes[] memory tlds, address owner, uint64[] memory expiry) public {
     require(names.length == tlds.length && tlds.length == expiry.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
       controller.register(names[i], tlds[i], owner, expiry[i]);
@@ -36,12 +30,7 @@ contract BatchRegistrarController is ContextUpgradeable {
     }
   }
 
-  function renew(
-    IBaseRegistrarController controller,
-    bytes[] memory names,
-    bytes[] memory tlds,
-    uint64[] memory expiry
-  ) public {
+  function renew(IBaseRegistrarController controller, bytes[] memory names, bytes[] memory tlds, uint64[] memory expiry) public {
     require(names.length == tlds.length && tlds.length == expiry.length, "INVALID_SIZE");
     for (uint256 i = 0; i < names.length; i++) {
       controller.renew(names[i], tlds[i], expiry[i]);

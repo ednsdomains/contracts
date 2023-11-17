@@ -63,11 +63,7 @@ abstract contract Helper {
   //   return true;
   // }
 
-  function _join(
-    bytes memory host,
-    bytes memory name,
-    bytes memory tld
-  ) internal pure returns (bytes memory) {
+  function _join(bytes memory host, bytes memory name, bytes memory tld) internal pure returns (bytes memory) {
     return abi.encodePacked(host, DOT, name, DOT, tld);
   }
 

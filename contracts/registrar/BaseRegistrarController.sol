@@ -25,22 +25,12 @@ abstract contract BaseRegistrarController is IBaseRegistrarController, AccessCon
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
-  function __BaseRegistrarController_init(
-    IERC20Upgradeable token_,
-    IRegistrar registrar_,
-    IRoot root_,
-    uint256 coinId
-  ) internal onlyInitializing {
+  function __BaseRegistrarController_init(IERC20Upgradeable token_, IRegistrar registrar_, IRoot root_, uint256 coinId) internal onlyInitializing {
     __Pausable_init();
     __BaseRegistrarController_init_unchained(token_, registrar_, root_, coinId);
   }
 
-  function __BaseRegistrarController_init_unchained(
-    IERC20Upgradeable token_,
-    IRegistrar registrar_,
-    IRoot root_,
-    uint256 coinId
-  ) internal onlyInitializing {
+  function __BaseRegistrarController_init_unchained(IERC20Upgradeable token_, IRegistrar registrar_, IRoot root_, uint256 coinId) internal onlyInitializing {
     _token = token_;
     _registrar = registrar_;
     _root = root_;
@@ -50,11 +40,7 @@ abstract contract BaseRegistrarController is IBaseRegistrarController, AccessCon
     _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function _verify(
-    bytes32 payload,
-    bytes calldata signature,
-    address signer
-  ) internal pure returns (bool) {
+  function _verify(bytes32 payload, bytes calldata signature, address signer) internal pure returns (bool) {
     return payload.toEthSignedMessageHash().recover(signature) == signer;
   }
 
