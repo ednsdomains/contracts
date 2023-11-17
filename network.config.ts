@@ -646,6 +646,9 @@ const config: INetworkConfig = {
     name: "OKC Testnet",
     symbol: "OKT",
     url: `https://exchaintestrpc.okex.org`,
+    slip44: {
+      coinId: 996,
+    },
     layerzero: {
       chainId: 10155,
       endpoint: {
@@ -659,6 +662,9 @@ const config: INetworkConfig = {
     name: "OKC Mainnet",
     symbol: "OKT",
     url: `https://oKc-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
+    slip44: {
+      coinId: 996,
+    },
     layerzero: {
       chainId: 155,
       endpoint: {
@@ -684,7 +690,7 @@ const config: INetworkConfig = {
     symbol: "KCS",
     url: `https://rpc-testnet.kcc.network`,
     slip44: {
-      coinId: 641,
+      coinId: 642,
     },
   },
   [Network.KCC]: {
@@ -693,7 +699,7 @@ const config: INetworkConfig = {
     symbol: "KCS",
     url: `https://kcc.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
     slip44: {
-      coinId: 641,
+      coinId: 642,
     },
   },
   [Network.GNOSIS]: {
@@ -797,6 +803,9 @@ const config: INetworkConfig = {
     name: "Celo Mainnet",
     symbol: "CELO",
     url: `https://celo-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    slip44: {
+      coinId: 52751,
+    },
     layerzero: {
       chainId: 125,
       endpoint: {
@@ -810,6 +819,9 @@ const config: INetworkConfig = {
     name: "Celo Alfajores Testnet",
     symbol: "CELO",
     url: `https://celo-alfajores.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    slip44: {
+      coinId: 52751,
+    },
     layerzero: {
       chainId: 10125,
       endpoint: {
@@ -823,6 +835,9 @@ const config: INetworkConfig = {
     name: "zkSync Era Mainnet",
     symbol: "ETH",
     url: `https://mainnet.era.zksync.io`,
+    slip44: {
+      coinId: 804,
+    },
     layerzero: {
       chainId: 165,
       endpoint: {
@@ -836,6 +851,9 @@ const config: INetworkConfig = {
     name: "zkSync Era Testnet",
     symbol: "ETH",
     url: `https://testnet.era.zksync.dev`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 10165,
       endpoint: {
@@ -862,6 +880,9 @@ const config: INetworkConfig = {
     name: "Polygon zkEVM Testnet",
     symbol: "ETH",
     url: `https://rpc.public.zkevm-test.net	`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 10158,
       endpoint: {
@@ -876,6 +897,9 @@ const config: INetworkConfig = {
     symbol: "ONE",
     url: "https://api.s0.t.hmny.io",
     // url: `https://one.getblock.io/${process.env.GETBLOCK_API_KEY}/mainnet/`,
+    slip44: {
+      coinId: 1023,
+    },
     layerzero: {
       chainId: 116,
       endpoint: {
@@ -889,6 +913,9 @@ const config: INetworkConfig = {
     name: "Harmony One Testnet",
     symbol: "ONE",
     url: `https://api.s0.b.hmny.io`,
+    slip44: {
+      coinId: 1023,
+    },
     layerzero: {
       chainId: 10133,
       endpoint: {
@@ -902,6 +929,9 @@ const config: INetworkConfig = {
     name: "Linea",
     symbol: "ETH",
     url: `https://rpc.linea.build`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 183,
       endpoint: {
@@ -915,6 +945,9 @@ const config: INetworkConfig = {
     name: "Linea Goerli Testnet",
     symbol: "ETH",
     url: `https://rpc.goerli.linea.build`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 10157,
       endpoint: {
@@ -928,6 +961,9 @@ const config: INetworkConfig = {
     name: "BASE",
     symbol: "ETH",
     url: `https://mainnet.base.org`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 184,
       endpoint: {
@@ -940,7 +976,10 @@ const config: INetworkConfig = {
     chainId: Network.BASE_SEPOLIA,
     name: "Base Sepolia Testnet",
     symbol: "ETH",
-    url: `https://sepolia.base.org	`,
+    url: `https://sepolia.base.org`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 10160,
       endpoint: {
@@ -954,6 +993,9 @@ const config: INetworkConfig = {
     name: "Base Goerli Testnet",
     symbol: "ETH",
     url: `https://base-goerli.publicnode.com`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 10160,
       endpoint: {
@@ -980,6 +1022,9 @@ const config: INetworkConfig = {
     name: "Scroll",
     symbol: "ETH",
     url: `https://rpc.scroll.io`,
+    slip44: {
+      coinId: 60,
+    },
     layerzero: {
       chainId: 214,
       endpoint: {
@@ -993,6 +1038,9 @@ const config: INetworkConfig = {
     name: "Core Chain MainNet",
     symbol: "CORE",
     url: `https://rpc.coredao.org/`,
+    slip44: {
+      coinId: 1116,
+    },
     layerzero: {
       chainId: 153,
       endpoint: {
@@ -1006,6 +1054,9 @@ const config: INetworkConfig = {
     name: "Core Chain TestNet",
     symbol: "tCORE",
     url: `https://rpc.test.btcs.network/`,
+    slip44: {
+      coinId: 1116,
+    },
     layerzero: {
       chainId: 10153,
       endpoint: {
