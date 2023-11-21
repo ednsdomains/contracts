@@ -6,6 +6,7 @@ import {
   setupDefaultWrapper,
   setupLayerZeroProvider,
   setupMigrationManager,
+  setupMortgage,
   setupOmniRegistrarController,
   setupPortal,
   setupPublicResolver,
@@ -33,6 +34,7 @@ async function main() {
   await setupPortal({ signer, chainId, contracts });
   if (contracts.LayerZeroProvider) await setupLayerZeroProvider({ signer, chainId, contracts });
   if (contracts.MigrationManager) await setupMigrationManager({ signer, chainId, contracts });
+  if (contracts.Mortgage) await setupMortgage({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

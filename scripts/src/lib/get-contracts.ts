@@ -5,7 +5,7 @@ import { Signer } from "ethers";
 import { ContractName } from "../constants/contract-name";
 import { IContracts, IRegistry } from "../interfaces/contracts";
 import { UniversalRegistrarController } from "../../../typechain/UniversalRegistrarController";
-import { PublicResolver, Root } from "../../../typechain";
+import { Mortgage, PublicResolver, Root, TokenMock } from "../../../typechain";
 import { Bridge } from "../../../typechain/Bridge";
 import { ClassicalRegistrarController } from "../../../typechain/ClassicalRegistrarController";
 import { ERC20 } from "../../../typechain/ERC20";
@@ -42,6 +42,7 @@ export interface IGetContractsData {
     Portal: string | null;
     LayerZeroProvider: string | null;
     MigrationManager: string | null;
+    Mortgage: string | null;
   };
 }
 
@@ -80,6 +81,7 @@ export async function getContracts(signer: Signer): Promise<IContracts> {
     Synchronizer: await getSynchronizer(signer),
     LayerZeroProvider: await getLayerZeroProvider(signer),
     MigrationManager: await getMigrationManager(signer),
+    Mortgage: await getMortgage(signer),
   };
 }
 
@@ -179,11 +181,11 @@ export async function getRoot(signer: Signer): Promise<Root | undefined> {
   return undefined;
 }
 
-export async function getToken(signer: Signer): Promise<ERC20 | undefined> {
+export async function getToken(signer: Signer): Promise<TokenMock | undefined> {
   const chainId = await signer.getChainId();
   const data = await getContractsData(chainId);
   if (data?.addresses.Token) {
-    const TokenFactory = await ethers.getContractFactory("ERC20", signer);
+    const TokenFactory = await ethers.getContractFactory("TokenMock", signer);
     return TokenFactory.attach(data.addresses.Token);
   }
   return undefined;
@@ -235,6 +237,16 @@ export async function getMigrationManager(signer: Signer): Promise<MigrationMana
   if (data?.addresses.MigrationManager) {
     const factory = await ethers.getContractFactory("MigrationManager", signer);
     return factory.attach(data.addresses.MigrationManager);
+  }
+  return undefined;
+}
+
+export async function getMortgage(signer: Signer): Promise<Mortgage | undefined> {
+  const chainId = await signer.getChainId();
+  const data = await getContractsData(chainId);
+  if (data?.addresses.Mortgage) {
+    const factory = await ethers.getContractFactory("Mortgage", signer);
+    return factory.attach(data.addresses.Mortgage);
   }
   return undefined;
 }

@@ -6,6 +6,7 @@ import "../../../lib/TokenRecord.sol";
 interface IBaseRegistryFacet {
   event SetDefaultWrapper(address wrapper);
   event SetPublicResolver(address resolver);
+  event SetMortgage(address mortgage);
 
   function getTokenRecord(uint256 tokenId) external view returns (TokenRecord memory);
 
@@ -15,7 +16,11 @@ interface IBaseRegistryFacet {
 
   function getPublicResolver() external view returns (address);
 
+  function getMortgage() external view returns (address);
+
   function setDefaultWrapper(address defaultWrapper) external;
 
   function setPublicResolver(address publicResolver) external;
+
+  function setMortgage(address mortgage) external;
 }

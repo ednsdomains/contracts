@@ -14,7 +14,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     uint256 chainId,
     address contract_,
     uint256 tokenId
-  ) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  ) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _beforeExec(host, name, tld);
     _setNFT(host, name, tld, chainId, contract_, tokenId);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setNFT(bytes,bytes,bytes,uint256,address,uint256)", host, name, tld, chainId, contract_, tokenId));
@@ -26,7 +26,7 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     emit SetNFT(host, name, tld, chainId, contract_, tokenId);
   }
 
-  function unsetNFT(bytes memory host, bytes memory name, bytes memory tld, uint256 chainId) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  function unsetNFT(bytes memory host, bytes memory name, bytes memory tld, uint256 chainId) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _unsetNFT(host, name, tld, chainId);
     _afterExec(keccak256(tld), abi.encodeWithSignature("unsetNFT(bytes,bytes,bytes,uint256)", host, name, tld, chainId));
   }
@@ -37,7 +37,8 @@ abstract contract NFTResolver is INFTResolver, BaseResolver {
     emit UnsetNFT(host, name, tld, chainId);
   }
 
-  function getNFT(bytes memory host, bytes memory name, bytes memory tld, uint256 chainId) public view onlyLive(host, name, tld) returns (NFT memory) {
+  function getNFT(bytes memory host, bytes memory name, bytes memory tld, uint256 chainId) public view onlyValid(host, name, tld) returns (NFT memory) {
+    if (!_isValid(host, name, tld)) return NFT({ contract_: address(0), tokenId: 0 });
     bytes32 fqdn = _getFqdn(host, name, tld);
     return _nfts[_getUser(host, name, tld)][fqdn][chainId];
   }

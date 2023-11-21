@@ -228,6 +228,14 @@ export async function upgradeMigrationManager(input: IUpgradeInput): Promise<voi
   await _afterUpgrade(input.signer, input.chainId, "MigrationManager", input.contracts.MigrationManager);
 }
 
+export async function upgradeMortgage(input: IUpgradeInput): Promise<void> {
+  if (!input.contracts.Mortgage) throw new Error("`Mortgage` is not available");
+  const factory = await ethers.getContractFactory("Mortgage", input.signer);
+  await _beforeUpgrade(input.signer, input.chainId, "Mortgage");
+  await upgrades.upgradeProxy(input.contracts.Mortgage, factory);
+  await _afterUpgrade(input.signer, input.chainId, "Mortgage", input.contracts.Mortgage);
+}
+
 const _beforeUpgrade = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName) => {
   console.log("\n⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️");
   const balance = await getBalance(signer);

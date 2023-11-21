@@ -20,4 +20,5 @@ export type ContractName =
   | "Registry.DomainRecordFacet"
   | "Registry.HostRecordFacet"
   | "Registry.BaseRegistryFacet"
-  | "MigrationManager";
+  | "MigrationManager"
+  | "Mortgage";

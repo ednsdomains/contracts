@@ -16,6 +16,7 @@ import {
   OmniRegistrarController,
   RegistryInit,
   MigrationManager,
+  Mortgage,
 } from "../../typechain";
 import { ContractName } from "./constants/contract-name";
 import { Contract, Transaction, Wallet } from "ethers";
@@ -338,6 +339,17 @@ export const deployMigrationManager = async (input: IDeployInput): Promise<Migra
   const _contract = await upgrades.deployProxy(factory, [input.contracts.Registrar.address], { kind: "uups" });
   await _contract.deployed();
   await _afterDeploy(input.signer, input.chainId, "MigrationManager", _contract, _contract.deployTransaction);
+  const contract = factory.attach(_contract.address);
+  return contract;
+};
+
+export const deployMortgage = async (input: IDeployInput): Promise<Mortgage> => {
+  if (!input.contracts.Token) throw new Error("`Token` is not available");
+  await _beforeDeploy(input.signer, await input.signer.getChainId(), "Mortgage");
+  const factory = await ethers.getContractFactory("Mortgage", input.signer);
+  const _contract = await upgrades.deployProxy(factory, [input.contracts.Token.address], { kind: "uups" });
+  await _contract.deployed();
+  await _afterDeploy(input.signer, input.chainId, "Mortgage", _contract, _contract.deployTransaction);
   const contract = factory.attach(_contract.address);
   return contract;
 };

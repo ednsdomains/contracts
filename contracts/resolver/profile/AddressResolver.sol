@@ -14,7 +14,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     emit SetAddress(host, name, tld, address_);
   }
 
-  function setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  function setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _beforeExec(host, name, tld);
     _setAddress(host, name, tld, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
@@ -26,12 +26,13 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     emit UnsetAddress(host, name, tld);
   }
 
-  function unsetAddress(bytes memory host, bytes memory name, bytes memory tld) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  function unsetAddress(bytes memory host, bytes memory name, bytes memory tld) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _unsetAddress(host, name, tld);
     _afterExec(keccak256(tld), abi.encodeWithSignature("unsetAddress(bytes,bytes,bytes)", host, name, tld));
   }
 
-  function getAddress(bytes memory host, bytes memory name, bytes memory tld) public view onlyLive(host, name, tld) returns (address) {
+  function getAddress(bytes memory host, bytes memory name, bytes memory tld) public view returns (address) {
+    if (!_isValid(host, name, tld)) return address(0);
     if (keccak256(bytes(host)) == AT) {
       return _addresses[_getUser(host, name, tld)][keccak256(_join(name, tld))];
     } else {
@@ -55,7 +56,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     emit SetReverseAddress(host, name, tld, address_);
   }
 
-  function setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  function setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     require(_msgSender() == address_, "ADDRESS_VALUE_MUST_BE_SENDER");
     _beforeExec(host, name, tld);
     _setReverseAddress(host, name, tld, address_);
@@ -67,7 +68,7 @@ abstract contract AddressResolver is IAddressResolver, BaseResolver {
     emit UnsetReverseAddress(host, name, tld, address_);
   }
 
-  function unsetReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  function unsetReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _unsetReverseAddress(host, name, tld, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("unsetReverseAddress(bytes,bytes,bytes,address)", host, name, tld, address_));
   }

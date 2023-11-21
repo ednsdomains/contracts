@@ -10,4 +10,5 @@ struct RegistryStorage {
   mapping(uint256 => TokenRecord) tokenRecords;
   mapping(bytes32 => mapping(bytes32 => uint256)) unsyncHostUser;
   address publicResolver;
+  address mortgage;
 }

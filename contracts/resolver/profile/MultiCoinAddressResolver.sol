@@ -19,7 +19,7 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     bytes memory tld,
     uint256 coin,
     bytes memory address_
-  ) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  ) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _beforeExec(host, name, tld);
     _setMultiCoinAddress(host, name, tld, coin, address_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setMultiCoinAddress(bytes,bytes,bytes,uint256,bytes)", host, name, tld, coin, address_));
@@ -32,12 +32,13 @@ abstract contract MultiCoinAddressResolver is IMultiCoinAddressResolver, BaseRes
     emit UnsetMultiCoinAddress(host, name, tld, coin);
   }
 
-  function unsetMultiCoinAddress(bytes memory host, bytes memory name, bytes memory tld, uint256 coin) public payable onlyLive(host, name, tld) onlyAuthorised(host, name, tld) {
+  function unsetMultiCoinAddress(bytes memory host, bytes memory name, bytes memory tld, uint256 coin) public payable onlyValid(host, name, tld) onlyAuthorised(host, name, tld) {
     _unsetMultiCoinAddress(host, name, tld, coin);
     _afterExec(keccak256(tld), abi.encodeWithSignature("unsetMultiCoinAddress(bytes,bytes,bytes,uint256)", host, name, tld, coin));
   }
 
-  function getMultiCoinAddress(bytes memory host, bytes memory name, bytes memory tld, uint256 coin) public view onlyLive(host, name, tld) returns (bytes memory) {
+  function getMultiCoinAddress(bytes memory host, bytes memory name, bytes memory tld, uint256 coin) public view returns (bytes memory) {
+    if (!_isValid(host, name, tld)) return new bytes(0);
     if (keccak256(bytes(host)) == AT) {
       return _multiCoinAddresses[_getUser(host, name, tld)][keccak256(_join(name, tld))][coin];
     } else {

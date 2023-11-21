@@ -15,6 +15,7 @@ import { FacetCutAction, getSelectors } from "./lib/diamond";
 import { ILayerZeroEndpoint__factory, ILegacyBaseRegistrar__factory } from "../../typechain";
 import { getProvider } from "./lib/get-provider";
 import { AwsKmsSigner } from "./lib/kms-signer";
+import { Mortgage } from "../../typechain/Mortgage";
 
 const GAS_LIMIT = 8000000;
 
@@ -201,6 +202,14 @@ export const setupRegistry = async (input: ISetupInput) => {
       txs.push(tx);
     }
 
+    if (input.contracts.Mortgage) {
+      if ((await _registry.getMortgage()) !== input.contracts.Mortgage.address) {
+        const tx = await _registry.setMortgage(input.contracts.Mortgage.address);
+        await tx.wait();
+        txs.push(tx);
+      }
+    }
+
     await _afterSetup(input.signer, input.chainId, "Registry.Diamond", [...txs]);
   } catch (error) {
     await _afterSetup(input.signer, input.chainId, "Registry.Diamond", [...txs]);
@@ -280,9 +289,11 @@ export const setupRegistrar = async (input: ISetupInput) => {
   }
 
   if (input.contracts.Synchronizer) {
-    const tx1 = await input.contracts.Registrar.setSynchronizer(input.contracts.Synchronizer.address);
-    await tx1.wait();
-    txs.push(tx1);
+    if ((await input.contracts.Registrar.getSynchronizer()) !== input.contracts.Synchronizer.address) {
+      const tx = await input.contracts.Registrar.setSynchronizer(input.contracts.Synchronizer.address);
+      await tx.wait();
+      txs.push(tx);
+    }
   }
 
   await _afterSetup(input.signer, input.chainId, "Registrar", [...txs]);
@@ -295,9 +306,19 @@ export const setupPublicResolver = async (input: ISetupInput) => {
   const txs: Transaction[] = [];
 
   if (input.contracts.Synchronizer) {
-    const tx1 = await input.contracts.PublicResolver.setSynchronizer(input.contracts.Synchronizer.address);
-    await tx1.wait();
-    txs.push(tx1);
+    if ((await input.contracts.PublicResolver.getSynchronizer()) !== input.contracts.Synchronizer.address) {
+      const tx = await input.contracts.PublicResolver.setSynchronizer(input.contracts.Synchronizer.address);
+      await tx.wait();
+      txs.push(tx);
+    }
+  }
+
+  if (input.contracts.Mortgage) {
+    if ((await input.contracts.PublicResolver.getMortgage()) !== input.contracts.Mortgage.address) {
+      const tx = await input.contracts.PublicResolver.setMortgage(input.contracts.Mortgage.address);
+      await tx.wait();
+      txs.push(tx);
+    }
   }
 
   await _afterSetup(input.signer, input.chainId, "PublicResolver", [...txs]);
@@ -721,6 +742,24 @@ export const setupMigrationManager = async (input: ISetupInput) => {
   }
 
   await _afterSetup(input.signer, input.chainId, "MigrationManager", [...txs]);
+};
+
+export const setupMortgage = async (input: ISetupInput) => {
+  if (!input.contracts.Mortgage) throw new Error("`Mortgage` is not available");
+  if (!input.contracts.Registry?.Diamond) throw new Error("`Registry.Diamond` is not available");
+
+  await _beforeSetup(input.signer, input.chainId, "MigrationManager");
+  const txs: Transaction[] = [];
+
+  const _registry = await ethers.getContractAt("Mortgage", input.contracts.Registry.Diamond.address, input.signer);
+
+  if ((await input.contracts.Mortgage.getRegistry()) !== _registry.address) {
+    const tx = await input.contracts.Mortgage.setRegistry(_registry.address);
+    await tx.wait();
+    txs.push(tx);
+  }
+
+  await _afterSetup(input.signer, input.chainId, "Mortgage", [...txs]);
 };
 
 const _beforeSetup = async (signer: SignerWithAddress | Wallet, chainId: number, name: ContractName) => {

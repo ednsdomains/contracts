@@ -6,6 +6,7 @@ import {
   upgradeClassicalRegistrarController,
   upgradeLayerZeroProvider,
   upgradeMigrationManager,
+  upgradeMortgage,
   upgradeOmniRegistrarController,
   upgradePortal,
   upgradePublicResolver,
@@ -35,6 +36,7 @@ async function main() {
   await upgradeSynchronizer({ signer, chainId, contracts });
   if (contracts.LayerZeroProvider) await upgradeLayerZeroProvider({ signer, chainId, contracts });
   if (contracts.MigrationManager) await upgradeMigrationManager({ signer, chainId, contracts });
+  if (contracts.Mortgage) await upgradeMortgage({ signer, chainId, contracts });
 }
 
 main().catch((error) => {

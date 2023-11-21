@@ -36,6 +36,8 @@ interface IHostRecordFacet {
 
   function isOperator(bytes32 host, bytes32 name, bytes32 tld, address _operator) external view returns (bool);
 
+  function isLive(bytes32 host, bytes32 name, bytes32 tld) external view returns (bool);
+
   /* ========== Utils ==========*/
   function getTokenId(bytes memory host, bytes memory name, bytes memory tld) external returns (uint256);
 }

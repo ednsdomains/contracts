@@ -8,7 +8,8 @@ import "./Facet.sol";
 import "../../wrapper/interfaces/IWrapper.sol";
 import "../../lib/TldClass.sol";
 import "../../lib/RecordKind.sol";
-import  "../../lib/Timestamp.sol";
+import "../../lib/Timestamp.sol";
+import "../../mortgage/interfaces/IMortgage.sol";
 
 contract DomainRecordFacet is IDomainRecordFacet, Facet {
   /* ========== Modifier ==========*/
@@ -20,6 +21,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
 
   modifier onlyDomainOwner(bytes32 name, bytes32 tld) {
     require(_msgSender() == registryStorage().records[tld].domains[name].owner || _isSelfExecution(), "ONLY_OWNER");
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
   modifier onlyDomainOwnerOrWrapper(bytes32 name, bytes32 tld) {
@@ -27,16 +29,19 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
       _msgSender() == registryStorage().records[tld].domains[name].owner || _msgSender() == registryStorage().records[tld].wrapper.address_ || _isSelfExecution(),
       "ONLY_OWNER_OR_WRAPPER"
     );
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
   modifier onlyDomainUser(bytes32 name, bytes32 tld) {
     require(_msgSender() == getUser(name, tld) || _isSelfExecution(), "ONLY_DOMAIN_USER");
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
   modifier onlyDomainUserOrOperator(bytes32 name, bytes32 tld) {
     require(_msgSender() == getUser(name, tld) || isOperator(name, tld, _msgSender()) || _isSelfExecution(), "ONLY_DOMAIN_USER_OR_OPERATOR");
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
@@ -119,7 +124,7 @@ contract DomainRecordFacet is IDomainRecordFacet, Facet {
     emit SetDomainOperator(name, tld, operator_, approved);
   }
 
-  function setUser(bytes32 name, bytes32 tld, address user, uint64 expiry) public onlyWrapper(tld) onlyLiveDomain(name, tld) {
+  function setUser(bytes32 name, bytes32 tld, address user, uint64 expiry) public onlyDomainOwnerOrWrapper(name, tld) onlyLiveDomain(name, tld) {
     RegistryStorage storage _ds = registryStorage();
 
     _ds.records[tld].domains[name].user.user = user;

@@ -9,6 +9,7 @@ import "./interfaces/IBaseResolver.sol";
 import "../lib/Chain.sol";
 import "../crosschain/SynchronizerApplication.sol";
 import "../crosschain/interfaces/ISynchronizer.sol";
+import "../mortgage/interfaces/IMortgage.sol";
 
 abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication, AccessControlUpgradeable, UUPSUpgradeable {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -16,6 +17,8 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
   bytes32 internal constant AT = keccak256(bytes("@"));
 
   IRegistry internal _registry;
+
+  IMortgage internal _mortgage;
 
   modifier onlyAuthorised(
     bytes memory host,
@@ -26,13 +29,18 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     _;
   }
 
-  modifier onlyLive(
+  modifier onlyValid(
     bytes memory host,
     bytes memory name,
     bytes memory tld
   ) {
-    // require(_isExists(host, name, tld), "DOMAIN_NOT_EXISTS");
-    require(_isLive(name, tld), "DOMAIN_EXPIRED");
+    require(_isExists(name, tld), "DOMAIN_NOT_EXISTS");
+    if (_isExists(host, name, tld)) {
+      require(_isLive(host, name, tld), "DOMAIN_EXPIRED");
+    } else {
+      require(_isLive(name, tld), "DOMAIN_EXPIRED");
+    }
+    require(_isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
@@ -53,6 +61,9 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     bytes32 host_ = keccak256(host);
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
+
+    require(_mortgage.isFulfill(name_, tld_), "DOMAIN_MORTGAGE_NOT_FULFILLED");
+
     bool isSelfAuthorized = _msgSender() == address(this);
     if (isSelfAuthorized) {
       return true;
@@ -68,16 +79,43 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
   }
 
   function _isLive(bytes memory name, bytes memory tld) internal view returns (bool) {
-    bytes32 domain_ = keccak256(name);
+    bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    return _registry.isLive(domain_, tld_);
+    return _registry.isLive(name_, tld_);
+  }
+
+  function _isLive(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
+    bytes32 host_ = keccak256(host);
+    bytes32 name_ = keccak256(name);
+    bytes32 tld_ = keccak256(tld);
+    return _registry.isLive(host_, name_, tld_);
+  }
+
+  function _isExists(bytes memory name, bytes memory tld) internal view returns (bool) {
+    bytes32 name_ = keccak256(name);
+    bytes32 tld_ = keccak256(tld);
+    return _registry.isExists(name_, tld_);
   }
 
   function _isExists(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
     bytes32 host_ = keccak256(host);
-    bytes32 domain_ = keccak256(name);
+    bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
-    return _registry.isExists(host_, domain_, tld_);
+    return _registry.isExists(host_, name_, tld_);
+  }
+
+  function _isFulfill(bytes memory name, bytes memory tld) internal view returns (bool) {
+    if (address(_mortgage) != address(0)) {
+      bytes32 name_ = keccak256(name);
+      bytes32 tld_ = keccak256(tld);
+      return _mortgage.isFulfill(name_, tld_);
+    } else {
+      return true;
+    }
+  }
+
+  function _isValid(bytes memory host, bytes memory name, bytes memory tld) internal view returns (bool) {
+    return _isExists(host, name, tld) && _isLive(host, name, tld) && _isFulfill(name, tld);
   }
 
   function _getUser(bytes memory host, bytes memory name, bytes memory tld) internal view returns (address) {
@@ -114,5 +152,13 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     _setSynchronizer(synchronizer_);
   }
 
-  uint256[50] private __gap;
+  function getMortgage() external view returns (address) {
+    return address(_mortgage);
+  }
+
+  function setMortgage(IMortgage mortgage_) external onlyRole(ADMIN_ROLE) {
+    _mortgage = mortgage_;
+  }
+
+  uint256[49] private __gap;
 }

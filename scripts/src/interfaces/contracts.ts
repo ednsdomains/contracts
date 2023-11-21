@@ -5,6 +5,7 @@ import { TldRecordFacet } from "../../../typechain/TldRecordFacet";
 import { DomainRecordFacet } from "../../../typechain/DomainRecordFacet";
 import { HostRecordFacet } from "../../../typechain/HostRecordFacet";
 import { RegistryInit } from "../../../typechain/RegistryInit";
+import { Mortgage } from "../../../typechain/Mortgage";
 import {
   Registry,
   PublicResolver,
@@ -21,6 +22,7 @@ import {
   AccessControlFacet,
   BaseRegistryFacet,
   MigrationManager,
+  TokenMock,
 } from "../../../typechain";
 
 export interface IRegistry {
@@ -46,10 +48,11 @@ export interface IContracts {
   OmniRegistrarController?: OmniRegistrarController;
   Root?: Root;
   DefaultWrapper?: Wrapper;
-  Token?: IERC20;
+  Token?: TokenMock;
   Portal?: Portal;
   Bridge?: Bridge;
   Synchronizer?: Synchronizer;
   LayerZeroProvider?: LayerZeroProvider;
   MigrationManager?: MigrationManager;
+  Mortgage?: Mortgage;
 }

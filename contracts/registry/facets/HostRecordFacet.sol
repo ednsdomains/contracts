@@ -9,6 +9,7 @@ import "../../wrapper/interfaces/IWrapper.sol";
 import "../../lib/TldClass.sol";
 import "../../lib/RecordKind.sol";
 import "../../lib/Timestamp.sol";
+import "../../mortgage/interfaces/IMortgage.sol";
 
 contract HostRecordFacet is IHostRecordFacet, Facet {
   /* ========== Modifier ==========*/
@@ -23,6 +24,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
       _msgSender() == IDomainRecordFacet(_self()).getUser(name, tld) || IDomainRecordFacet(_self()).isOperator(name, tld, _msgSender()) || _isSelfExecution() || isPublicResolver(),
       "ONLY_DOMAIN_USER_OR_OPERATOR"
     );
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
@@ -37,6 +39,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     bytes32 tld
   ) {
     require(_msgSender() == getUser(host, name, tld) || _isSelfExecution(), "ONLY_HOST_USER");
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
@@ -46,6 +49,7 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
     bytes32 tld
   ) {
     require(_msgSender() == getUser(host, name, tld) || isOperator(host, name, tld, _msgSender()) || _isSelfExecution(), "ONLY_HOST_USER_OR_OPERATOR");
+    if (!_isSelfExecution() && registryStorage().mortgage != address(0)) require(IMortgage(registryStorage().mortgage).isFulfill(name, tld), "DOMAIN_MORTGAGE_NOT_FULFILLED");
     _;
   }
 
@@ -191,6 +195,10 @@ contract HostRecordFacet is IHostRecordFacet, Facet {
 
   function isOperator(bytes32 host, bytes32 name, bytes32 tld, address _operator) public view returns (bool) {
     return registryStorage().records[tld].domains[name].hosts[host].operators[getUser(host, name, tld)][_operator];
+  }
+
+  function isLive(bytes32 host, bytes32 name, bytes32 tld) public view returns (bool) {
+    return getUserExpiry(host, name, tld) > block.timestamp;
   }
 
   /* ========== Utils ==========*/

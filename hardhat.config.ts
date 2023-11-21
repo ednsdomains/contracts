@@ -260,6 +260,7 @@ const config: HardhatUserConfig = {
       "Synchronizer",
       "LayerZeroProvider",
       "MigrationManager",
+      "Mortgage",
     ],
   },
 };

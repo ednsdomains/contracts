@@ -13,7 +13,7 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
     emit SetTypedText(host, name, tld, type_, text);
   }
 
-  function setTypedText(bytes memory host, bytes memory name, bytes memory tld, bytes memory type_, string memory text) public payable onlyLive(host, name, tld) {
+  function setTypedText(bytes memory host, bytes memory name, bytes memory tld, bytes memory type_, string memory text) public payable onlyValid(host, name, tld) {
     _beforeExec(host, name, tld);
     _setTypedText(host, name, tld, type_, text);
     _afterExec(keccak256(tld), abi.encodeWithSignature("setTypedText(bytes,bytes,bytes,bytes,string)", host, name, tld, type_, text));
@@ -25,12 +25,13 @@ abstract contract TypedTextResolver is ITypedTextResolver, BaseResolver {
     emit UnsetTypedText(host, name, tld, type_);
   }
 
-  function unsetTypedText(bytes memory host, bytes memory name, bytes memory tld, bytes memory type_) public payable onlyLive(host, name, tld) {
+  function unsetTypedText(bytes memory host, bytes memory name, bytes memory tld, bytes memory type_) public payable onlyValid(host, name, tld) {
     _unsetTypedText(host, name, tld, type_);
     _afterExec(keccak256(tld), abi.encodeWithSignature("unsetTypedText(bytes,bytes,bytes,bytes)", host, name, tld, type_));
   }
 
-  function getTypedText(bytes memory host, bytes memory name, bytes memory tld, bytes memory type_) public view onlyLive(host, name, tld) returns (string memory) {
+  function getTypedText(bytes memory host, bytes memory name, bytes memory tld, bytes memory type_) public view returns (string memory) {
+    if (!_isValid(host, name, tld)) return "";
     bytes32 fqdn = _getFqdn(host, name, tld);
     return _typedTexts[_getUser(host, name, tld)][fqdn][keccak256(type_)];
   }

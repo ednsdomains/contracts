@@ -4,6 +4,7 @@ import {
   deployClassicalRegistrarController,
   deployLayerZeroProvider,
   deployMigrationManager,
+  deployMortgage,
   deployOmniRegistrarController,
   deployPortal,
   deployPublicResolver,
@@ -55,6 +56,10 @@ async function main() {
   }
   if (chainId === Network.POLYGON || chainId === Network.GOERLI || chainId === Network.IOTEX_TESTNET || chainId === Network.IOTEX) {
     await deployMigrationManager({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
+  }
+  if (Testnets.includes(chainId)) {
+    await deployMortgage({ signer, chainId, contracts });
     contracts = await getContracts(signer);
   }
 }
