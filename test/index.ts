@@ -331,7 +331,7 @@ describe("Deploy & Setup", function () {
     expect(await contracts.PublicResolver.getText(ethers.utils.toUtf8Bytes("@"), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld))).to.equal("");
 
     expect(
-      contracts.PublicResolver.connect(signer_1)["setAddress"](ethers.utils.toUtf8Bytes("@"), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld), signer_1.address),
+      contracts.PublicResolver.connect(signer_1)["setAddress"](ethers.utils.toUtf8Bytes(host), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld), signer_1.address),
     ).to.be.revertedWith("DOMAIN_MORTGAGE_NOT_FULFILLED");
 
     // Mint some token to signer_1

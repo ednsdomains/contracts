@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { getContracts } from "./src/lib/get-contracts";
-import { setupMigrationManager, setupMortgage } from "./src/setup";
+import {  setupMortgage } from "./src/setup";
 
 async function main() {
   const [signer] = await ethers.getSigners();
