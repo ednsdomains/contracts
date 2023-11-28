@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
@@ -9,8 +9,6 @@ import "./interfaces/IMortgage.sol";
 import "../registry/interfaces/IRegistry.sol";
 
 contract Mortgage is IMortgage, ReentrancyGuardUpgradeable, AccessControlUpgradeable, UUPSUpgradeable, PausableUpgradeable {
-  using SafeERC20Upgradeable for IERC20Upgradeable;
-
   IERC20Upgradeable internal _token;
   IRegistry internal _registry;
 
@@ -39,14 +37,17 @@ contract Mortgage is IMortgage, ReentrancyGuardUpgradeable, AccessControlUpgrade
   function deposit(bytes32 name, bytes32 tld, address owner, address spender, uint256 amount) public whenNotPaused nonReentrant {
     require(isExists(name, tld), "DOMAIN_NOT_EXISTS");
     require(_registry.isLive(name, tld), "DOMAIN_EXPIRED");
-    _token.safeTransferFrom(spender, address(this), getRequirement(name, tld));
+    require(_token.allowance(spender, _msgSender()) >= amount, "INSUFFICIENT_TOKEN_ALLOWANCE");
+    require(_token.balanceOf(spender) >= amount, "INSUFFICIENT_TOKEN_BALANCE");
+    _token.transferFrom(spender, address(this), getRequirement(name, tld));
     _funds[tld][name][owner] += amount;
     emit Deposit(name, tld, owner, amount);
   }
 
   function withdraw(bytes32 name, bytes32 tld, address recipient, uint256 amount) public whenNotPaused nonReentrant {
-    require(_funds[tld][name][_msgSender()] >= amount, "FUND_AMOUNT_EXCEEDED");
-    _token.safeTransferFrom(address(this), recipient, amount);
+    require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
+    require(_funds[tld][name][_msgSender()] >= amount, "AMOUNT_EXCEEDED");
+    _token.transferFrom(address(this), recipient, amount);
     emit Withdraw(name, tld, _msgSender(), amount);
   }
 
