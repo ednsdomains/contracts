@@ -1,4 +1,5 @@
 import { InContractChain } from "./scripts/src/constants/in-contract-chain";
+import GetBlockConfig from "./getblock.config.json";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -177,7 +178,7 @@ const config: INetworkConfig = {
     chain: InContractChain.ETHEREUM,
     name: "Ethereum",
     symbol: "ETH",
-    url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: `https://go.getblock.io/${GetBlockConfig.shared.eth.mainnet.jsonRpc[0]}` || "https://eth.llamarpc.com",
     slip44: {
       coinId: 60,
     },
@@ -229,7 +230,7 @@ const config: INetworkConfig = {
     chain: InContractChain.ETHEREUM,
     name: "Ethereum Goerli",
     symbol: "gETH",
-    url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: `https://go.getblock.io/${GetBlockConfig.shared.eth.goerli.jsonRpc[0]}` || `https://endpoints.omniatech.io/v1/eth/goerli/public`,
     slip44: {
       coinId: 60,
     },

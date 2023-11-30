@@ -290,7 +290,7 @@ describe("Deploy & Setup", function () {
   });
 
   it("Register Premium Domain and Set Address Record", async function () {
-    const [master_signer, signer_1] = await ethers.getSigners();
+    const [master_signer, signer_1, signer_2] = await ethers.getSigners();
     const { contracts } = await loadFixture(deployAndSetup);
 
     const host = `i-am-host-${luxon.DateTime.now().toSeconds().toFixed(0)}`;
@@ -344,7 +344,7 @@ describe("Deploy & Setup", function () {
     await tx4.wait();
 
     // signer_1 do the deposit to `Mortgage`
-    const tx5 = await contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, ethers.utils.parseUnits("10000"));
+    const tx5 = await contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, signer_1.address, ethers.utils.parseUnits("10000"));
     await tx5.wait();
 
     const tx6 = await contracts.PublicResolver.connect(signer_1)["setAddress"](
@@ -356,5 +356,9 @@ describe("Deploy & Setup", function () {
     await tx6.wait();
 
     expect(await contracts.PublicResolver.getAddress(ethers.utils.toUtf8Bytes(host), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld))).to.be.equal(signer_1.address);
+
+    expect(contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, signer_2.address, ethers.utils.parseUnits("10000"))).to.be.revertedWith(
+      "INSUFFICIENT_TOKEN_ALLOWANCE",
+    );
   });
 });

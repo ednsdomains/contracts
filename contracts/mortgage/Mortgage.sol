@@ -37,7 +37,7 @@ contract Mortgage is IMortgage, ReentrancyGuardUpgradeable, AccessControlUpgrade
   function deposit(bytes32 name, bytes32 tld, address owner, address spender, uint256 amount) public whenNotPaused nonReentrant {
     require(isExists(name, tld), "DOMAIN_NOT_EXISTS");
     require(_registry.isLive(name, tld), "DOMAIN_EXPIRED");
-    require(_token.allowance(spender, _msgSender()) >= amount, "INSUFFICIENT_TOKEN_ALLOWANCE");
+    if (spender != _msgSender()) require(_token.allowance(spender, _msgSender()) >= amount, "INSUFFICIENT_TOKEN_ALLOWANCE");
     require(_token.balanceOf(spender) >= amount, "INSUFFICIENT_TOKEN_BALANCE");
     _token.transferFrom(spender, address(this), getRequirement(name, tld));
     _funds[tld][name][owner] += amount;
