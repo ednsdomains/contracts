@@ -1,8 +1,31 @@
 import { InContractChain } from "./scripts/src/constants/in-contract-chain";
-import GetBlockConfig from "./getblock.config.json";
 import * as dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
+
+interface IGetBlockConfig {
+  shared: {
+    [key: string]: {
+      [key: string]: {
+        jsonRpc: string[];
+      };
+    };
+  };
+}
+
+let GetBlockConfig: IGetBlockConfig = { shared: {} };
+
+if (process.env.GETBLOCK_CONFIG) {
+  GetBlockConfig = JSON.parse(process.env.GETBLOCK_CONFIG);
+}
+
+try {
+  GetBlockConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), "getblock.config.json"), "utf-8"));
+} catch {
+  console.warn("getblock.config.json not found");
+}
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
