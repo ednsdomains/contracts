@@ -29,6 +29,11 @@ try {
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
+export enum Net {
+  MAINNET = "mainnet",
+  TESTNET = "testnet",
+}
+
 export enum Network {
   ETHEREUM = 1,
   GOERLI = 5,
