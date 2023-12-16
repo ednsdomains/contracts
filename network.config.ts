@@ -643,8 +643,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chain: InContractChain.IOTEX,
       name: "IoTeX Mainnet",
       symbol: "IOTX",
-      // url: `https://iotex-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
-      url: "https://babel-api.mainnet.iotex.io",
+      url: `https://iotex-mainnet.rpc.grove.city/v1/${process.env.GROVE_CITY_APP_ID}`,
       slip44: {
         coinId: 304,
       },
@@ -688,7 +687,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chain: InContractChain.OKC,
       name: "OKC Mainnet",
       symbol: "OKT",
-      url: `https://oKc-mainnet.gateway.pokt.network/v1/lb/${process.env.POKT_PORTAL_ID}`,
+      url: `https://oKc-mainnet.rpc.grove.city/v1/${process.env.GROVE_CITY_APP_ID}`,
       slip44: {
         coinId: 996,
       },
@@ -774,7 +773,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chainId: Network.MOONBEAM,
       name: "Moonbeam",
       symbol: "GLMR",
-      url: `https://go.getblock.io/${GetBlockConfig.shared.glmr.mainnet.jsonRpc[0]}`,
+      url: `https://moonbeam-mainnet.rpc.grove.city/v1/${process.env.GROVE_CITY_APP_ID}`,
       slip44: {
         coinId: 1284,
       },
@@ -803,7 +802,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chainId: Network.MOONRIVER,
       name: "Moonriver",
       symbol: "MOVR",
-      url: `https://go.getblock.io/${GetBlockConfig.shared.movr.mainnet.jsonRpc[0]}`,
+      url: `https://moonriver-mainnet.rpc.grove.city/v1/${process.env.GROVE_CITY_APP_ID}`,
       slip44: {
         coinId: 1285,
       },
@@ -827,7 +826,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chainId: Network.CELO,
       name: "Celo Mainnet",
       symbol: "CELO",
-      url: `https://celo-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://celo-mainnet.rpc.grove.city/v1/${process.env.GROVE_CITY_APP_ID}`,
       slip44: {
         coinId: 52751,
       },
@@ -843,7 +842,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chainId: Network.CELO_ALFAJORES,
       name: "Celo Alfajores Testnet",
       symbol: "CELO",
-      url: `https://celo-alfajores.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://alfajores-forno.celo-testnet.org`,
       slip44: {
         coinId: 52751,
       },
