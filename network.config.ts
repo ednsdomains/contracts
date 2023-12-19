@@ -37,6 +37,7 @@ export enum Net {
 export enum Network {
   ETHEREUM = 1,
   GOERLI = 5,
+  SEPOLIA = 11155111,
   BNB_CHAIN = 56,
   BNB_CHAIN_TESTNET = 97,
   POLYGON = 137,
@@ -118,6 +119,7 @@ export const Mainnets = [
 
 export const Testnets = [
   Network.GOERLI,
+  Network.SEPOLIA,
   Network.BNB_CHAIN_TESTNET,
   Network.POLYGON_MUMBAI,
   Network.AVALANCHE_FUJI,
@@ -133,7 +135,7 @@ export const Testnets = [
   Network.HARMONY_TESTNET,
   Network.IOTEX_TESTNET,
   Network.LINEA_GOERLI,
-  Network.BASE_GOERLI,
+  Network.BASE_SEPOLIA,
   Network.SCROLL_SEPOLIA,
   Network.CORE_DAO_TESTNET,
 ];
@@ -286,6 +288,22 @@ export const getNetworkConfig = (): INetworkConfig => {
         },
       },
     },
+    [Network.SEPOLIA]: {
+      chainId: Network.SEPOLIA,
+      chain: InContractChain.ETHEREUM,
+      name: "Ethereum Sepolia",
+      symbol: "SepETH",
+      url: `https://go.getblock.io/${GetBlockConfig.shared.eth.sepolia.jsonRpc[0]}`,
+      slip44: {
+        coinId: 60,
+      },
+      layerzero: {
+        chainId: 10161,
+        endpoint: {
+          address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+        },
+      },
+    },
     [Network.BNB_CHAIN]: {
       chainId: Network.BNB_CHAIN,
       chain: InContractChain.BNB,
@@ -355,7 +373,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chain: InContractChain.AVALANCHE,
       name: "Avalanche C-Chain",
       symbol: "AVAX",
-      url: `https://go.getblock.io/${GetBlockConfig.shared.avax.mainnet.jsonRpc[0]}`,
+      url: `https://go.getblock.io/${GetBlockConfig.shared.avax.mainnet.jsonRpc[0]}/ext/bc/C/rpc`,
       slip44: {
         coinId: 9005,
       },
@@ -387,7 +405,7 @@ export const getNetworkConfig = (): INetworkConfig => {
       chain: InContractChain.AVALANCHE,
       name: "Avalanche Fuji",
       symbol: "AVAX",
-      url: `https://go.getblock.io/${GetBlockConfig.shared.avax.testnet.jsonRpc[0]}`,
+      url: `https://go.getblock.io/${GetBlockConfig.shared.avax.testnet.jsonRpc[0]}/ext/bc/C/rpc`,
       slip44: {
         coinId: 9005,
       },

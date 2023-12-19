@@ -49,6 +49,9 @@ const config: HardhatUserConfig = {
     goerli: {
       chainId: 5,
     },
+    sepolia: {
+      chainId: 11155111,
+    },
     // BNB Chain
     bnb: {
       chainId: 56,
