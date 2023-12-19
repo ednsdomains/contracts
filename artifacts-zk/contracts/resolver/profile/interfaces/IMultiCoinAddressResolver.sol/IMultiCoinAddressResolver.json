@@ -1,0 +1,175 @@
+{
+  "_format": "hh-zksolc-artifact-1",
+  "contractName": "IMultiCoinAddressResolver",
+  "sourceName": "contracts/resolver/profile/interfaces/IMultiCoinAddressResolver.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "host",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "tld",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "coin",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "address_",
+          "type": "bytes"
+        }
+      ],
+      "name": "SetMultiCoinAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "host",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "tld",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "coin",
+          "type": "uint256"
+        }
+      ],
+      "name": "UnsetMultiCoinAddress",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "host",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "tld",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "coin",
+          "type": "uint256"
+        }
+      ],
+      "name": "getMultiCoinAddress",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "host",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "tld",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "coin",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "address_",
+          "type": "bytes"
+        }
+      ],
+      "name": "setMultiCoinAddress",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "host",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "name",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "tld",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "coin",
+          "type": "uint256"
+        }
+      ],
+      "name": "unsetMultiCoinAddress",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "factoryDeps": {}
+}

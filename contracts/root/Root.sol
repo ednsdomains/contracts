@@ -1,134 +1,102 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
 import "./interfaces/IRoot.sol";
-import "../registry/IRegistry.sol";
-import "../registrar/interfaces/ISingletonRegistrar.sol";
-import "../registrar/interfaces/IOmniRegistrar.sol";
-import "../utils/Synchronizer.sol";
+import "../registry/interfaces/IRegistry.sol";
+import "../registrar/interfaces/IRegistrar.sol";
+import "../lib/TldClass.sol";
+import "../lib/WrapperRecord.sol";
+import "../wrapper/Wrapper.sol";
 
-contract Root is IRoot, AccessControlUpgradeable, Synchronizer {
+contract Root is IRoot, AccessControlUpgradeable, UUPSUpgradeable {
   IRegistry private _registry;
-  ISingletonRegistrar private _singletonRegistrar;
-  IOmniRegistrar private _omniRegistrar;
+  IRegistrar private _registrar;
 
-  function initialize(
-    IRegistry registry_,
-    ISingletonRegistrar singletonRegistrar_,
-    IOmniRegistrar omniRegistrar_,
-    address _lzEndpoint,
-    uint16 chainId_,
-    uint16[] memory chainIds_
-  ) public initializer {
-    __Root_init(registry_, singletonRegistrar_, omniRegistrar_);
-    __Synchronizer_init(chainId_, chainIds_, _lzEndpoint);
+  address internal _authorizer;
+
+  bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+  bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+
+  function initialize(IRegistry registry_, IRegistrar registrar) public initializer {
+    __Root_init(registry_, registrar);
   }
 
-  function __Root_init(
-    IRegistry registry_,
-    ISingletonRegistrar singletonRegistrar_,
-    IOmniRegistrar omniRegistrar_
-  ) internal onlyInitializing {
-    __Root_init_unchained(registry_, singletonRegistrar_, omniRegistrar_);
+  function __Root_init(IRegistry registry_, IRegistrar registrar) internal onlyInitializing {
+    __Root_init_unchained(registry_, registrar);
   }
 
-  function __Root_init_unchained(
-    IRegistry registry_,
-    ISingletonRegistrar singletonRegistrar_,
-    IOmniRegistrar omniRegistrar_
-  ) internal onlyInitializing {
+  function __Root_init_unchained(IRegistry registry_, IRegistrar registrar) internal onlyInitializing {
     _registry = registry_;
-    _singletonRegistrar = singletonRegistrar_;
-    _omniRegistrar = omniRegistrar_;
-    _setRoleAdmin(ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    _setupRole(ADMIN_ROLE, _msgSender());
+    _registrar = registrar;
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(ADMIN_ROLE, _msgSender());
+    _grantRole(OPERATOR_ROLE, _msgSender());
   }
 
-  function register(
-    bytes calldata tld,
-    address resolver_,
-    bool enable_,
-    bool omni_
-  )  public onlyAdmin payable {
-    require(!_registry.exists(keccak256(tld)), "TLD_EXISTS");
-    _register(tld, resolver_, enable_, omni_);
-    if (omni_) {
-      _sync(abi.encodeWithSignature("register_SYNC(bytes,address,bool,bool)", tld, resolver_, enable_, true));
+  function register(Chain[] memory chains, bytes memory tld, address resolver, uint64 expiry, address owner, bool enable, TldClass class_) public onlyRole(ADMIN_ROLE) {
+    if (class_ == TldClass.CLASSICAL) {
+      require(chains.length == 0, "INVALID_CHAINS");
+    } else {
+      require(chains.length > 0, "INVALID_CHAINS");
     }
+    require(!_registry.isExists(keccak256(tld)) || _registry.getExpiry(keccak256(tld)) < block.timestamp, "TLD_EXISTS");
+    _registry.setRecord(chains, tld, owner, resolver, expiry, enable, class_);
+    emit TldRegistered(tld, owner, expiry);
   }
 
-  function register_SYNC(
-    bytes calldata tld,
-    address resolver_,
-    bool enable_,
-    bool omni_
-  ) external onlySelf {
-    _register(tld, resolver_, enable_, omni_);
+  function renew(bytes memory tld, uint64 expiry) public onlyRole(ADMIN_ROLE) {
+    require(_registry.isExists(keccak256(tld)) && _registry.getExpiry(keccak256(tld)) > block.timestamp, "TLD_NOT_EXISTS");
+    _registry.setExpiry(keccak256(tld), expiry);
+    emit TldRenewed(tld, expiry);
   }
 
-  function _register(
-    bytes calldata tld,
-    address resolver_,
-    bool enable_,
-    bool omni_
-  ) internal {
-    _registry.setRecord(tld, address(this), resolver_, enable_, omni_);
+  function transfer(bytes memory tld, address newOwner) public onlyRole(ADMIN_ROLE) {
+    uint256 tokenId = _registry.getTokenId(tld);
+    WrapperRecord memory _wrapper = _registry.getWrapper(keccak256(tld));
+    Wrapper(_wrapper.address_).transferFrom(address(this), newOwner, tokenId);
   }
 
-  // TODO:
-  function transfer(bytes calldata tld) public onlyAdmin {}
-
-  // TODO: Omni
-  function reclaim(bytes calldata tld) public onlyAdmin {
-    _registry.setOwner(keccak256(bytes(tld)), address(this));
-  }
-
-  function setEnable(bytes calldata tld, bool enable_) public onlyAdmin {
-    _setEnable(tld, enable_);
-    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setEnable(bytes,bool)", tld, enable_));
-  }
-
-  function _setEnable(bytes calldata tld, bool enable_) internal {
+  function setEnable(bytes memory tld, bool enable_) public payable onlyRole(ADMIN_ROLE) {
     _registry.setEnable(keccak256(tld), enable_);
   }
 
-  function setResolver(bytes calldata tld, address resolver_) public onlyAdmin {
-    _setResolver(tld, resolver_);
-    if (_registry.omni(keccak256(tld))) _sync(abi.encodeWithSignature("_setResolver(bytes,bool)", tld, resolver_));
-  }
-
-  function _setResolver(bytes calldata tld, address resolver_) internal {
+  function setResolver(bytes memory tld, address resolver_) public payable onlyRole(ADMIN_ROLE) {
     _registry.setResolver(keccak256(tld), resolver_);
   }
 
-  function setControllerApproval(
-    bytes calldata tld,
-    address controller,
-    bool approved
-  ) public onlyAdmin {
-    // require(_registry.exists(keccak256(tld)), "TLD_NOT_EXISTS");
-    if (_registry.omni(keccak256(tld))) {
-      _omniRegistrar.setControllerApproval(tld, controller, approved);
-    } else {
-      _singletonRegistrar.setControllerApproval(tld, controller, approved);
-    }
+  function setControllerApproval(bytes32 tld, address controller, bool approved) public onlyRole(ADMIN_ROLE) {
+    _registrar.setControllerApproval(tld, controller, approved);
   }
 
-  function enable(bytes calldata tld) public view returns (bool) {
-    return _registry.enable(keccak256(tld));
+  function setWrapper(bytes32 tld, bool enable, address address_) public onlyRole(ADMIN_ROLE) {
+    _registry.setWrapper(tld, enable, address_);
   }
 
-  function omni(bytes calldata tld) public view returns (bool) {
-    return _registry.omni(keccak256(tld));
+  function isEnable(bytes memory tld) public view returns (bool) {
+    return _registry.isEnable(keccak256(tld));
   }
 
-  function resolver(bytes calldata tld) public view returns (address) {
-    return _registry.resolver(keccak256(tld));
+  function getResolver(bytes memory tld) public view returns (address) {
+    return _registry.getResolver(keccak256(tld));
   }
 
-  function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable, Synchronizer) returns (bool) {
+  function getAuthorizer() public view returns (address) {
+    return _authorizer;
+  }
+
+  function setAuthorizer(address address_) public onlyRole(ADMIN_ROLE) {
+    _authorizer = address_;
+    emit NewAuthorizer(address_);
+  }
+
+  function _authorizeUpgrade(address newImplementation) internal override onlyRole(ADMIN_ROLE) {}
+
+  function supportsInterface(bytes4 interfaceID) public view override(AccessControlUpgradeable) returns (bool) {
     return interfaceID == type(IRoot).interfaceId || super.supportsInterface(interfaceID);
   }
+
+  uint256[50] private __gap;
 }

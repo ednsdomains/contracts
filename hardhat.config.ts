@@ -1,6 +1,9 @@
 import * as dotenv from "dotenv";
-
+import NetworkConfig from "./network.config";
 import { HardhatUserConfig } from "hardhat/config";
+import "@nomiclabs/hardhat-web3";
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-solhint";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-waffle";
@@ -8,23 +11,29 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "solidity-coverage";
+import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
+import "@matterlabs/hardhat-zksync-upgradable";
+import { ethers } from "ethers";
 
 dotenv.config();
-// const mnemonic: string | undefined = process.env.MNEMONIC;
-// if (!mnemonic) {
-//   throw new Error("Please set your MNEMONIC in a .env file");
-// }
-
-// const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
-// if (!infuraApiKey) {
-//   // throw new Error("Please set your INFURA_API_KEY in a .env file");
-// }
-
 // https://hardhat.org/config/
 // https://hardhat.org/guides/compile-contracts/
+
 const config: HardhatUserConfig = {
+  // defaultNetwork: "goerli",
+  zksolc: {
+    version: "1.3.10",
+    compilerSource: "binary",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   solidity: {
-    version: process.env.SOLIDITY_VERSION || "0.8.9",
+    version: process.env.SOLIDITY_VERSION || "0.8.17",
     settings: {
       optimizer: {
         enabled: true,
@@ -36,98 +45,243 @@ const config: HardhatUserConfig = {
     // Ethereum
     mainnet: {
       chainId: 1,
-      url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    rinkeby: {
-      chainId: 4,
-      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    goerli: {
+      chainId: 5,
+    },
+    sepolia: {
+      chainId: 11155111,
     },
     // BNB Chain
     bnb: {
       chainId: 56,
-      url: `https://bsc.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
-    bnbTestnet: {
+    bnb_testnet: {
       chainId: 97,
-      url: `https://bsc.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
     // Fantom
     fantom: {
       chainId: 250,
-      url: `https://ftm.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
-    fantomTestnet: {
+    fantom_testnet: {
       chainId: 4002,
-      url: `https://rpc.testnet.fantom.network/`,
     },
     // Optimism
-    optimisim: {
+    optimism: {
       chainId: 10,
-      url: `https://optimism-arbitrum.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    optimisimKovan: {
-      chainId: 69,
-      url: `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    optimism_goerli: {
+      chainId: 420,
     },
     // Polygon
     polygon: {
       chainId: 137,
-      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      gasPrice: ethers.utils.parseUnits("200", "gwei").toNumber(),
     },
-    polygonMumbai: {
+    polygon_mumbai: {
       chainId: 80001,
-      url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
     // Arbitrum
     arbitrum: {
       chainId: 42161,
-      url: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-    arbitrumRinkeby: {
-      chainId: 421611,
-      url: `https://arbitrum-rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    arbitrum_goerli: {
+      chainId: 421613,
     },
     // Avalanche
     avalanche: {
       chainId: 43114,
-      url: `https://avax.getblock.io/mainnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
     },
-    avalancheFuji: {
+    avalanche_fuji: {
       chainId: 43113,
-      url: `https://avax.getblock.io/testnet/?api_key=${process.env.GETBLOCK_API_KEY}`,
+    },
+    gnosis: {
+      chainId: 100,
+    },
+    gnosis_chiado: {
+      chainId: 10200,
+      gasPrice: 1000000000,
+    },
+    iotex: {
+      chainId: 4689,
+    },
+    iotex_testnet: {
+      chainId: 4690,
+    },
+    okc: {
+      chainId: 66,
+    },
+    okc_testnet: {
+      chainId: 65,
+    },
+    kcc: {
+      chainId: 321,
+    },
+    kcc_testnet: {
+      chainId: 322,
+    },
+    mixin: {
+      chainId: 73927,
+    },
+    cronos: {
+      chainId: 25,
+    },
+    cronos_testnet: {
+      chainId: 338,
+    },
+    celo: {
+      chainId: 42220,
+    },
+    celo_alfajores: {
+      chainId: 44787,
+    },
+    evmos: {
+      chainId: 9001,
+    },
+    evmos_testmet: {
+      chainId: 9000,
+    },
+    zksync_era: {
+      chainId: 324,
+      zksync: true,
+    },
+    zksync_era_testnet: {
+      chainId: 280,
+      ethNetwork: "goerli",
+      zksync: true,
+    },
+    polygon_zkevm: {
+      chainId: 1101,
+    },
+    polygon_zkevm_testnet: {
+      chainId: 1442,
+    },
+    harmony: {
+      chainId: 1666600000,
+    },
+    harmony_testnet: {
+      chainId: 1666700000,
+    },
+    moonbeam: {
+      chainId: 1284,
+    },
+    moonriver: {
+      chainId: 1285,
+    },
+    moonbase_alphanet: {
+      chainId: 1287,
+    },
+    linea: {
+      chainId: 59144,
+    },
+    linea_goerli: {
+      chainId: 59140,
+    },
+    base: {
+      chainId: 8453,
+    },
+    base_goerli: {
+      chainId: 84531,
+      gasPrice: 1000000000,
+    },
+    scroll: {
+      chainId: 534352,
+    },
+    scroll_sepolia: {
+      chainId: 534351,
+    },
+    coredao: {
+      chainId: 1116,
+    },
+    coredao_testnet: {
+      chainId: 1115,
     },
   },
   gasReporter: {
-    enabled: true,
+    enabled: !!process.env.REPORT_GAS,
     currency: "USD",
+    token: "MATIC",
+    gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY || undefined,
     showTimeSpent: true,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-  },
-  mocha: {
-    parallel: true,
+    // https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan#adding-support-for-other-networks
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY || "",
+      goerli: process.env.ETHERSCAN_API_KEY || "",
+      polygon: process.env.POLYGONSCAN_API_KEY || "",
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
+      bsc: process.env.BSCSCAN_API_KEY || "",
+      bscTestnet: process.env.BSCSCAN_API_KEY || "",
+      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY || "",
+      optimisticGoerli: process.env.OPTIMISTIC_ETHERSCAN_API_KEY || "",
+      avalanche: process.env.SNOWTRACE_API_KEY || "",
+      avalancheFujiTestnet: process.env.SNOWTRACE_API_KEY || "",
+      arbitrumOne: process.env.ARBISCAN_API_KEY || "",
+      arbitrumGoerli: process.env.ARBISCAN_API_KEY || "",
+      gnosis: process.env.GNOSISSCAN_API_KEY || "",
+      ftm: process.env.FTMSCAN_API_KEY || "",
+      ftmTestnet: process.env.FTMSCAN_API_KEY || "",
+      moonbeam: process.env.MOONSCAN_API_KEY || "",
+    },
+    customChains: [
+      {
+        network: "chiado",
+        chainId: 10200,
+        urls: {
+          apiURL: "https://blockscout.com/gnosis/chiado/api",
+          browserURL: "https://blockscout.com/gnosis/chiado",
+        },
+      },
+      {
+        network: "gnosis",
+        chainId: 100,
+        urls: {
+          apiURL: "https://api.gnosisscan.io/api",
+          browserURL: "https://gnosisscan.io/",
+        },
+      },
+    ],
   },
   contractSizer: {
     alphaSort: false,
-    runOnCompile: true,
+    runOnCompile: !!process.env.CONTRACT_SIZER,
     disambiguatePaths: false,
     only: [
+      "TldRecordFacet",
+      "DomainRecordFacet",
+      "HostRecordFacet",
       "Registry",
-      "SingletonRegistrar",
-      "SingletonRegistrarController",
-      "Token",
-      "DomainPriceOracle",
-      "TokenPriceOracle",
+      "Registrar",
+      "ClassicalRegistrarController",
+      "UniversalRegistrarController",
+      "BatchRegistrarController",
       "PublicResolver",
-      "PublicResolverSynchronizer",
       "Root",
-      "OmniRegistrar",
-      "OmniRegistrarController",
-      "OmniRegistrarSynchronizer",
+      "Wrapper",
+      "Bridge",
+      "Portal",
+      "Synchronizer",
+      "LayerZeroProvider",
+      "MigrationManager",
+      "Mortgage",
     ],
   },
 };
 
+if (config.networks) {
+  for (const network in config.networks) {
+    const chainId = config.networks[network]?.chainId;
+    if (chainId) {
+      if (NetworkConfig[chainId]) {
+        // @ts-ignore
+        config.networks[network].url = NetworkConfig[chainId].url;
+        if (process.env.PRIVATE_KEY) config.networks[network]!.accounts = [process.env.PRIVATE_KEY];
+      } else {
+        delete config.networks[network];
+      }
+    }
+  }
+}
 export default config;

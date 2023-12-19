@@ -1,33 +1,21 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
 
 interface IAddressResolver {
-  event SetAddress(bytes host, bytes domain, bytes tld, uint256 coin, bytes address_);
+  event SetAddress(bytes host, bytes name, bytes tld, address address_);
+  event UnsetAddress(bytes host, bytes name, bytes tld);
+  event SetReverseAddress(bytes host, bytes name, bytes tld, address address_);
+  event UnsetReverseAddress(bytes host, bytes name, bytes tld, address address_);
 
-  function setAddr(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
-    uint256 coin,
-    bytes calldata address_
-  ) external;
+  function setAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) external payable;
 
-  function setAddr_SYNC(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
-    uint256 coin,
-    bytes calldata address_
-  ) external;
+  function unsetAddress(bytes memory host, bytes memory name, bytes memory tld) external payable;
 
-  function addr(
-    bytes calldata host,
-    bytes calldata domain,
-    bytes calldata tld,
-    uint256 coin
-  ) external view returns (bytes memory);
+  function getAddress(bytes memory host, bytes memory name, bytes memory tld) external returns (address);
 
-  function addr(bytes calldata fqdn, uint256 coin) external view returns (bytes memory);
+  function setReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) external payable;
 
-  function addr(bytes32 fqdn, uint256 coin) external view returns (bytes memory);
+  function unsetReverseAddress(bytes memory host, bytes memory name, bytes memory tld, address address_) external payable;
+
+  function getReverseAddress(address address_) external returns (string memory);
 }

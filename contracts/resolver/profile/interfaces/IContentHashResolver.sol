@@ -1,25 +1,42 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
 
 interface IContentHashResolver {
   event SetContentHash(bytes32 indexed node, bytes hash);
 
-  function setContenthash(
-    string memory host,
-    string memory domain,
-    string memory tld,
-    bytes32 type_,
-    bytes memory hash
-  ) external;
+  enum ContentHashProtocol {
+    IPFS,
+    BZZ,
+    BTFS,
+    ARWEAVE,
+    DEDRIVE
+  }
 
-  function contenthash(
+  function setContentHash(
     string memory host,
-    string memory domain,
+    string memory name,
     string memory tld,
-    bytes32 type_
+    bytes memory hash
+  ) external payable;
+
+  function getContentHash(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld
   ) external view returns (bytes memory);
 
-  function contenthash(string memory fqdn, bytes32 type_) external view returns (bytes memory);
+  function setTypedContentHash(
+    string memory host,
+    string memory name,
+    string memory tld,
+    ContentHashProtocol type_,
+    bytes memory hash
+  ) external payable;
 
-  function contenthash(bytes32 fqdn, bytes32 type_) external view returns (bytes memory);
+  function getTypedContentHash(
+    bytes memory host,
+    bytes memory name,
+    bytes memory tld,
+    ContentHashProtocol type_
+  ) external view returns (bytes memory);
 }

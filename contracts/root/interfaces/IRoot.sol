@@ -1,31 +1,50 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
+
+import "../../lib/TldClass.sol";
+import "../../lib/Chain.sol";
 
 interface IRoot {
+  event NewAuthorizer(address address_);
+
+  event TldRegistered(bytes tld, address owner, uint256 expiry);
+  event TldRenewed(bytes tld, uint256 expiry);
+
   function register(
-    bytes calldata tld,
+    Chain[] memory chains,
+    bytes memory tld,
     address resolver,
-    bool enable_,
-    bool omni_
-  ) payable external;
+    uint64 expiry,
+    address owner,
+    bool enable,
+    TldClass class_
+  ) external;
 
-  function transfer(bytes calldata tld) external;
+  function renew(bytes memory tld, uint64 expiry) external;
 
-  function reclaim(bytes calldata tld) external;
+  function transfer(bytes memory tld, address newOwner) external;
 
-  function setEnable(bytes calldata tld, bool enable) external;
+  function setEnable(bytes memory tld, bool enable) external payable;
 
-  function setResolver(bytes calldata tld, address resolver) external;
+  function setResolver(bytes memory tld, address resolver) external payable;
 
   function setControllerApproval(
-    bytes calldata tld,
+    bytes32 tld,
     address controller,
     bool approved
   ) external;
 
-  function enable(bytes calldata tld) external view returns (bool);
+  function setWrapper(
+    bytes32 tld,
+    bool enable,
+    address address_
+  ) external;
 
-  function omni(bytes calldata tld) external view returns (bool);
+  function isEnable(bytes memory tld) external view returns (bool);
 
-  function resolver(bytes calldata tld) external view returns (address);
+  function getResolver(bytes memory tld) external view returns (address);
+
+  function getAuthorizer() external view returns (address);
+
+  function setAuthorizer(address address_) external;
 }

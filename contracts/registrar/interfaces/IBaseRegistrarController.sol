@@ -1,42 +1,35 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.13;
+import "@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol";
 
-interface IBaseRegistrarController {
-  function available(string calldata domain, string calldata tld) external returns (bool);
-
-  function available(string calldata tld) external returns (bool);
-
-  function price(
-    string calldata domain,
-    string calldata tld,
-    uint256 durations
-  ) external returns (uint256);
-
-  function commit(
-    string calldata domain,
-    string calldata tld,
-    address owner,
-    uint256 durations
-  ) external;
-
-  function makeCommitment(
-    string calldata domain,
-    string calldata tld,
-    address owner,
-    uint256 durations
-  ) external view returns (bytes32);
-
+interface IBaseRegistrarController is IAccessControlUpgradeable {
   function register(
-    string calldata domain,
-    string calldata tld,
+    bytes memory name,
+    bytes memory tld,
     address owner,
-    uint256 durations,
-    bytes32 commitment
-  ) external;
+    uint64 expiry
+  ) external payable;
 
   function renew(
-    string calldata domain,
-    string calldata tld,
-    uint256 durations
-  ) external;
+    bytes memory name,
+    bytes memory tld,
+    uint64 expiry
+  ) external payable;
+
+  function register(
+    bytes memory name,
+    bytes memory tld,
+    address owner,
+    uint64 expiry,
+    uint256 price,
+    bytes calldata signature
+  ) external payable;
+
+  function renew(
+    bytes memory name,
+    bytes memory tld,
+    uint64 expiry,
+    uint256 price,
+    bytes calldata signature
+  ) external payable;
 }

@@ -1,0 +1,38 @@
+name: Slither Analysis
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+
+jobs:
+  slither:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+      - name: Installing dependencies
+        run: npm install
+      - name: Compile and create artifacts
+        run: npm run compile
+      - name: Run Slither
+        uses: crytic/slither-action@v0.2.0
+        id: slither
+        with:
+          node-version: 18
+          solc-version: 0.8.17
+          sarif: results.sarif
+          fail-on: none
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}
