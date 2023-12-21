@@ -10969,7 +10969,7 @@
             "slot": "0",
             "type": "t_uint8",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
             "retypedFrom": "bool"
           },
           {
@@ -10978,7 +10978,7 @@
             "slot": "0",
             "type": "t_bool",
             "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
           },
           {
             "label": "__gap",
@@ -10986,7 +10986,7 @@
             "slot": "1",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:169"
           },
           {
             "label": "__gap",
@@ -10994,7 +10994,7 @@
             "slot": "51",
             "type": "t_array(t_uint256)50_storage",
             "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:111"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:111"
           },
           {
             "label": "__gap",
@@ -11002,7 +11002,7 @@
             "slot": "101",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
           },
           {
             "label": "_paused",
@@ -11010,7 +11010,7 @@
             "slot": "151",
             "type": "t_bool",
             "contract": "PausableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:29"
           },
           {
             "label": "__gap",
@@ -11018,7 +11018,7 @@
             "slot": "152",
             "type": "t_array(t_uint256)49_storage",
             "contract": "PausableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:116"
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\PausableUpgradeable.sol:116"
           },
           {
             "label": "__gap",
@@ -11026,7 +11026,7 @@
             "slot": "201",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC165Upgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
           },
           {
             "label": "_roles",
@@ -11034,7 +11034,7 @@
             "slot": "251",
             "type": "t_mapping(t_bytes32,t_struct(RoleData)34_storage)",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:62"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:62"
           },
           {
             "label": "__gap",
@@ -11042,7 +11042,7 @@
             "slot": "252",
             "type": "t_array(t_uint256)49_storage",
             "contract": "AccessControlUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
           },
           {
             "label": "_status",
@@ -11050,7 +11050,7 @@
             "slot": "301",
             "type": "t_uint256",
             "contract": "ReentrancyGuardUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:38"
           },
           {
             "label": "__gap",
@@ -11058,47 +11058,47 @@
             "slot": "302",
             "type": "t_array(t_uint256)49_storage",
             "contract": "ReentrancyGuardUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:88"
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:88"
           },
           {
             "label": "_selfChain",
             "offset": 0,
             "slot": "351",
-            "type": "t_enum(Chain)14251",
+            "type": "t_enum(Chain)9467",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:18"
+            "src": "contracts\\crosschain\\Bridge.sol:18"
           },
           {
             "label": "_registry",
             "offset": 1,
             "slot": "351",
-            "type": "t_contract(IRegistry)21758",
+            "type": "t_contract(IRegistry)16626",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:20"
+            "src": "contracts\\crosschain\\Bridge.sol:20"
           },
           {
             "label": "_portal",
             "offset": 0,
             "slot": "352",
-            "type": "t_contract(IPortal)10544",
+            "type": "t_contract(IPortal)7918",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:21"
+            "src": "contracts\\crosschain\\Bridge.sol:21"
           },
           {
             "label": "_acceptedRequests",
             "offset": 0,
             "slot": "353",
-            "type": "t_mapping(t_bytes32,t_struct(AcceptedRequest)10325_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(AcceptedRequest)7699_storage)",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:23"
+            "src": "contracts\\crosschain\\Bridge.sol:23"
           },
           {
             "label": "_bridgedRequests",
             "offset": 0,
             "slot": "354",
-            "type": "t_mapping(t_bytes32,t_struct(BridgedRequest)10340_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(BridgedRequest)7714_storage)",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:24"
+            "src": "contracts\\crosschain\\Bridge.sol:24"
           },
           {
             "label": "_receivedRequest",
@@ -11106,15 +11106,15 @@
             "slot": "355",
             "type": "t_mapping(t_bytes32,t_bool)",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:25"
+            "src": "contracts\\crosschain\\Bridge.sol:25"
           },
           {
             "label": "_remoteBridges",
             "offset": 0,
             "slot": "356",
-            "type": "t_mapping(t_enum(Chain)14251,t_address)",
+            "type": "t_mapping(t_enum(Chain)9467,t_address)",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:27"
+            "src": "contracts\\crosschain\\Bridge.sol:27"
           },
           {
             "label": "_nonces",
@@ -11122,7 +11122,7 @@
             "slot": "357",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:29"
+            "src": "contracts\\crosschain\\Bridge.sol:29"
           },
           {
             "label": "__gap",
@@ -11130,7 +11130,7 @@
             "slot": "358",
             "type": "t_array(t_uint256)50_storage",
             "contract": "Bridge",
-            "src": "contracts/crosschain/Bridge.sol:172"
+            "src": "contracts\\crosschain\\Bridge.sol:172"
           }
         ],
         "types": {
@@ -11154,15 +11154,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IPortal)10544": {
+          "t_contract(IPortal)7918": {
             "label": "contract IPortal",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistry)21758": {
+          "t_contract(IRegistry)16626": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
-          "t_enum(Chain)14251": {
+          "t_enum(Chain)9467": {
             "label": "enum Chain",
             "members": [
               "ETHEREUM",
@@ -11188,7 +11188,7 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_enum(CrossChainProvider)14258": {
+          "t_enum(CrossChainProvider)9474": {
             "label": "enum CrossChainProvider",
             "members": [
               "LAYERZERO",
@@ -11210,11 +11210,11 @@
             "label": "mapping(bytes32 => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(AcceptedRequest)10325_storage)": {
+          "t_mapping(t_bytes32,t_struct(AcceptedRequest)7699_storage)": {
             "label": "mapping(bytes32 => struct IBridge.AcceptedRequest)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(BridgedRequest)10340_storage)": {
+          "t_mapping(t_bytes32,t_struct(BridgedRequest)7714_storage)": {
             "label": "mapping(bytes32 => struct IBridge.BridgedRequest)",
             "numberOfBytes": "32"
           },
@@ -11222,22 +11222,22 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_enum(Chain)14251,t_address)": {
+          "t_mapping(t_enum(Chain)9467,t_address)": {
             "label": "mapping(enum Chain => address)",
             "numberOfBytes": "32"
           },
-          "t_struct(AcceptedRequest)10325_storage": {
+          "t_struct(AcceptedRequest)7699_storage": {
             "label": "struct IBridge.AcceptedRequest",
             "members": [
               {
                 "label": "srcChain",
-                "type": "t_enum(Chain)14251",
+                "type": "t_enum(Chain)9467",
                 "offset": 0,
                 "slot": "0"
               },
               {
                 "label": "provider",
-                "type": "t_enum(CrossChainProvider)14258",
+                "type": "t_enum(CrossChainProvider)9474",
                 "offset": 1,
                 "slot": "0"
               },
@@ -11268,18 +11268,18 @@
             ],
             "numberOfBytes": "128"
           },
-          "t_struct(BridgedRequest)10340_storage": {
+          "t_struct(BridgedRequest)7714_storage": {
             "label": "struct IBridge.BridgedRequest",
             "members": [
               {
                 "label": "dstChain",
-                "type": "t_enum(Chain)14251",
+                "type": "t_enum(Chain)9467",
                 "offset": 0,
                 "slot": "0"
               },
               {
                 "label": "provider",
-                "type": "t_enum(CrossChainProvider)14258",
+                "type": "t_enum(CrossChainProvider)9474",
                 "offset": 1,
                 "slot": "0"
               },
