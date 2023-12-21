@@ -50,8 +50,10 @@ export enum Network {
   FANTOM_TESTNET = 4002,
   OPTIMISM = 10,
   OPTIMISM_GOERLI = 420,
+  OPTIMISM_SEPOLIA = 11155420,
   ARBITRUM = 42161,
   ARBITRUM_GOERLI = 421613,
+  ARBITRUM_SEPOLIA = 421614,
   IOTEX = 4689,
   IOTEX_TESTNET = 4690,
   OKC = 66,
@@ -124,8 +126,8 @@ export const Testnets = [
   Network.POLYGON_MUMBAI,
   Network.AVALANCHE_FUJI,
   Network.FANTOM_TESTNET,
-  // Network.OPTIMISM_GOERLI,
-  // Network.ARBITRUM_GOERLI,
+  Network.OPTIMISM_SEPOLIA,
+  Network.ARBITRUM_SEPOLIA,
   Network.GNOSIS_CHIADO,
   Network.CELO_ALFAJORES,
   Network.OKC_TESTNET,
@@ -536,6 +538,22 @@ export const getNetworkConfig = (): INetworkConfig => {
         },
       },
     },
+    [Network.ARBITRUM_SEPOLIA]: {
+      chainId: Network.ARBITRUM_SEPOLIA,
+      chain: InContractChain.ARBITRUM,
+      name: "Arbitrum Sepolia",
+      symbol: "ETH",
+      url: `https://sepolia-rollup.arbitrum.io/rpc`,
+      slip44: {
+        coinId: 9001,
+      },
+      layerzero: {
+        chainId: 10231,
+        endpoint: {
+          address: "0x6098e96a28E02f27B1e6BD381f870F1C8Bd169d3",
+        },
+      },
+    },
     [Network.OPTIMISM]: {
       chainId: Network.OPTIMISM,
       chain: InContractChain.OPTIMISM,
@@ -589,6 +607,22 @@ export const getNetworkConfig = (): INetworkConfig => {
           symbol: "LINK",
           decimals: 18,
           address: "0x4911b761993b9c8c0d14Ba2d86902AF6B0074F5B",
+        },
+      },
+    },
+    [Network.OPTIMISM_SEPOLIA]: {
+      chainId: Network.OPTIMISM_SEPOLIA,
+      chain: InContractChain.OPTIMISM,
+      name: "Optimism Sepolia",
+      symbol: "ETH",
+      url: `https://sepolia.optimism.io`,
+      slip44: {
+        coinId: 614,
+      },
+      layerzero: {
+        chainId: 10232,
+        endpoint: {
+          address: "0x55370E0fBB5f5b8dAeD978BA1c075a499eB107B8",
         },
       },
     },
@@ -999,7 +1033,7 @@ export const getNetworkConfig = (): INetworkConfig => {
     [Network.BASE]: {
       chain: InContractChain.BASE,
       chainId: Network.BASE,
-      name: "BASE",
+      name: "Base Mainnet",
       symbol: "ETH",
       url: `https://go.getblock.io/${GetBlockConfig.shared.base.mainnet.jsonRpc[0]}`,
       slip44: {

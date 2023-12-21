@@ -11064,7 +11064,7 @@
             "label": "_selfChain",
             "offset": 0,
             "slot": "351",
-            "type": "t_enum(Chain)10093",
+            "type": "t_enum(Chain)14251",
             "contract": "Bridge",
             "src": "contracts/crosschain/Bridge.sol:18"
           },
@@ -11072,7 +11072,7 @@
             "label": "_registry",
             "offset": 1,
             "slot": "351",
-            "type": "t_contract(IRegistry)13125",
+            "type": "t_contract(IRegistry)21758",
             "contract": "Bridge",
             "src": "contracts/crosschain/Bridge.sol:20"
           },
@@ -11080,7 +11080,7 @@
             "label": "_portal",
             "offset": 0,
             "slot": "352",
-            "type": "t_contract(IPortal)7877",
+            "type": "t_contract(IPortal)10544",
             "contract": "Bridge",
             "src": "contracts/crosschain/Bridge.sol:21"
           },
@@ -11088,7 +11088,7 @@
             "label": "_acceptedRequests",
             "offset": 0,
             "slot": "353",
-            "type": "t_mapping(t_bytes32,t_struct(AcceptedRequest)7658_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(AcceptedRequest)10325_storage)",
             "contract": "Bridge",
             "src": "contracts/crosschain/Bridge.sol:23"
           },
@@ -11096,7 +11096,7 @@
             "label": "_bridgedRequests",
             "offset": 0,
             "slot": "354",
-            "type": "t_mapping(t_bytes32,t_struct(BridgedRequest)7673_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(BridgedRequest)10340_storage)",
             "contract": "Bridge",
             "src": "contracts/crosschain/Bridge.sol:24"
           },
@@ -11112,7 +11112,7 @@
             "label": "_remoteBridges",
             "offset": 0,
             "slot": "356",
-            "type": "t_mapping(t_enum(Chain)10093,t_address)",
+            "type": "t_mapping(t_enum(Chain)14251,t_address)",
             "contract": "Bridge",
             "src": "contracts/crosschain/Bridge.sol:27"
           },
@@ -11154,15 +11154,15 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IPortal)7877": {
+          "t_contract(IPortal)10544": {
             "label": "contract IPortal",
             "numberOfBytes": "20"
           },
-          "t_contract(IRegistry)13125": {
+          "t_contract(IRegistry)21758": {
             "label": "contract IRegistry",
             "numberOfBytes": "20"
           },
-          "t_enum(Chain)10093": {
+          "t_enum(Chain)14251": {
             "label": "enum Chain",
             "members": [
               "ETHEREUM",
@@ -11188,7 +11188,7 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_enum(CrossChainProvider)10100": {
+          "t_enum(CrossChainProvider)14258": {
             "label": "enum CrossChainProvider",
             "members": [
               "LAYERZERO",
@@ -11210,11 +11210,11 @@
             "label": "mapping(bytes32 => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(AcceptedRequest)7658_storage)": {
+          "t_mapping(t_bytes32,t_struct(AcceptedRequest)10325_storage)": {
             "label": "mapping(bytes32 => struct IBridge.AcceptedRequest)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(BridgedRequest)7673_storage)": {
+          "t_mapping(t_bytes32,t_struct(BridgedRequest)10340_storage)": {
             "label": "mapping(bytes32 => struct IBridge.BridgedRequest)",
             "numberOfBytes": "32"
           },
@@ -11222,22 +11222,22 @@
             "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_enum(Chain)10093,t_address)": {
+          "t_mapping(t_enum(Chain)14251,t_address)": {
             "label": "mapping(enum Chain => address)",
             "numberOfBytes": "32"
           },
-          "t_struct(AcceptedRequest)7658_storage": {
+          "t_struct(AcceptedRequest)10325_storage": {
             "label": "struct IBridge.AcceptedRequest",
             "members": [
               {
                 "label": "srcChain",
-                "type": "t_enum(Chain)10093",
+                "type": "t_enum(Chain)14251",
                 "offset": 0,
                 "slot": "0"
               },
               {
                 "label": "provider",
-                "type": "t_enum(CrossChainProvider)10100",
+                "type": "t_enum(CrossChainProvider)14258",
                 "offset": 1,
                 "slot": "0"
               },
@@ -11268,18 +11268,18 @@
             ],
             "numberOfBytes": "128"
           },
-          "t_struct(BridgedRequest)7673_storage": {
+          "t_struct(BridgedRequest)10340_storage": {
             "label": "struct IBridge.BridgedRequest",
             "members": [
               {
                 "label": "dstChain",
-                "type": "t_enum(Chain)10093",
+                "type": "t_enum(Chain)14251",
                 "offset": 0,
                 "slot": "0"
               },
               {
                 "label": "provider",
-                "type": "t_enum(CrossChainProvider)10100",
+                "type": "t_enum(CrossChainProvider)14258",
                 "offset": 1,
                 "slot": "0"
               },

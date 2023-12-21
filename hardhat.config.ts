@@ -73,6 +73,10 @@ const config: HardhatUserConfig = {
     optimism_goerli: {
       chainId: 420,
     },
+    optimism_sepolia: {
+      chainId: 11155420,
+      gasPrice: 1000000,
+    },
     // Polygon
     polygon: {
       chainId: 137,
@@ -87,6 +91,9 @@ const config: HardhatUserConfig = {
     },
     arbitrum_goerli: {
       chainId: 421613,
+    },
+    arbitrum_sepolia: {
+      chainId: 421614,
     },
     // Avalanche
     avalanche: {
@@ -183,6 +190,10 @@ const config: HardhatUserConfig = {
     base_goerli: {
       chainId: 84531,
       gasPrice: 1000000000,
+    },
+    base_sepolia: {
+      chainId: 84532,
+      gasPrice: 1000000,
     },
     scroll: {
       chainId: 534352,
