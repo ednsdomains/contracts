@@ -53,7 +53,7 @@ contract Mortgage is IMortgage, ReentrancyGuardUpgradeable, AccessControlUpgrade
   function withdraw(bytes32 name, bytes32 tld, address recipient, uint256 amount) public whenNotPaused nonReentrant {
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
     require(_funds[tld][name][_msgSender()] >= amount, "AMOUNT_EXCEEDED");
-    _token.transferFrom(address(this), recipient, amount);
+    _token.transfer(recipient, amount);
     emit Withdraw(name, tld, _msgSender(), amount);
   }
 
