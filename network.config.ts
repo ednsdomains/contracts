@@ -98,6 +98,7 @@ export enum Network {
   SCROLL_SEPOLIA = 534351,
   CORE_DAO = 1116,
   CORE_DAO_TESTNET = 1115,
+  _HARDHAT_ = 31337,
 }
 
 export const Mainnets = [

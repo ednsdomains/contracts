@@ -1,7 +1,7 @@
 import hre from "hardhat";
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import NetworkConfig, { Mainnets, Testnets, ZERO_ADDRESS } from "../../network.config";
+import NetworkConfig, { Mainnets, Network, Testnets, ZERO_ADDRESS } from "../../network.config";
 import {
   PublicResolver,
   Registry,
@@ -412,6 +412,11 @@ export const deployMigrationManager = async (input: IDeployInput): Promise<Migra
 
 export const deployMortgage = async (input: IDeployInput): Promise<Mortgage> => {
   if (!input.contracts.Token) throw new Error("`Token` is not available");
+  if (![Network.GOERLI, Network.SEPOLIA, Network.POLYGON, Network.POLYGON_MUMBAI, Network._HARDHAT_].includes(input.chainId)) {
+    throw new Error(
+      `Only specific networks are supported: ${[Network.GOERLI, Network.SEPOLIA, Network.POLYGON, Network.POLYGON_MUMBAI].map((cid) => NetworkConfig[cid]?.name).join(", ")}`,
+    );
+  }
   const factory = await ethers.getContractFactory("Mortgage", input.signer);
   const { canContinue, contractAddress } = await _beforeDeploy(input.signer, await input.signer.getChainId(), "Mortgage");
   if (!canContinue) {

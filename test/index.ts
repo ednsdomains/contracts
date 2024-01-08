@@ -16,6 +16,7 @@ import * as luxon from "luxon";
 import { expect } from "chai";
 import { IRegistry__factory, PublicResolver } from "../typechain";
 import { Mortgage } from "../typechain/Mortgage";
+import { ZERO_ADDRESS } from "../network.config";
 
 describe("Deploy & Setup", function () {
   async function deployAndSetup() {
@@ -310,9 +311,11 @@ describe("Deploy & Setup", function () {
 
     const Registry = IRegistry__factory.connect(contracts.Registry.Diamond.address, master_signer);
 
-    const tx1 = await contracts.Mortgage.setRequirement(_name_, _tld_, 10000);
+    const TOKEN_DECIMAL = await contracts.Token.decimals();
+
+    const tx1 = await contracts.Mortgage.setRequirement(_name_, _tld_, ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
     await tx1.wait();
-    expect(await contracts.Mortgage.getRequirement(_name_, _tld_)).to.equal(10000);
+    expect(await contracts.Mortgage.getRequirement(_name_, _tld_)).to.equal(ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
 
     const tx2 = await contracts.ClassicalRegistrarController["register(bytes,bytes,address,uint64)"](
       ethers.utils.toUtf8Bytes(name),
@@ -328,34 +331,32 @@ describe("Deploy & Setup", function () {
     expect(await Registry["getUserExpiry(bytes32,bytes32)"](_name_, _tld_), "Same User Expiry").to.equal(expiry);
     expect(await Registry["getExpiry(bytes32,bytes32)"](_name_, _tld_), "Same Expiry").to.equal(expiry);
 
-    expect(await contracts.PublicResolver.getText(ethers.utils.toUtf8Bytes("@"), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld))).to.equal("");
+    expect(await contracts.PublicResolver.getAddress(ethers.utils.toUtf8Bytes("@"), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld))).to.equal(ZERO_ADDRESS);
 
     expect(
       contracts.PublicResolver.connect(signer_1)["setAddress"](ethers.utils.toUtf8Bytes(host), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld), signer_1.address),
     ).to.be.revertedWith("DOMAIN_MORTGAGE_NOT_FULFILLED");
 
-    // Mint some token to signer_1
-    const tx3 = await contracts.Token.mint(signer_1.address, ethers.utils.parseUnits("1000000"));
+    const tx3 = await contracts.Token.mint(signer_1.address, ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
     await tx3.wait();
 
-    expect(await contracts.Token.balanceOf(signer_1.address)).to.equal(ethers.utils.parseUnits("1000000"));
+    expect(await contracts.Token.balanceOf(signer_1.address)).to.equal(ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
 
-    expect(contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, signer_2.address, ethers.utils.parseUnits("10000"))).to.be.revertedWith(
+    expect(contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, signer_2.address, ethers.utils.parseUnits("10000", TOKEN_DECIMAL))).to.be.revertedWith(
       "INSUFFICIENT_TOKEN_ALLOWANCE",
     );
 
-    expect(contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_2.address, signer_2.address, ethers.utils.parseUnits("10000"))).to.be.revertedWith(
+    expect(contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_2.address, signer_2.address, ethers.utils.parseUnits("10000", TOKEN_DECIMAL))).to.be.revertedWith(
       "NOT_DOMAIN_OWNER",
     );
 
-    const tx4 = await contracts.Token.connect(signer_1).approve(contracts.Mortgage.address, ethers.utils.parseUnits("10000"));
+    const tx4 = await contracts.Token.connect(signer_1).approve(contracts.Mortgage.address, ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
     await tx4.wait();
 
-    // signer_1 do the deposit to `Mortgage`
-    const tx5 = await contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, signer_1.address, ethers.utils.parseUnits("10000"));
+    const tx5 = await contracts.Mortgage.connect(signer_1).deposit(_name_, _tld_, signer_1.address, signer_1.address, ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
     await tx5.wait();
 
-    expect(await contracts.Mortgage.getBalance(_name_, _tld_)).to.equal(ethers.utils.parseUnits("10000"));
+    expect(await contracts.Mortgage.getBalance(_name_, _tld_)).to.equal(ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
 
     const tx6 = await contracts.PublicResolver.connect(signer_1)["setAddress"](
       ethers.utils.toUtf8Bytes(host),
@@ -366,5 +367,27 @@ describe("Deploy & Setup", function () {
     await tx6.wait();
 
     expect(await contracts.PublicResolver.getAddress(ethers.utils.toUtf8Bytes(host), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld))).to.be.equal(signer_1.address);
+
+    console.log({
+      contract_balance: await contracts.Token.balanceOf(contracts.Mortgage.address),
+      signer_1_balance: await contracts.Token.balanceOf(signer_1.address),
+      domain_balance: await contracts.Mortgage.getBalance(_name_, _tld_),
+      parse_units: ethers.utils.parseUnits("10000", TOKEN_DECIMAL),
+    });
+
+    const tx7 = await contracts.Mortgage.connect(signer_1).withdraw(_name_, _tld_, signer_1.address, ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
+    await tx7.wait();
+
+    console.log({
+      contract_balance: await contracts.Token.balanceOf(contracts.Mortgage.address),
+      signer_1_balance: await contracts.Token.balanceOf(signer_1.address),
+      domain_balance: await contracts.Mortgage.getBalance(_name_, _tld_),
+      parse_units: ethers.utils.parseUnits("10000", TOKEN_DECIMAL),
+    });
+
+    expect(await contracts.Mortgage.getBalance(_name_, _tld_)).to.equal(ethers.utils.parseUnits("0", TOKEN_DECIMAL));
+    expect(await contracts.Token.balanceOf(signer_1.address)).to.equal(ethers.utils.parseUnits("10000", TOKEN_DECIMAL));
+
+    expect(await contracts.PublicResolver.getAddress(ethers.utils.toUtf8Bytes(host), ethers.utils.toUtf8Bytes(name), ethers.utils.toUtf8Bytes(tld))).to.be.equal(ZERO_ADDRESS);
   });
 });

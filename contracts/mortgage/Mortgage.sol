@@ -54,6 +54,8 @@ contract Mortgage is IMortgage, ReentrancyGuardUpgradeable, AccessControlUpgrade
     require(_registry.getOwner(name, tld) == _msgSender(), "ONLY_OWNER");
     require(_funds[tld][name][_msgSender()] >= amount, "AMOUNT_EXCEEDED");
     _token.transfer(recipient, amount);
+    address owner = _registry.getOwner(name, tld);
+    _funds[tld][name][owner] -= amount;
     emit Withdraw(name, tld, _msgSender(), amount);
   }
 
