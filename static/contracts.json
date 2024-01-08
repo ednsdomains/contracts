@@ -330,7 +330,8 @@
       "Bridge": "0xC04C3f710b1F738b2Ba22CF6D0E8Cb68252eD5eF",
       "Synchronizer": "0xcF3781911fC5D4fa0e091C1AC9BbC998999DA559",
       "LayerZeroProvider": "0xfB0f20f18507bAB150f6c57e0Bdbd6c6331Eb824",
-      "MigrationManager": "0x564a8d20e131613Cb4Dd2476091e37aCC9cD126A"
+      "MigrationManager": "0x564a8d20e131613Cb4Dd2476091e37aCC9cD126A",
+      "Mortgage": "0x95D08727E17106208688cCccF7e356Ea28eA1aC7"
     }
   },
   {
