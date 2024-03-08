@@ -163,6 +163,10 @@
     {
       "chainId": 84532,
       "names": ["_base"]
+    },
+    {
+      "chainId": 114,
+      "names": ["_flare", "_pixel"]
     }
   ],
   "universal": [

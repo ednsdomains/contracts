@@ -1,3 +1,7 @@
+// === 🚨 ALERT 🚨 === //
+// PLEASE MAKE SURE THE ORDER OF THE KEY IS THE SAME AS THE ENUM IN SMART CONTRACT //
+// === 🚨 ALERT 🚨 === //
+
 export enum InContractChain {
   ETHEREUM,
   BNB,
@@ -19,4 +23,5 @@ export enum InContractChain {
   BASE,
   SCROLL,
   CORE_DAO,
+  FLARE,
 }

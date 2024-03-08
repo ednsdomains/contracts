@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import NetworkConfig from "./network.config";
+import NetworkConfig, { Network } from "./network.config";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-ethers";
@@ -206,6 +206,12 @@ const config: HardhatUserConfig = {
     },
     coredao_testnet: {
       chainId: 1115,
+    },
+    flare: {
+      chainId: Network.FLARE,
+    },
+    flare_testnet: {
+      chainId: Network.FLARE_TESTNET,
     },
   },
   gasReporter: {

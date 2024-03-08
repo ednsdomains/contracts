@@ -54,15 +54,15 @@
   "66": {
     "PublicResolver": {
       "hash": "0x29c919d87c8ed820ea83ba1a7aeb1106329b33b370f533d72675b10efb4ffc78",
-      "block": 0
+      "block": 20420046
     },
     "Registrar": {
       "hash": "0x737ada91fd98a99069f42d79a3bcd08928adf8b3aa3987384dd062d89d279331",
-      "block": 0
+      "block": 20420029
     },
     "Bridge": {
       "hash": "0xb3dc65b4f3854aa9af23908f60d97d608a3a302894ad3a0acfa1f66349514303",
-      "block": 0
+      "block": 20420102
     }
   },
   "97": {
@@ -264,29 +264,29 @@
   "42220": {
     "PublicResolver": {
       "hash": "0xb0b156ee74df87b995a8128f1814a081f740cf5b8a754cbf981aef5635e7852c",
-      "block": 0
+      "block": 20037401
     },
     "Registrar": {
       "hash": "0xb8c876008bf76886f99067afcc9e0a7d85f6a6bc9cba9f0c96cf4fd4cf727e36",
-      "block": 0
+      "block": 20037406
     },
     "Bridge": {
       "hash": "0xdb289a450509b2d3fe36b80e596505e3fba6d15f728bcfc35fc8611170222ffb",
-      "block": 0
+      "block": 20037511
     }
   },
   "43113": {
     "PublicResolver": {
       "hash": "0x8d12d0c2d15997fe888089f38869709fe0305cbf1aa7ef32c420baacc773ad83",
-      "block": 0
+      "block": 19849520
     },
     "Registrar": {
       "hash": "0xfa8e5824d98fe28423437a17adc0d1ca9b989d4c9b59cf0a57e54e7bd2174507",
-      "block": 0
+      "block": 19849527
     },
     "Bridge": {
       "hash": "0xfacc621fde83a476e450fc1e265223f58f7cf462f95ba024f733e5538e3ea930",
-      "block": 0
+      "block": 19849573
     }
   },
   "43114": {

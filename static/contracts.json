@@ -2,7 +2,7 @@
   {
     "chainId": 0,
     "addresses": {
-      "Registry.Init": "0x814357bD7C7167119Bb5cdF84470004351084589",
+      "Registry.Init": "0xF2B33EdC3e307F517B4fdbF89fd232E65acFB624",
       "Registry.DiamondLoupeFacet": "0xF2B33EdC3e307F517B4fdbF89fd232E65acFB624"
     }
   },
@@ -913,6 +913,30 @@
       "Synchronizer": "0xeD5a900f6FC898044E137a48CE61590D5207bC72",
       "LayerZeroProvider": "0xdAC7B6a1d20DF2e21AFCDF10DaA1273254869fBE",
       "Mortgage": "0x2d9D2b3339786208760e0BdADAc828582a47659E"
+    }
+  },
+  {
+    "chainId": 114,
+    "addresses": {
+      "Registry.Init": "0x3042D63c7f27850191BF87a88f3f81CFbC2b3D4e",
+      "Registry.DiamondCutFacet": "0xcd77b7Ee5703e609cbc99B4B97AdD1fF362A301A",
+      "Registry.DiamondLoupeFacet": "0xb848963623E78196b66601f07fD2bB8bDe51D871",
+      "Registry.AccessControlFacet": "0xB50DD7376Ffb5282822F3f11CE67d8e21cA8E6CD",
+      "Registry.TldRecordFacet": "0x65cB40A225dB695B8e96aE9165CBfF67493B637A",
+      "Registry.DomainRecordFacet": "0xcC12872118605c587249e103EeA7CA09Bac58053",
+      "Registry.HostRecordFacet": "0xB51457f684F1638a95981Df380595815e0ab81d4",
+      "Registry.BaseRegistryFacet": "0x5845b418334fe1f0bE22642728c9c8451B06E28c",
+      "Registry.Diamond": "0x42Ffe9E01975Fd576c861142C7799DD5635c46e2",
+      "DefaultWrapper": "0x659D7a70d0978c6927DB39A73E0DdAE51D6148Bd",
+      "PublicResolver": "0x33Ff4d030E0737987360eA5C97Bd189652b49c06",
+      "Registrar": "0x758cE7F3867e526E3B897984c3E4C07976afe59f",
+      "Root": "0xf34599E103f26E1B9AB11e90F5A0aD8CCC1C80D7",
+      "Token": "0x4f0793d030ec8F7Eb3907C75D441bd401Ff57e3A",
+      "ClassicalRegistrarController": "0x3CD270B48102e5113214C8b6C9818081cDEe6CC1",
+      "UniversalRegistrarController": "0x0EDc7373c47EaE490dcC8B03EfD65af1f3c9F7b7",
+      "OmniRegistrarController": "0xfdAbf2a8DE737ef2850A0109Bb148dfAe347Ed0C",
+      "Portal": "0x9aaa2F8C5929680b0457bc530CaEd676D3d10b31",
+      "Bridge": "0x3DACf00164CC23199b8eb4A3fEfB35FD6F009DF5"
     }
   }
 ]

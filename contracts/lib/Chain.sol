@@ -21,5 +21,6 @@ enum Chain {
   LINEA,
   BASE,
   SCROLL,
-  CORE_DAO
+  CORE_DAO,
+  FLARE
 }

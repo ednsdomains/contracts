@@ -98,6 +98,8 @@ export enum Network {
   SCROLL_SEPOLIA = 534351,
   CORE_DAO = 1116,
   CORE_DAO_TESTNET = 1115,
+  FLARE = 14,
+  FLARE_TESTNET = 114,
   _HARDHAT_ = 31337,
 }
 
@@ -141,6 +143,7 @@ export const Testnets = [
   Network.BASE_SEPOLIA,
   Network.SCROLL_SEPOLIA,
   Network.CORE_DAO_TESTNET,
+  Network.FLARE_TESTNET,
 ];
 
 export interface INetworkConfig {
@@ -1139,6 +1142,20 @@ export const getNetworkConfig = (): INetworkConfig => {
           address: "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
         },
       },
+    },
+    [Network.FLARE]: {
+      chain: InContractChain.FLARE,
+      chainId: Network.FLARE,
+      name: "Flare Mainnet",
+      symbol: "FLR",
+      url: `https://flare-api.flare.network/ext/C/rpc`,
+    },
+    [Network.FLARE_TESTNET]: {
+      chain: InContractChain.FLARE,
+      chainId: Network.FLARE_TESTNET,
+      name: "Flare Testnet",
+      symbol: "C2FLR",
+      url: `https://coston2-api.flare.network/ext/C/rpc	`,
     },
   };
 };

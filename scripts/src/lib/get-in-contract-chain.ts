@@ -23,5 +23,6 @@ export const getInContractChain = async (chainId: number): Promise<InContractCha
   if (chainId === Network.BASE || chainId === Network.BASE_GOERLI || chainId === Network.BASE_SEPOLIA) return InContractChain.BASE;
   if (chainId === Network.SCROLL || chainId === Network.SCROLL_SEPOLIA) return InContractChain.SCROLL;
   if (chainId === Network.CORE_DAO || chainId === Network.CORE_DAO_TESTNET) return InContractChain.CORE_DAO;
+  if (chainId === Network.FLARE || chainId === Network.FLARE_TESTNET) return InContractChain.FLARE;
   throw new Error(`Unsupported chain: ${chainId}`);
 };

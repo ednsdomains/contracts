@@ -40,17 +40,17 @@ async function main() {
   }
   await deployClassicalRegistrarController({ signer, chainId, contracts });
   contracts = await getContracts(signer);
-  await deployUniversalRegistrarController({ signer, chainId, contracts });
-  contracts = await getContracts(signer);
-  await deployOmniRegistrarController({ signer, chainId, contracts });
-  contracts = await getContracts(signer);
-  await deployPortal({ signer, chainId, contracts });
-  contracts = await getContracts(signer);
-  await deployBridge({ signer, chainId, contracts });
-  contracts = await getContracts(signer);
-  await deploySynchronizer({ signer, chainId, contracts });
-  contracts = await getContracts(signer);
   if (NetworkConfig[chainId].layerzero) {
+    await deployUniversalRegistrarController({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
+    await deployOmniRegistrarController({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
+    await deployPortal({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
+    await deployBridge({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
+    await deploySynchronizer({ signer, chainId, contracts });
+    contracts = await getContracts(signer);
     await deployLayerZeroProvider({ signer, chainId, contracts });
     contracts = await getContracts(signer);
   }

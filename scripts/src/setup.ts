@@ -92,6 +92,7 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
         ) {
           try {
             const _address = await _loupe.facetAddress(_selector);
+            console.log({ _address });
             if (!states[facet.address]) states[facet.address] = { add: [], replace: [] };
             if (_address === ZERO_ADDRESS) {
               states[facet.address].add.push(_selector);
@@ -99,6 +100,7 @@ const _registryDiamondCut = async (input: ISetupInput): Promise<ContractTransact
               states[facet.address].replace.push(_selector);
             }
           } catch (e) {
+            console.log("Error occur when doing diamond cut");
             console.error(e);
           }
         }
