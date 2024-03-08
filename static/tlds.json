@@ -166,7 +166,11 @@
     },
     {
       "chainId": 114,
-      "names": ["_flare", "_pixel"]
+      "names": ["_coton2"]
+    },
+    {
+      "chainId": 19,
+      "names": ["_songbird"]
     }
   ],
   "universal": [

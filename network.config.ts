@@ -99,7 +99,8 @@ export enum Network {
   CORE_DAO = 1116,
   CORE_DAO_TESTNET = 1115,
   FLARE = 14,
-  FLARE_TESTNET = 114,
+  FLARE_COTON_2 = 114,
+  FLARE_SONGBIRD = 19,
   _HARDHAT_ = 31337,
 }
 
@@ -143,7 +144,9 @@ export const Testnets = [
   Network.BASE_SEPOLIA,
   Network.SCROLL_SEPOLIA,
   Network.CORE_DAO_TESTNET,
-  Network.FLARE_TESTNET,
+  Network.FLARE_COTON_2,
+  Network.FLARE_SONGBIRD,
+  Network._HARDHAT_,
 ];
 
 export interface INetworkConfig {
@@ -1150,12 +1153,19 @@ export const getNetworkConfig = (): INetworkConfig => {
       symbol: "FLR",
       url: `https://flare-api.flare.network/ext/C/rpc`,
     },
-    [Network.FLARE_TESTNET]: {
+    [Network.FLARE_COTON_2]: {
       chain: InContractChain.FLARE,
-      chainId: Network.FLARE_TESTNET,
-      name: "Flare Testnet",
+      chainId: Network.FLARE_COTON_2,
+      name: "Flare Coton 2 Testnet",
       symbol: "C2FLR",
-      url: `https://coston2-api.flare.network/ext/C/rpc	`,
+      url: `https://coston2-api.flare.network/ext/C/rpc`,
+    },
+    [Network.FLARE_SONGBIRD]: {
+      chain: InContractChain.FLARE,
+      chainId: Network.FLARE_SONGBIRD,
+      name: "Flare Songbird Canary Network",
+      symbol: "SGB",
+      url: `https://songbird-api.flare.network/ext/C/rpc	`,
     },
   };
 };

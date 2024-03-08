@@ -210,8 +210,11 @@ const config: HardhatUserConfig = {
     flare: {
       chainId: Network.FLARE,
     },
-    flare_testnet: {
-      chainId: Network.FLARE_TESTNET,
+    flare_coton_2: {
+      chainId: Network.FLARE_COTON_2,
+    },
+    flare_songbird: {
+      chainId: Network.FLARE_SONGBIRD,
     },
   },
   gasReporter: {
