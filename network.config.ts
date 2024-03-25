@@ -146,7 +146,6 @@ export const Testnets = [
   Network.CORE_DAO_TESTNET,
   Network.FLARE_COTON_2,
   Network.FLARE_SONGBIRD,
-  Network._HARDHAT_,
 ];
 
 export interface INetworkConfig {

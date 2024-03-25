@@ -62,8 +62,6 @@ abstract contract BaseResolver is IBaseResolver, Helper, SynchronizerApplication
     bytes32 name_ = keccak256(name);
     bytes32 tld_ = keccak256(tld);
 
-    require(_mortgage.isFulfill(name_, tld_), "DOMAIN_MORTGAGE_NOT_FULFILLED");
-
     bool isSelfAuthorized = _msgSender() == address(this);
     if (isSelfAuthorized) {
       return true;
